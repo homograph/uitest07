@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>넛지 칩 · 하단 요금영역 리뷰</title>
+<style>
+  :root{
+    --blue-50:#e2f2fe; --blue-600:#0086ea; --navy:#19254d;
+    --gray-30:#f5f6f7; --gray-700:#4b5064; --gray-900:#262a38; --gray-300:#9da0ae;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    background:#eef1f5;color:var(--gray-900);-webkit-font-smoothing:antialiased;padding:16px 14px 40px;}
+  h1{font-size:17px;margin:4px 0 2px;}
+  .sub{font-size:12.5px;color:#6b7482;margin:0 0 16px;line-height:1.5;}
+
+  .stagebox{max-width:420px;margin:0 auto;}
+
+  /* 폰 하단 영역 */
+  .phone{position:relative;width:100%;background:#fff;border-radius:18px;border:1px solid #e3e7ee;
+    box-shadow:0 10px 30px rgba(20,30,55,.12);overflow:hidden;}
+  .filler{height:150px;background:linear-gradient(180deg,#fbfcfe,#fff);display:flex;align-items:center;justify-content:center;
+    color:#c2c7d2;font-size:12px;}
+  .pricewrap{position:relative;display:flex;flex-direction:column;box-shadow:0 -8px 8px rgba(25,37,77,.06);}
+  .band{background:var(--blue-50);text-align:center;font-size:13px;color:#383d4f;
+    overflow:hidden;max-height:0;opacity:0;transition:max-height .34s cubic-bezier(.4,0,.2,1),opacity .28s ease,padding .34s;}
+  .band b{color:var(--blue-600);font-weight:700;}
+  .band.show{max-height:44px;opacity:1;padding:10px 12px;}
+  .bottom{background:#fff;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
+    padding:0 18px 14px;min-height:92px;transition:min-height .34s cubic-bezier(.4,0,.2,1);}
+  .bottom.grow{min-height:112px;}
+  .fare{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;padding-top:12px;}
+  .lblrow{display:flex;align-items:center;gap:5px;}
+  .lbl{font-size:12px;color:#111;}
+  .surge{font-size:12px;color:#60667a;white-space:nowrap;display:none;}
+  .surge.show{display:inline;}
+  .prow{display:flex;align-items:baseline;gap:6px;margin-top:2px;white-space:nowrap;}
+  .price{font-size:16px;font-weight:700;color:#111;}
+  .strike{font-size:12px;color:var(--gray-300);text-decoration:line-through;display:none;}
+  .strike.show{display:inline;}
+  .next{width:96px;flex:0 0 auto;background:var(--navy);color:#fff;font-size:15px;font-weight:700;border:none;
+    border-radius:6px;padding:13px 0;text-align:center;}
+
+  .nchip{display:inline-flex;align-items:center;gap:4px;background:var(--gray-30);color:var(--gray-700);
+    border-radius:9999px;font-size:12px;line-height:1;white-space:nowrap;overflow:hidden;
+    max-height:0;opacity:0;margin-top:0;padding:0 10px;
+    transition:max-height .3s ease,opacity .28s ease,margin-top .3s ease,padding .3s ease;}
+  .nchip.show{max-height:24px;opacity:1;margin-top:6px;padding:5px 10px 5px 6px;}
+  .nchip.landing{animation:pulse .5s ease;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,148,249,.0);}
+    30%{box-shadow:0 0 0 4px rgba(0,148,249,.22);background:#e2f2fe;}
+    100%{box-shadow:0 0 0 0 rgba(0,148,249,0);}}
+
+  /* 플로팅 (모프 시작점) */
+  .floating{position:absolute;left:16px;right:16px;bottom:calc(92px + 16px);z-index:5;
+    display:flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:8px;
+    background:linear-gradient(90deg,#0094F9,#32A2FA);color:#fff;font-size:15px;line-height:1.38;
+    box-shadow:0 4px 12px rgba(25,37,77,.14);white-space:nowrap;
+    opacity:0;visibility:hidden;transform:translateY(0);transform-origin:center center;}
+  .floating b{font-weight:700;}
+
+  /* 컨트롤 */
+  .controls{max-width:420px;margin:18px auto 0;background:#fff;border-radius:14px;padding:14px 14px 16px;
+    box-shadow:0 2px 10px rgba(20,30,55,.06);}
+  .cgrp{margin-bottom:14px;}
+  .cgrp:last-child{margin-bottom:0;}
+  .cgrp .l{font-size:11px;font-weight:700;color:#8a90a0;letter-spacing:.03em;margin-bottom:8px;text-transform:uppercase;}
+  .toggles{display:flex;flex-wrap:wrap;gap:8px;}
+  .tg{border:1px solid #dfe3ea;background:#fff;color:#4b5064;border-radius:9999px;padding:8px 14px;
+    font-size:13px;font-weight:600;cursor:pointer;user-select:none;}
+  .tg.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .seg{display:flex;background:#eef1f5;border-radius:10px;padding:3px;gap:3px;}
+  .seg button{flex:1;border:none;background:transparent;padding:10px 6px;border-radius:8px;font-size:13px;font-weight:600;color:#5a6373;cursor:pointer;}
+  .seg button.on{background:#fff;color:#1c2430;box-shadow:0 1px 3px rgba(0,0,0,.12);}
+  .replay{width:100%;margin-top:2px;background:var(--blue-600);color:#fff;border:none;border-radius:10px;
+    padding:13px;font-size:14px;font-weight:700;cursor:pointer;}
+  .hint{font-size:11.5px;color:#8a90a0;margin-top:10px;line-height:1.5;}
+</style>
+</head>
+<body>
+  <div class="stagebox">
+    <h1>넛지 칩 · 하단 요금영역 리뷰</h1>
+    <p class="sub">회색 칩 확정안. 케이스를 토글하며 세로 여백(A 92px 고정 vs B 위로 확장)을 실제 폭에서 확인하세요. ‘모프 재생’은 진입 1초 후 플로팅→칩 도킹.</p>
+
+    <div class="phone" id="phone">
+      <div class="filler">▲ 위쪽 콘텐츠 (스크롤 영역)</div>
+      <div class="floating" id="floating">🔥 이 날은 예약이 평소 대비 <b style="margin:0 3px;">2배</b> 몰리고 있어요</div>
+      <div class="pricewrap">
+        <div class="band" id="band"><span>⚡ 넥스트 호출 시 <b>100% 예약 확정</b></span></div>
+        <div class="bottom grow" id="bottom">
+          <div class="fare">
+            <div class="lblrow"><span class="lbl">예상 요금</span><span class="surge" id="surge">↗ 1.4배</span></div>
+            <div class="prow"><span class="price">110,000원</span><span class="strike" id="strike">150,000원</span></div>
+            <span class="nchip show" id="chip">✓ 예약이 몰리는 날</span>
+          </div>
+          <button class="next">다음</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="cgrp">
+        <div class="l">요금바 높이</div>
+        <div class="seg" id="height">
+          <button data-h="fixed">A · 92px 고정</button>
+          <button data-h="grow" class="on">B · 위로 확장</button>
+        </div>
+      </div>
+      <div class="cgrp">
+        <div class="l">케이스 토글</div>
+        <div class="toggles">
+          <div class="tg on" data-t="band">⚡ 밴드</div>
+          <div class="tg" data-t="surge">↗ 서지</div>
+          <div class="tg" data-t="discount">할인 취소선</div>
+          <div class="tg on" data-t="chip">넛지 칩</div>
+        </div>
+      </div>
+      <div class="cgrp">
+        <div class="l">모프</div>
+        <button class="replay" id="replay">▶ 모프 재생 (진입→1초→도킹)</button>
+        <div class="hint">플로팅 배너가 뜬 뒤 1초 후 칩으로 축소·이동하며, 착지 시 하이라이트 펄스로 “여기로 접혔다”를 분명히 보여줍니다. (모프 가시성 개선안)</div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  const bottom=document.getElementById('bottom'), band=document.getElementById('band'),
+        surge=document.getElementById('surge'), strike=document.getElementById('strike'),
+        chip=document.getElementById('chip'), floating=document.getElementById('floating');
+  const state={band:true,surge:false,discount:false,chip:true,height:'grow'};
+
+  function render(){
+    band.classList.toggle('show',state.band);
+    surge.classList.toggle('show',state.surge);
+    strike.classList.toggle('show',state.discount);
+    chip.classList.toggle('show',state.chip);
+    bottom.classList.toggle('grow',state.height==='grow' && state.chip);
+  }
+
+  document.querySelectorAll('#height button').forEach(b=>b.addEventListener('click',()=>{
+    state.height=b.dataset.h;
+    document.querySelectorAll('#height button').forEach(x=>x.classList.toggle('on',x===b));
+    render();
+  }));
+  document.querySelectorAll('.tg').forEach(t=>t.addEventListener('click',()=>{
+    const k=t.dataset.t; state[k]=!state[k]; t.classList.toggle('on',state[k]); render();
+  }));
+
+  document.getElementById('replay').addEventListener('click',()=>{
+    // 칩 숨기고 플로팅 등장
+    state.chip=false; render();
+    document.querySelector('.tg[data-t="chip"]').classList.remove('on');
+    floating.style.transition='none';
+    floating.style.transform='translateY(0)'; floating.style.opacity='0'; floating.style.visibility='visible';
+    void floating.offsetWidth;
+    floating.style.transition='opacity .28s ease';
+    floating.style.opacity='1';
+    // 1초 후 도킹 모프
+    setTimeout(()=>{
+      // 칩 최종 위치 측정
+      chip.classList.add('show'); state.chip=true;
+      document.querySelector('.tg[data-t="chip"]').classList.add('on'); render();
+      const to=chip.getBoundingClientRect(), from=floating.getBoundingClientRect();
+      chip.classList.remove('show'); render();
+      const dx=(to.left+to.width/2)-(from.left+from.width/2);
+      const dy=(to.top+to.height/2)-(from.top+from.height/2);
+      const sc=Math.max(to.width/from.width,.1);
+      floating.style.transition='transform .42s cubic-bezier(.4,0,.2,1),opacity .34s ease';
+      setTimeout(()=>{
+        floating.style.transform='translate('+dx+'px,'+dy+'px) scale('+sc+')';
+        floating.style.opacity='0';
+        chip.classList.add('show'); state.chip=true; render();
+      },20);
+      setTimeout(()=>{
+        floating.style.visibility='hidden';
+        chip.classList.add('landing');
+        setTimeout(()=>chip.classList.remove('landing'),520);
+      },460);
+    },1000);
+  });
+
+  render();
+</script>
+</body>
+</html>
