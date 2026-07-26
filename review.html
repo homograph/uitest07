@@ -80,7 +80,7 @@
 <body>
 <div class="wrap">
   <h1>통합 밴드↔플로팅 넛지 시스템 v1</h1>
-  <p class="sub">🔥수요 있으면 <b>플로팅 시작</b> · 없으면 <b>밴드 시작</b>. 스크롤 → 밴드 축소, 밴드 <b>탭 → 플로팅</b>. 여러 메시지는 밴드에서 한 줄 병합. 요금 블록은 손대지 않음.</p>
+  <p class="sub">🔥수요 있으면 <b>플로팅 시작</b> · 없으면 <b>밴드 시작</b>. 스크롤 → 밴드 축소, 밴드 <b>탭 → 플로팅</b>. 여러 조건이면 <b>우선순위 1개만</b>(병합 안 함) — 밴드·플로팅 동일 메시지. 요금 블록은 손대지 않음.</p>
 
   <div class="phone" id="phone">
     <div class="scroll" id="scroll">
@@ -132,7 +132,7 @@
     </div>
     <div class="cgrp">
       <button class="replay" id="replay">▶ 진입 재생 (시작 상태부터)</button>
-      <div class="hint">진입 시 🔥수요가 있으면 플로팅으로 강조 시작, 없으면 밴드로 시작. 스크롤하면 밴드로 도킹, 밴드를 탭하면 다시 플로팅. <b>플로팅=자세한 문구 / 밴드=짧은 문구(병합)</b>.</div>
+      <div class="hint">진입 시 🔥수요가 있으면 플로팅으로 강조 시작, 없으면 밴드로 시작. 스크롤하면 밴드로 도킹, 밴드를 탭하면 다시 플로팅. <b>플로팅=자세한 문구 / 밴드=짧은 문구, 여러 조건이면 우선순위(수요>⚡>무료취소) 1개만</b>.</div>
     </div>
   </div>
 </div>
@@ -159,8 +159,9 @@
     if(state.freecancel) keys.push('freecancel');
     return keys.sort((a,b)=>MSG[a].pri-MSG[b].pri);
   }
+  // 한 순간 한 메시지: 밴드·플로팅 모두 최우선 1개만 (모프 정합성 유지)
   function floatingHTML(){ const k=present()[0]; return k?MSG[k].floating:''; }
-  function bandHTML(){ return present().map(k=>MSG[k].band).join(' <span style="color:#c2c7d2">·</span> '); }
+  function bandHTML(){ const k=present()[0]; return k?MSG[k].band:''; }
 
   function setFloating(on){
     if(!present().length){ bar.classList.remove('show'); return; }
