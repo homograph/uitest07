@@ -3,184 +3,174 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>넛지 칩 · 하단 요금영역 리뷰</title>
+<title>넛지 · 요금 블록 재편 1~3안</title>
 <style>
   :root{
     --blue-50:#e2f2fe; --blue-600:#0086ea; --navy:#19254d;
     --gray-30:#f5f6f7; --gray-700:#4b5064; --gray-900:#262a38; --gray-300:#9da0ae;
+    --fire:#e8590c; --amber-bg:#fff2e8; --amber-fg:#d9480f;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-    background:#eef1f5;color:var(--gray-900);-webkit-font-smoothing:antialiased;padding:16px 14px 40px;}
+    background:#eef1f5;color:var(--gray-900);-webkit-font-smoothing:antialiased;padding:16px 14px 56px;}
+  .wrap{max-width:460px;margin:0 auto;}
   h1{font-size:17px;margin:4px 0 2px;}
-  .sub{font-size:12.5px;color:#6b7482;margin:0 0 16px;line-height:1.5;}
+  .sub{font-size:12.5px;color:#6b7482;margin:0 0 14px;line-height:1.55;}
+  .sub b{color:var(--gray-900);}
 
-  .stagebox{max-width:420px;margin:0 auto;}
-
-  /* 폰 하단 영역 */
-  .phone{position:relative;width:100%;background:#fff;border-radius:18px;border:1px solid #e3e7ee;
-    box-shadow:0 10px 30px rgba(20,30,55,.12);overflow:hidden;}
-  .filler{height:150px;background:linear-gradient(180deg,#fbfcfe,#fff);display:flex;align-items:center;justify-content:center;
-    color:#c2c7d2;font-size:12px;}
-  .pricewrap{position:relative;display:flex;flex-direction:column;box-shadow:0 -8px 8px rgba(25,37,77,.06);}
-  .band{background:var(--blue-50);text-align:center;font-size:13px;color:#383d4f;
-    overflow:hidden;max-height:0;opacity:0;transition:max-height .34s cubic-bezier(.4,0,.2,1),opacity .28s ease,padding .34s;}
-  .band b{color:var(--blue-600);font-weight:700;}
-  .band.show{max-height:44px;opacity:1;padding:10px 12px;}
-  .bottom{background:#fff;display:flex;align-items:flex-end;justify-content:space-between;gap:16px;
-    padding:0 18px 14px;min-height:92px;transition:min-height .34s cubic-bezier(.4,0,.2,1);}
-  .bottom.grow{min-height:112px;}
-  .fare{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;padding-top:12px;}
-  .lblrow{display:flex;align-items:center;gap:5px;}
-  .lbl{font-size:12px;color:#111;}
-  .surge{font-size:12px;color:#60667a;white-space:nowrap;display:none;}
-  .surge.show{display:inline;}
-  .prow{display:flex;align-items:baseline;gap:6px;margin-top:2px;white-space:nowrap;}
-  .price{font-size:16px;font-weight:700;color:#111;}
-  .strike{font-size:12px;color:var(--gray-300);text-decoration:line-through;display:none;}
-  .strike.show{display:inline;}
-  .next{width:96px;flex:0 0 auto;background:var(--navy);color:#fff;font-size:15px;font-weight:700;border:none;
-    border-radius:6px;padding:13px 0;text-align:center;}
-
-  .nchip{display:inline-flex;align-items:center;gap:4px;background:var(--gray-30);color:var(--gray-700);
-    border-radius:9999px;font-size:12px;line-height:1;white-space:nowrap;overflow:hidden;
-    max-height:0;opacity:0;margin-top:0;padding:0 10px;
-    transition:max-height .3s ease,opacity .28s ease,margin-top .3s ease,padding .3s ease;}
-  .nchip.show{max-height:24px;opacity:1;margin-top:6px;padding:5px 10px 5px 6px;}
-  .nchip.landing{animation:pulse .5s ease;}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(0,148,249,.0);}
-    30%{box-shadow:0 0 0 4px rgba(0,148,249,.22);background:#e2f2fe;}
-    100%{box-shadow:0 0 0 0 rgba(0,148,249,0);}}
-
-  /* 플로팅 (모프 시작점) */
-  .floating{position:absolute;left:16px;right:16px;bottom:calc(92px + 16px);z-index:5;
-    display:flex;align-items:center;justify-content:center;padding:12px 18px;border-radius:8px;
-    background:linear-gradient(90deg,#0094F9,#32A2FA);color:#fff;font-size:15px;line-height:1.38;
-    box-shadow:0 4px 12px rgba(25,37,77,.14);white-space:nowrap;
-    opacity:0;visibility:hidden;transform:translateY(0);transform-origin:center center;}
-  .floating b{font-weight:700;}
-
-  /* 컨트롤 */
-  .controls{max-width:420px;margin:18px auto 0;background:#fff;border-radius:14px;padding:14px 14px 16px;
-    box-shadow:0 2px 10px rgba(20,30,55,.06);}
-  .cgrp{margin-bottom:14px;}
-  .cgrp:last-child{margin-bottom:0;}
-  .cgrp .l{font-size:11px;font-weight:700;color:#8a90a0;letter-spacing:.03em;margin-bottom:8px;text-transform:uppercase;}
+  .controls{position:sticky;top:0;z-index:10;background:#eef1f5;padding:10px 0 12px;margin-bottom:6px;}
   .toggles{display:flex;flex-wrap:wrap;gap:8px;}
   .tg{border:1px solid #dfe3ea;background:#fff;color:#4b5064;border-radius:9999px;padding:8px 14px;
     font-size:13px;font-weight:600;cursor:pointer;user-select:none;}
   .tg.on{background:var(--navy);color:#fff;border-color:var(--navy);}
-  .seg{display:flex;background:#eef1f5;border-radius:10px;padding:3px;gap:3px;}
-  .seg button{flex:1;border:none;background:transparent;padding:10px 6px;border-radius:8px;font-size:13px;font-weight:600;color:#5a6373;cursor:pointer;}
-  .seg button.on{background:#fff;color:#1c2430;box-shadow:0 1px 3px rgba(0,0,0,.12);}
-  .replay{width:100%;margin-top:2px;background:var(--blue-600);color:#fff;border:none;border-radius:10px;
-    padding:13px;font-size:14px;font-weight:700;cursor:pointer;}
-  .hint{font-size:11.5px;color:#8a90a0;margin-top:10px;line-height:1.5;}
+  .ctitle{font-size:11px;font-weight:700;color:#8a90a0;letter-spacing:.03em;margin:0 0 8px;text-transform:uppercase;}
+
+  .opt{margin-bottom:22px;}
+  .opt .oh{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;}
+  .opt .onum{font-size:12px;font-weight:800;color:#fff;background:var(--navy);border-radius:6px;padding:2px 8px;}
+  .opt .ot{font-size:14px;font-weight:700;color:var(--gray-900);}
+  .opt .od{font-size:12px;color:#7b8091;margin:6px 2px 0;line-height:1.5;}
+
+  .phone{background:#fff;border-radius:14px;border:1px solid #e3e7ee;box-shadow:0 6px 18px rgba(20,30,55,.08);overflow:hidden;}
+  .filler{height:60px;background:linear-gradient(180deg,#fbfcfe,#fff);}
+  .band{background:var(--blue-50);text-align:center;font-size:12.5px;color:#383d4f;padding:9px 10px;}
+  .band .fire{color:var(--fire);font-weight:700;}
+  .band b{color:var(--blue-600);font-weight:700;}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 16px;height:92px;box-sizing:border-box;}
+  .fare{display:flex;flex-direction:column;align-items:flex-start;min-width:0;flex:1;}
+  .lblrow{display:flex;align-items:center;gap:6px;width:100%;}
+  .lbl{font-size:12px;color:#111;}
+  .lbl.mut{color:#868b9c;}
+  .prow{display:flex;align-items:baseline;gap:6px;margin-top:3px;white-space:nowrap;}
+  .price{font-size:17px;font-weight:700;color:#111;}
+  .surge-sm{font-size:12px;color:#60667a;white-space:nowrap;}
+  .strike{font-size:12px;color:var(--gray-300);text-decoration:line-through;}
+  .next{width:88px;flex:0 0 auto;background:var(--navy);color:#fff;font-size:14px;font-weight:700;border-radius:6px;padding:12px 0;text-align:center;}
+  .demand{display:inline-flex;align-items:center;gap:4px;border-radius:9999px;font-size:12px;line-height:1;white-space:nowrap;padding:4px 9px;font-weight:600;}
+  .demand.amber{background:var(--amber-bg);color:var(--amber-fg);}
+  .demand.ghost{color:var(--fire);font-weight:700;}
+  .spacer{flex:1;}
 </style>
 </head>
 <body>
-  <div class="stagebox">
-    <h1>넛지 칩 · 하단 요금영역 리뷰</h1>
-    <p class="sub">회색 칩 확정안. 케이스를 토글하며 세로 여백(A 92px 고정 vs B 위로 확장)을 실제 폭에서 확인하세요. ‘모프 재생’은 진입 1초 후 플로팅→칩 도킹.</p>
+<div class="wrap">
+  <h1>넛지 · 요금 블록 재편 1~3안</h1>
+  <p class="sub">높이는 <b>92px 그대로</b>. 핵심 전제: 서지(↗)와 “예약이 몰리는 날”은 같은 수요 신호 → <b>통합</b>하면 3번째 줄이 불필요. 아래 토글로 케이스를 바꿔가며 각 안을 비교하세요.</p>
 
-    <div class="phone" id="phone">
-      <div class="filler">▲ 위쪽 콘텐츠 (스크롤 영역)</div>
-      <div class="floating" id="floating">🔥 이 날은 예약이 평소 대비 <b style="margin:0 3px;">2배</b> 몰리고 있어요</div>
-      <div class="pricewrap">
-        <div class="band" id="band"><span>⚡ 넥스트 호출 시 <b>100% 예약 확정</b></span></div>
-        <div class="bottom grow" id="bottom">
-          <div class="fare">
-            <div class="lblrow"><span class="lbl">예상 요금</span><span class="surge" id="surge">↗ 1.4배</span></div>
-            <div class="prow"><span class="price">110,000원</span><span class="strike" id="strike">150,000원</span></div>
-            <span class="nchip show" id="chip">✓ 예약이 몰리는 날</span>
-          </div>
-          <button class="next">다음</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="controls">
-      <div class="cgrp">
-        <div class="l">요금바 높이</div>
-        <div class="seg" id="height">
-          <button data-h="fixed">A · 92px 고정</button>
-          <button data-h="grow" class="on">B · 위로 확장</button>
-        </div>
-      </div>
-      <div class="cgrp">
-        <div class="l">케이스 토글</div>
-        <div class="toggles">
-          <div class="tg on" data-t="band">⚡ 밴드</div>
-          <div class="tg" data-t="surge">↗ 서지</div>
-          <div class="tg" data-t="discount">할인 취소선</div>
-          <div class="tg on" data-t="chip">넛지 칩</div>
-        </div>
-      </div>
-      <div class="cgrp">
-        <div class="l">모프</div>
-        <button class="replay" id="replay">▶ 모프 재생 (진입→1초→도킹)</button>
-        <div class="hint">플로팅 배너가 뜬 뒤 1초 후 칩으로 축소·이동하며, 착지 시 하이라이트 펄스로 “여기로 접혔다”를 분명히 보여줍니다. (모프 가시성 개선안)</div>
-      </div>
+  <div class="controls">
+    <div class="ctitle">케이스 토글</div>
+    <div class="toggles">
+      <div class="tg on" data-t="demand">🔥 수요 높음</div>
+      <div class="tg" data-t="surge">↗ 서지 1.4배</div>
+      <div class="tg" data-t="discount">할인 취소선</div>
+      <div class="tg" data-t="band">⚡ 100% 확정</div>
     </div>
   </div>
 
+  <!-- 옵션 1 -->
+  <div class="opt">
+    <div class="oh"><span class="onum">1</span><span class="ot">통합 배지 (라벨 우측)</span></div>
+    <div class="phone">
+      <div class="filler"></div>
+      <div id="band1"></div>
+      <div class="row">
+        <div class="fare">
+          <div class="lblrow"><span class="lbl">예상 요금</span><span class="spacer"></span><span id="badge1"></span></div>
+          <div class="prow"><span class="price">110,000원</span><span id="disc1"></span></div>
+        </div>
+        <div class="next">다음</div>
+      </div>
+    </div>
+    <p class="od">서지 배지 자리에 수요를 얹어 “🔥 예약 몰림 · 1.4배↑” 하나로 통합. 변화 최소, 별도 칩 없음.</p>
+  </div>
+
+  <!-- 옵션 2 -->
+  <div class="opt">
+    <div class="oh"><span class="onum">2</span><span class="ot">라벨 흡수형</span></div>
+    <div class="phone">
+      <div class="filler"></div>
+      <div id="band2"></div>
+      <div class="row">
+        <div class="fare">
+          <div class="lblrow" id="lbl2"></div>
+          <div class="prow"><span class="price">110,000원</span><span id="surge2"></span><span id="disc2"></span></div>
+        </div>
+        <div class="next">다음</div>
+      </div>
+    </div>
+    <p class="od">‘예상 요금’ 라벨 줄을 수요 문구가 흡수. 서지·할인은 가격 줄 주석. 공간 0 추가, 단 라벨 명료성 약간 양보.</p>
+  </div>
+
+  <!-- 옵션 3 -->
+  <div class="opt">
+    <div class="oh"><span class="onum">3</span><span class="ot">밴드 슬롯 활용 (칩 폐기)</span></div>
+    <div class="phone">
+      <div class="filler"></div>
+      <div id="band3"></div>
+      <div class="row">
+        <div class="fare">
+          <div class="lblrow"><span class="lbl">예상 요금</span><span id="surge3"></span></div>
+          <div class="prow"><span class="price">110,000원</span><span id="disc3"></span></div>
+        </div>
+        <div class="next">다음</div>
+      </div>
+    </div>
+    <p class="od">요금 블록은 손 안 대고 수요를 상단 밴드로. ⚡ 동시면 한 줄 병합. 도킹 형태를 칩→밴드로 되돌리는 결정 번복 필요.</p>
+  </div>
+
+  <p class="sub" style="margin-top:4px;">각 안을 케이스별로 본 뒤, 방향(또는 조합)을 알려주세요. 정해지면 실제 프로토타입에 반영합니다.</p>
+</div>
+
 <script>
-  const bottom=document.getElementById('bottom'), band=document.getElementById('band'),
-        surge=document.getElementById('surge'), strike=document.getElementById('strike'),
-        chip=document.getElementById('chip'), floating=document.getElementById('floating');
-  const state={band:true,surge:false,discount:false,chip:true,height:'grow'};
+  const S={demand:true,surge:false,discount:false,band:false};
+  const strike='<span class="strike">150,000원</span>';
+  const surgeSm='<span class="surge-sm">↗1.4배</span>';
 
   function render(){
-    band.classList.toggle('show',state.band);
-    surge.classList.toggle('show',state.surge);
-    strike.classList.toggle('show',state.discount);
-    chip.classList.toggle('show',state.chip);
-    bottom.classList.toggle('grow',state.height==='grow' && state.chip);
+    const d=S.demand, sg=S.surge, dc=S.discount, bd=S.band;
+
+    // 공통 할인
+    document.getElementById('disc1').innerHTML = dc?strike:'';
+    document.getElementById('disc2').innerHTML = dc?strike:'';
+    document.getElementById('disc3').innerHTML = dc?strike:'';
+
+    // 옵션1: 통합 배지
+    let b1='';
+    if(d) b1 = '<span class="demand amber">🔥 예약 몰림'+(sg?' · 1.4배↑':'')+'</span>';
+    else if(sg) b1 = '<span class="surge-sm">↗1.4배</span>';
+    document.getElementById('badge1').innerHTML=b1;
+    document.getElementById('band1').innerHTML = bd?bandHTML(false):'';
+
+    // 옵션2: 라벨 흡수
+    let l2='';
+    if(d) l2 = '<span class="demand ghost">🔥 예약이 몰리는 날</span><span class="lbl mut">· 예상 요금</span>';
+    else l2 = '<span class="lbl">예상 요금</span>';
+    document.getElementById('lbl2').innerHTML=l2;
+    document.getElementById('surge2').innerHTML = sg?surgeSm:'';
+    document.getElementById('band2').innerHTML = bd?bandHTML(false):'';
+
+    // 옵션3: 밴드 슬롯
+    document.getElementById('surge3').innerHTML = sg?surgeSm:'';
+    let b3='';
+    if(d||bd) b3 = bandHTML(true);
+    document.getElementById('band3').innerHTML = b3;
   }
 
-  document.querySelectorAll('#height button').forEach(b=>b.addEventListener('click',()=>{
-    state.height=b.dataset.h;
-    document.querySelectorAll('#height button').forEach(x=>x.classList.toggle('on',x===b));
-    render();
-  }));
+  // merged=true면 3안(수요+⚡ 병합 규칙), false면 1·2안(⚡ 단독 밴드)
+  function bandHTML(merged){
+    if(merged){
+      if(S.demand && S.band) return '<div class="band"><span class="fire">🔥 예약 몰림</span> · <b>⚡100% 예약 확정</b></div>';
+      if(S.demand) return '<div class="band"><span class="fire">🔥 이 날은 예약이 평소 대비 2배 몰려요</span></div>';
+      if(S.band) return '<div class="band">⚡ 넥스트 호출 시 <b>100% 예약 확정</b></div>';
+      return '';
+    }
+    return '<div class="band">⚡ 넥스트 호출 시 <b>100% 예약 확정</b></div>';
+  }
+
   document.querySelectorAll('.tg').forEach(t=>t.addEventListener('click',()=>{
-    const k=t.dataset.t; state[k]=!state[k]; t.classList.toggle('on',state[k]); render();
+    const k=t.dataset.t; S[k]=!S[k]; t.classList.toggle('on',S[k]); render();
   }));
-
-  document.getElementById('replay').addEventListener('click',()=>{
-    // 칩 숨기고 플로팅 등장
-    state.chip=false; render();
-    document.querySelector('.tg[data-t="chip"]').classList.remove('on');
-    floating.style.transition='none';
-    floating.style.transform='translateY(0)'; floating.style.opacity='0'; floating.style.visibility='visible';
-    void floating.offsetWidth;
-    floating.style.transition='opacity .28s ease';
-    floating.style.opacity='1';
-    // 1초 후 도킹 모프
-    setTimeout(()=>{
-      // 칩 최종 위치 측정
-      chip.classList.add('show'); state.chip=true;
-      document.querySelector('.tg[data-t="chip"]').classList.add('on'); render();
-      const to=chip.getBoundingClientRect(), from=floating.getBoundingClientRect();
-      chip.classList.remove('show'); render();
-      const dx=(to.left+to.width/2)-(from.left+from.width/2);
-      const dy=(to.top+to.height/2)-(from.top+from.height/2);
-      const sc=Math.max(to.width/from.width,.1);
-      floating.style.transition='transform .42s cubic-bezier(.4,0,.2,1),opacity .34s ease';
-      setTimeout(()=>{
-        floating.style.transform='translate('+dx+'px,'+dy+'px) scale('+sc+')';
-        floating.style.opacity='0';
-        chip.classList.add('show'); state.chip=true; render();
-      },20);
-      setTimeout(()=>{
-        floating.style.visibility='hidden';
-        chip.classList.add('landing');
-        setTimeout(()=>chip.classList.remove('landing'),520);
-      },460);
-    },1000);
-  });
-
   render();
 </script>
 </body>
