@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>타다 예약 · 하단 띠배너 강조 프로토타입</title>
+<title>타다 예약 · 통합 넛지(밴드↔플로팅) 프로토타입</title>
 <style>
   :root{
     color-scheme: light;
@@ -12,7 +12,7 @@
     --gray-950:#171a24; --gray-900:#262a38; --gray-800:#383d4f; --gray-700:#4b5064;
     --gray-600:#60667a; --gray-500:#73788b; --gray-300:#9da0ae; --gray-100:#d5d7dc;
     --gray-80:#e3e4e8; --gray-30:#f5f6f7; --gray-400:#868b9c; --navy:#19254d; --navy-50:#e6e9ef;
-    --cta-h:88px; --float-gap:16px; --dock-dur:.42s; --grad-dur:1.6s;
+    --cta-h:92px; --float-gap:16px; --dock-dur:.42s; --grad-dur:1.6s;
     --float-radius:8px; --float-side:16px;
     --shim-w:155px; --shim-peak:.25; --shim-x0:-190px; --shim-x1:500px;
     --fl-fs:15px; --fl-fw:400;
@@ -108,10 +108,10 @@
   .notice .help .l{flex:1;display:flex;align-items:flex-end;gap:4px;font-size:14px;line-height:20px;font-weight:700;color:var(--gray-700);}
   .notice .help .r{font-size:13px;line-height:20px;color:var(--tada-blue);white-space:nowrap;}
 
-  /* info bar (강조 = FloatingLiveButton 스펙) */
+  /* 통합 넛지: 밴드(기본) ↔ 플로팅(강조) */
   .infobar{position:absolute;left:0;right:0;bottom:calc(var(--cta-h) + env(safe-area-inset-bottom,0px));
     display:flex;align-items:center;justify-content:center;gap:4px;
-    padding:10px 12px;background:var(--blue-50);border-radius:0;box-shadow:none;overflow:hidden;z-index:4;opacity:0;
+    padding:10px 12px;background:var(--blue-50);border-radius:0;box-shadow:none;overflow:hidden;z-index:4;opacity:0;visibility:hidden;cursor:pointer;
     transition:left var(--dock-dur) cubic-bezier(.4,0,.2,1),right var(--dock-dur) cubic-bezier(.4,0,.2,1),
       bottom var(--dock-dur) cubic-bezier(.4,0,.2,1),border-radius var(--dock-dur) cubic-bezier(.4,0,.2,1),
       box-shadow var(--dock-dur) cubic-bezier(.4,0,.2,1),transform var(--dock-dur) cubic-bezier(.4,0,.2,1),opacity .18s ease;}
@@ -121,35 +121,25 @@
     background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,var(--shim-peak)) 50%, transparent 100%);}
   .ib-text{position:relative;z-index:1;font-size:13px;line-height:18px;color:var(--gray-800);text-align:center;white-space:nowrap;transition:color var(--dock-dur) ease,font-size var(--dock-dur) ease,line-height var(--dock-dur) ease;}
   .ib-text b{font-weight:700;color:var(--blue-600);transition:color var(--dock-dur) ease;}
+  .ib-tap{position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:2;font-size:11px;color:#9aa8c0;transition:opacity .2s;}
   .infobar.floating{left:var(--float-side);right:var(--float-side);bottom:calc(var(--cta-h) + env(safe-area-inset-bottom,0px) + var(--float-gap));
-    border-radius:var(--float-radius);box-shadow:0 4px 12px rgba(25,37,77,.10);}
-  .infobar.floating{padding:12px 18px;}
+    border-radius:var(--float-radius);box-shadow:0 4px 12px rgba(25,37,77,.10);padding:12px 18px;}
   .infobar.floating .ib-text{font-size:var(--fl-fs);line-height:1.38;font-weight:var(--fl-fw);}
   .infobar.floating .ib-grad{opacity:1;}
   .infobar.floating .ib-shimmer{animation:shimmer var(--grad-dur) linear infinite;}
   .infobar.floating .ib-text,.infobar.floating .ib-text b{color:#fff;}
+  .infobar.floating .ib-tap{opacity:0;}
   @keyframes shimmer{0%{transform:translateX(var(--shim-x0));}100%{transform:translateX(var(--shim-x1));}}
   @media (prefers-reduced-motion:reduce){.infobar.floating .ib-shimmer{animation:none;}}
 
-  /* bottom price area */
+  /* bottom price area — 요금 블록(손 안 댐) */
   .pricewrap{position:absolute;left:0;right:0;bottom:0;z-index:5;display:flex;flex-direction:column;box-shadow:0 -8px 8px rgba(25,37,77,.08);}
-  .tbanner{background:var(--blue-50);display:flex;align-items:center;justify-content:center;gap:4px;
-    padding:10px 12px;font-size:13px;line-height:18px;color:var(--gray-800);white-space:nowrap;
-    overflow:hidden;max-height:0;opacity:0;transition:max-height var(--dock-dur) cubic-bezier(.4,0,.2,1),opacity .3s ease;}
-  .tbanner b{color:var(--blue-600);font-weight:700;}
-  .tbanner.show{max-height:40px;opacity:1;}
-  /* 고정 높이(=Figma 92px 컨테이너). 칩 유무와 무관하게 컨테이너 높이 불변, align-center로 요금블록만 재정렬 */
   .bottom{background:#fff;display:flex;align-items:center;justify-content:space-between;gap:20px;
     box-sizing:border-box;height:calc(92px + env(safe-area-inset-bottom,0px));
     padding:0 24px;padding-bottom:env(safe-area-inset-bottom,0px);}
   .bottom .fare{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;}
   .bottom .fare .l{font-size:13px;line-height:18px;color:#000;}
   .bottom .fare .p{font-size:16px;line-height:24px;font-weight:700;color:#000;margin-top:2px;}
-  .nchip{display:inline-flex;align-items:center;gap:4px;background:var(--gray-30);color:var(--gray-700);
-    border-radius:9999px;padding:0 10px 0 6px;font-size:13px;line-height:18px;white-space:nowrap;
-    overflow:hidden;max-height:0;opacity:0;margin-top:0;transition:max-height .3s ease,opacity .28s ease,margin-top .3s ease,padding .3s ease;}
-  .nchip.show{max-height:26px;opacity:1;margin-top:6px;padding:4px 10px 4px 6px;cursor:pointer;}
-  .nchip.show:active{background:#e9ebef;}
   .bottom .next{width:120px;background:var(--navy);color:#fff;font-size:16px;line-height:24px;font-weight:700;
     border:none;border-radius:4px;padding:14px 18px;flex:0 0 auto;}
 
@@ -212,6 +202,9 @@
   .seg{display:flex;background:#e3e8ef;border-radius:10px;padding:3px;gap:3px;}
   .seg button{flex:1;border:none;background:transparent;padding:10px 6px;border-radius:8px;font-size:13px;font-weight:600;color:#5a6373;cursor:pointer;}
   .seg button.on{background:#fff;color:#1c2430;box-shadow:0 1px 3px rgba(0,0,0,.12);}
+  .msgtoggles{display:flex;gap:8px;}
+  .mt{flex:1;border:1px solid #d7dce4;background:#fff;color:#4b5064;border-radius:8px;padding:11px 6px;font-size:13px;font-weight:600;cursor:pointer;}
+  .mt.on{background:var(--navy);color:#fff;border-color:var(--navy);}
   .replay{width:100%;background:var(--navy);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;}
   .tl{margin-top:20px;font-size:12px;color:var(--gray-500);line-height:1.9;}
   .tl b{color:#5a6373;}
@@ -362,20 +355,19 @@
       </section>
     </div>
 
-    <!-- 넛지 (플로팅) -->
+    <!-- 통합 넛지 (밴드 ↔ 플로팅) -->
     <div class="infobar" id="infobar">
       <div class="ib-grad"><div class="ib-shimmer"></div></div>
-      <span class="ib-text">🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요</span>
+      <span class="ib-text" id="ib-text"></span>
+      <span class="ib-tap">탭 ▲</span>
     </div>
 
-    <!-- 하단 영역: ⚡ 띠배너(신규 공존) + 바텀 바 -->
+    <!-- 하단 영역: 요금 바 (넛지는 상단 통합 밴드/플로팅으로 분리) -->
     <div class="pricewrap">
-      <div class="tbanner" id="tbanner"><span>⚡ 넥스트 호출 시 <b>100% 예약 확정</b></span></div>
       <div class="bottom">
         <div class="fare">
           <div class="l">예상 요금</div>
           <div class="p">125,000원</div>
-          <div class="nchip" id="nchip"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2.5 7.2l3 3 6-6.5" stroke="#4b5064" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>예약이 몰리는 날</div>
         </div>
         <button class="next" id="btn-next">다음</button>
       </div>
@@ -463,7 +455,7 @@
           </div>
         </div>
       </div>
-      <div class="cf-infobar"><span>🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요</span></div>
+      <div class="cf-infobar" id="cf-infobar"><span id="cf-ib-text">🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요</span></div>
       <div class="cf-bottom">
         <div class="fare"><div class="l">예상 요금</div><div class="p">125,000원</div></div>
         <button class="next">예약하기</button>
@@ -473,23 +465,24 @@
 
   <aside class="panel" id="panel">
     <div class="grab"></div>
-    <h1>넛지 배너 · 구현 비교</h1>
-    <p class="sub">기존(넛지 단독) vs 신규(⚡ 100% 예약 확정 띠배너와 공존).</p>
+    <h1>통합 넛지 · 밴드↔플로팅</h1>
+    <p class="sub">🔥수요 있으면 플로팅 시작·없으면 밴드 시작. 스크롤→밴드, 밴드 탭→플로팅. 여러 조건이면 우선순위 1개만(병합 없음).</p>
     <div class="grp2">
-      <label>구현 버전</label>
-      <div class="seg" id="impl">
-        <button data-i="legacy">기존</button>
-        <button data-i="coexist" class="on">신규(공존)</button>
+      <label>넛지 메시지</label>
+      <div class="msgtoggles" id="msgtoggles">
+        <button class="mt on" data-m="demand">🔥 수요 넛지</button>
+        <button class="mt" data-m="freecancel">🔥 무료 취소</button>
       </div>
     </div>
     <div class="grp2">
-      <label>100% 예약 확정 조건 (신규)</label>
-      <div class="seg" id="cond100">
-        <button data-c="1" class="on">있음</button>
-        <button data-c="0">없음</button>
+      <label>⚡ 100% 예약 확정</label>
+      <div class="seg" id="guarantee">
+        <button data-g="none" class="on">없음</button>
+        <button data-g="air">공항·넥스트</button>
+        <button data-g="van">프리미엄 밴</button>
       </div>
     </div>
-    <button class="replay" id="replay">▶ 다시 재생</button>
+    <button class="replay" id="replay">▶ 진입 재생</button>
     <div class="tl" id="tl"></div>
   </aside>
 </div>
@@ -499,108 +492,80 @@
 <button class="fab" id="fab" aria-label="컨트롤 열기">⚙</button>
 
 <script>
-  const bar = document.getElementById('infobar');
-  const tbanner = document.getElementById('tbanner');
-  const nchip = document.getElementById('nchip');
-  const tlEl = document.getElementById('tl');
-  let impl='coexist', cond100=true, speed=0.75, disarmDock=null, morphTimer=null, armTimer=null;
+  const bar=document.getElementById('infobar'), ibtext=document.getElementById('ib-text'),
+        scroller=document.querySelector('#screen-select .scroll'), phoneEl=document.getElementById('phone'),
+        tlEl=document.getElementById('tl');
 
-  function applySpeed(){
-    document.documentElement.style.setProperty('--dock-dur',(0.42/speed)+'s');
-    document.documentElement.style.setProperty('--grad-dur',(1.6/speed)+'s');
-  }
-  const TL={
-    legacy:'① 진입: 바텀 뒤 슬라이드업 → 도킹 → 플로팅<br>② 화면 터치·스크롤 시 blue-50 띠배너로 도킹',
-    coexist:'① 진입: 플로팅 (⚡ 띠배너·칩 숨김)<br>② 3초 후 스크롤 → 플로팅이 ‘✓ 예약이 몰리는 날’ 칩으로 모프<br>③ 이어서 ⚡ 100% 예약 확정 띠배너 상승<br>④ 칩 클릭 → 역순으로 플로팅 배너 복귀'
+  // 밴드 메시지 인벤토리 (new/info_bar). floating=자세히 / band=짧게. pri=우선순위(작을수록 우선)
+  const MSG={
+    demand:    {pri:1, floating:'🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요', band:'🔥 예약 <b>2배</b> 몰리는 날'},
+    air:       {pri:2, floating:'⚡ 넥스트는 호출 시 <b>100% 예약 확정</b>돼요',        band:'⚡ 넥스트 <b>100% 확정</b>'},
+    van:       {pri:2, floating:'⚡ 프리미엄 밴은 항상 <b>100% 예약 확정</b>돼요',        band:'⚡ 밴 <b>100% 확정</b>'},
+    freecancel:{pri:3, floating:'🔥 출발 <b>12시간 전</b>까지 무료 취소 가능해요',        band:'🔥 <b>12시간 전</b> 무료취소'}
   };
-  function setTL(){ tlEl.innerHTML='<b>동작</b><br>'+TL[impl]; }
-  function clearTimers(){ clearTimeout(morphTimer); clearTimeout(armTimer); if(disarmDock){disarmDock();disarmDock=null;} }
+  const state={demand:true, freecancel:false, guarantee:'none'};
+  let armTimer=null, disarm=null;
 
-  function resetBase(){                                 // 바텀 바 뒤 시작 상태로 리셋
-    clearTimers();
-    bar.classList.remove('floating');
-    bar.style.transition='none'; bar.style.opacity='1'; bar.style.visibility='visible';
-    bar.style.transform='translateY(74px)'; bar.style.transformOrigin='';
-    tbanner.classList.remove('show'); nchip.classList.remove('show');
-    void bar.offsetWidth;
+  function present(){
+    const k=[];
+    if(state.demand) k.push('demand');
+    if(state.guarantee==='air') k.push('air');
+    if(state.guarantee==='van') k.push('van');
+    if(state.freecancel) k.push('freecancel');
+    return k.sort((a,b)=>MSG[a].pri-MSG[b].pri);
   }
-  function armInteraction(cb, scrollOnly){              // 첫 상호작용에 1회 콜백
-    if(disarmDock) disarmDock();
-    const scroller=document.querySelector('.scroll'), phone=document.querySelector('.phone');
-    const trigger=()=>{ disarm(); cb(); };
-    function disarm(){ scroller.removeEventListener('scroll',trigger); scroller.removeEventListener('wheel',trigger); phone.removeEventListener('pointerdown',trigger); disarmDock=null; }
+  function topKey(){ return present()[0]; }
+
+  function setForm(floating){                 // 한 순간 한 메시지 (최우선 1개, 병합 없음)
+    const k=topKey();
+    if(!k){ bar.style.opacity='0'; bar.style.visibility='hidden'; return; }
+    bar.style.visibility='visible'; bar.style.opacity='1';
+    ibtext.innerHTML = floating ? MSG[k].floating : MSG[k].band;
+    bar.classList.toggle('floating', floating);
+  }
+  function clearArm(){ if(disarm){disarm();disarm=null;} clearTimeout(armTimer); }
+  function armDock(){                          // 첫 스크롤 → 밴드로 도킹 (1회)
+    clearArm();
+    const trigger=()=>{ off(); if(bar.classList.contains('floating')) setForm(false); };
+    function off(){ scroller.removeEventListener('scroll',trigger); disarm=null; }
     scroller.addEventListener('scroll',trigger,{passive:true,once:true});
-    scroller.addEventListener('wheel',trigger,{passive:true,once:true});
-    if(!scrollOnly) phone.addEventListener('pointerdown',trigger,{once:true});
-    disarmDock=disarm;
+    disarm=off;
   }
-
-  function dockLegacy(){ bar.classList.remove('floating'); }   // 기존: blue-50 스트립
-
-  function dockCoexist(){                               // 신규: 플로팅 → ✓칩 모프 → ⚡띠배너 상승
-    nchip.style.transition='none'; nchip.classList.add('show');   // 칩 최종 위치 사전 측정
-    const to=nchip.getBoundingClientRect();
-    nchip.classList.remove('show'); void nchip.offsetWidth; nchip.style.transition='';
-    const from=bar.getBoundingClientRect();
-    const dx=(to.left+to.width/2)-(from.left+from.width/2);
-    const dy=(to.top+to.height/2)-(from.top+from.height/2);
-    const sc=Math.max(to.width/from.width,.06);
-    bar.style.transition='transform .42s cubic-bezier(.4,0,.2,1),opacity .32s ease';
-    bar.style.transformOrigin='center center';
-    setTimeout(()=>{                                    // rAF 대신 setTimeout (백그라운드 탭 rAF 정지 대비)
-      bar.style.transform='translate('+dx+'px,'+dy+'px) scale('+sc+')';
-      bar.style.opacity='0';
-      nchip.classList.add('show');                     // 칩 등장
-    }, 20);
-    morphTimer=setTimeout(()=>{
-      bar.style.visibility='hidden';
-      if(cond100) tbanner.classList.add('show');        // ⚡ 띠배너 상승
-    }, 470);
-  }
-
-  function undockCoexist(){                             // 칩 클릭 → 도킹 역순으로 플로팅 복귀
-    if(impl!=='coexist' || !nchip.classList.contains('show')) return;
-    clearTimers();
-    tbanner.classList.remove('show');                   // ⚡ 띠배너 하강
-    const from=nchip.getBoundingClientRect();           // 시작: 칩 위치
-    bar.style.transition='none';                        // 끝: 플로팅 레이아웃 위치 측정
-    bar.style.transform='translateY(0)'; bar.style.opacity='0';
-    void bar.offsetWidth;
-    const to=bar.getBoundingClientRect();
-    const dx=(from.left+from.width/2)-(to.left+to.width/2);
-    const dy=(from.top+from.height/2)-(to.top+to.height/2);
-    const sc=Math.max(from.width/to.width,.06);
-    bar.style.transformOrigin='center center';          // 칩 위치에 축소·투명 상태로 배치
-    bar.style.transform='translate('+dx+'px,'+dy+'px) scale('+sc+')';
-    bar.style.visibility='visible';
-    void bar.offsetWidth;
-    nchip.classList.remove('show');                     // 칩 사라짐
-    bar.style.transition='transform .42s cubic-bezier(.4,0,.2,1),opacity .32s ease';
-    setTimeout(()=>{                                     // 플로팅으로 확대·페이드인 (setTimeout: 백그라운드 rAF 대비)
-      bar.style.transform='translateY(0)'; bar.style.opacity='1';
-    }, 20);
-    morphTimer=setTimeout(()=>{                          // 복귀 후 재도킹 재무장
-      bar.style.transition=''; bar.style.transformOrigin='';
-      armTimer=setTimeout(()=>armInteraction(dockCoexist,true), 3000);
-    }, 470);
-  }
-  nchip.addEventListener('click', undockCoexist);
-
-  function play(){
-    resetBase(); setTL();
-    bar.style.transition=''; bar.style.transform='translateY(0)';   // 슬라이드업
-    if(impl==='legacy'){
-      morphTimer=setTimeout(()=>{ bar.classList.add('floating'); armInteraction(dockLegacy,false); }, (420+160)/speed);
-    } else {
-      bar.classList.add('floating');                    // 신규: 바로 플로팅으로 상승
-      armTimer=setTimeout(()=>armInteraction(dockCoexist,true), 3000);   // 3초 후 스크롤 도킹
+  bar.addEventListener('click',()=>{           // 밴드 탭 → 플로팅
+    if(!bar.classList.contains('floating') && topKey()){
+      setForm(true);
+      armTimer=setTimeout(armDock, 500);       // 잠시 후 재-도킹 무장
     }
+  });
+
+  function setTL(){
+    const k=topKey();
+    if(!k){ tlEl.innerHTML='<b>동작</b><br>표시할 넛지 없음'; return; }
+    tlEl.innerHTML='<b>동작</b><br>'+(state.demand
+      ? '① 🔥수요 있음 → 플로팅 시작<br>② 스크롤 → 밴드 도킹<br>③ 밴드 탭 → 플로팅'
+      : '① 🔥수요 없음 → 밴드 시작<br>② 밴드 탭 → 플로팅<br>(노출: 우선순위 최상위 1개)');
   }
 
-  document.getElementById('impl').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-    impl=b.dataset.i; document.querySelectorAll('#impl button').forEach(x=>x.classList.toggle('on',x===b)); play();});
-  document.getElementById('cond100').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
-    cond100=b.dataset.c==='1'; document.querySelectorAll('#cond100 button').forEach(x=>x.classList.toggle('on',x===b)); play();});
+  function play(){                             // 진입 재생
+    clearArm();
+    scroller.scrollTop=0;
+    bar.style.transition='none'; bar.classList.remove('floating'); void bar.offsetWidth; bar.style.transition='';
+    setTL();
+    const k=topKey();
+    if(!k){ bar.style.opacity='0'; bar.style.visibility='hidden'; return; }
+    if(state.demand){ setForm(true); armTimer=setTimeout(armDock, 600); }   // 수요 있으면 플로팅 시작
+    else { setForm(false); }                                               // 없으면 밴드 시작
+  }
+
+  // 컨트롤
+  document.querySelectorAll('#msgtoggles .mt').forEach(b=>b.addEventListener('click',()=>{
+    const m=b.dataset.m; state[m]=!state[m]; b.classList.toggle('on',state[m]); play();
+  }));
+  document.querySelectorAll('#guarantee button').forEach(b=>b.addEventListener('click',()=>{
+    state.guarantee=b.dataset.g;
+    document.querySelectorAll('#guarantee button').forEach(x=>x.classList.toggle('on',x===b));
+    play();
+  }));
   document.getElementById('replay').addEventListener('click',play);
   document.getElementById('replayFab').addEventListener('click',play);
 
@@ -608,19 +573,19 @@
   document.getElementById('fab').addEventListener('click',()=>{panel.classList.add('open');scrim.classList.add('open');});
   scrim.addEventListener('click',()=>{panel.classList.remove('open');scrim.classList.remove('open');});
 
-  // 화면 전환: 다음 → 예약확인 / 뒤로 → 차량선택(애니메이션 재생)
-  const phoneEl=document.getElementById('phone');
+  // 화면 전환: 다음 → 예약확인(밴드 형태로 넛지 따라옴) / 뒤로 → 차량선택(재생)
   document.getElementById('btn-next').addEventListener('click',()=>{
+    const k=topKey();
+    const cfib=document.getElementById('cf-infobar'), cft=document.getElementById('cf-ib-text');
+    if(k){ cfib.style.display=''; cft.innerHTML=MSG[k].band; } else { cfib.style.display='none'; }
     document.querySelector('#screen-confirm .cf-scroll').scrollTop=0;
     phoneEl.classList.add('show-confirm');
   });
   document.getElementById('cf-back').addEventListener('click',()=>{
-    resetBase();                          // 슬라이드 인 동안 바텀 바 뒤에 숨김
     phoneEl.classList.remove('show-confirm');
-    setTimeout(play, 380);                // 슬라이드 인 후 재생
+    setTimeout(play, 380);
   });
 
-  applySpeed();
   window.addEventListener('load',()=>setTimeout(play,400));
 </script>
 </body>
