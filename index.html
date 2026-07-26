@@ -472,7 +472,7 @@
   <aside class="panel" id="panel">
     <div class="grab"></div>
     <h1>통합 넛지 · 밴드↔플로팅</h1>
-    <p class="sub">🔥수요 있으면 플로팅 시작·없으면 밴드 시작. 스크롤→밴드, 밴드 탭→플로팅. 넛지끼리는 우선순위 1개, ⚡보장은 넛지와 공존(도킹 시 한 줄 병합).</p>
+    <p class="sub">🔥수요 있으면 플로팅 시작·없으면 밴드 시작. 스크롤→밴드, 밴드 탭→플로팅. 여러 메시지는 설정(병합/우선순위/로테이션)에 따라 처리. 병합은 최대 2개.</p>
     <div class="grp2">
       <label>넛지 메시지</label>
       <div class="msgtoggles" id="msgtoggles">
@@ -534,7 +534,7 @@
     const ks=present();
     if(ks.length===0) return null;
     if(ks.length===1) return floating?MSG[ks[0]].floating:MSG[ks[0]].band;
-    if(state.multi==='merge')  return ks.map(k=>MSG[k].micro).join(SEP);
+    if(state.multi==='merge')  return ks.slice(0,2).map(k=>MSG[k].micro).join(SEP);   // 폭 한계 → 최대 2개
     if(state.multi==='rotate'){ const k=ks[rotIdx%ks.length]; return floating?MSG[k].floating:MSG[k].band; }
     return floating?MSG[ks[0]].floating:MSG[ks[0]].band;   // priority
   }
