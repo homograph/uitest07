@@ -471,7 +471,7 @@
       <label>넛지 메시지</label>
       <div class="msgtoggles" id="msgtoggles">
         <button class="mt on" data-m="demand">🔥 수요 넛지</button>
-        <button class="mt" data-m="freecancel">🔥 무료 취소</button>
+        <button class="mt" data-m="freecancel">↩️ 무료 취소</button>
       </div>
     </div>
     <div class="grp2">
@@ -499,9 +499,9 @@
   // 밴드 메시지 인벤토리 (new/info_bar). floating=자세히 / band=짧게. pri=우선순위(작을수록 우선)
   const MSG={
     demand:    {pri:1, floating:'🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요', band:'🔥 예약 <b>2배</b> 몰리는 날'},
-    air:       {pri:2, floating:'⚡ 넥스트는 호출 시 <b>100% 예약 확정</b>돼요',        band:'⚡ 넥스트 <b>100% 확정</b>'},
-    van:       {pri:2, floating:'⚡ 프리미엄 밴은 항상 <b>100% 예약 확정</b>돼요',        band:'⚡ 밴 <b>100% 확정</b>'},
-    freecancel:{pri:3, floating:'🔥 출발 <b>12시간 전</b>까지 무료 취소 가능해요',        band:'🔥 <b>12시간 전</b> 무료취소'}
+    air:       {pri:2, floating:'⚡ 넥스트는 호출 시 <b>100% 예약이 확정</b>돼요',      band:'⚡ 넥스트 호출 시 <b>100% 예약 확정</b>'},
+    van:       {pri:2, floating:'⚡ 프리미엄 밴은 항상 <b>100% 예약이 확정</b>돼요',      band:'⚡ 프리미엄 밴 <b>항상 100% 확정</b>'},
+    freecancel:{pri:3, floating:'↩️ 출발 <b>12시간 전</b>까지 무료로 취소할 수 있어요',   band:'↩️ <b>12시간 전</b>까지 무료 취소'}
   };
   const state={demand:true, freecancel:false, guarantee:'none'};
   let armTimer=null, disarm=null;

@@ -114,7 +114,7 @@
       <div class="cl">메시지 (밴드 슬롯 입력)</div>
       <div class="toggles">
         <div class="tg on" data-m="demand">🔥 수요 넛지</div>
-        <div class="tg" data-m="freecancel">🔥 무료 취소</div>
+        <div class="tg" data-m="freecancel">↩️ 무료 취소</div>
       </div>
       <div style="height:8px;"></div>
       <div class="seg" id="guarantee">
@@ -145,9 +145,9 @@
   // 메시지 정의 (우선순위 순). floating=자세히 / band=짧게
   const MSG={
     demand:   {pri:1, floating:'🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요', band:'🔥 예약 <b>2배</b> 몰리는 날'},
-    air:      {pri:2, floating:'⚡ 넥스트는 호출 시 <b>100% 예약 확정</b>돼요',        band:'⚡ 넥스트 <b>100% 확정</b>'},
-    van:      {pri:2, floating:'⚡ 프리미엄 밴은 항상 <b>100% 예약 확정</b>돼요',        band:'⚡ 밴 <b>100% 확정</b>'},
-    freecancel:{pri:3,floating:'🔥 출발 <b>12시간 전</b>까지 무료 취소 가능해요',        band:'🔥 <b>12시간 전</b> 무료취소'},
+    air:      {pri:2, floating:'⚡ 넥스트는 호출 시 <b>100% 예약이 확정</b>돼요',        band:'⚡ 넥스트 호출 시 <b>100% 예약 확정</b>'},
+    van:      {pri:2, floating:'⚡ 프리미엄 밴은 항상 <b>100% 예약이 확정</b>돼요',        band:'⚡ 프리미엄 밴 <b>항상 100% 확정</b>'},
+    freecancel:{pri:3,floating:'↩️ 출발 <b>12시간 전</b>까지 무료로 취소할 수 있어요',        band:'↩️ <b>12시간 전</b>까지 무료 취소'},
   };
   const state={demand:true, freecancel:false, guarantee:'none', surge:false, discount:false, armed:false};
 
