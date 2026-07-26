@@ -3,175 +3,209 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>넛지 · 요금 블록 재편 1~3안</title>
+<title>통합 밴드↔플로팅 넛지 시스템 v1</title>
 <style>
   :root{
-    --blue-50:#e2f2fe; --blue-600:#0086ea; --navy:#19254d;
-    --gray-30:#f5f6f7; --gray-700:#4b5064; --gray-900:#262a38; --gray-300:#9da0ae;
-    --fire:#e8590c; --amber-bg:#fff2e8; --amber-fg:#d9480f;
+    --blue-50:#e2f2fe; --blue-500:#0094f9; --blue-600:#0086ea; --tada-blue:#32a2fa; --navy:#19254d;
+    --gray-30:#f5f6f7; --gray-700:#4b5064; --gray-800:#383d4f; --gray-900:#262a38; --gray-300:#9da0ae;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-    background:#eef1f5;color:var(--gray-900);-webkit-font-smoothing:antialiased;padding:16px 14px 56px;}
-  .wrap{max-width:460px;margin:0 auto;}
-  h1{font-size:17px;margin:4px 0 2px;}
-  .sub{font-size:12.5px;color:#6b7482;margin:0 0 14px;line-height:1.55;}
-  .sub b{color:var(--gray-900);}
+    background:#eef1f5;color:var(--gray-900);-webkit-font-smoothing:antialiased;padding:16px 14px 48px;}
+  .wrap{max-width:440px;margin:0 auto;}
+  h1{font-size:16px;margin:2px 0 2px;}
+  .sub{font-size:12px;color:#6b7482;margin:0 0 12px;line-height:1.5;}
 
-  .controls{position:sticky;top:0;z-index:10;background:#eef1f5;padding:10px 0 12px;margin-bottom:6px;}
+  /* phone */
+  .phone{position:relative;width:100%;height:460px;background:#fff;border-radius:16px;border:1px solid #e3e7ee;
+    box-shadow:0 10px 26px rgba(20,30,55,.12);overflow:hidden;}
+  .scroll{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+    padding:16px 16px calc(92px + 60px);scrollbar-width:none;}
+  .scroll::-webkit-scrollbar{display:none;}
+  .content-blk{border-bottom:1px solid #eef0f3;padding:14px 2px;}
+  .content-blk .t{font-size:14px;font-weight:700;color:var(--gray-900);}
+  .content-blk .d{font-size:12.5px;color:#8a90a0;margin-top:4px;line-height:1.5;}
+
+  .pricewrap{position:absolute;left:0;right:0;bottom:0;z-index:5;box-shadow:0 -8px 8px rgba(25,37,77,.06);}
+  .bottom{background:#fff;display:flex;align-items:center;justify-content:space-between;gap:14px;
+    height:92px;padding:0 16px;}
+  .fare{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;}
+  .lblrow{display:flex;align-items:center;gap:5px;}
+  .lbl{font-size:12px;color:#111;}
+  .surge{font-size:12px;color:#60667a;display:none;}
+  .surge.on{display:inline;}
+  .prow{display:flex;align-items:baseline;gap:6px;margin-top:2px;}
+  .price{font-size:16px;font-weight:700;color:#111;}
+  .strike{font-size:12px;color:var(--gray-300);text-decoration:line-through;display:none;}
+  .strike.on{display:inline;}
+  .next{width:92px;flex:0 0 auto;background:var(--navy);color:#fff;font-size:14px;font-weight:700;border:none;border-radius:6px;padding:12px 0;text-align:center;}
+
+  /* info bar — band(default) ↔ floating */
+  .infobar{position:absolute;left:0;right:0;bottom:92px;z-index:6;display:flex;align-items:center;justify-content:center;
+    padding:9px 12px;background:var(--blue-50);border-radius:0;overflow:hidden;box-shadow:none;cursor:pointer;
+    opacity:0;visibility:hidden;
+    transition:left .40s cubic-bezier(.4,0,.2,1),right .40s cubic-bezier(.4,0,.2,1),bottom .40s cubic-bezier(.4,0,.2,1),
+      border-radius .40s cubic-bezier(.4,0,.2,1),box-shadow .40s cubic-bezier(.4,0,.2,1),padding .40s cubic-bezier(.4,0,.2,1),opacity .2s ease;}
+  .infobar.show{opacity:1;visibility:visible;}
+  .ib-grad{position:absolute;inset:0;background:linear-gradient(90deg,#0094F9,#32A2FA);opacity:0;transition:opacity .40s ease;}
+  .ib-text{position:relative;z-index:1;font-size:13px;line-height:1.35;color:var(--gray-800);text-align:center;
+    transition:color .40s ease,font-size .40s ease;}
+  .ib-text b{color:var(--blue-600);font-weight:700;transition:color .40s ease;}
+  .infobar.floating{left:16px;right:16px;bottom:calc(92px + 14px);border-radius:8px;padding:12px 18px;
+    box-shadow:0 4px 12px rgba(25,37,77,.14);}
+  .infobar.floating .ib-grad{opacity:1;}
+  .infobar.floating .ib-text{font-size:15px;color:#fff;}
+  .infobar.floating .ib-text b{color:#fff;}
+  .taphint{position:absolute;right:10px;top:50%;transform:translateY(-50%);z-index:2;font-size:11px;color:#9aa0af;}
+  .infobar.floating .taphint{display:none;}
+
+  /* controls */
+  .controls{margin-top:16px;background:#fff;border-radius:14px;padding:14px;box-shadow:0 2px 10px rgba(20,30,55,.06);}
+  .cgrp{margin-bottom:14px;}
+  .cgrp:last-child{margin-bottom:0;}
+  .cl{font-size:11px;font-weight:700;color:#8a90a0;letter-spacing:.03em;margin-bottom:8px;text-transform:uppercase;}
   .toggles{display:flex;flex-wrap:wrap;gap:8px;}
-  .tg{border:1px solid #dfe3ea;background:#fff;color:#4b5064;border-radius:9999px;padding:8px 14px;
+  .tg{border:1px solid #dfe3ea;background:#fff;color:#4b5064;border-radius:9999px;padding:8px 13px;
     font-size:13px;font-weight:600;cursor:pointer;user-select:none;}
   .tg.on{background:var(--navy);color:#fff;border-color:var(--navy);}
-  .ctitle{font-size:11px;font-weight:700;color:#8a90a0;letter-spacing:.03em;margin:0 0 8px;text-transform:uppercase;}
-
-  .opt{margin-bottom:22px;}
-  .opt .oh{display:flex;align-items:baseline;gap:8px;margin-bottom:8px;}
-  .opt .onum{font-size:12px;font-weight:800;color:#fff;background:var(--navy);border-radius:6px;padding:2px 8px;}
-  .opt .ot{font-size:14px;font-weight:700;color:var(--gray-900);}
-  .opt .od{font-size:12px;color:#7b8091;margin:6px 2px 0;line-height:1.5;}
-
-  .phone{background:#fff;border-radius:14px;border:1px solid #e3e7ee;box-shadow:0 6px 18px rgba(20,30,55,.08);overflow:hidden;}
-  .filler{height:60px;background:linear-gradient(180deg,#fbfcfe,#fff);}
-  .band{background:var(--blue-50);text-align:center;font-size:12.5px;color:#383d4f;padding:9px 10px;}
-  .band .fire{color:var(--fire);font-weight:700;}
-  .band b{color:var(--blue-600);font-weight:700;}
-  .row{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 16px;height:92px;box-sizing:border-box;}
-  .fare{display:flex;flex-direction:column;align-items:flex-start;min-width:0;flex:1;}
-  .lblrow{display:flex;align-items:center;gap:6px;width:100%;}
-  .lbl{font-size:12px;color:#111;}
-  .lbl.mut{color:#868b9c;}
-  .prow{display:flex;align-items:baseline;gap:6px;margin-top:3px;white-space:nowrap;}
-  .price{font-size:17px;font-weight:700;color:#111;}
-  .surge-sm{font-size:12px;color:#60667a;white-space:nowrap;}
-  .strike{font-size:12px;color:var(--gray-300);text-decoration:line-through;}
-  .next{width:88px;flex:0 0 auto;background:var(--navy);color:#fff;font-size:14px;font-weight:700;border-radius:6px;padding:12px 0;text-align:center;}
-  .demand{display:inline-flex;align-items:center;gap:4px;border-radius:9999px;font-size:12px;line-height:1;white-space:nowrap;padding:4px 9px;font-weight:600;}
-  .demand.amber{background:var(--amber-bg);color:var(--amber-fg);}
-  .demand.ghost{color:var(--fire);font-weight:700;}
-  .spacer{flex:1;}
+  .seg{display:flex;background:#eef1f5;border-radius:10px;padding:3px;gap:3px;}
+  .seg button{flex:1;border:none;background:transparent;padding:9px 4px;border-radius:8px;font-size:12.5px;font-weight:600;color:#5a6373;cursor:pointer;}
+  .seg button.on{background:#fff;color:#1c2430;box-shadow:0 1px 3px rgba(0,0,0,.12);}
+  .replay{width:100%;margin-top:4px;background:var(--blue-600);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;}
+  .hint{font-size:11.5px;color:#8a90a0;margin-top:9px;line-height:1.5;}
+  .hint b{color:#4b5064;}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>넛지 · 요금 블록 재편 1~3안</h1>
-  <p class="sub">높이는 <b>92px 그대로</b>. 핵심 전제: 서지(↗)와 “예약이 몰리는 날”은 같은 수요 신호 → <b>통합</b>하면 3번째 줄이 불필요. 아래 토글로 케이스를 바꿔가며 각 안을 비교하세요.</p>
+  <h1>통합 밴드↔플로팅 넛지 시스템 v1</h1>
+  <p class="sub">🔥수요 있으면 <b>플로팅 시작</b> · 없으면 <b>밴드 시작</b>. 스크롤 → 밴드 축소, 밴드 <b>탭 → 플로팅</b>. 여러 메시지는 밴드에서 한 줄 병합. 요금 블록은 손대지 않음.</p>
+
+  <div class="phone" id="phone">
+    <div class="scroll" id="scroll">
+      <div class="content-blk"><div class="t">차량 선택</div><div class="d">넓고 쾌적한 넥스트 · 최대 5인</div></div>
+      <div class="content-blk"><div class="t">부가 서비스</div><div class="d">드라이버 지정 · 카시트</div></div>
+      <div class="content-blk"><div class="t">유의사항</div><div class="d">아래로 스크롤하면 플로팅이 밴드로 축소됩니다.</div></div>
+      <div class="content-blk"><div class="t">넥스트/플러스 요금 정책</div><div class="d">최종 이동 거리/시간 초과 시 추가 요금이 부과될 수 있습니다.</div></div>
+      <div class="content-blk"><div class="t">취소 수수료</div><div class="d">탑승 예정 시각 12시간 이내 취소 시 수수료가 차등 부과됩니다.</div></div>
+      <div class="content-blk"><div class="t">도움이 필요하신가요?</div><div class="d">고객센터 문의하기</div></div>
+    </div>
+
+    <div class="infobar" id="infobar">
+      <div class="ib-grad"></div>
+      <span class="ib-text" id="ibtext"></span>
+      <span class="taphint">탭 ▲</span>
+    </div>
+
+    <div class="pricewrap">
+      <div class="bottom">
+        <div class="fare">
+          <div class="lblrow"><span class="lbl">예상 요금</span><span class="surge" id="surge">↗ 1.4배</span></div>
+          <div class="prow"><span class="price">125,000원</span><span class="strike" id="strike">150,000원</span></div>
+        </div>
+        <button class="next">다음</button>
+      </div>
+    </div>
+  </div>
 
   <div class="controls">
-    <div class="ctitle">케이스 토글</div>
-    <div class="toggles">
-      <div class="tg on" data-t="demand">🔥 수요 높음</div>
-      <div class="tg" data-t="surge">↗ 서지 1.4배</div>
-      <div class="tg" data-t="discount">할인 취소선</div>
-      <div class="tg" data-t="band">⚡ 100% 확정</div>
-    </div>
-  </div>
-
-  <!-- 옵션 1 -->
-  <div class="opt">
-    <div class="oh"><span class="onum">1</span><span class="ot">통합 배지 (라벨 우측)</span></div>
-    <div class="phone">
-      <div class="filler"></div>
-      <div id="band1"></div>
-      <div class="row">
-        <div class="fare">
-          <div class="lblrow"><span class="lbl">예상 요금</span><span class="spacer"></span><span id="badge1"></span></div>
-          <div class="prow"><span class="price">110,000원</span><span id="disc1"></span></div>
-        </div>
-        <div class="next">다음</div>
+    <div class="cgrp">
+      <div class="cl">메시지 (밴드 슬롯 입력)</div>
+      <div class="toggles">
+        <div class="tg on" data-m="demand">🔥 수요 넛지</div>
+        <div class="tg" data-m="freecancel">🔥 무료 취소</div>
+      </div>
+      <div style="height:8px;"></div>
+      <div class="seg" id="guarantee">
+        <button data-g="none" class="on">⚡ 없음</button>
+        <button data-g="air">⚡ 공항·넥스트</button>
+        <button data-g="van">⚡ 프리미엄 밴</button>
       </div>
     </div>
-    <p class="od">서지 배지 자리에 수요를 얹어 “🔥 예약 몰림 · 1.4배↑” 하나로 통합. 변화 최소, 별도 칩 없음.</p>
-  </div>
-
-  <!-- 옵션 2 -->
-  <div class="opt">
-    <div class="oh"><span class="onum">2</span><span class="ot">라벨 흡수형</span></div>
-    <div class="phone">
-      <div class="filler"></div>
-      <div id="band2"></div>
-      <div class="row">
-        <div class="fare">
-          <div class="lblrow" id="lbl2"></div>
-          <div class="prow"><span class="price">110,000원</span><span id="surge2"></span><span id="disc2"></span></div>
-        </div>
-        <div class="next">다음</div>
+    <div class="cgrp">
+      <div class="cl">요금 블록 케이스 (손 안 댐 확인용)</div>
+      <div class="toggles">
+        <div class="tg" data-f="surge">↗ 서지</div>
+        <div class="tg" data-f="discount">할인 취소선</div>
       </div>
     </div>
-    <p class="od">‘예상 요금’ 라벨 줄을 수요 문구가 흡수. 서지·할인은 가격 줄 주석. 공간 0 추가, 단 라벨 명료성 약간 양보.</p>
-  </div>
-
-  <!-- 옵션 3 -->
-  <div class="opt">
-    <div class="oh"><span class="onum">3</span><span class="ot">밴드 슬롯 활용 (칩 폐기)</span></div>
-    <div class="phone">
-      <div class="filler"></div>
-      <div id="band3"></div>
-      <div class="row">
-        <div class="fare">
-          <div class="lblrow"><span class="lbl">예상 요금</span><span id="surge3"></span></div>
-          <div class="prow"><span class="price">110,000원</span><span id="disc3"></span></div>
-        </div>
-        <div class="next">다음</div>
-      </div>
+    <div class="cgrp">
+      <button class="replay" id="replay">▶ 진입 재생 (시작 상태부터)</button>
+      <div class="hint">진입 시 🔥수요가 있으면 플로팅으로 강조 시작, 없으면 밴드로 시작. 스크롤하면 밴드로 도킹, 밴드를 탭하면 다시 플로팅. <b>플로팅=자세한 문구 / 밴드=짧은 문구(병합)</b>.</div>
     </div>
-    <p class="od">요금 블록은 손 안 대고 수요를 상단 밴드로. ⚡ 동시면 한 줄 병합. 도킹 형태를 칩→밴드로 되돌리는 결정 번복 필요.</p>
   </div>
-
-  <p class="sub" style="margin-top:4px;">각 안을 케이스별로 본 뒤, 방향(또는 조합)을 알려주세요. 정해지면 실제 프로토타입에 반영합니다.</p>
 </div>
 
 <script>
-  const S={demand:true,surge:false,discount:false,band:false};
-  const strike='<span class="strike">150,000원</span>';
-  const surgeSm='<span class="surge-sm">↗1.4배</span>';
+  const bar=document.getElementById('infobar'), ibtext=document.getElementById('ibtext'),
+        scroll=document.getElementById('scroll'), phone=document.getElementById('phone'),
+        surge=document.getElementById('surge'), strike=document.getElementById('strike');
 
-  function render(){
-    const d=S.demand, sg=S.surge, dc=S.discount, bd=S.band;
+  // 메시지 정의 (우선순위 순). floating=자세히 / band=짧게
+  const MSG={
+    demand:   {pri:1, floating:'🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요', band:'🔥 예약 <b>2배</b> 몰리는 날'},
+    air:      {pri:2, floating:'⚡ 넥스트는 호출 시 <b>100% 예약 확정</b>돼요',        band:'⚡ 넥스트 <b>100% 확정</b>'},
+    van:      {pri:2, floating:'⚡ 프리미엄 밴은 항상 <b>100% 예약 확정</b>돼요',        band:'⚡ 밴 <b>100% 확정</b>'},
+    freecancel:{pri:3,floating:'🔥 출발 <b>12시간 전</b>까지 무료 취소 가능해요',        band:'🔥 <b>12시간 전</b> 무료취소'},
+  };
+  const state={demand:true, freecancel:false, guarantee:'none', surge:false, discount:false, armed:false};
 
-    // 공통 할인
-    document.getElementById('disc1').innerHTML = dc?strike:'';
-    document.getElementById('disc2').innerHTML = dc?strike:'';
-    document.getElementById('disc3').innerHTML = dc?strike:'';
-
-    // 옵션1: 통합 배지
-    let b1='';
-    if(d) b1 = '<span class="demand amber">🔥 예약 몰림'+(sg?' · 1.4배↑':'')+'</span>';
-    else if(sg) b1 = '<span class="surge-sm">↗1.4배</span>';
-    document.getElementById('badge1').innerHTML=b1;
-    document.getElementById('band1').innerHTML = bd?bandHTML(false):'';
-
-    // 옵션2: 라벨 흡수
-    let l2='';
-    if(d) l2 = '<span class="demand ghost">🔥 예약이 몰리는 날</span><span class="lbl mut">· 예상 요금</span>';
-    else l2 = '<span class="lbl">예상 요금</span>';
-    document.getElementById('lbl2').innerHTML=l2;
-    document.getElementById('surge2').innerHTML = sg?surgeSm:'';
-    document.getElementById('band2').innerHTML = bd?bandHTML(false):'';
-
-    // 옵션3: 밴드 슬롯
-    document.getElementById('surge3').innerHTML = sg?surgeSm:'';
-    let b3='';
-    if(d||bd) b3 = bandHTML(true);
-    document.getElementById('band3').innerHTML = b3;
+  function present(){                       // 존재하는 메시지 키 목록 (우선순위 정렬)
+    const keys=[];
+    if(state.demand) keys.push('demand');
+    if(state.guarantee==='air') keys.push('air');
+    if(state.guarantee==='van') keys.push('van');
+    if(state.freecancel) keys.push('freecancel');
+    return keys.sort((a,b)=>MSG[a].pri-MSG[b].pri);
   }
+  function floatingHTML(){ const k=present()[0]; return k?MSG[k].floating:''; }
+  function bandHTML(){ return present().map(k=>MSG[k].band).join(' <span style="color:#c2c7d2">·</span> '); }
 
-  // merged=true면 3안(수요+⚡ 병합 규칙), false면 1·2안(⚡ 단독 밴드)
-  function bandHTML(merged){
-    if(merged){
-      if(S.demand && S.band) return '<div class="band"><span class="fire">🔥 예약 몰림</span> · <b>⚡100% 예약 확정</b></div>';
-      if(S.demand) return '<div class="band"><span class="fire">🔥 이 날은 예약이 평소 대비 2배 몰려요</span></div>';
-      if(S.band) return '<div class="band">⚡ 넥스트 호출 시 <b>100% 예약 확정</b></div>';
-      return '';
+  function setFloating(on){
+    if(!present().length){ bar.classList.remove('show'); return; }
+    bar.classList.add('show');
+    ibtext.innerHTML = on?floatingHTML():bandHTML();
+    bar.classList.toggle('floating', on);
+  }
+  function armDock(){                        // 첫 스크롤에 밴드로 도킹
+    state.armed=true;
+    scroll.addEventListener('scroll', onScrollDock, {passive:true, once:true});
+  }
+  function onScrollDock(){ if(bar.classList.contains('floating')) setFloating(false); }
+
+  bar.addEventListener('click', ()=>{        // 밴드 탭 → 플로팅
+    if(!bar.classList.contains('floating') && present().length){
+      setFloating(true);
+      setTimeout(armDock, 400);              // 잠시 후 재-도킹 무장
     }
-    return '<div class="band">⚡ 넥스트 호출 시 <b>100% 예약 확정</b></div>';
+  });
+
+  function start(){
+    scroll.scrollTop=0;
+    scroll.removeEventListener('scroll', onScrollDock);
+    const keys=present();
+    if(!keys.length){ bar.classList.remove('show','floating'); return; }
+    if(state.demand){ setFloating(true); setTimeout(armDock, 500); }   // 수요 있으면 플로팅 시작
+    else { setFloating(false); }                                       // 없으면 밴드 시작
   }
 
-  document.querySelectorAll('.tg').forEach(t=>t.addEventListener('click',()=>{
-    const k=t.dataset.t; S[k]=!S[k]; t.classList.toggle('on',S[k]); render();
+  // 컨트롤
+  document.querySelectorAll('.tg[data-m]').forEach(t=>t.addEventListener('click',()=>{
+    const k=t.dataset.m; state[k]=!state[k]; t.classList.toggle('on',state[k]); start();
   }));
-  render();
+  document.querySelectorAll('#guarantee button').forEach(b=>b.addEventListener('click',()=>{
+    state.guarantee=b.dataset.g;
+    document.querySelectorAll('#guarantee button').forEach(x=>x.classList.toggle('on',x===b));
+    start();
+  }));
+  document.querySelectorAll('.tg[data-f]').forEach(t=>t.addEventListener('click',()=>{
+    const k=t.dataset.f; state[k]=!state[k]; t.classList.toggle('on',state[k]);
+    surge.classList.toggle('on',state.surge); strike.classList.toggle('on',state.discount);
+  }));
+  document.getElementById('replay').addEventListener('click', start);
+
+  start();
 </script>
 </body>
 </html>
