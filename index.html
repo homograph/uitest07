@@ -368,9 +368,8 @@
       <span class="ib-tap">탭 ▲</span>
     </div>
 
-    <!-- 하단 영역: ⚡ 보장 상시 밴드 + 요금 바(손 안 댐) -->
+    <!-- 하단 영역: 요금 바(손 안 댐) -->
     <div class="pricewrap">
-      <div class="gbanner" id="gbanner"><span id="gb-text"></span></div>
       <div class="bottom">
         <div class="fare">
           <div class="l">예상 요금</div>
@@ -482,11 +481,19 @@
       </div>
     </div>
     <div class="grp2">
-      <label>⚡ 100% 예약 확정 (공존)</label>
+      <label>⚡ 100% 예약 확정</label>
       <div class="seg" id="guarantee">
         <button data-g="none" class="on">없음</button>
         <button data-g="air">공항·넥스트</button>
         <button data-g="van">프리미엄 밴</button>
+      </div>
+    </div>
+    <div class="grp2">
+      <label>다중 메시지 처리 (A/B)</label>
+      <div class="seg" id="multi">
+        <button data-x="merge" class="on">병합</button>
+        <button data-x="priority">우선순위</button>
+        <button data-x="rotate">로테이션</button>
       </div>
     </div>
     <button class="replay" id="replay">▶ 진입 재생</button>
@@ -500,43 +507,54 @@
 
 <script>
   const bar=document.getElementById('infobar'), ibtext=document.getElementById('ib-text'),
-        gbanner=document.getElementById('gbanner'), gbtext=document.getElementById('gb-text'),
         scroller=document.querySelector('#screen-select .scroll'), phoneEl=document.getElementById('phone'),
         tlEl=document.getElementById('tl');
 
-  // 넛지(플로팅↔밴드) : floating=자세히 / band=짧게 / micro=병합용 초압축
-  const NUDGE={
+  // 메시지 인벤토리: floating=자세히 / band=짧게 / micro=병합용 초압축
+  const MSG={
     demand:    {pri:1, floating:'🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요', band:'🔥 예약 <b>2배</b> 몰리는 날', micro:'🔥 예약 <b>2배</b> 몰림'},
-    freecancel:{pri:3, floating:'↩️ 출발 <b>12시간 전</b>까지 무료로 취소할 수 있어요',   band:'↩️ <b>12시간 전</b>까지 무료 취소', micro:'↩️ <b>12시간</b> 무료취소'}
-  };
-  // ⚡ 보장(상시 밴드) : band=단독 밴드 / micro=병합용 / floating=넛지 없이 단독일 땐 미사용(상태 정보라 플로팅 안 함)
-  const GUAR={
-    air:{band:'⚡ 넥스트 호출 시 <b>100% 예약 확정</b>', micro:'⚡ 넥스트 <b>100% 확정</b>'},
-    van:{band:'⚡ 프리미엄 밴 <b>항상 100% 확정</b>',  micro:'⚡ 밴 <b>100% 확정</b>'}
+    air:       {pri:2, floating:'⚡ 넥스트는 호출 시 <b>100% 예약이 확정</b>돼요',      band:'⚡ 넥스트 호출 시 <b>100% 예약 확정</b>', micro:'⚡ 넥스트 <b>100% 확정</b>'},
+    van:       {pri:2, floating:'⚡ 프리미엄 밴은 항상 <b>100% 예약이 확정</b>돼요',      band:'⚡ 프리미엄 밴 <b>항상 100% 확정</b>',   micro:'⚡ 밴 <b>100% 확정</b>'},
+    freecancel:{pri:3, floating:'↩️ 출발 <b>12시간 전</b>까지 무료로 취소할 수 있어요',   band:'↩️ <b>12시간 전</b>까지 무료 취소',      micro:'↩️ <b>12시간</b> 무료취소'}
   };
   const SEP=' <span style="color:#c2c7d2">·</span> ';
-  const state={demand:true, freecancel:false, guarantee:'none'};
-  let armTimer=null, disarm=null;
+  const state={demand:true, freecancel:false, guarantee:'none', multi:'merge'};
+  let armTimer=null, disarm=null, rotTimer=null, rotIdx=0;
 
-  function activeNudge(){ if(state.demand) return 'demand'; if(state.freecancel) return 'freecancel'; return null; }
-  function activeGuar(){ return state.guarantee!=='none' ? state.guarantee : null; }
-  function showGband(on, html){ if(on){ gbtext.innerHTML=html; gbanner.classList.add('show'); } else { gbanner.classList.remove('show'); } }
-  function hideBar(){ bar.style.opacity='0'; bar.style.visibility='hidden'; bar.classList.remove('floating','with-guar'); }
+  function present(){                 // 활성 메시지 (우선순위 정렬)
+    const k=[];
+    if(state.demand)k.push('demand');
+    if(state.guarantee==='air')k.push('air');
+    if(state.guarantee==='van')k.push('van');
+    if(state.freecancel)k.push('freecancel');
+    return k.sort((a,b)=>MSG[a].pri-MSG[b].pri);
+  }
+  // 다중 처리 전략별 콘텐츠 (A/B: 병합 / 우선순위 / 로테이션)
+  function contentFor(floating){
+    const ks=present();
+    if(ks.length===0) return null;
+    if(ks.length===1) return floating?MSG[ks[0]].floating:MSG[ks[0]].band;
+    if(state.multi==='merge')  return ks.map(k=>MSG[k].micro).join(SEP);
+    if(state.multi==='rotate'){ const k=ks[rotIdx%ks.length]; return floating?MSG[k].floating:MSG[k].band; }
+    return floating?MSG[ks[0]].floating:MSG[ks[0]].band;   // priority
+  }
 
-  function setForm(floating){        // 한 순간: 넛지 1개(+⚡ 공존). 도킹 시 병합.
-    const n=activeNudge(), g=activeGuar();
-    if(!n && !g){ hideBar(); showGband(false); return; }
-    if(!n && g){ hideBar(); showGband(true, GUAR[g].band); return; }   // 보장만 → 밴드
-    bar.style.visibility='visible'; bar.style.opacity='1';             // 넛지 있음
-    if(floating){
-      ibtext.innerHTML = NUDGE[n].floating;
-      bar.classList.add('floating');
-      bar.classList.toggle('with-guar', !!g);
-      showGband(!!g, g?GUAR[g].band:'');                               // 플로팅 + ⚡ 밴드 동시
-    } else {
-      bar.classList.remove('floating','with-guar');
-      ibtext.innerHTML = g ? (NUDGE[n].micro + SEP + GUAR[g].micro) : NUDGE[n].band;   // 도킹 시 병합
-      showGband(false);
+  function setForm(floating){
+    const html=contentFor(floating);
+    if(html==null){ bar.style.opacity='0'; bar.style.visibility='hidden'; bar.classList.remove('floating'); return; }
+    bar.style.visibility='visible'; bar.style.opacity='1';
+    ibtext.innerHTML=html;
+    bar.classList.toggle('floating', floating);
+  }
+  function repaint(){                 // 텍스트만 갱신(현재 form 유지 — 로테이션용)
+    const html=contentFor(bar.classList.contains('floating'));
+    if(html!=null){ ibtext.innerHTML=html; }
+  }
+  function stopRotate(){ clearInterval(rotTimer); rotTimer=null; }
+  function maybeRotate(){
+    stopRotate();
+    if(state.multi==='rotate' && present().length>1){
+      rotTimer=setInterval(()=>{ rotIdx++; repaint(); }, 2500);
     }
   }
 
@@ -549,29 +567,32 @@
     disarm=off;
   }
   bar.addEventListener('click',()=>{  // 밴드 탭 → 플로팅
-    if(!bar.classList.contains('floating') && activeNudge()){
+    if(!bar.classList.contains('floating') && present().length){
       setForm(true);
       armTimer=setTimeout(armDock, 500);
     }
   });
 
+  const MULTI_LABEL={merge:'병합(한 줄)', priority:'우선순위 1개', rotate:'로테이션'};
   function setTL(){
-    const n=activeNudge(), g=activeGuar();
-    if(!n && !g){ tlEl.innerHTML='<b>동작</b><br>표시할 넛지 없음'; return; }
-    if(!n && g){ tlEl.innerHTML='<b>동작</b><br>⚡ 보장만 → 상시 밴드'; return; }
+    const ks=present();
+    if(ks.length===0){ tlEl.innerHTML='<b>동작</b><br>표시할 넛지 없음'; return; }
+    var m = ks.length>1 ? ('<br>다중('+ks.length+'): <b>'+MULTI_LABEL[state.multi]+'</b>') : '';
     tlEl.innerHTML='<b>동작</b><br>'+(state.demand
-      ? '① 🔥수요 → 플로팅 시작'+(g?' + ⚡밴드 동시':'')+'<br>② 스크롤 → '+(g?'한 줄 병합 밴드':'밴드')+'<br>③ 탭 → 플로팅'
-      : '① 넛지 → 밴드 시작'+(g?'(⚡ 한 줄 병합)':'')+'<br>② 탭 → 플로팅 + ⚡밴드');
+      ? '① 🔥수요 → 플로팅 시작<br>② 스크롤 → 밴드<br>③ 탭 → 플로팅'
+      : '① 넛지 → 밴드 시작<br>② 탭 → 플로팅')+m;
   }
 
   function play(){                    // 진입 재생
-    clearArm();
+    clearArm(); stopRotate(); rotIdx=0;
     scroller.scrollTop=0;
-    bar.style.transition='none'; bar.classList.remove('floating','with-guar'); void bar.offsetWidth; bar.style.transition='';
+    bar.style.transition='none'; bar.classList.remove('floating'); void bar.offsetWidth; bar.style.transition='';
     setTL();
-    const n=activeNudge();
-    if(n && state.demand){ setForm(true); armTimer=setTimeout(armDock, 600); }  // 수요 → 플로팅 시작
-    else { setForm(false); }                                                   // 그 외 → 밴드/보장 밴드/없음
+    const ks=present();
+    if(ks.length===0){ bar.style.opacity='0'; bar.style.visibility='hidden'; return; }
+    if(state.demand){ setForm(true); armTimer=setTimeout(armDock, 600); }  // 수요 → 플로팅 시작
+    else { setForm(false); }                                              // 그 외 → 밴드 시작
+    maybeRotate();
   }
 
   // 컨트롤
@@ -583,6 +604,11 @@
     document.querySelectorAll('#guarantee button').forEach(x=>x.classList.toggle('on',x===b));
     play();
   }));
+  document.querySelectorAll('#multi button').forEach(b=>b.addEventListener('click',()=>{
+    state.multi=b.dataset.x;
+    document.querySelectorAll('#multi button').forEach(x=>x.classList.toggle('on',x===b));
+    play();
+  }));
   document.getElementById('replay').addEventListener('click',play);
   document.getElementById('replayFab').addEventListener('click',play);
 
@@ -592,13 +618,9 @@
 
   // 화면 전환: 다음 → 예약확인(도킹/병합 형태로 따라옴) / 뒤로 → 차량선택(재생)
   document.getElementById('btn-next').addEventListener('click',()=>{
-    const n=activeNudge(), g=activeGuar();
     const cfib=document.getElementById('cf-infobar'), cft=document.getElementById('cf-ib-text');
-    let cf='';
-    if(n && g) cf = NUDGE[n].micro + SEP + GUAR[g].micro;
-    else if(n) cf = NUDGE[n].band;
-    else if(g) cf = GUAR[g].band;
-    if(cf){ cfib.style.display=''; cft.innerHTML=cf; } else { cfib.style.display='none'; }
+    const html=contentFor(false);   // 예약확인엔 도킹(밴드) 표현으로 따라옴
+    if(html){ cfib.style.display=''; cft.innerHTML=html; } else { cfib.style.display='none'; }
     document.querySelector('#screen-confirm .cf-scroll').scrollTop=0;
     phoneEl.classList.add('show-confirm');
   });
