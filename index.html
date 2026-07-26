@@ -121,6 +121,13 @@
     background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,var(--shim-peak)) 50%, transparent 100%);}
   .ib-text{position:relative;z-index:1;font-size:13px;line-height:18px;color:var(--gray-800);text-align:center;white-space:nowrap;transition:color var(--dock-dur) ease,font-size var(--dock-dur) ease,line-height var(--dock-dur) ease;}
   .ib-text b{font-weight:700;color:var(--blue-600);transition:color var(--dock-dur) ease;}
+  /* 분할(세그먼트) */
+  .ib-text.is-seg{display:flex;gap:6px;align-items:center;white-space:nowrap;}
+  .ib-text .ib-seg{background:rgba(90,110,150,.14);border-radius:9999px;padding:3px 10px;}
+  .infobar.floating .ib-text .ib-seg{background:rgba(255,255,255,.22);}
+  /* 2단(스택) */
+  .ib-text.is-stack{display:flex;flex-direction:column;gap:3px;white-space:normal;line-height:1.4;text-align:center;}
+  .ib-text .ib-line{display:block;}
   .ib-tap{position:absolute;right:12px;top:50%;transform:translateY(-50%);z-index:2;font-size:11px;color:#9aa8c0;transition:opacity .2s;}
   .infobar.floating{left:var(--float-side);right:var(--float-side);bottom:calc(var(--cta-h) + env(safe-area-inset-bottom,0px) + var(--float-gap));
     border-radius:var(--float-radius);box-shadow:0 4px 12px rgba(25,37,77,.10);padding:12px 18px;}
@@ -489,11 +496,13 @@
       </div>
     </div>
     <div class="grp2">
-      <label>다중 메시지 처리 (A/B)</label>
-      <div class="seg" id="multi">
+      <label>다중 메시지 처리 (A/B/C/D/E)</label>
+      <div class="seg" id="multi" style="font-size:12px;">
         <button data-x="merge" class="on">병합</button>
-        <button data-x="priority">우선순위</button>
-        <button data-x="rotate">로테이션</button>
+        <button data-x="priority">우선</button>
+        <button data-x="rotate">순환</button>
+        <button data-x="segment">분할</button>
+        <button data-x="stack">2단</button>
       </div>
     </div>
     <button class="replay" id="replay">▶ 진입 재생</button>
@@ -529,26 +538,32 @@
     if(state.freecancel)k.push('freecancel');
     return k.sort((a,b)=>MSG[a].pri-MSG[b].pri);
   }
-  // 다중 처리 전략별 콘텐츠 (A/B: 병합 / 우선순위 / 로테이션)
+  // 다중 처리 전략별 콘텐츠 (병합/우선/순환/분할/2단) → {mode, html}
   function contentFor(floating){
     const ks=present();
     if(ks.length===0) return null;
-    if(ks.length===1) return floating?MSG[ks[0]].floating:MSG[ks[0]].band;
-    if(state.multi==='merge')  return ks.slice(0,2).map(k=>MSG[k].micro).join(SEP);   // 폭 한계 → 최대 2개
-    if(state.multi==='rotate'){ const k=ks[rotIdx%ks.length]; return floating?MSG[k].floating:MSG[k].band; }
-    return floating?MSG[ks[0]].floating:MSG[ks[0]].band;   // priority
+    if(ks.length===1) return {mode:'normal', html: floating?MSG[ks[0]].floating:MSG[ks[0]].band};
+    if(state.multi==='priority') return {mode:'normal', html: floating?MSG[ks[0]].floating:MSG[ks[0]].band};
+    if(state.multi==='rotate'){ const k=ks[rotIdx%ks.length]; return {mode:'normal', html: floating?MSG[k].floating:MSG[k].band}; }
+    const two=ks.slice(0,2);   // 병합/분할/2단 = 상위 2개
+    if(state.multi==='segment') return {mode:'segment', html: two.map(k=>'<span class="ib-seg">'+MSG[k].micro+'</span>').join('')};
+    if(state.multi==='stack')   return {mode:'stack',   html: two.map(k=>'<span class="ib-line">'+MSG[k].micro+'</span>').join('')};
+    return {mode:'normal', html: two.map(k=>MSG[k].micro).join(SEP)};   // merge
   }
-
+  function applyContent(c){
+    ibtext.className = 'ib-text'+(c.mode==='segment'?' is-seg':c.mode==='stack'?' is-stack':'');
+    ibtext.innerHTML = c.html;
+  }
   function setForm(floating){
-    const html=contentFor(floating);
-    if(html==null){ bar.style.opacity='0'; bar.style.visibility='hidden'; bar.classList.remove('floating'); return; }
+    const c=contentFor(floating);
+    if(c==null){ bar.style.opacity='0'; bar.style.visibility='hidden'; bar.classList.remove('floating'); return; }
     bar.style.visibility='visible'; bar.style.opacity='1';
-    ibtext.innerHTML=html;
+    applyContent(c);
     bar.classList.toggle('floating', floating);
   }
-  function repaint(){                 // 텍스트만 갱신(현재 form 유지 — 로테이션용)
-    const html=contentFor(bar.classList.contains('floating'));
-    if(html!=null){ ibtext.innerHTML=html; }
+  function repaint(){                 // 텍스트만 갱신(현재 form 유지 — 순환용)
+    const c=contentFor(bar.classList.contains('floating'));
+    if(c!=null) applyContent(c);
   }
   function stopRotate(){ clearInterval(rotTimer); rotTimer=null; }
   function maybeRotate(){
@@ -573,7 +588,7 @@
     }
   });
 
-  const MULTI_LABEL={merge:'병합(한 줄)', priority:'우선순위 1개', rotate:'로테이션'};
+  const MULTI_LABEL={merge:'병합(한 줄)', priority:'우선순위 1개', rotate:'순환', segment:'분할(칩)', stack:'2단 밴드'};
   function setTL(){
     const ks=present();
     if(ks.length===0){ tlEl.innerHTML='<b>동작</b><br>표시할 넛지 없음'; return; }
@@ -619,8 +634,9 @@
   // 화면 전환: 다음 → 예약확인(도킹/병합 형태로 따라옴) / 뒤로 → 차량선택(재생)
   document.getElementById('btn-next').addEventListener('click',()=>{
     const cfib=document.getElementById('cf-infobar'), cft=document.getElementById('cf-ib-text');
-    const html=contentFor(false);   // 예약확인엔 도킹(밴드) 표현으로 따라옴
-    if(html){ cfib.style.display=''; cft.innerHTML=html; } else { cfib.style.display='none'; }
+    const ks=present();   // 예약확인엔 밴드 표현으로 따라옴 (2개면 병합)
+    let cf = ks.length===0 ? '' : (ks.length===1 ? MSG[ks[0]].band : ks.slice(0,2).map(k=>MSG[k].micro).join(SEP));
+    if(cf){ cfib.style.display=''; cft.innerHTML=cf; } else { cfib.style.display='none'; }
     document.querySelector('#screen-confirm .cf-scroll').scrollTop=0;
     phoneEl.classList.add('show-confirm');
   });
