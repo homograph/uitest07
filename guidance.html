@@ -59,7 +59,7 @@
   #ta{position:relative; display:block; width:100%; min-height:52px; height:auto; margin:0; padding:0; border:0;
     font-family:inherit; font-size:15px; line-height:1.6; white-space:pre-wrap; word-break:break-word;
     overflow:hidden; resize:none; outline:none; background:transparent; color:transparent; caret-color:var(--ink); box-sizing:border-box}
-  .backdrop mark{background:transparent; color:var(--blue); border-bottom:2px solid var(--blue); padding-bottom:1px}
+  .backdrop mark{background:transparent; color:inherit; border-bottom:0}
   .backdrop .ph{color:#b6bac6}
   .counter{text-align:right; margin-top:8px; font-size:12px}
   .counter .n{font-weight:600; color:var(--ink)}
@@ -72,11 +72,12 @@
   .preset:hover{background:#fafbfc}
   .preset:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
 
-  .guide{margin-top:20px}
-  .assist{display:flex; align-items:center; gap:6px; margin-bottom:10px}
-  .assist span{font-size:13px; color:var(--dmuted)}
+  .guide{margin-top:18px}
+  .ai-panel{background:#f6f9fe; border:1px solid #e9f1fb; border-radius:16px; padding:14px 16px}
+  .assist{display:flex; align-items:center; gap:7px; margin-bottom:10px}
+  .assist span{font-size:13px; color:#5a6070}
   .assist svg{flex:0 0 auto}
-  .card{background:transparent; border-radius:0; padding:14px 0; border-top:1px solid #edeef2; margin-bottom:0}
+  .card{background:transparent; border-radius:0; padding:14px 0; border-top:1px solid #e4ecf8; margin-bottom:0}
   .card h4{margin:0 0 6px; font-size:14px; font-weight:600; color:var(--ink)}
   .card p{margin:0 0 10px; font-size:14px; line-height:1.55; color:var(--ink)}
   .kw-label{font-size:12px; color:var(--dmuted); margin-bottom:6px}
@@ -143,10 +144,6 @@
           <textarea id="ta" maxlength="100" aria-label="요청사항 입력" spellcheck="false"></textarea>
         </div>
         <div class="counter" id="cnt"><span class="n">0</span><span class="m">/100</span></div>
-      </div>
-      <div class="presets">
-        <button class="preset" data-fill="초등학생 3명 하교길입니다.">초등학생 3명 하교길입니다.</button>
-        <button class="preset" data-fill="경유지에서 2명 내려요.">경유지에서 2명 내려요.</button>
       </div>
       <div class="guide" id="guide"></div>
     </div>
@@ -221,13 +218,13 @@
     if(!act.length){ guide.innerHTML='<div class="helper"><span class="dot"></span>지금은 따로 안내드릴 내용이 없어요.</div>'; return; }
     var head='<div class="assist">'+STAR.replace('%TADA%',tadaCol)+'<span>요청 내용에서 참고할 점을 찾았어요</span></div>';
     var vis=expanded?act:act.slice(0,2);
-    var html=head+vis.map(cardHTML).join('');
-    if(!expanded && act.length>2){ html+='<div class="more" id="moreBtn">안내 '+(act.length-2)+'개 더보기</div>'; }
-    guide.innerHTML=html;
+    var inner=head+vis.map(cardHTML).join('');
+    if(!expanded && act.length>2){ inner+='<div class="more" id="moreBtn">안내 '+(act.length-2)+'개 더보기</div>'; }
+    guide.innerHTML='<div class="ai-panel">'+inner+'</div>';
     var mb=document.getElementById('moreBtn'); if(mb)mb.onclick=function(){expanded=true;renderGuide(ta.value);};
   }
   function skeleton(){
-    guide.innerHTML='<div class="skel"><div class="sh">'+STAR.replace('%TADA%','#868b9c')+'<span>요청 내용 확인 중</span></div><div class="bar shim" style="width:70%"></div><div class="bar shim" style="width:45%;margin-bottom:0"></div></div>';
+    guide.innerHTML='<div class="ai-panel"><div class="assist">'+STAR.replace('%TADA%',tadaCol)+'<span>요청 내용 확인 중</span></div><div class="bar shim" style="width:70%"></div><div class="bar shim" style="width:45%;margin-bottom:0"></div></div>';
   }
   function render(){
     var v=ta.value;
