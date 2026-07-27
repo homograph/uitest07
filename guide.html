@@ -169,7 +169,7 @@
           <li><b>진입</b> — 넛지 있으면 <b>플로팅으로 시작</b>. 넛지 없고 ⚡만이면 <b>띠배너만</b>(플로팅 없음).</li>
           <li><b>첫 스크롤</b> → 플로팅이 <b>띠배너로 도킹</b> (1회).</li>
           <li><b>띠배너 탭</b> → 다시 플로팅으로. (이후 스크롤 시 재도킹)</li>
-          <li><b>예약확인 화면</b> — 진입 시점의 <b>띠배너 형태</b>로 애니메이션 없이 그대로 따라옴. 넛지·⚡ 없으면 미표시.</li>
+          <li><b>예약확인(미리보기) 화면</b> — 진입 시점의 <b>띠배너 형태</b>로 따라옴. 넛지가 있으면 이 띠배너도 <b>탭 → 플로팅</b>(스크롤 시 다시 띠배너). ⚡ 단독(플로팅 조건 미충족)은 탭 무반응, 넛지·⚡ 모두 없으면 미표시.</li>
         </ul>
         <p style="font-size:13.5px;color:var(--g600)">전이: <code>0.42s cubic-bezier(.4,0,.2,1)</code> (left/right/bottom/border-radius/box-shadow/transform). 플로팅 쉬머: 흰 하이라이트 좌→우 sweep(<code>~155px, α .25</code>).</p>
         <div class="note">도킹 전이 시작은 <code>requestAnimationFrame</code> 대신 <code>setTimeout(20ms)</code> — 백그라운드/스로틀 탭에서 rAF 정지로 최종 상태가 안 먹는 문제 방지.</div>
