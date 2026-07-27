@@ -198,8 +198,18 @@
   .cf-preset{display:flex;align-items:center;gap:12px;padding:14px;border-radius:8px;}
   .cf-preset .p{flex:1;min-width:0;font-size:13px;line-height:18px;color:var(--gray-500);}
   .cf-inputbtn{flex:0 0 auto;border:none;background:transparent;font-size:13px;line-height:18px;font-weight:700;color:var(--gray-800);padding:8px 10px;border-radius:6px;cursor:pointer;}
-  .cf-infobar{flex:0 0 auto;background:var(--blue-50);display:flex;align-items:center;justify-content:center;gap:4px;padding:10px 12px;font-size:13px;line-height:18px;color:var(--gray-800);}
-  .cf-infobar b{color:var(--blue-600);font-weight:700;}
+  .cf-infobar{flex:0 0 auto;position:relative;background:var(--blue-50);display:flex;align-items:center;justify-content:center;gap:4px;padding:10px 12px;overflow:hidden;
+    transition:margin var(--dock-dur) cubic-bezier(.4,0,.2,1),border-radius var(--dock-dur) cubic-bezier(.4,0,.2,1),box-shadow var(--dock-dur) cubic-bezier(.4,0,.2,1),padding var(--dock-dur) cubic-bezier(.4,0,.2,1);}
+  .cf-infobar .cf-grad{position:absolute;inset:0;overflow:hidden;opacity:0;background:linear-gradient(90deg,#0094F9,#32A2FA);transition:opacity var(--dock-dur) ease;}
+  .cf-infobar .cf-shim{position:absolute;top:0;bottom:0;left:0;width:var(--shim-w);transform:translateX(var(--shim-x0));background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,var(--shim-peak)) 50%,transparent 100%);}
+  .cf-ib-text{position:relative;z-index:1;font-size:13px;line-height:18px;color:var(--gray-800);text-align:center;white-space:nowrap;transition:color var(--dock-dur) ease,font-size var(--dock-dur) ease;}
+  .cf-ib-text b{color:var(--blue-600);font-weight:700;transition:color var(--dock-dur) ease;}
+  .cf-infobar.tappable{cursor:pointer;}
+  .cf-infobar.floating{margin:0 var(--float-side) var(--float-gap);border-radius:var(--float-radius);box-shadow:0 4px 12px rgba(25,37,77,.10);padding:12px 18px;}
+  .cf-infobar.floating .cf-grad{opacity:1;}
+  .cf-infobar.floating .cf-shim{animation:shimmer var(--grad-dur) linear infinite;}
+  .cf-infobar.floating .cf-ib-text{font-size:var(--fl-fs);line-height:1.38;color:#fff;}
+  .cf-infobar.floating .cf-ib-text b{color:#fff;}
   .cf-bottom{flex:0 0 auto;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:20px;
     padding:20px 24px;padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 8px rgba(25,37,77,.06);}
   .cf-bottom .fare .l{font-size:13px;line-height:18px;color:#000;}
@@ -467,7 +477,10 @@
           </div>
         </div>
       </div>
-      <div class="cf-infobar" id="cf-infobar"><span id="cf-ib-text">🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요</span></div>
+      <div class="cf-infobar" id="cf-infobar">
+        <div class="cf-grad"><div class="cf-shim"></div></div>
+        <span class="cf-ib-text" id="cf-ib-text">🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요</span>
+      </div>
       <div class="cf-bottom">
         <div class="fare"><div class="l">예상 요금</div><div class="p">125,000원</div></div>
         <button class="next">예약하기</button>
@@ -601,12 +614,29 @@
   document.getElementById('fab').addEventListener('click',()=>{panel.classList.add('open');scrim.classList.add('open');});
   scrim.addEventListener('click',()=>{panel.classList.remove('open');scrim.classList.remove('open');});
 
+  // ── 예약확인(미리보기) 넛지: 띠배너 ↔ 플로팅 (넛지 있을 때만 탭 가능) ──
+  const cfib=document.getElementById('cf-infobar'), cft=document.getElementById('cf-ib-text'),
+        cfScroll=document.querySelector('#screen-confirm .cf-scroll');
+  let cfDisarm=null;
+  function cfClearArm(){ if(cfDisarm){cfDisarm();cfDisarm=null;} }
+  function cfBand(){ cfib.classList.remove('floating'); cft.innerHTML=bandContent()||''; cfClearArm(); }   // 도킹(띠배너)
+  function cfFloat(){                                    // 플로팅 (넛지 있을 때만)
+    const f=floatContent(); if(!f) return;
+    cft.innerHTML=f; cfib.classList.add('floating');
+    cfClearArm();
+    const trig=()=>{ off(); if(cfib.classList.contains('floating')) cfBand(); };   // 스크롤 → 다시 띠배너
+    function off(){ cfScroll.removeEventListener('scroll',trig); cfDisarm=null; }
+    cfScroll.addEventListener('scroll',trig,{passive:true,once:true}); cfDisarm=off;
+  }
+  cfib.addEventListener('click',()=>{ if(!cfib.classList.contains('floating') && floatContent()) cfFloat(); });
+
   // 화면 전환: 다음 → 예약확인(띠배너 형태로 따라옴) / 뒤로 → 차량선택(재생)
   document.getElementById('btn-next').addEventListener('click',()=>{
-    const cfib=document.getElementById('cf-infobar'), cft=document.getElementById('cf-ib-text');
-    const html=bandContent();   // 예약확인엔 띠배너 표현으로 따라옴
-    if(html){ cfib.style.display=''; cft.innerHTML=html; } else { cfib.style.display='none'; }
-    document.querySelector('#screen-confirm .cf-scroll').scrollTop=0;
+    const html=bandContent();   // 예약확인엔 띠배너(도킹) 표현으로 따라옴
+    cfClearArm(); cfib.classList.remove('floating');
+    if(html){ cfib.style.display=''; cft.innerHTML=html; cfib.classList.toggle('tappable', !!floatContent()); }
+    else { cfib.style.display='none'; }
+    cfScroll.scrollTop=0;
     phoneEl.classList.add('show-confirm');
   });
   document.getElementById('cf-back').addEventListener('click',()=>{
