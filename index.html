@@ -372,7 +372,6 @@
     <div class="infobar" id="infobar">
       <div class="ib-grad"><div class="ib-shimmer"></div></div>
       <span class="ib-text" id="ib-text"></span>
-      <span class="ib-tap">탭 ▲</span>
     </div>
 
     <!-- 하단 영역: 요금 바(손 안 댐) -->
@@ -519,7 +518,7 @@
     air:{full:'⚡ 공항 예약시 <b>100% 확정</b>'},
     van:{full:'⚡ 프리미엄 밴 <b>항상 100% 확정</b>'}
   };
-  const GAP=' <span style="display:inline-block;width:12px"></span> ';   // 넛지 축약 ↔ ⚡ 사이 간격 (구분점 없음)
+  const GAP=' ';   // 넛지 축약 ↔ ⚡ 사이 한 칸 띄어쓰기
   const state={demand:true, freecancel:false, guarantee:'none'};
   let armTimer=null, disarm=null;
 
