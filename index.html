@@ -607,7 +607,11 @@
     document.querySelectorAll('#guarantee button').forEach(x=>x.classList.toggle('on',x===b));
     play();
   }));
-  document.getElementById('replay').addEventListener('click',play);
+  document.getElementById('replay').addEventListener('click',()=>{   // 진입 재생 = 바텀시트 닫고 설정 적용
+    document.getElementById('panel').classList.remove('open');
+    document.getElementById('scrim').classList.remove('open');
+    play();
+  });
   document.getElementById('replayFab').addEventListener('click',play);
 
   const panel=document.getElementById('panel'), scrim=document.getElementById('scrim');
