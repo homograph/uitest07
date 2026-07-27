@@ -79,8 +79,9 @@
   .card{background:transparent; border-radius:0; padding:14px 0; border-top:1px solid #edeef2; margin-bottom:0}
   .card h4{margin:0 0 6px; font-size:14px; font-weight:600; color:var(--ink)}
   .card p{margin:0 0 10px; font-size:14px; line-height:1.55; color:var(--ink)}
-  .chip{font-size:12px; color:var(--blue)}
-  .chip .cv{border-bottom:0}
+  .kw-label{font-size:12px; color:var(--dmuted); margin-bottom:6px}
+  .chip-btn{margin-top:10px; font-size:12.5px; color:var(--blue); background:#f1f9fe; border:0; border-radius:8px; padding:8px 12px; cursor:pointer; font-family:inherit}
+  .chip-btn:hover{filter:brightness(.98)}
   .more{margin-top:2px; padding-top:12px; border-top:1px solid #e6e8ec; text-align:center; font-size:13px; color:var(--blue); cursor:pointer}
   .helper{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--dmuted); padding:2px}
   .helper .dot{width:5px;height:5px;border-radius:50%;background:var(--dmuted);flex:0 0 auto}
@@ -166,7 +167,7 @@
 <script>
 (function(){
   var DICT=[
-    {id:"seat", vars:["카시트","카싯트","카시트기","유아용 의자"], title:"아동·카시트 안내", body:"카시트는 최대 1개까지 제공돼요. 2개 이상은 직접 가져와 설치해 주세요."},
+    {id:"seat", vars:["카시트","카싯트","카시트기","유아용 의자"], title:"아동·카시트 안내", body:"카시트는 최대 1개까지 제공돼요. 2개 이상은 직접 가져와 설치해 주세요.", action:"짐 적재 가이드 보기"},
     {id:"pet", vars:["강아지","반려동물","고양이","반려견","펫"], title:"반려동물 탑승 안내", body:"반려동물과 함께 타는 경우 케이지를 지참해 주세요."},
     {id:"veh", vars:["카니발","스타리아","특정 차종","특정 차량"], title:"차종 선택 안내", body:"특정 차종은 요청하실 수 없어요. 차량은 배차 시 자동 배정돼요."},
     {id:"load", vars:["골프백","캐리어","악기","자전거"], title:"적재 안내", body:"캐리어 5개·골프백까지 실을 수 있어요. 초과 시 다른 차량이 필요할 수 있어요."},
@@ -210,8 +211,9 @@
     return act;
   }
   function cardHTML(a){
-    return '<div class="card fade"><h4>'+a.e.title+'</h4><p>'+a.e.body+'</p>'+
-      '<span class="chip">‘'+esc(a.word)+'’에서 안내 ›</span></div>';
+    var act=a.e.action?'<button class="chip-btn">'+a.e.action+'</button>':'';
+    return '<div class="card fade"><div class="kw-label">‘'+esc(a.word)+'’</div>'+
+      '<h4>'+a.e.title+'</h4><p>'+a.e.body+'</p>'+act+'</div>';
   }
   function renderGuide(v){
     if(!v.trim()){ guide.innerHTML='<div class="helper"><span class="dot"></span>참고할 안내가 있으면 여기에 보여드려요.</div>'; return; }
