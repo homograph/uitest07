@@ -484,7 +484,7 @@
       <div class="seg" id="nudge" style="font-size:12px;">
         <button data-n="none">없음</button>
         <button data-n="demand" class="on">🔥 수요 넛지</button>
-        <button data-n="freecancel">↩️ 무료 취소</button>
+        <button data-n="freecancel">무료 취소</button>
       </div>
     </div>
     <div class="grp2">
@@ -510,14 +510,15 @@
         tlEl=document.getElementById('tl');
 
   // 넛지(플로팅↔띠배너) : floating=자세히 / band=단독 축약 / micro=⚡ 병합용 초압축
+  // 넛지: full=플로팅·단독 띠배너 공통 풀 문구 / micro=⚡ 병합용 축약
   const NUDGE={
-    demand:    {floating:'🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요', band:'🔥 예약 <b>2배</b> 몰리는 날', micro:'예약 <b>2배</b> 몰림'},
-    freecancel:{floating:'↩️ 출발 <b>12시간 전</b>까지 무료로 취소할 수 있어요',   band:'↩️ <b>12시간 전</b>까지 무료 취소', micro:'무료 취소 가능'}
+    demand:    {full:'🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요', micro:'예약 <b>2배</b> 몰림'},
+    freecancel:{full:'출발 12시간 전까지 <b style="color:inherit">무료 취소</b> 가능해요', micro:'무료 취소 가능'}
   };
   // ⚡ 보장 : 플로팅 없음(띠배너에만). full=단독/병합 공통 문구
   const GUAR={
-    air:{full:'⚡ 공항 예약시 <b>100% 확정</b>'},
-    van:{full:'⚡ 프리미엄 밴 <b>항상 100% 확정</b>'}
+    air:{full:'⚡ 공항 예약 시 <b>100% 확정</b>'},
+    van:{full:'⚡ 프리미엄 밴은 <b>100% 예약 확정</b>'}
   };
   const GAP=' ';   // 넛지 축약 ↔ ⚡ 사이 한 칸 띄어쓰기
   const state={nudge:'demand', guarantee:'none'};
@@ -526,12 +527,12 @@
   function activeNudge(){ return state.nudge!=='none' ? state.nudge : null; }  // 단일 선택(중복 없음)
   function activeGuar(){ return state.guarantee!=='none' ? state.guarantee : null; }
 
-  function floatContent(){ const n=activeNudge(); return n ? NUDGE[n].floating : null; }   // 플로팅 = 넛지만
-  function bandContent(){                                                                   // 띠배너 = 넛지축약+⚡ / 넛지 / ⚡
+  function floatContent(){ const n=activeNudge(); return n ? NUDGE[n].full : null; }         // 플로팅 = 넛지 풀 문구
+  function bandContent(){                                                                     // 띠배너
     const n=activeNudge(), g=activeGuar();
-    if(n && g) return NUDGE[n].micro + GAP + GUAR[g].full;
-    if(n) return NUDGE[n].band;
-    if(g) return GUAR[g].full;
+    if(n && g) return NUDGE[n].micro + GAP + GUAR[g].full;   // 병합: 넛지 축약 + ⚡ 풀
+    if(n) return NUDGE[n].full;                              // 넛지 단독: 풀 문구(플로팅과 동일)
+    if(g) return GUAR[g].full;                               // ⚡ 단독
     return null;
   }
 
