@@ -73,20 +73,23 @@
   .preset:focus-visible{outline:2px solid var(--blue); outline-offset:2px}
 
   .guide{margin-top:18px}
-  .ai-panel{position:relative; overflow:hidden; background:#f4f8ff; border:1px solid #e3edfb; border-radius:16px; padding:16px}
-  .ai-accent{position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#2ea7ff,#6f8cf7,#b07cf0,#2ea7ff); background-size:200% 100%; animation:accent 5s linear infinite}
+  .ai-panel{position:relative; padding:0}
+  .ai-divider{height:2px; border-radius:2px; margin:0 0 14px; background:linear-gradient(90deg,#2ea7ff,#6f8cf7,#b07cf0,#2ea7ff); background-size:200% 100%; animation:accent 5s linear infinite}
   .ai-panel.analyzing .assist svg{animation:pulse 1.2s ease-in-out infinite}
   @keyframes accent{to{background-position:-200% 0}}
-  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.45;transform:scale(1.18)}}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.2)}}
   .assist{display:flex; align-items:center; gap:7px; margin-bottom:10px}
-  .assist span{font-size:13px; color:#5a6070}
+  .assist span{font-size:13.5px; color:#232838; font-weight:500}
   .assist svg{flex:0 0 auto}
-  .card{background:transparent; border-radius:0; padding:14px 0; border-top:1px solid #e4ecf8; margin-bottom:0}
-  .card h4{margin:0 0 6px; font-size:14px; font-weight:600; color:var(--ink)}
-  .card p{margin:0 0 10px; font-size:14px; line-height:1.55; color:var(--ink)}
-  .kw-label{font-size:12px; color:var(--dmuted); margin-bottom:6px}
-  .chip-btn{margin-top:10px; font-size:12.5px; color:var(--blue); background:#f1f9fe; border:0; border-radius:8px; padding:8px 12px; cursor:pointer; font-family:inherit}
-  .chip-btn:hover{filter:brightness(.98)}
+  .card{background:transparent; padding:0 0 18px; margin:0}
+  .card:first-of-type{padding-top:14px}
+  .card + .card{border-top:1px solid #ebedf2; padding-top:16px}
+  .card h4{margin:0 0 6px; font-size:14.5px; font-weight:600; color:#141826}
+  .card p{margin:0 0 12px; font-size:14px; line-height:1.6; color:#39404f}
+  .kw-label{font-size:12px; color:#8a90a1; margin-bottom:6px; font-weight:500}
+  .chip-btn{display:inline-flex; align-items:center; gap:6px; font-size:13px; font-weight:600; color:#0060c8; background:#eaf3ff; border:1.5px solid #a9cdf6; border-radius:10px; padding:9px 13px; cursor:pointer; font-family:inherit}
+  .chip-btn .cv{font-weight:500; font-size:15px; line-height:1}
+  .chip-btn:hover{background:#dcecff}
   .more{margin-top:2px; padding-top:12px; border-top:1px solid #e6e8ec; text-align:center; font-size:13px; color:var(--blue); cursor:pointer}
   .helper{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--dmuted); padding:2px}
   .helper .dot{width:5px;height:5px;border-radius:50%;background:var(--dmuted);flex:0 0 auto}
@@ -176,6 +179,7 @@
     {id:"call", vars:["불러주기","010","전화번호"], title:"불러주기 안내", body:"불러주기 기능을 쓰면 예약자와 탑승자 모두에게 예약 현황이 공유돼요."}
   ];
   var STAR='<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2ea7ff"/><stop offset=".55" stop-color="#6f8cf7"/><stop offset="1" stop-color="#b07cf0"/></linearGradient></defs><path d="M12 1.5l2.3 7.2 7.2 2.3-7.2 2.3L12 22.5l-2.3-7.2L2.5 13l7.2-2.3z" fill="url(#sg)"/></svg>';
+  var ICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8z" stroke="#0060c8" stroke-width="1.7" stroke-linejoin="round"/><path d="M13 3v5h5M9 13h6M9 16.5h4" stroke="#0060c8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var ta=document.getElementById('ta'), bd=document.getElementById('bd'), cnt=document.getElementById('cnt'),
       guide=document.getElementById('guide'), cta=document.getElementById('cta'),
       toast=document.getElementById('toast');
@@ -212,7 +216,7 @@
     return act;
   }
   function cardHTML(a,i){
-    var act=a.e.action?'<button class="chip-btn">'+a.e.action+'</button>':'';
+    var act=a.e.action?'<button class="chip-btn">'+ICON+a.e.action+'<span class="cv">›</span></button>':'';
     return '<div class="card fade" style="animation-delay:'+((i||0)*90)+'ms"><div class="kw-label">‘'+esc(a.word)+'’</div>'+
       '<h4>'+a.e.title+'</h4><p>'+a.e.body+'</p>'+act+'</div>';
   }
@@ -220,15 +224,15 @@
     if(!v.trim()){ guide.innerHTML='<div class="helper"><span class="dot"></span>참고할 안내가 있으면 여기에 보여드려요.</div>'; return; }
     var act=detect(v);
     if(!act.length){ guide.innerHTML='<div class="helper"><span class="dot"></span>지금은 따로 안내드릴 내용이 없어요.</div>'; return; }
-    var head='<div class="assist">'+STAR.replace('%TADA%',tadaCol)+'<span>요청 내용에서 참고할 점을 찾았어요</span></div>';
+    var head='<div class="assist">'+STAR+'<span>요청 내용에서 참고할 점을 찾았어요</span></div><div class="ai-divider"></div>';
     var vis=expanded?act:act.slice(0,2);
     var inner=head+vis.map(cardHTML).join('');
     if(!expanded && act.length>2){ inner+='<div class="more" id="moreBtn">안내 '+(act.length-2)+'개 더보기</div>'; }
-    guide.innerHTML='<div class="ai-panel"><div class="ai-accent"></div>'+inner+'</div>';
+    guide.innerHTML='<div class="ai-panel">'+inner+'</div>';
     var mb=document.getElementById('moreBtn'); if(mb)mb.onclick=function(){expanded=true;renderGuide(ta.value);};
   }
   function skeleton(){
-    guide.innerHTML='<div class="ai-panel analyzing"><div class="ai-accent"></div><div class="assist">'+STAR+'<span>요청 내용 분석 중</span></div><div class="bar shim" style="width:70%"></div><div class="bar shim" style="width:45%;margin-bottom:0"></div></div>';
+    guide.innerHTML='<div class="ai-panel analyzing"><div class="assist">'+STAR+'<span>요청 내용 분석 중</span></div><div class="ai-divider"></div><div class="bar shim" style="width:70%;margin-top:12px"></div><div class="bar shim" style="width:45%;margin-bottom:0"></div></div>';
   }
   function render(){
     var v=ta.value;
