@@ -71,6 +71,14 @@
   pre{background:var(--code);color:#e6edf7;border-radius:10px;padding:14px 16px;overflow:auto;font-family:var(--mono);font-size:12.5px;line-height:1.6;}
   pre code{background:none;color:inherit;padding:0;}
   pre .c{color:#7f93b3;}
+  pre .k{color:#7ac0ff;} pre .s{color:#a5e08a;} pre .t{color:#e6c07b;}
+
+  /* code tabs */
+  .tabs{display:flex;gap:6px;margin:10px 0 8px;}
+  .tab{border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 14px;font-size:13px;font-weight:700;color:var(--g600);cursor:pointer;}
+  .tab.on{background:var(--navy);color:#fff;border-color:var(--navy);}
+  .cpanel{display:none;} .cpanel.on{display:block;}
+  .cpanel .lang{font-size:12px;font-weight:700;color:var(--g500);margin:2px 0 6px;}
 
   @media (max-width:900px){ .wrap{grid-template-columns:1fr;} .preview{position:static;} .grid2{grid-template-columns:1fr;} }
 </style>
@@ -167,8 +175,159 @@
         <div class="note">도킹 전이 시작은 <code>requestAnimationFrame</code> 대신 <code>setTimeout(20ms)</code> — 백그라운드/스로틀 탭에서 rAF 정지로 최종 상태가 안 먹는 문제 방지.</div>
       </section>
 
+      <section id="impl">
+        <h2><span class="n">06</span>구현 · 네이티브 참조</h2>
+        <p class="lead">플로팅↔띠배너 모프 + 진입/도킹/탭 + 콘텐츠(넛지 풀·병합·⚡). <b>디자인·애니메이션·인터랙션</b> 기준 최신 코드입니다. (섀도우는 옅은 단일 <code>navy .10</code> — 폐기된 글로우 아님)</p>
+        <div class="tabs" id="tabs">
+          <button class="tab on" data-p="ios">iOS · SwiftUI</button>
+          <button class="tab" data-p="aos">Android · Compose</button>
+          <button class="tab" data-p="web">Web · CSS/JS</button>
+        </div>
+
+        <div class="cpanel on" data-p="ios">
+          <div class="lang">SwiftUI</div>
+<pre><code>enum NudgeForm { case floating, band }        <span class="c">// 플로팅(강조) / 띠배너(도킹)</span>
+
+struct NudgeBar: View {
+  let nudge: Nudge?            <span class="c">// .demand(2) / .freeCancel / nil</span>
+  let guarantee: Guarantee?   <span class="c">// .air / .van / nil</span>
+  @State private var form: NudgeForm = .band
+
+  var body: some View {
+    if let text = content(for: form) {                 <span class="c">// 없으면 미표시</span>
+      text
+        .font(.system(size: form == .floating ? 15 : 13))
+        .foregroundColor(form == .floating ? .white : Color(hex: "#383D4F"))
+        .lineLimit(1)
+        .padding(.horizontal, form == .floating ? 18 : 12)
+        .padding(.vertical,   form == .floating ? 12 : 10)
+        .frame(maxWidth: .infinity)
+        .background(bg(for: form))                       <span class="c">// 그라데이션 / blue-50 (+쉬머)</span>
+        .clipShape(RoundedRectangle(cornerRadius: form == .floating ? 8 : 0))
+        <span class="c">// 옅은 단일 섀도우 (navy .10) — 폐기된 파란 글로우 아님</span>
+        .shadow(color: Color(hex: "#19254D").opacity(form == .floating ? 0.10 : 0), radius: 6, y: 4)
+        .padding(.horizontal, form == .floating ? 16 : 0)          <span class="c">// 좌우 마진</span>
+        .animation(.timingCurve(0.4, 0, 0.2, 1, duration: 0.42), value: form)
+        .onTapGesture { if form == .band, nudge != nil { form = .floating } }   <span class="c">// 띠배너 탭 → 플로팅</span>
+        .onAppear { form = nudge != nil ? .floating : .band }      <span class="c">// 넛지 → 플로팅 / ⚡만 → 띠배너</span>
+    }
+  }
+
+  <span class="c">// 콘텐츠 규칙 — 플로팅=넛지 풀 / 띠배너=넛지축약+⚡ 병합·넛지 풀·⚡ 풀</span>
+  private func content(for form: NudgeForm) -> Text? {
+    switch (form, nudge, guarantee) {
+    case (.floating, let n?, _):  return n.full                       <span class="c">// 플로팅은 넛지만</span>
+    case (.band, let n?, let g?): return n.micro + Text(" ") + g.full <span class="c">// 병합</span>
+    case (.band, let n?, nil):    return n.full                       <span class="c">// 넛지 단독 = 풀</span>
+    case (.band, nil, let g?):    return g.full                       <span class="c">// ⚡ 단독</span>
+    default:                      return nil
+    }
+  }
+}
+
+<span class="c">// 문구·강조 (blue-600 = #0086EA)</span>
+extension Nudge {
+  var full: Text {   <span class="c">// 플로팅·단독 띠배너</span>
+    switch self {
+    case .demand(let x):
+      return Text("🔥 이 날은 예약이 평소 대비 ")
+           + Text("\(x)배").bold().foregroundColor(.blue600)          <span class="c">// 2배 = blue (풀에서만)</span>
+           + Text(" 몰리고 있어요")
+    case .freeCancel:
+      return Text("출발 12시간 전까지 ") + Text("무료 취소").bold() + Text(" 가능해요")  <span class="c">// 다크 볼드(색 없음)</span>
+    }
+  }
+  var micro: Text {  <span class="c">// ⚡ 병합용 축약 — 강조 없음(병합의 파랑은 ⚡만)</span>
+    switch self {
+    case .demand(let x): return Text("예약 \(x)배 몰림")
+    case .freeCancel:    return Text("무료 취소 가능")
+    }
+  }
+}
+extension Guarantee {
+  var full: Text {
+    switch self {
+    case .air: return Text("⚡ 공항 예약 시 ")   + Text("100% 확정").bold().foregroundColor(.blue600)
+    case .van: return Text("⚡ 프리미엄 밴은 ") + Text("100% 예약 확정").bold().foregroundColor(.blue600)
+    }
+  }
+}
+<span class="c">// 첫 스크롤 → form = .band(도킹). 예약확인 화면엔 band 형태로 정적 노출.</span></code></pre>
+        </div>
+
+        <div class="cpanel" data-p="aos">
+          <div class="lang">Jetpack Compose</div>
+<pre><code>enum class NudgeForm { Floating, Band }
+
+@Composable
+fun NudgeBar(nudge: Nudge?, guarantee: Guarantee?) {
+  var form by remember { mutableStateOf(if (nudge != null) NudgeForm.Floating else NudgeForm.Band) }
+  val floating = form == NudgeForm.Floating
+  val text = content(form, nudge, guarantee) ?: return          <span class="c">// 없으면 미표시</span>
+
+  val e = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+  val side   by animateDpAsState(if (floating) 16.dp else 0.dp, tween(420, easing = e))
+  val radius by animateDpAsState(if (floating) 8.dp  else 0.dp, tween(420, easing = e))
+  val elev   by animateDpAsState(if (floating) 6.dp  else 0.dp, tween(420, easing = e))
+
+  Row(
+    Modifier
+      .padding(horizontal = side)
+      .fillMaxWidth()
+      <span class="c">// 옅은 단일 섀도우 (navy .10) — 글로우 아님</span>
+      .shadow(elev, RoundedCornerShape(radius), spotColor = Color(0xFF19254D).copy(alpha = .10f))
+      .clip(RoundedCornerShape(radius))
+      .background(
+        if (floating) Brush.horizontalGradient(listOf(Color(0xFF0094F9), Color(0xFF32A2FA)))
+        else SolidColor(Color(0xFFE2F2FE))
+      )
+      .then(if (floating) Modifier.shimmer() else Modifier)               <span class="c">// 쉬머</span>
+      .clickable(enabled = !floating &amp;&amp; nudge != null) { form = NudgeForm.Floating }  <span class="c">// 탭 → 플로팅</span>
+      .padding(horizontal = if (floating) 18.dp else 12.dp,
+               vertical   = if (floating) 12.dp else 10.dp),
+    horizontalArrangement = Arrangement.Center
+  ) {
+    Text(text, fontSize = if (floating) 15.sp else 13.sp, maxLines = 1,
+      color = if (floating) Color.White else Color(0xFF383D4F))
+  }
+}
+
+<span class="c">// 콘텐츠 — 플로팅=넛지 풀 / 띠배너=넛지축약+⚡ 병합</span>
+fun content(form: NudgeForm, n: Nudge?, g: Guarantee?): AnnotatedString? = buildAnnotatedString {
+  when {
+    form == NudgeForm.Floating &amp;&amp; n != null -&gt; append(n.full())                  <span class="c">// 플로팅 넛지만</span>
+    n != null &amp;&amp; g != null -&gt; { append(n.micro()); append(" "); append(g.full()) } <span class="c">// 병합</span>
+    n != null -&gt; append(n.full())                                                <span class="c">// 넛지 단독</span>
+    g != null -&gt; append(g.full())                                                <span class="c">// ⚡ 단독</span>
+    else -&gt; return null
+  }
+}
+<span class="c">// 강조: 수요 "2배" → blue-600(full 에서만) / ⚡ "100% (예약) 확정" → blue-600 / 무료취소 "무료 취소" → 다크 볼드</span>
+<span class="c">// 진입: 넛지 Floating / ⚡만 Band. 첫 스크롤 → Band. 예약확인엔 Band 정적.</span></code></pre>
+        </div>
+
+        <div class="cpanel" data-p="web">
+          <div class="lang">CSS · 상태 전이 (실제 구현은 index.html)</div>
+<pre><code><span class="c">/* --e: cubic-bezier(.4,0,.2,1) */</span>
+.info-bar{ position:absolute; left:0; right:0; bottom:var(--cta-h);
+  background:#E2F2FE; border-radius:0; opacity:0; overflow:hidden;
+  transition:left .42s var(--e), right .42s var(--e), bottom .42s var(--e),
+    border-radius .42s var(--e), box-shadow .42s var(--e), transform .42s var(--e), opacity .18s; }
+.info-bar.floating{ left:16px; right:16px; bottom:calc(var(--cta-h) + 16px);
+  border-radius:8px; box-shadow:0 4px 12px rgba(25,37,77,.10); }   <span class="c">/* 옅은 단일 (글로우 폐기) */</span>
+.info-bar .grad{ position:absolute; inset:0; opacity:0; transition:opacity .42s;
+  background:linear-gradient(90deg,#0094F9,#32A2FA); }
+.info-bar.floating .grad{ opacity:1; }              <span class="c">/* 플로팅에서만 그라데이션 */</span>
+
+<span class="c">// JS 콘텐츠 규칙</span>
+<span class="c">// floatContent(): 넛지 있으면 넛지 full, 없으면 null (⚡만이면 플로팅 없음)</span>
+<span class="c">// bandContent(): 넛지+⚡ → nudge.micro + ' ' + guar.full / 넛지 → full / ⚡ → full</span>
+<span class="c">// 진입: 넛지 있으면 floating, ⚡만이면 band. 첫 스크롤 → band. 탭 → floating.</span></code></pre>
+        </div>
+      </section>
+
       <section id="spec">
-        <h2><span class="n">06</span>디자인 토큰</h2>
+        <h2><span class="n">07</span>디자인 토큰</h2>
         <table>
           <tbody>
             <tr><td>blue-50 (띠배너 배경)</td><td><code>#E2F2FE</code></td></tr>
@@ -184,7 +343,7 @@
       </section>
 
       <section id="a11y">
-        <h2><span class="n">07</span>접근성 · 유의</h2>
+        <h2><span class="n">08</span>접근성 · 유의</h2>
         <ul>
           <li><code>prefers-reduced-motion</code> → 쉬머 애니메이션 정지.</li>
           <li>병합 띠배너는 폰 폭 내(최장 케이스도 오버플로 없음) — 한 줄, 넘치면 안 됨.</li>
@@ -193,7 +352,7 @@
       </section>
 
       <section id="deploy">
-        <h2><span class="n">08</span>배포 · 이어서 작업</h2>
+        <h2><span class="n">09</span>배포 · 이어서 작업</h2>
         <p>단일 <code>index.html</code>(HTML+CSS+JS 인라인, 차량 이미지 <code>assets/*.png</code>만 외부). 로직은 <code>index.html</code>의 <code>&lt;script&gt;</code> 하나에 있음 — <code>NUDGE</code>/<code>GUAR</code> 문구 정의 + <code>floatContent()</code>/<code>bandContent()</code> + 진입/도킹/탭.</p>
         <pre><code><span class="c"># 배포 (GitHub Pages 자동 반영)</span>
 git add index.html
@@ -209,6 +368,14 @@ git push origin main   <span class="c"># → https://homograph.github.io/uitest0
   // 프로토타입 다시 재생 = iframe 리로드
   document.getElementById('replay').addEventListener('click',function(){
     var f=document.getElementById('proto'); f.src=f.src;
+  });
+  // 구현 코드 탭 전환
+  document.querySelectorAll('#tabs .tab').forEach(function(b){
+    b.addEventListener('click',function(){
+      var p=b.dataset.p;
+      document.querySelectorAll('#tabs .tab').forEach(function(x){ x.classList.toggle('on', x===b); });
+      document.querySelectorAll('.cpanel').forEach(function(c){ c.classList.toggle('on', c.dataset.p===p); });
+    });
   });
 </script>
 </body>
