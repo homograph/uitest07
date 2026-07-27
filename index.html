@@ -569,7 +569,7 @@
     const n=activeNudge(), g=activeGuar();
     if(!n && !g){ tlEl.innerHTML='<b>동작</b><br>표시할 넛지 없음'; return; }
     if(!n && g){ tlEl.innerHTML='<b>동작</b><br>⚡ 보장만 → 띠배너만 (플로팅 없음)'; return; }
-    tlEl.innerHTML='<b>동작</b><br>① 넛지 플로팅 시작<br>② 스크롤 → 띠배너(넛지 축약'+(g?' + ⚡':'')+')<br>③ 탭 → 플로팅';
+    tlEl.innerHTML='<b>동작</b><br>① 넛지 플로팅 시작<br>② 스크롤 → 띠배너'+(g?'(넛지 축약 + ⚡ 병합)':'(넛지 풀 문구)')+'<br>③ 탭 → 플로팅';
   }
 
   function play(){                    // 진입 재생
