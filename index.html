@@ -644,6 +644,10 @@
     phoneEl.classList.add('show-confirm');
   });
   document.getElementById('cf-back').addEventListener('click',()=>{
+    // 슬라이드인 동안 띠배너 숨김 → 이전 상태 플래시/스냅 방지, 슬라이드 후 깨끗한 진입 모프
+    clearArm();
+    bar.style.transition='none'; bar.classList.remove('floating');
+    bar.style.opacity='0'; bar.style.visibility='hidden'; void bar.offsetWidth; bar.style.transition='';
     phoneEl.classList.remove('show-confirm');
     setTimeout(play, 380);
   });
