@@ -122,8 +122,7 @@
     .wrap{padding:0; gap:0; min-height:100dvh}
     .head,.legend,.note{display:none}
     .phone{width:100%; max-width:none; height:100dvh; border-radius:0; box-shadow:none}
-    .foot{position:fixed; left:0; right:0; bottom:0; z-index:20}
-    .scroll{padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+    .foot{z-index:20}
   }
 </style>
 
@@ -261,11 +260,18 @@
   });
   // 키보드 위로 버튼 올리기 — 실기기에서 입력 포커스 시 버튼이 키보드 위에 붙음(내리면 하단)
   var foot=document.querySelector('.foot');
+  var scrollEl=document.querySelector('.scroll');
   function syncKb(){
     if(!window.visualViewport||!foot)return;
     var vv=window.visualViewport;
     var kb=Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop));
-    foot.style.bottom = kb + 'px';
+    if(kb>80){ // 키보드 올라옴 → 키보드 위로 띄움
+      foot.style.position='fixed'; foot.style.left='0'; foot.style.right='0'; foot.style.bottom=kb+'px';
+      if(scrollEl) scrollEl.style.paddingBottom=(foot.offsetHeight+8)+'px';
+    } else { // 키보드 내림 → 원래 하단(flow)으로
+      foot.style.position=''; foot.style.left=''; foot.style.right=''; foot.style.bottom='';
+      if(scrollEl) scrollEl.style.paddingBottom='';
+    }
   }
   if(window.visualViewport){
     window.visualViewport.addEventListener('resize', syncKb);
