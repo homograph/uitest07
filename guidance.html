@@ -240,7 +240,7 @@
     var act=detect(v);
     if(!act.length){ guide.innerHTML='<div class="helper"><span class="dot"></span>지금은 따로 안내드릴 내용이 없어요.</div>'; updatePeek(); return; }
     var n=act.length;
-    var headText=n>=2?'요청 내용에서 참고할 점 '+n+'개를 찾았어요':'요청 내용에서 참고할 점을 찾았어요';
+    var headText='요청 내용에서 참고할 점 '+n+'개를 찾았어요';
     var head='<div class="assist">'+STAR+'<span>'+headText+'</span></div>';
     var inner=head+act.map(cardHTML).join('');
     guide.innerHTML='<div class="ai-panel">'+inner+'</div>';
