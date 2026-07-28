@@ -243,12 +243,13 @@
   .tl{margin-top:20px;font-size:12px;color:var(--gray-500);line-height:1.9;}
   .tl b{color:#5a6373;}
 
-  .fab,.replay-fab{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:30;
+  .fab,.replay-fab,.toast-fab{display:none;position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);z-index:30;
     width:44px;height:44px;border-radius:50%;border:none;color:#fff;box-shadow:0 6px 18px rgba(20,30,55,.28);
     cursor:pointer;backdrop-filter:blur(4px);align-items:center;justify-content:center;}
   .fab{right:14px;background:rgba(25,37,77,.9);font-size:20px;}
   .replay-fab{right:68px;background:rgba(0,134,234,.94);font-size:22px;}
-  .replay-fab:active{transform:scale(.92);}
+  .toast-fab{right:122px;background:rgba(56,61,79,.94);font-size:19px;}
+  .replay-fab:active,.toast-fab:active{transform:scale(.92);}
   .scrim{display:none;}
 
   @media (max-width:899px){
@@ -256,7 +257,7 @@
     .stage{display:block;padding:0;min-height:0;}
     .phone{width:100vw;height:100dvh;border-radius:0;border:none;box-shadow:none;}
     .statusbar{padding-top:env(safe-area-inset-top,0px);height:calc(36px + env(safe-area-inset-top,0px));}
-    .fab,.replay-fab{display:flex;}
+    .fab,.replay-fab,.toast-fab{display:flex;}
     .scrim{display:block;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:38;opacity:0;pointer-events:none;transition:opacity .25s;}
     .scrim.open{opacity:1;pointer-events:auto;}
     .panel{position:fixed;left:0;right:0;bottom:0;z-index:40;width:auto;background:#fff;border-radius:20px 20px 0 0;
@@ -529,6 +530,7 @@
 </div>
 
 <div class="scrim" id="scrim"></div>
+<button class="toast-fab" id="toastFab" aria-label="토스트 띄우기">🔔</button>
 <button class="replay-fab" id="replayFab" aria-label="다시 재생">↻</button>
 <button class="fab" id="fab" aria-label="컨트롤 열기">⚙</button>
 
@@ -644,6 +646,7 @@
     document.getElementById('scrim').classList.remove('open');
     showToast('적용되었어요');
   });
+  document.getElementById('toastFab').addEventListener('click',()=>showToast('적용되었어요'));   // 설정 밖 상시 버튼
 
   const panel=document.getElementById('panel'), scrim=document.getElementById('scrim');
   document.getElementById('fab').addEventListener('click',()=>{panel.classList.add('open');scrim.classList.add('open');});
