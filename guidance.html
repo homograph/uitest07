@@ -58,16 +58,17 @@
   .textwrap{position:relative; min-height:52px}
   .backdrop{position:absolute; inset:0; margin:0; padding:0; border:0;
     font-family:inherit; font-size:15px; line-height:1.6; white-space:pre-wrap; word-break:break-word;
-    overflow:hidden; background:transparent; box-sizing:border-box; color:var(--ink); pointer-events:none}
+    overflow:hidden; background:transparent; box-sizing:border-box; color:#000; pointer-events:none}
   #ta{position:relative; display:block; width:100%; min-height:52px; height:auto; margin:0; padding:0; border:0;
     font-family:inherit; font-size:15px; line-height:1.6; white-space:pre-wrap; word-break:break-word;
-    overflow:hidden; resize:none; outline:none; background:transparent; color:transparent; caret-color:var(--ink); box-sizing:border-box}
+    overflow:hidden; resize:none; outline:none; background:transparent; color:transparent; caret-color:#000; box-sizing:border-box}
   .backdrop mark{background:transparent; color:inherit; border-bottom:0}
-  .backdrop .ph{color:#b6bac6}
+  .backdrop .ph{color:#73788b}
+  .inputCard:focus-within .backdrop .ph{color:#9da0ae}
   .counter{text-align:right; margin-top:8px; font-size:12px}
   .counter .n{font-weight:700; color:#73788b}
   .counter .m{color:#73788b}
-  .counter.max .n{color:var(--red)}
+  .counter.max .n{color:#32a2fa}
   .counter.max .m{color:#73788b}
 
   .presets{display:flex; gap:6px; flex-wrap:wrap; margin-top:12px}
