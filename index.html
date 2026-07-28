@@ -238,8 +238,6 @@
   .mt{flex:1;border:1px solid #d7dce4;background:#fff;color:#4b5064;border-radius:8px;padding:11px 6px;font-size:13px;font-weight:600;cursor:pointer;}
   .mt.on{background:var(--navy);color:#fff;border-color:var(--navy);}
   .replay{width:100%;background:var(--navy);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;}
-  .toastbtn{width:100%;margin-top:8px;background:#fff;color:var(--navy);border:1px solid #d7dce4;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;}
-  .toastbtn:active{background:#f3f5f8;}
   .tl{margin-top:20px;font-size:12px;color:var(--gray-500);line-height:1.9;}
   .tl b{color:#5a6373;}
 
@@ -524,7 +522,6 @@
       </div>
     </div>
     <button class="replay" id="replay">▶ 진입 재생</button>
-    <button class="toastbtn" id="toastBtn">🔔 토스트 띄우기 (플로팅 → 도킹)</button>
     <div class="tl" id="tl"></div>
   </aside>
 </div>
@@ -641,11 +638,6 @@
     clearTimeout(toastTimer);
     toastTimer=setTimeout(()=>toast.classList.remove('show'), 2600);
   }
-  document.getElementById('toastBtn').addEventListener('click',()=>{
-    document.getElementById('panel').classList.remove('open');   // 바텀시트 닫고 토스트 표시
-    document.getElementById('scrim').classList.remove('open');
-    showToast('적용되었어요');
-  });
   document.getElementById('toastFab').addEventListener('click',()=>showToast('적용되었어요'));   // 설정 밖 상시 버튼
 
   const panel=document.getElementById('panel'), scrim=document.getElementById('scrim');
