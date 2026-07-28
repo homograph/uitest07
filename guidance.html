@@ -111,6 +111,15 @@
     background:rgba(25,37,77,.94); color:#fff; font-size:13px; padding:9px 16px; border-radius:22px; pointer-events:none; transition:.2s}
   .toast.on{opacity:1; transform:translateX(-50%) translateY(0)}
 
+  /* 멀티카드 발견성 — 가려진 안내로 스크롤 유도 칩 */
+  .peek{position:absolute; left:50%; bottom:76px; transform:translateX(-50%) translateY(8px); z-index:18;
+    display:flex; align-items:center; gap:5px; max-width:82%; white-space:nowrap;
+    padding:9px 15px; border-radius:999px; background:var(--navy); color:#fff;
+    font-size:13px; font-weight:500; box-shadow:0 8px 22px -6px rgba(20,30,60,.5);
+    cursor:pointer; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s}
+  .peek.show{opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto}
+  .peek .peek-n{font-weight:700}
+
   .legend{max-width:520px;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
   .lg{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
   .lg h5{margin:0 0 4px;font-size:12.5px;font-weight:700;color:var(--fg)}
@@ -157,6 +166,7 @@
       </div>
       <div class="guide" id="guide"></div>
     </div>
+    <div class="peek" id="peek" role="button" tabindex="0" aria-label="가려진 안내로 이동"><span class="peek-n">2</span>개 안내 더 있어요<svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 9l6 6 6-6" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div class="foot">
       <button class="cta" id="cta" disabled>작성완료</button>
     </div>
@@ -185,7 +195,7 @@
   var ARROW='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="#383d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var ta=document.getElementById('ta'), bd=document.getElementById('bd'), cnt=document.getElementById('cnt'),
       guide=document.getElementById('guide'), cta=document.getElementById('cta'),
-      toast=document.getElementById('toast');
+      toast=document.getElementById('toast'), peek=document.getElementById('peek');
   var tadaCol=getComputedStyle(document.documentElement).getPropertyValue('--tada').trim()||'#32a2fa';
   var PH="예: 24인치 캐리어와 골프백이 2개 있어요";
   var timer=null, expanded=false, lastKey="";
@@ -226,12 +236,25 @@
       '<h4>'+a.e.title+'</h4><p>'+a.e.body+'</p>'+foot+'</div>';
   }
   function renderGuide(v){
-    if(!v.trim()){ guide.innerHTML='<div class="helper"><span class="dot"></span>참고할 안내가 있으면 여기에 보여드려요.</div>'; return; }
+    if(!v.trim()){ guide.innerHTML='<div class="helper"><span class="dot"></span>참고할 안내가 있으면 여기에 보여드려요.</div>'; updatePeek(); return; }
     var act=detect(v);
-    if(!act.length){ guide.innerHTML='<div class="helper"><span class="dot"></span>지금은 따로 안내드릴 내용이 없어요.</div>'; return; }
-    var head='<div class="assist">'+STAR+'<span>요청 내용에서 참고할 점을 찾았어요</span></div>';
+    if(!act.length){ guide.innerHTML='<div class="helper"><span class="dot"></span>지금은 따로 안내드릴 내용이 없어요.</div>'; updatePeek(); return; }
+    var n=act.length;
+    var headText=n>=2?'요청 내용에서 참고할 점 '+n+'개를 찾았어요':'요청 내용에서 참고할 점을 찾았어요';
+    var head='<div class="assist">'+STAR+'<span>'+headText+'</span></div>';
     var inner=head+act.map(cardHTML).join('');
     guide.innerHTML='<div class="ai-panel">'+inner+'</div>';
+    updatePeek(); requestAnimationFrame(updatePeek);
+  }
+  // 가려진 안내로 스크롤 유도 칩: 안내 2개 이상 + 아래로 넘칠 때만 노출
+  function updatePeek(){
+    if(!peek)return;
+    var sc=document.querySelector('.scroll');
+    var cards=guide.querySelectorAll('.card').length;
+    if(cards<2||!sc){ peek.classList.remove('show'); return; }
+    var moreBelow=sc.scrollHeight-(sc.scrollTop+sc.clientHeight)>24;
+    if(moreBelow){ peek.querySelector('.peek-n').textContent=cards; peek.classList.add('show'); }
+    else peek.classList.remove('show');
   }
   function skeleton(){
     guide.innerHTML='<div class="ai-panel analyzing"><div class="assist">'+STAR+'<span>요청 내용 분석 중</span></div><div class="bar shim" style="width:70%;margin-top:6px"></div><div class="bar shim" style="width:45%;margin-bottom:0"></div></div>';
@@ -260,6 +283,13 @@
     if(cta.disabled)return; toast.classList.add('on');
     setTimeout(function(){toast.classList.remove('on');},1400);
   });
+  document.querySelector('.scroll').addEventListener('scroll',updatePeek);
+  window.addEventListener('resize',updatePeek);
+  if(peek){
+    var goDown=function(){var sc=document.querySelector('.scroll');sc.scrollTo({top:sc.scrollHeight,behavior:'smooth'});};
+    peek.addEventListener('click',goDown);
+    peek.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();goDown();}});
+  }
   // 키보드 위로 버튼 올리기 — 실기기에서 입력 포커스 시 버튼이 키보드 위에 붙음(내리면 하단)
   var foot=document.querySelector('.foot');
   var scrollEl=document.querySelector('.scroll');
@@ -270,10 +300,13 @@
     if(kb>80){ // 키보드 올라옴 → 키보드 위로 띄움
       foot.style.position='fixed'; foot.style.left='0'; foot.style.right='0'; foot.style.bottom=kb+'px';
       if(scrollEl) scrollEl.style.paddingBottom=(foot.offsetHeight+8)+'px';
+      if(peek){ peek.style.position='fixed'; peek.style.bottom=(kb+foot.offsetHeight+14)+'px'; }
     } else { // 키보드 내림 → 원래 하단(flow)으로
       foot.style.position=''; foot.style.left=''; foot.style.right=''; foot.style.bottom='';
       if(scrollEl) scrollEl.style.paddingBottom='';
+      if(peek){ peek.style.position=''; peek.style.bottom=''; }
     }
+    updatePeek();
   }
   if(window.visualViewport){
     window.visualViewport.addEventListener('resize', syncKb);
