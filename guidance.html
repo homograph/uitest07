@@ -84,7 +84,8 @@
   .card p{margin:0; font-size:15px; line-height:22px; color:#383d4f}
   .kw-label{font-size:13px; color:#868b9c; font-weight:400; margin:6px 0 0; line-height:18px}
   .chip-row{display:flex; justify-content:flex-end; margin-top:6px}
-  .chip-btn{display:inline-flex; align-items:center; flex:0 0 auto; font-size:13px; font-weight:700; color:#32a2fa; background:transparent; border:1px solid #5cb4fa; border-radius:6px; padding:8px 10px; cursor:pointer; font-family:inherit}
+  .chip-btn{display:inline-flex; align-items:center; gap:4px; flex:0 0 auto; font-size:13px; font-weight:400; color:#383d4f; background:#f1f9fe; border:0; border-radius:999px; padding:10px 10px 10px 14px; cursor:pointer; font-family:inherit}
+  .chip-btn svg{flex:0 0 auto}
   .chip-btn:hover{background:#eef5ff}
   .more{margin-top:2px; padding-top:12px; border-top:1px solid #e6e8ec; text-align:center; font-size:13px; color:var(--blue); cursor:pointer}
   .helper{display:flex; align-items:center; gap:7px; font-size:13px; color:var(--dmuted); padding:2px}
@@ -175,7 +176,7 @@
     {id:"call", vars:["불러주기","010","전화번호"], title:"불러주기 안내", body:"불러주기 기능을 쓰면 예약자와 탑승자 모두에게 예약 현황이 공유돼요."}
   ];
   var STAR='<svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5l2.3 7.2 7.2 2.3-7.2 2.3L12 22.5l-2.3-7.2L2.5 13l7.2-2.3z" fill="#32a2fa"/></svg>';
-  var ICON='<svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8z" stroke="#0060c8" stroke-width="1.7" stroke-linejoin="round"/><path d="M13 3v5h5M9 13h6M9 16.5h4" stroke="#0060c8" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ARROW='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="#383d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var ta=document.getElementById('ta'), bd=document.getElementById('bd'), cnt=document.getElementById('cnt'),
       guide=document.getElementById('guide'), cta=document.getElementById('cta'),
       toast=document.getElementById('toast');
@@ -212,7 +213,7 @@
     return act;
   }
   function cardHTML(a,i){
-    var act=a.e.action?'<button class="chip-btn">'+a.e.action+'</button>':'';
+    var act=a.e.action?'<button class="chip-btn">'+a.e.action+ARROW+'</button>':'';
     var foot=act?'<div class="chip-row">'+act+'</div>':'';
     return '<div class="card fade" style="animation-delay:'+((i||0)*90)+'ms">'+
       '<h4>'+a.e.title+'</h4><p>'+a.e.body+'</p>'+
