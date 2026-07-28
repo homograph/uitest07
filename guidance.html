@@ -53,7 +53,8 @@
 
   .scroll{flex:1 1 auto; overflow-y:auto; padding:16px 20px 20px; -webkit-overflow-scrolling:touch}
 
-  .inputCard{background:var(--card); border-radius:12px; padding:16px}
+  .inputCard{background:var(--card); border:1px solid transparent; border-radius:8px; padding:16px}
+  .inputCard:focus-within{border-color:#000}
   .textwrap{position:relative; min-height:52px}
   .backdrop{position:absolute; inset:0; margin:0; padding:0; border:0;
     font-family:inherit; font-size:15px; line-height:1.6; white-space:pre-wrap; word-break:break-word;
@@ -64,10 +65,10 @@
   .backdrop mark{background:transparent; color:inherit; border-bottom:0}
   .backdrop .ph{color:#b6bac6}
   .counter{text-align:right; margin-top:8px; font-size:12px}
-  .counter .n{font-weight:600; color:var(--ink)}
-  .counter .m{color:var(--dmuted)}
+  .counter .n{font-weight:600; color:#73788b}
+  .counter .m{color:#73788b}
   .counter.max .n{color:var(--red)}
-  .counter.max .m{color:var(--dmuted)}
+  .counter.max .m{color:#73788b}
 
   .presets{display:flex; gap:6px; flex-wrap:wrap; margin-top:12px}
   .preset{font-size:12.5px; color:var(--ink); background:#fff; border:1px solid var(--dline); border-radius:20px; padding:6px 12px; cursor:pointer; font-family:inherit}
