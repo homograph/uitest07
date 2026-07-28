@@ -638,7 +638,7 @@
     clearTimeout(toastTimer);
     toastTimer=setTimeout(()=>toast.classList.remove('show'), 2600);
   }
-  document.getElementById('toastFab').addEventListener('click',()=>showToast('적용되었어요'));   // 설정 밖 상시 버튼
+  document.getElementById('toastFab').addEventListener('click',()=>showToast('토스트 입니다'));   // 설정 밖 상시 버튼
 
   const panel=document.getElementById('panel'), scrim=document.getElementById('scrim');
   document.getElementById('fab').addEventListener('click',()=>{panel.classList.add('open');scrim.classList.add('open');});
