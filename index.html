@@ -156,6 +156,15 @@
   .bottom .next{width:120px;background:var(--navy);color:#fff;font-size:16px;line-height:24px;font-weight:700;
     border:none;border-radius:4px;padding:14px 18px;flex:0 0 auto;}
 
+  /* 토스트 — 아래 끝이 바텀바 위 10px. 플로팅 넛지는 도킹되고 토스트가 (도킹된) 띠배너를 가림 */
+  .toast{position:absolute;left:16px;right:16px;z-index:6;
+    bottom:calc(var(--cta-h) + env(safe-area-inset-bottom,0px) + 10px);
+    background:rgba(38,42,56,.96);color:#fff;font-size:13px;line-height:18px;text-align:center;
+    padding:12px 16px;border-radius:8px;box-shadow:0 8px 24px rgba(20,30,55,.28);
+    opacity:0;transform:translateY(8px);pointer-events:none;
+    transition:opacity .22s ease,transform .22s ease;}
+  .toast.show{opacity:1;transform:translateY(0);}
+
   /* ---------- confirm screen ---------- */
   #screen-confirm .topbar{background:var(--navy-50);}
   .cf-scroll{background:var(--navy-50);padding-bottom:24px;}
@@ -229,6 +238,8 @@
   .mt{flex:1;border:1px solid #d7dce4;background:#fff;color:#4b5064;border-radius:8px;padding:11px 6px;font-size:13px;font-weight:600;cursor:pointer;}
   .mt.on{background:var(--navy);color:#fff;border-color:var(--navy);}
   .replay{width:100%;background:var(--navy);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;}
+  .toastbtn{width:100%;margin-top:8px;background:#fff;color:var(--navy);border:1px solid #d7dce4;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;}
+  .toastbtn:active{background:#f3f5f8;}
   .tl{margin-top:20px;font-size:12px;color:var(--gray-500);line-height:1.9;}
   .tl b{color:#5a6373;}
 
@@ -394,6 +405,9 @@
         <button class="next" id="btn-next">다음</button>
       </div>
     </div>
+
+    <!-- 토스트 (데모) — 뜨면 플로팅 넛지는 도킹, 토스트가 띠배너를 가림 -->
+    <div class="toast" id="toast"></div>
     </div><!-- /screen-select -->
 
     <div class="screen" id="screen-confirm">
@@ -509,6 +523,7 @@
       </div>
     </div>
     <button class="replay" id="replay">▶ 진입 재생</button>
+    <button class="toastbtn" id="toastBtn">🔔 토스트 띄우기 (플로팅 → 도킹)</button>
     <div class="tl" id="tl"></div>
   </aside>
 </div>
@@ -613,6 +628,22 @@
     play();
   });
   document.getElementById('replayFab').addEventListener('click',play);
+
+  // 토스트: 뜨면 플로팅 넛지를 도킹시키고, 토스트가 (도킹된) 띠배너를 가림. 소멸 후 띠배너 유지.
+  const toast=document.getElementById('toast');
+  let toastTimer=null;
+  function showToast(msg){
+    if(bar.classList.contains('floating')){ clearArm(); setForm(false); }   // 플로팅 → 도킹(트리거)
+    toast.textContent=msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer=setTimeout(()=>toast.classList.remove('show'), 2600);
+  }
+  document.getElementById('toastBtn').addEventListener('click',()=>{
+    document.getElementById('panel').classList.remove('open');   // 바텀시트 닫고 토스트 표시
+    document.getElementById('scrim').classList.remove('open');
+    showToast('적용되었어요');
+  });
 
   const panel=document.getElementById('panel'), scrim=document.getElementById('scrim');
   document.getElementById('fab').addEventListener('click',()=>{panel.classList.add('open');scrim.classList.add('open');});
