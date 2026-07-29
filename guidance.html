@@ -589,116 +589,240 @@ Button(
     </section>
 
     <section class="dg-sec" id="s-input">
-      <h2><span class="num">6</span>텍스트 필드 <span class="nth">신규 DS</span></h2>
-      <p class="dg-lead">요청사항·탑승사유 입력에 쓰는 <b>멀티라인 텍스트 필드 + 글자수 카운터</b>. 기존 디자인 시스템에 없던 컴포넌트라 여기서 정의합니다. 정확한 값은 <b>Figma 입력 컴포넌트 <code class="i">56952:84251</code></b>가 기준.</p>
+      <h2><span class="num">6</span>텍스트 필드 <span class="nth">DS 컴포넌트</span></h2>
+      <p class="dg-lead">자유 텍스트를 입력하는 <b>기본 입력 컴포넌트</b>. 특정 화면·기능에 종속되지 않는 <b>재사용 프리미티브</b>로 정의합니다 — 요청사항 스마트 안내는 이 컴포넌트를 쓰는 <b>사용 예시</b> 하나일 뿐. 정확한 값은 Figma 입력 컴포넌트 <code class="i">56952:84251</code>가 정본.</p>
 
-      <h3>이름 제안</h3>
-      <p><b>텍스트 필드 (Text Field)</b> — 이 화면은 <b>멀티라인 + 카운터</b> variant입니다. iOS <code class="i">TextField/TextEditor</code>, Android <code class="i">TextField</code>와 이름이 이어져 개발 소통이 쉽습니다. "텍스트 박스 / 텍스트 영역(Text Area)"은 웹 용어라 앱 DS에선 지양을 권장합니다.</p>
-
-      <h3>구조 (Anatomy)</h3>
+      <h3>1. 정의 · 용도</h3>
       <ul>
-        <li>① <b>컨테이너(well)</b> — 회색 배경, radius 8. 화면에서 <b>유일한 편집 표면</b>(안내 카드와 역할을 색으로 구분).</li>
-        <li>② <b>입력 텍스트 / 플레이스홀더</b> — 멀티라인, auto-grow.</li>
-        <li>③ <b>글자수 카운터</b> — 하단 우측 고정(컨테이너 하단 여백으로 공간 확보).</li>
-        <li>(선택) ④ <b>헬퍼/에러 문구</b> — 컨테이너 하단, 에러 상태에서만.</li>
+        <li><b>정의</b> — 사용자가 자유 텍스트를 입력하는 기본 필드. <b>단일행·멀티라인</b>을 모두 포괄.</li>
+        <li><b>쓸 때</b> — 이름·메모·요청사항·사유 등 정형화되지 않은 입력.</li>
+        <li><b>쓰지 말 것</b> — 고정 선택지(→ Select/Chips), 검색(→ Search), 숫자 증감(→ Stepper), 날짜(→ Date Picker).</li>
+        <li><b>이름</b> — "텍스트 필드(Text Field)". iOS <code class="i">TextField/TextEditor</code>·Android <code class="i">TextField</code> 계열과 통일. "텍스트 박스/영역"은 웹 용어라 지양.</li>
       </ul>
 
-      <h3>상태 (States)</h3>
+      <h3>2. 해부 (Anatomy)</h3>
+      <ul>
+        <li>① <b>라벨</b>(옵션) — 필드 목적 명시, 상단</li>
+        <li>② <b>컨테이너(well)</b> — 편집 표면(회색 배경 · radius)</li>
+        <li>③ <b>값 / 플레이스홀더</b></li>
+        <li>④ <b>리딩 / 트레일링</b>(옵션) — 아이콘·버튼(clear 등)</li>
+        <li>⑤ <b>카운터</b>(옵션) — 하단 우측</li>
+        <li>⑥ <b>헬퍼 / 에러 문구</b>(옵션) — 하단</li>
+        <li>⑦ <b>focus 보더</b> — 포커스 시 표시</li>
+      </ul>
+
+      <h3>3. Variants (구성 축)</h3>
       <table>
-        <tr><th>상태</th><th>보더</th><th>텍스트</th><th>비고</th></tr>
-        <tr><td>Default (빈값)</td><td>없음</td><td>플레이스홀더 #73788B</td><td>미포커스</td></tr>
-        <tr><td>Focus (빈값)</td><td>#000 1px</td><td>플레이스홀더 #9DA0AE</td><td>커서 표시</td></tr>
-        <tr><td>Filled (미포커스)</td><td>없음</td><td>#000</td><td>—</td></tr>
-        <tr><td>Filled (포커스)</td><td>#000 1px</td><td>#000</td><td>편집 중</td></tr>
-        <tr><td>Max 도달</td><td>#000 1px</td><td>#000</td><td>카운터 #32A2FA · 추가 입력 차단(에러 아님)</td></tr>
-        <tr><td>Disabled <span class="nth">제안</span></td><td>없음</td><td>#9DA0AE</td><td>well 더 흐리게. Figma 미정의 → 확정 필요</td></tr>
-        <tr><td>Error <span class="nth">제안</span></td><td>레드 1px</td><td>#000</td><td>하단 에러 문구. Figma에 텍스트 슬롯만 존재 → 색·트리거 확정 필요</td></tr>
+        <tr><th>축</th><th>값</th><th>비고</th></tr>
+        <tr><td>라인</td><td>단일행 / 멀티라인(auto-grow)</td><td>멀티라인은 min~max 확장</td></tr>
+        <tr><td>카운터</td><td>없음 / 있음(한도 N)</td><td>N은 프로퍼티</td></tr>
+        <tr><td>라벨</td><td>없음 / 있음</td><td>상단 배치</td></tr>
+        <tr><td>리딩</td><td>없음 / 아이콘</td><td>검색·통화 등</td></tr>
+        <tr><td>트레일링</td><td>없음 / 아이콘·버튼</td><td>clear·표시토글 등</td></tr>
+        <tr><td>상태</td><td>§4 참조</td><td>Enabled~Error</td></tr>
+      </table>
+      <p>조합은 프로퍼티로 자유. <b>예시 — 요청사항</b>: 멀티라인 + 카운터100 + 라벨 없음.</p>
+
+      <h3>4. 상태 (States)</h3>
+      <table>
+        <tr><th>상태</th><th>보더</th><th>값 / 플레이스홀더</th></tr>
+        <tr><td>Enabled(기본)</td><td>없음</td><td>플레이스홀더 뮤트 #73788B</td></tr>
+        <tr><td>Focus</td><td>#000 1px</td><td>커서 · 플레이스홀더 #9DA0AE</td></tr>
+        <tr><td>Filled</td><td>비포커스 없음 / 포커스 #000</td><td>값 #000</td></tr>
+        <tr><td>Disabled</td><td>없음</td><td>흐리게 · 입력 불가</td></tr>
+        <tr><td>Error</td><td>레드 1px</td><td>+ 하단 에러 문구</td></tr>
+        <tr><td>ReadOnly</td><td>없음</td><td>값 표시 · 편집 불가</td></tr>
+        <tr><td>Max(카운터 有)</td><td>—</td><td>카운터 #32A2FA · 추가입력 차단</td></tr>
       </table>
 
-      <h3>동작 (Behavior)</h3>
+      <h3>5. 디자인 토큰 (semantic)</h3>
+      <p>값을 직접 박지 말고 <b>의미 기반 토큰</b>으로 참조 → 다크모드·테마 확장 시 값만 rebind. 정본 값은 Figma <code class="i">56952:84251</code>.</p>
+      <table>
+        <tr><th>토큰</th><th>의미</th><th>현재 값(참조)</th></tr>
+        <tr><td><code class="i">field.bg</code></td><td>컨테이너 배경</td><td>#F5F6F7</td></tr>
+        <tr><td><code class="i">field.radius</code></td><td>모서리</td><td>8</td></tr>
+        <tr><td><code class="i">field.padding</code></td><td>내부 여백</td><td>16</td></tr>
+        <tr><td><code class="i">field.border.focus</code></td><td>포커스 보더</td><td>#000 · 1px</td></tr>
+        <tr><td><code class="i">field.text</code></td><td>값 텍스트</td><td>#000 · Regular 15</td></tr>
+        <tr><td><code class="i">field.placeholder</code></td><td>플레이스홀더</td><td>#73788B → focus #9DA0AE</td></tr>
+        <tr><td><code class="i">counter.text</code></td><td>카운터</td><td>#73788B · 현재값 Bold</td></tr>
+        <tr><td><code class="i">counter.max</code></td><td>한도 도달</td><td>#32A2FA</td></tr>
+        <tr><td><code class="i">field.error</code></td><td>에러 보더/문구 <span class="nth">제안</span></td><td>레드(확정 필요)</td></tr>
+      </table>
+
+      <h3>6. 동작 (Behavior)</h3>
       <ul>
-        <li><b>Auto-grow</b> — min-height에서 시작해 내용에 따라 max까지 성장. 글자 한도가 자연 최대치라 대부분 스크롤 없음.</li>
-        <li><b>하드 리밋</b> — 한도(요청사항 100 / 탑승사유 150) 초과 입력 차단. 도달 시 카운터만 브랜드 블루(#32A2FA).</li>
-        <li><b>Focus</b> — #000 1px 보더 등장, blur 시 제거. well 배경색은 유지.</li>
-        <li><b>카운터</b> — 실시간 갱신, 현재값만 Bold.</li>
+        <li><b>Auto-grow</b>(멀티라인) — min-height에서 max까지 성장.</li>
+        <li><b>하드 리밋</b>(옵션) — <code class="i">characterLimit</code> 초과 입력 차단.</li>
+        <li><b>Focus</b> — 보더 등장/제거, 배경색 유지.</li>
+        <li><b>카운터</b> — 실시간, 현재값 Bold, 도달 시 브랜드블루.</li>
+        <li><b>IME 조합입력</b> — 조합 중 글자수 카운트 주의(한글·일본어). 확정 기준으로 리밋 적용 권장.</li>
+        <li><b>붙여넣기</b> — 한도 초과분 <b>절단</b>(전체 거부 X).</li>
+        <li><b>clear / submit</b> — 트레일링 clear · 키보드 확정 콜백.</li>
       </ul>
 
-      <h3>구현 코드</h3>
+      <h3>7. API / Props</h3>
       <div class="plat ios">iOS · SwiftUI</div>
-<pre><code>struct RequestTextField: View {
+<pre><code>struct DSTextField: View {
     @Binding var text: String
-    @FocusState private var focused: Bool
-    let limit: Int              // 100(요청사항) / 150(탑승사유)
-    let placeholder: String
-
-    var body: some View {
-        VStack(alignment: .trailing, spacing: 8) {
-            ZStack(alignment: .topLeading) {
-                if text.isEmpty {
-                    Text(placeholder).spoqa(.regular, 15)
-                        .foregroundColor(Color(hex: focused ? 0x9DA0AE : 0x73788B))
-                }
-                TextEditor(text: $text)
-                    .spoqa(.regular, 15).foregroundColor(.black)
-                    .focused($focused)
-                    .scrollContentBackground(.hidden)              // iOS 16+
-                    .frame(minHeight: 52)
-                    .onChange(of: text) { text = String($0.prefix(limit)) }   // 하드 리밋
-            }
-            HStack(spacing: 0) {
-                Text("\(text.count)").spoqa(.bold, 12)
-                    .foregroundColor(Color(hex: text.count &gt;= limit ? 0x32A2FA : 0x73788B))
-                Text("/\(limit)").spoqa(.regular, 12).foregroundColor(Color(hex: 0x73788B))
-            }
-        }
-        .padding(16)
-        .background(Color(hex: 0xF5F6F7))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
-        .overlay(RoundedRectangle(cornerRadius: 8)
-            .stroke(.black, lineWidth: focused ? 1 : 0))           // focus 시 #000
-    }
+    var placeholder: String = ""
+    var label: String? = nil
+    var characterLimit: Int? = nil        // nil = 무제한(카운터 숨김)
+    var singleLine: Bool = false
+    var isEnabled: Bool = true
+    var isError: Bool = false
+    var errorText: String? = nil
+    var leading: AnyView? = nil
+    var trailing: AnyView? = nil
+    var onSubmit: (() -&gt; Void)? = nil
 }</code></pre>
       <div class="plat aos">Android · Compose</div>
 <pre><code>@Composable
-fun RequestTextField(
+fun DSTextField(
     value: String,
     onValueChange: (String) -&gt; Unit,
-    limit: Int,                       // 100 / 150
-    placeholder: String,
-) {
-    var focused by remember { mutableStateOf(false) }
-    Column(
-        Modifier.fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
-            .background(Color(0xFFF5F6F7))
-            .then(if (focused) Modifier.border(1.dp, Color.Black, RoundedCornerShape(8.dp)) else Modifier)
-            .padding(16.dp),
-        horizontalAlignment = Alignment.End,
-    ) {
-        BasicTextField(
-            value = value,
-            onValueChange = { if (it.length &lt;= limit) onValueChange(it) },   // 하드 리밋
-            textStyle = TextStyle(fontFamily = Spoqa, fontSize = 15.sp, color = Color.Black),
-            cursorBrush = SolidColor(Color.Black),
-            modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp)
-                .onFocusChanged { focused = it.isFocused },
-            decorationBox = { inner -&gt;
-                if (value.isEmpty()) Text(
-                    placeholder, fontFamily = Spoqa, fontSize = 15.sp,
-                    color = Color(if (focused) 0xFF9DA0AE else 0xFF73788B),
-                )
-                inner()
-            },
-        )
-        Spacer(Modifier.height(8.dp))
-        Row {
-            Text("${value.length}", fontWeight = FontWeight.Bold, fontSize = 12.sp,
-                color = if (value.length &gt;= limit) Color(0xFF32A2FA) else Color(0xFF73788B))
-            Text("/$limit", fontSize = 12.sp, color = Color(0xFF73788B))
+    modifier: Modifier = Modifier,
+    placeholder: String = "",
+    label: String? = null,
+    characterLimit: Int? = null,          // null = 무제한
+    singleLine: Boolean = false,
+    enabled: Boolean = true,
+    isError: Boolean = false,
+    errorText: String? = null,
+    leading: (@Composable () -&gt; Unit)? = null,
+    trailing: (@Composable () -&gt; Unit)? = null,
+    onSubmit: (() -&gt; Unit)? = null,
+)</code></pre>
+
+      <h3>8. 접근성</h3>
+      <ul>
+        <li><b>라벨 연결</b> — label을 <code class="i">accessibilityLabel</code>/<code class="i">labelFor</code>로 필드에 결합.</li>
+        <li><b>상태 안내</b> — 에러는 live region, 카운터는 "N/한도 자 입력됨".</li>
+        <li><b>탭 타깃</b> — 최소 44pt(iOS)/48dp(Android).</li>
+        <li><b>동적 타입 / 폰트 스케일</b> — 고정 높이 지양, min-height로.</li>
+        <li><b>대비</b> — 값 #000(AAA), 플레이스홀더 #73788B(AA 경계 → 필수 정보 넣지 말 것).</li>
+        <li>IME 조합 중 스크린리더 과다 낭독 주의.</li>
+      </ul>
+
+      <h3>9. 콘텐츠 가이드</h3>
+      <ul>
+        <li><b>라벨</b> — 짧은 명사구.</li>
+        <li><b>플레이스홀더</b> — 예시형("예: …"), 지시형("입력하세요") 지양, 라벨 대용 금지.</li>
+        <li><b>에러</b> — 원인 + 해결 한 줄.</li>
+        <li><b>한도</b> — 카운터로만 표현, 경고 문구 남발 지양.</li>
+      </ul>
+
+      <h3>10. Do / Don't</h3>
+      <table>
+        <tr><th>Do</th><th>Don't</th></tr>
+        <tr><td>라벨로 목적 명시</td><td>플레이스홀더를 라벨 대용으로</td></tr>
+        <tr><td>플레이스홀더는 보조 예시</td><td>well 안에 관련 없는 액션 배치</td></tr>
+        <tr><td>한도는 카운터로</td><td>한도 없이 무한 입력</td></tr>
+        <tr><td>에러는 필드 하단 + 색</td><td>포커스 색만으로 에러 표현</td></tr>
+      </table>
+
+      <h3>11. 구현 코드</h3>
+      <div class="plat ios">iOS · SwiftUI</div>
+<pre><code>struct DSTextField: View {
+    @Binding var text: String
+    @FocusState private var focused: Bool
+    var placeholder = "";  var label: String? = nil
+    var characterLimit: Int? = nil
+    var singleLine = false;  var isError = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            if let label {                                    // 라벨(옵션)
+                Text(label).spoqa(.medium, 13).foregroundColor(Color(hex: 0x5A6070))
+            }
+            VStack(alignment: .trailing, spacing: 8) {
+                ZStack(alignment: .topLeading) {
+                    if text.isEmpty {                         // 플레이스홀더
+                        Text(placeholder).spoqa(.regular, 15)
+                            .foregroundColor(Color(hex: focused ? 0x9DA0AE : 0x73788B))
+                    }
+                    field.spoqa(.regular, 15).foregroundColor(.black).focused($focused)
+                        .onChange(of: text) { if let n = characterLimit { text = String($0.prefix(n)) } }
+                }
+                if let limit = characterLimit {               // 카운터(옵션)
+                    HStack(spacing: 0) {
+                        Text("\(text.count)").spoqa(.bold, 12)
+                            .foregroundColor(Color(hex: text.count &gt;= limit ? 0x32A2FA : 0x73788B))
+                        Text("/\(limit)").spoqa(.regular, 12).foregroundColor(Color(hex: 0x73788B))
+                    }
+                }
+            }
+            .padding(16).background(Color(hex: 0xF5F6F7))
+            .clipShape(RoundedRectangle(cornerRadius: 8))
+            .overlay(RoundedRectangle(cornerRadius: 8)         // focus / error 보더
+                .stroke(isError ? Color(hex: 0xFE4C00) : .black, lineWidth: (focused || isError) ? 1 : 0))
         }
     }
-}</code></pre>
-      <div class="callout">멀티라인 auto-grow: iOS <code class="i">TextEditor</code>는 내용에 따라 자동 확장(<code class="i">min/maxHeight</code>로 상·하한). Android <code class="i">BasicTextField</code>는 기본 확장 + <code class="i">heightIn(min, max)</code>. 카운터는 well 내부 하단 우측에 고정 배치.</div>
+    @ViewBuilder private var field: some View {
+        if singleLine { TextField("", text: $text) }
+        else { TextEditor(text: $text).scrollContentBackground(.hidden).frame(minHeight: 52) }
+    }
+}
+
+// 사용 예시 — 요청사항(멀티라인 + 100자)
+DSTextField(text: $note, placeholder: "예: 24인치 캐리어와 골프백이 2개 있어요", characterLimit: 100)</code></pre>
+      <div class="plat aos">Android · Compose</div>
+<pre><code>@Composable
+fun DSTextField(
+    value: String,
+    onValueChange: (String) -&gt; Unit,
+    modifier: Modifier = Modifier,
+    placeholder: String = "",
+    label: String? = null,
+    characterLimit: Int? = null,
+    singleLine: Boolean = false,
+    isError: Boolean = false,
+) {
+    var focused by remember { mutableStateOf(false) }
+    val border = if (isError) Color(0xFFFE4C00) else Color.Black
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        label?.let {                                          // 라벨(옵션)
+            Text(it, fontFamily = Spoqa, fontWeight = FontWeight.Medium, fontSize = 13.sp, color = Color(0xFF5A6070))
+        }
+        Column(
+            Modifier.fillMaxWidth().clip(RoundedCornerShape(8.dp))
+                .background(Color(0xFFF5F6F7))
+                .then(if (focused || isError) Modifier.border(1.dp, border, RoundedCornerShape(8.dp)) else Modifier)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.End,
+        ) {
+            BasicTextField(
+                value = value,
+                onValueChange = { v -&gt; onValueChange(characterLimit?.let { v.take(it) } ?: v) },  // 하드 리밋
+                singleLine = singleLine,
+                textStyle = TextStyle(fontFamily = Spoqa, fontSize = 15.sp, color = Color.Black),
+                cursorBrush = SolidColor(Color.Black),
+                modifier = Modifier.fillMaxWidth().heightIn(min = if (singleLine) 24.dp else 52.dp)
+                    .onFocusChanged { focused = it.isFocused },
+                decorationBox = { inner -&gt;
+                    if (value.isEmpty()) Text(placeholder, fontFamily = Spoqa, fontSize = 15.sp,
+                        color = Color(if (focused) 0xFF9DA0AE else 0xFF73788B))
+                    inner()
+                },
+            )
+            characterLimit?.let { limit -&gt;                    // 카운터(옵션)
+                Spacer(Modifier.height(8.dp))
+                Row {
+                    Text("${value.length}", fontWeight = FontWeight.Bold, fontSize = 12.sp,
+                        color = if (value.length &gt;= limit) Color(0xFF32A2FA) else Color(0xFF73788B))
+                    Text("/$limit", fontSize = 12.sp, color = Color(0xFF73788B))
+                }
+            }
+        }
+    }
+}
+
+// 사용 예시 — 요청사항(멀티라인 + 100자)
+DSTextField(value = note, onValueChange = { note = it },
+    placeholder = "예: 24인치 캐리어와 골프백이 2개 있어요", characterLimit = 100)</code></pre>
+
+      <h3>12. 채택 / 마이그레이션</h3>
+      <div class="callout">앱 전역의 산발적 입력(회색 well · bare row 등)을 이 컴포넌트로 통일. 순서 — ① semantic 토큰 정합 확인 ② 기존 입력 인벤토리 ③ 라벨·한도만 파라미터로 치환 ④ 접근성 회귀 테스트. 관련: 입력 필드 통일 프로젝트.</div>
     </section>
 
     <section class="dg-sec" id="s-copy">
