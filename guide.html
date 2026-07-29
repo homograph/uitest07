@@ -180,7 +180,7 @@
 
       <section id="impl">
         <h2><span class="n">06</span>구현 · 네이티브 참조</h2>
-        <p class="lead">플로팅↔띠배너 모프 + 진입/도킹/탭 + 콘텐츠(넛지 풀·병합·⚡). <b>디자인·애니메이션·인터랙션</b> 기준 최신 코드입니다. (섀도우는 옅은 단일 <code>navy .10</code> — 폐기된 글로우 아님)</p>
+        <p class="lead"><b>생성(바 뒤에서 상승) · 도킹 · 탭 · 재생성(차종 변경)</b> + 서버 문구 렌더. <b>디자인·애니메이션·인터랙션</b> 기준 최신 코드입니다. <b>문구·병합·강조는 서버에서 완성</b>해 내려주고 클라는 표시만 하며, 섀도우는 옅은 단일 <code>navy .10</code>(폐기된 글로우 아님)입니다.</p>
         <div class="tabs" id="tabs">
           <button class="tab on" data-p="ios">iOS · SwiftUI</button>
           <button class="tab" data-p="aos">Android · Compose</button>
@@ -191,14 +191,21 @@
           <div class="lang">SwiftUI</div>
 <pre><code>enum NudgeForm { case floating, band }        <span class="c">// 플로팅(강조) / 띠배너(도킹)</span>
 
+<span class="c">// 서버가 상태별 완성 문구를 내려줌 (병합·강조 조합은 서버에서)</span>
+struct BannerData: Equatable {
+  let floatingText: AttributedString?   <span class="c">// 플로팅 문구(넛지). nil = 플로팅 불가(⚡만)</span>
+  let bandText: AttributedString?       <span class="c">// 띠배너 문구(넛지축약+⚡ 병합 / 넛지 / ⚡). nil = 미표시</span>
+  var floatable: Bool { floatingText != nil }
+}
+
 struct NudgeBar: View {
-  let nudge: Nudge?            <span class="c">// .demand(2) / .freeCancel / nil</span>
-  let guarantee: Guarantee?   <span class="c">// .air / .van / nil</span>
+  let data: BannerData
   @State private var form: NudgeForm = .band
+  @State private var riseY: CGFloat = 0        <span class="c">// 생성 시 바 뒤(+y)에서 올라옴</span>
 
   var body: some View {
-    if let text = content(for: form) {                 <span class="c">// 없으면 미표시</span>
-      text
+    if let text = (form == .floating ? data.floatingText : data.bandText) {   <span class="c">// 없으면 미표시</span>
+      Text(text)
         .font(.system(size: form == .floating ? 15 : 13))
         .foregroundColor(form == .floating ? .white : Color(hex: "#383D4F"))
         .lineLimit(1)
@@ -210,71 +217,57 @@ struct NudgeBar: View {
         <span class="c">// 옅은 단일 섀도우 (navy .10) — 폐기된 파란 글로우 아님</span>
         .shadow(color: Color(hex: "#19254D").opacity(form == .floating ? 0.10 : 0), radius: 6, y: 4)
         .padding(.horizontal, form == .floating ? 16 : 0)          <span class="c">// 좌우 마진</span>
+        .offset(y: riseY)                                          <span class="c">// 생성 애니: 바텀바보다 낮은 zIndex → 바 뒤에서 상승</span>
         .animation(.timingCurve(0.4, 0, 0.2, 1, duration: 0.42), value: form)
-        .onTapGesture { if form == .band, nudge != nil { form = .floating } }   <span class="c">// 띠배너 탭 → 플로팅</span>
-        .onAppear { form = nudge != nil ? .floating : .band }      <span class="c">// 넛지 → 플로팅 / ⚡만 → 띠배너</span>
+        .animation(.timingCurve(0.4, 0, 0.2, 1, duration: 0.42), value: riseY)
+        .onTapGesture { if form == .band, data.floatable { form = .floating } }   <span class="c">// 띠배너 탭 → 플로팅</span>
+        .onAppear { create() }                                    <span class="c">// 진입 = 생성</span>
+        .onChange(of: data) { _ in create() }                     <span class="c">// 데이터 새로고침(차종 변경 등) = 재생성</span>
     }
   }
 
-  <span class="c">// 콘텐츠 규칙 — 플로팅=넛지 풀 / 띠배너=넛지축약+⚡ 병합·넛지 풀·⚡ 풀</span>
-  private func content(for form: NudgeForm) -> Text? {
-    switch (form, nudge, guarantee) {
-    case (.floating, let n?, _):  return n.full                       <span class="c">// 플로팅은 넛지만</span>
-    case (.band, let n?, let g?): return n.micro + Text(" ") + g.full <span class="c">// 병합</span>
-    case (.band, let n?, nil):    return n.full                       <span class="c">// 넛지 단독 = 풀</span>
-    case (.band, nil, let g?):    return g.full                       <span class="c">// ⚡ 단독</span>
-    default:                      return nil
-    }
+  <span class="c">// 생성(진입·새로고침): 최종 형태로 세팅 후 바 뒤에서 +y → 0 으로 상승·안착</span>
+  private func create() {
+    form  = data.floatable ? .floating : .band            <span class="c">// 넛지 → 플로팅 / ⚡만 → 띠배너</span>
+    riseY = form == .floating ? 64 : 46                   <span class="c">// 시작 오프셋(바 뒤)</span>
+    withAnimation { riseY = 0 }                           <span class="c">// 안착</span>
   }
 }
-
-<span class="c">// 문구·강조 (blue-600 = #0086EA)</span>
-extension Nudge {
-  var full: Text {   <span class="c">// 플로팅·단독 띠배너</span>
-    switch self {
-    case .demand(let x):
-      return Text("🔥 이 날은 예약이 평소 대비 ")
-           + Text("\(x)배").bold().foregroundColor(.blue600)          <span class="c">// 2배 = blue (풀에서만)</span>
-           + Text(" 몰리고 있어요")
-    case .freeCancel:
-      return Text("출발 12시간 전까지 ") + Text("무료 취소").bold() + Text(" 가능해요")  <span class="c">// 다크 볼드(색 없음)</span>
-    }
-  }
-  var micro: Text {  <span class="c">// ⚡ 병합용 축약 — 강조 없음(병합의 파랑은 ⚡만)</span>
-    switch self {
-    case .demand(let x): return Text("예약 \(x)배 몰림")
-    case .freeCancel:    return Text("무료 취소 가능")
-    }
-  }
-}
-extension Guarantee {
-  var full: Text {
-    switch self {
-    case .air: return Text("⚡ 넥스트 예약 시 ")   + Text("100% 확정").bold().foregroundColor(.blue600)
-    case .van: return Text("⚡ 프리미엄 밴은 ") + Text("100% 예약 확정").bold().foregroundColor(.blue600)
-    }
-  }
-}
-<span class="c">// 첫 스크롤 → form = .band(도킹). 예약확인 화면엔 band 형태로 정적 노출.</span></code></pre>
+<span class="c">// zIndex: 배너 &lt; 바텀바(다음 버튼) → 바 뒤에서 emerge. bg(for:)는 쉬머 오버레이 포함.</span>
+<span class="c">// 스크롤 → form = .band (도킹 모프). 예약확인 화면도 동일 컴포넌트: 넛지면 탭 → 플로팅.</span>
+<span class="c">// 차종 변경 = 데이터 새로고침 → BannerData 교체(⚡만 갱신, 🔥수요 유지) → create()로 띠배너 재생성(재플로팅 없음).</span>
+<span class="c">// ⚠️ 문구·강조·병합은 서버 문자열(AttributedString) 그대로 렌더 — 클라에서 조합하지 않음.</span></code></pre>
         </div>
 
         <div class="cpanel" data-p="aos">
           <div class="lang">Jetpack Compose</div>
 <pre><code>enum class NudgeForm { Floating, Band }
 
+<span class="c">// 서버가 상태별 완성 문구를 내려줌</span>
+data class BannerData(val floatingText: AnnotatedString?, val bandText: AnnotatedString?) {
+  val floatable get() = floatingText != null
+}
+
 @Composable
-fun NudgeBar(nudge: Nudge?, guarantee: Guarantee?) {
-  var form by remember { mutableStateOf(if (nudge != null) NudgeForm.Floating else NudgeForm.Band) }
+fun NudgeBar(data: BannerData) {
+  <span class="c">// 생성(진입/새로고침): 넛지면 플로팅, ⚡만이면 띠배너. data 바뀌면(remember key) 재생성.</span>
+  var form by remember(data) { mutableStateOf(if (data.floatable) NudgeForm.Floating else NudgeForm.Band) }
   val floating = form == NudgeForm.Floating
-  val text = content(form, nudge, guarantee) ?: return          <span class="c">// 없으면 미표시</span>
+  val text = (if (floating) data.floatingText else data.bandText) ?: return   <span class="c">// 없으면 미표시</span>
 
   val e = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
+  <span class="c">// 생성 애니: 바텀바 뒤(+y)에서 0 으로 상승 (zIndex &lt; 바텀바)</span>
+  var risen by remember(data) { mutableStateOf(false) }
+  val riseY by animateDpAsState(if (risen) 0.dp else if (floating) 64.dp else 46.dp, tween(420, easing = e))
+  LaunchedEffect(data) { risen = true }
+
   val side   by animateDpAsState(if (floating) 16.dp else 0.dp, tween(420, easing = e))
   val radius by animateDpAsState(if (floating) 8.dp  else 0.dp, tween(420, easing = e))
   val elev   by animateDpAsState(if (floating) 6.dp  else 0.dp, tween(420, easing = e))
 
   Row(
     Modifier
+      .offset(y = riseY)                                                  <span class="c">// 바 뒤에서 올라옴</span>
       .padding(horizontal = side)
       .fillMaxWidth()
       <span class="c">// 옅은 단일 섀도우 (navy .10) — 글로우 아님</span>
@@ -285,7 +278,7 @@ fun NudgeBar(nudge: Nudge?, guarantee: Guarantee?) {
         else SolidColor(Color(0xFFE2F2FE))
       )
       .then(if (floating) Modifier.shimmer() else Modifier)               <span class="c">// 쉬머</span>
-      .clickable(enabled = !floating &amp;&amp; nudge != null) { form = NudgeForm.Floating }  <span class="c">// 탭 → 플로팅</span>
+      .clickable(enabled = !floating &amp;&amp; data.floatable) { form = NudgeForm.Floating }  <span class="c">// 탭 → 플로팅</span>
       .padding(horizontal = if (floating) 18.dp else 12.dp,
                vertical   = if (floating) 12.dp else 10.dp),
     horizontalArrangement = Arrangement.Center
@@ -294,38 +287,41 @@ fun NudgeBar(nudge: Nudge?, guarantee: Guarantee?) {
       color = if (floating) Color.White else Color(0xFF383D4F))
   }
 }
-
-<span class="c">// 콘텐츠 — 플로팅=넛지 풀 / 띠배너=넛지축약+⚡ 병합</span>
-fun content(form: NudgeForm, n: Nudge?, g: Guarantee?): AnnotatedString? = buildAnnotatedString {
-  when {
-    form == NudgeForm.Floating &amp;&amp; n != null -&gt; append(n.full())                  <span class="c">// 플로팅 넛지만</span>
-    n != null &amp;&amp; g != null -&gt; { append(n.micro()); append(" "); append(g.full()) } <span class="c">// 병합</span>
-    n != null -&gt; append(n.full())                                                <span class="c">// 넛지 단독</span>
-    g != null -&gt; append(g.full())                                                <span class="c">// ⚡ 단독</span>
-    else -&gt; return null
-  }
-}
-<span class="c">// 강조: 수요 "2배" → blue-600(full 에서만) / ⚡ "100% (예약) 확정" → blue-600 / 무료취소 "무료 취소" → 다크 볼드</span>
-<span class="c">// 진입: 넛지 Floating / ⚡만 Band. 첫 스크롤 → Band. 예약확인엔 Band 정적.</span></code></pre>
+<span class="c">// 스크롤 → form = Band(도킹). 예약확인 화면도 동일 컴포넌트: 넛지면 탭 → 플로팅.</span>
+<span class="c">// 차종·데이터 변경 → data 교체(⚡만 갱신, 🔥수요 유지) → remember(data) 리셋 → 재생성(바 뒤에서 상승, 재플로팅 없음).</span>
+<span class="c">// ⚠️ floatingText/bandText 는 서버 문자열(강조·병합 포함) 그대로 — 클라 조합 없음.</span></code></pre>
         </div>
 
         <div class="cpanel" data-p="web">
-          <div class="lang">CSS · 상태 전이 (실제 구현은 index.html)</div>
-<pre><code><span class="c">/* --e: cubic-bezier(.4,0,.2,1) */</span>
-.info-bar{ position:absolute; left:0; right:0; bottom:var(--cta-h);
-  background:#E2F2FE; border-radius:0; opacity:0; overflow:hidden;
+          <div class="lang">CSS · JS 상태 전이 (실제 구현은 index.html)</div>
+<pre><code><span class="c">/* --e: cubic-bezier(.4,0,.2,1) — 배너 z는 요금바(다음 버튼)보다 아래 → 바 뒤에서 emerge */</span>
+.info-bar{ position:absolute; left:0; right:0; bottom:var(--cta-h); z-index:4;
+  background:#E2F2FE; border-radius:0; opacity:0; overflow:hidden; visibility:hidden;
   transition:left .42s var(--e), right .42s var(--e), bottom .42s var(--e),
-    border-radius .42s var(--e), box-shadow .42s var(--e), transform .42s var(--e), opacity .18s; }
+    border-radius .42s var(--e), box-shadow .42s var(--e); }
 .info-bar.floating{ left:16px; right:16px; bottom:calc(var(--cta-h) + 16px);
   border-radius:8px; box-shadow:0 4px 12px rgba(25,37,77,.10); }   <span class="c">/* 옅은 단일 (글로우 폐기) */</span>
+.fare-bar{ z-index:5; }                                            <span class="c">/* 배너보다 위 → 배너가 바 뒤에서 올라옴 */</span>
 .info-bar .grad{ position:absolute; inset:0; opacity:0; transition:opacity .42s;
   background:linear-gradient(90deg,#0094F9,#32A2FA); }
 .info-bar.floating .grad{ opacity:1; }              <span class="c">/* 플로팅에서만 그라데이션 */</span>
 
-<span class="c">// JS 콘텐츠 규칙</span>
-<span class="c">// floatContent(): 넛지 있으면 넛지 full, 없으면 null (⚡만이면 플로팅 없음)</span>
-<span class="c">// bandContent(): 넛지+⚡ → nudge.micro + ' ' + guar.full / 넛지 → full / ⚡ → full</span>
-<span class="c">// 진입: 넛지 있으면 floating, ⚡만이면 band. 첫 스크롤 → band. 탭 → floating.</span></code></pre>
+<span class="c">// 생성(진입·새로고침): 바 뒤(+y)에서 최종 형태로 올라와 안착</span>
+function rise(intoFloating){
+  bar.classList.toggle('floating', intoFloating);
+  ibtext.innerHTML = intoFloating ? data.floatingText : data.bandText;   <span class="c">// 서버 문구</span>
+  bar.style.visibility = 'visible'; bar.style.opacity = '1';
+  bar.style.transition = 'none';
+  bar.style.transform  = `translateY(${intoFloating ? 64 : 46}px)`;      <span class="c">// 바 뒤 시작</span>
+  void bar.offsetWidth;                                                  <span class="c">// reflow</span>
+  bar.style.transition = 'transform .42s var(--e)';
+  bar.style.transform  = 'translateY(0)';                                <span class="c">// 상승·안착</span>
+}
+<span class="c">// 진입: rise(floatable) — 넛지면 플로팅으로, ⚡만이면 띠배너로 올라옴</span>
+<span class="c">// 스크롤 → 제자리 모프로 band(setForm(false)) / 띠배너 탭 → 제자리 모프로 floating</span>
+<span class="c">// 차종·데이터 새로고침 → 이전 배너 숨김 후 rise(false) (띠배너로 재생성, 재플로팅 없음)</span>
+<span class="c">// 토스트 발생 → 플로팅이면 먼저 도킹(setForm(false)) 후 토스트 노출</span>
+<span class="c">// ⚠️ data.floatingText / data.bandText 는 서버 문자열 — 클라에서 병합·조합하지 않음</span></code></pre>
         </div>
       </section>
 
