@@ -65,10 +65,12 @@
   .sec-head .cond{display:flex;align-items:center;gap:2px;font-size:14px;line-height:20px;color:var(--gray-300);}
   .cars{display:flex;gap:8px;align-items:center;justify-content:center;padding:20px 24px;}
   .carpill{position:relative;border:1px solid var(--gray-80);background:#f9f9f9;border-radius:9999px;
-    padding:22px 10px;display:flex;align-items:center;justify-content:center;}
+    padding:22px 10px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+    transition:background .2s,border-color .2s;}
   .carpill.sel{background:var(--blue-30);border-color:var(--blue-500);}
   .carpill img{width:72px;height:46px;object-fit:contain;display:block;}
-  .carpill .chk{position:absolute;top:-1px;right:-1px;}
+  .carpill .chk{position:absolute;top:-1px;right:-1px;display:none;}
+  .carpill.sel .chk{display:block;}
   .title-blk{padding:12px 24px 8px;text-align:center;display:flex;flex-direction:column;gap:12px;}
   .title-blk .cartitle{font-size:22px;line-height:30px;font-weight:700;color:var(--gray-950);}
   .title-blk .carprice{font-size:16px;line-height:24px;color:var(--gray-900);margin-top:4px;}
@@ -301,12 +303,18 @@
           </div>
         </div>
         <div class="cars">
-          <div class="carpill sel">
+          <div class="carpill sel" data-car="next">
             <img src="assets/car-next.png" alt="넥스트" />
             <span class="chk"><svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0094f9"/><path d="M7 12.4l3.2 3.2L17 9" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
           </div>
-          <div class="carpill"><img src="assets/car-plus.png" alt="플러스" /></div>
-          <div class="carpill"><img src="assets/car-vip.png" alt="프리미엄 밴" /></div>
+          <div class="carpill" data-car="plus">
+            <img src="assets/car-plus.png" alt="플러스" />
+            <span class="chk"><svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0094f9"/><path d="M7 12.4l3.2 3.2L17 9" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+          <div class="carpill" data-car="van">
+            <img src="assets/car-vip.png" alt="프리미엄 밴" />
+            <span class="chk"><svg width="24" height="24" viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#0094f9"/><path d="M7 12.4l3.2 3.2L17 9" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
         </div>
         <div class="title-blk">
           <div>
@@ -516,8 +524,8 @@
     <div class="grp2">
       <label>⚡ 100% 예약 확정</label>
       <div class="seg" id="guarantee">
-        <button data-g="none" class="on">없음</button>
-        <button data-g="air">공항·넥스트</button>
+        <button data-g="none">없음</button>
+        <button data-g="air" class="on">공항·넥스트</button>
         <button data-g="van">프리미엄 밴</button>
       </div>
     </div>
@@ -548,7 +556,7 @@
     van:{full:'⚡ 프리미엄 밴은 <b>100% 예약 확정</b>'}
   };
   const GAP=' ';   // 넛지 축약 ↔ ⚡ 사이 한 칸 띄어쓰기
-  const state={nudge:'demand', guarantee:'none'};
+  const state={nudge:'demand', guarantee:'air'};   // 기본 넥스트 선택 = ⚡ 넥스트 예약 시 100% 확정
   let armTimer=null, disarm=null;
 
   function activeNudge(){ return state.nudge!=='none' ? state.nudge : null; }  // 단일 선택(중복 없음)
@@ -616,9 +624,38 @@
     document.querySelectorAll('#nudge button').forEach(x=>x.classList.toggle('on',x===b));
     play();
   }));
+  // 차종 ↔ ⚡ 보장 매핑 (넥스트=⚡넥스트 / 플러스=보장없음 / 밴=⚡밴)
+  const CARS={
+    next:{title:'넓고 쾌적한 넥스트', price:'125,000원', guar:'air'},
+    plus:{title:'빠르고 편리한 플러스', price:'98,000원',  guar:'none'},
+    van: {title:'프리미엄 밴',        price:'175,000원', guar:'van'}
+  };
+  const GUAR_CAR={air:'next', van:'van', none:'plus'};
+  function paintCar(car){
+    const c=CARS[car]; if(!c) return;
+    document.querySelectorAll('.carpill').forEach(p=>p.classList.toggle('sel', p.dataset.car===car));
+    document.querySelector('.cartitle').textContent=c.title;
+    document.querySelector('.carprice').textContent=c.price;
+    const fp=document.querySelector('#screen-select .bottom .fare .p'); if(fp) fp.textContent=c.price;
+  }
+  // ⚡ 보장만 갱신 + 현재 form(플로팅/띠배너) 유지, 콘텐츠만 (재플로팅·진입애니 X)
+  function setGuaranteeInPlace(g){
+    state.guarantee=g;
+    document.querySelectorAll('#guarantee button').forEach(x=>x.classList.toggle('on', x.dataset.g===g));
+    setTL();
+    const html = bar.classList.contains('floating') ? floatContent() : bandContent();
+    if(html==null){ bar.style.opacity='0'; bar.style.visibility='hidden'; bar.classList.remove('floating'); }
+    else { bar.style.visibility='visible'; bar.style.opacity='1'; ibtext.innerHTML=html; }
+  }
+  // 차량 pill 탭 = 차종 변경 → ⚡ 갱신 (현재 form 유지, 넛지는 안 튐)
+  document.querySelectorAll('.carpill').forEach(p=>p.addEventListener('click',()=>{
+    const car=p.dataset.car; paintCar(car); setGuaranteeInPlace(CARS[car].guar);
+  }));
+  // ⚙ 패널 보장 세그먼트 = 차량 시각 동기화 + 진입 재생(데모용)
   document.querySelectorAll('#guarantee button').forEach(b=>b.addEventListener('click',()=>{
     state.guarantee=b.dataset.g;
     document.querySelectorAll('#guarantee button').forEach(x=>x.classList.toggle('on',x===b));
+    paintCar(GUAR_CAR[b.dataset.g]);
     play();
   }));
   document.getElementById('replay').addEventListener('click',()=>{   // 진입 재생 = 바텀시트 닫고 설정 적용
