@@ -610,11 +610,11 @@
   function play(){                    // 진입 재생
     clearArm();
     scroller.scrollTop=0;
-    bar.style.transition='none'; bar.classList.remove('floating'); void bar.offsetWidth; bar.style.transition='';
+    bar.style.transition='none'; bar.classList.remove('floating'); bar.style.transform=''; void bar.offsetWidth; bar.style.transition='';
     setTL();
     const n=activeNudge(), g=activeGuar();
     if(n){ setForm(true); armTimer=setTimeout(armDock, 600); }   // 넛지 → 플로팅 시작
-    else if(g){ setForm(false); }                                // ⚡만 → 띠배너만 (플로팅 없음)
+    else if(g){ bandCreate(); }                                  // ⚡만 → 띠배너 생성 애니(바 뒤에서 올라옴)
     else { bar.style.opacity='0'; bar.style.visibility='hidden'; }
   }
 
@@ -638,18 +638,31 @@
     document.querySelector('.carprice').textContent=c.price;
     const fp=document.querySelector('#screen-select .bottom .fare .p'); if(fp) fp.textContent=c.price;
   }
-  // ⚡ 보장만 갱신 + 현재 form(플로팅/띠배너) 유지, 콘텐츠만 (재플로팅·진입애니 X)
-  function setGuaranteeInPlace(g){
+  // 띠배너 생성 애니 — 바텀바(z5) 뒤(z4)에서 +y로 아래→위 올라와 안착. (화면 진입-띠배너/데이터 새로고침)
+  function bandCreate(){
+    clearArm();
+    bar.classList.remove('floating');
+    const html=bandContent();
+    if(html==null){ bar.style.transition='none'; bar.style.opacity='0'; bar.style.visibility='hidden'; bar.style.transform=''; return; }
+    bar.style.transition='none';
+    ibtext.innerHTML=html;
+    bar.style.visibility='visible'; bar.style.opacity='1';
+    bar.style.transform='translateY(46px)';        // 바텀바 뒤로 숨김
+    void bar.offsetWidth;
+    bar.style.transition='transform var(--dock-dur) cubic-bezier(.4,0,.2,1)';
+    bar.style.transform='translateY(0)';           // 위로 올라와 안착
+    setTimeout(()=>{ bar.style.transition=''; bar.style.transform=''; }, 460);
+  }
+  // 데이터 새로고침(차종/보장 변경) → 이전 띠배너 즉시 사라지고 새 띠배너 생성 애니 재생 (재플로팅 X)
+  function refreshBand(g){
     state.guarantee=g;
     document.querySelectorAll('#guarantee button').forEach(x=>x.classList.toggle('on', x.dataset.g===g));
     setTL();
-    const html = bar.classList.contains('floating') ? floatContent() : bandContent();
-    if(html==null){ bar.style.opacity='0'; bar.style.visibility='hidden'; bar.classList.remove('floating'); }
-    else { bar.style.visibility='visible'; bar.style.opacity='1'; ibtext.innerHTML=html; }
+    bandCreate();
   }
-  // 차량 pill 탭 = 차종 변경 → ⚡ 갱신 (현재 form 유지, 넛지는 안 튐)
+  // 차량 pill 탭 = 차종 변경(데이터 새로고침) → 띠배너 재생성
   document.querySelectorAll('.carpill').forEach(p=>p.addEventListener('click',()=>{
-    const car=p.dataset.car; paintCar(car); setGuaranteeInPlace(CARS[car].guar);
+    const car=p.dataset.car; paintCar(car); refreshBand(CARS[car].guar);
   }));
   // ⚙ 패널 보장 세그먼트 = 차량 시각 동기화 + 진입 재생(데모용)
   document.querySelectorAll('#guarantee button').forEach(b=>b.addEventListener('click',()=>{
