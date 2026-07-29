@@ -613,7 +613,7 @@
     bar.style.transition='none'; bar.classList.remove('floating'); bar.style.transform=''; void bar.offsetWidth; bar.style.transition='';
     setTL();
     const n=activeNudge(), g=activeGuar();
-    if(n || g){ bandCreate(true); }   // 진입: 띠배너로 올라온 뒤, 플로팅 가능(넛지)이면 안착과 동시에 플로팅으로
+    if(n || g){ rise(!!n); }   // 진입: 바 뒤에서 최종 형태로 올라옴 — 넛지면 플로팅, ⚡만이면 띠배너 (1단계)
     else { bar.style.opacity='0'; bar.style.visibility='hidden'; }
   }
 
@@ -638,24 +638,22 @@
     const fp=document.querySelector('#screen-select .bottom .fare .p'); if(fp) fp.textContent=c.price;
   }
   // 띠배너 생성 애니 — 바텀바(z5) 뒤(z4)에서 +y로 아래→위 올라와 안착. (화면 진입-띠배너/데이터 새로고침)
-  function bandCreate(thenFloat){
+  // 배너 생성/재생성 — 바텀바(z5) 뒤(z4)에서 +y로 올라와 최종 형태로 안착. intoFloating이면 플로팅으로, 아니면 띠배너로.
+  function rise(intoFloating){
     clearArm();
-    bar.classList.remove('floating');
-    const html=bandContent();
-    if(html==null){ bar.style.transition='none'; bar.style.opacity='0'; bar.style.visibility='hidden'; bar.style.transform=''; return; }
+    const html = intoFloating ? floatContent() : bandContent();
+    if(html==null){ bar.style.transition='none'; bar.style.opacity='0'; bar.style.visibility='hidden'; bar.style.transform=''; bar.classList.remove('floating'); return; }
     bar.style.transition='none';
+    bar.classList.toggle('floating', intoFloating);
     ibtext.innerHTML=html;
     bar.style.visibility='visible'; bar.style.opacity='1';
-    bar.style.transform='translateY(46px)';        // 바텀바 뒤로 숨김
+    bar.style.transform='translateY('+(intoFloating?64:46)+'px)';   // 바텀바 뒤로 숨김(플로팅은 위쪽이라 더 내림)
     void bar.offsetWidth;
     bar.style.transition='transform var(--dock-dur) cubic-bezier(.4,0,.2,1)';
-    bar.style.transform='translateY(0)';           // 위로 올라와 안착
+    bar.style.transform='translateY(0)';                             // 위로 올라와 안착
     setTimeout(()=>{
       bar.style.transition=''; bar.style.transform='';
-      if(thenFloat && activeNudge()){              // 진입: 안착과 동시에 플로팅으로 (플로팅 가능 배너일 때)
-        setForm(true);
-        armTimer=setTimeout(armDock, 500);
-      }
+      if(intoFloating) armDock();     // 플로팅 안착 후 스크롤 도킹 무장
     }, 460);
   }
   // 데이터 새로고침(차종/보장 변경) → 이전 띠배너 즉시 사라지고 새 띠배너 생성 애니 재생 (재플로팅 X)
@@ -663,7 +661,7 @@
     state.guarantee=g;
     document.querySelectorAll('#guarantee button').forEach(x=>x.classList.toggle('on', x.dataset.g===g));
     setTL();
-    bandCreate(false);   // 데이터 새로고침 = 띠배너만(재플로팅 없음)
+    rise(false);   // 데이터 새로고침(차종 변경) = 띠배너로 재생성(재플로팅 없음)
   }
   // 차량 pill 탭 = 차종 변경(데이터 새로고침) → 띠배너 재생성
   document.querySelectorAll('.carpill').forEach(p=>p.addEventListener('click',()=>{
