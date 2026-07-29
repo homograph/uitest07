@@ -642,6 +642,8 @@ Button(
         <tr><td><code class="i">field.bg</code></td><td>컨테이너 배경</td><td>#F5F6F7</td></tr>
         <tr><td><code class="i">field.radius</code></td><td>모서리</td><td>8</td></tr>
         <tr><td><code class="i">field.padding</code></td><td>내부 여백</td><td>16</td></tr>
+        <tr><td><code class="i">field.minHeight</code></td><td>최소 높이(텍스트 영역)</td><td>52 · 컴포넌트 min ~96(카운터·패딩 포함)</td></tr>
+        <tr><td><code class="i">field.maxHeight</code></td><td>최대 높이(auto-grow 상한)</td><td>옵션 · 초과 시 내부 스크롤. 예) 100자→168 / 150자→212</td></tr>
         <tr><td><code class="i">field.border.focus</code></td><td>포커스 보더</td><td>#000 · 1px</td></tr>
         <tr><td><code class="i">field.text</code></td><td>값 텍스트</td><td>#000 · Regular 15</td></tr>
         <tr><td><code class="i">field.placeholder</code></td><td>플레이스홀더</td><td>#73788B → focus #9DA0AE</td></tr>
@@ -652,7 +654,7 @@ Button(
 
       <h3>6. 동작 (Behavior)</h3>
       <ul>
-        <li><b>Auto-grow</b>(멀티라인) — min-height에서 max까지 성장.</li>
+        <li><b>Auto-grow / 높이</b>(멀티라인) — <code class="i">field.minHeight</code>(52)에서 시작 → 내용 따라 확장 → <code class="i">field.maxHeight</code> 도달 시 <b>내부 스크롤(clip)</b>. maxHeight 미지정이면 글자 한도가 자연 상한. 카운터는 well 하단 우측 고정.</li>
         <li><b>하드 리밋</b>(옵션) — <code class="i">characterLimit</code> 초과 입력 차단.</li>
         <li><b>Focus</b> — 보더 등장/제거, 배경색 유지.</li>
         <li><b>카운터</b> — 실시간, 현재값 Bold, 도달 시 브랜드블루.</li>
@@ -669,6 +671,8 @@ Button(
     var label: String? = nil
     var characterLimit: Int? = nil        // nil = 무제한(카운터 숨김)
     var singleLine: Bool = false
+    var minHeight: CGFloat = 52
+    var maxHeight: CGFloat? = nil          // nil = 한도가 자연 상한, 초과 시 내부 스크롤
     var isEnabled: Bool = true
     var isError: Bool = false
     var errorText: String? = nil
@@ -686,6 +690,8 @@ fun DSTextField(
     label: String? = null,
     characterLimit: Int? = null,          // null = 무제한
     singleLine: Boolean = false,
+    minHeight: Dp = 52.dp,
+    maxHeight: Dp? = null,                 // null = 한도가 자연 상한, 초과 시 내부 스크롤
     enabled: Boolean = true,
     isError: Boolean = false,
     errorText: String? = null,
@@ -729,6 +735,7 @@ fun DSTextField(
     var placeholder = "";  var label: String? = nil
     var characterLimit: Int? = nil
     var singleLine = false;  var isError = false
+    var minHeight: CGFloat = 52;  var maxHeight: CGFloat? = nil   // maxHeight 초과 시 내부 스크롤
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -760,7 +767,8 @@ fun DSTextField(
     }
     @ViewBuilder private var field: some View {
         if singleLine { TextField("", text: $text) }
-        else { TextEditor(text: $text).scrollContentBackground(.hidden).frame(minHeight: 52) }
+        else { TextEditor(text: $text).scrollContentBackground(.hidden)
+                   .frame(minHeight: minHeight, maxHeight: maxHeight ?? .infinity) }  // 상한 도달 시 내부 스크롤
     }
 }
 
@@ -777,6 +785,8 @@ fun DSTextField(
     characterLimit: Int? = null,
     singleLine: Boolean = false,
     isError: Boolean = false,
+    minHeight: Dp = 52.dp,
+    maxHeight: Dp? = null,                                // 상한 도달 시 내부 스크롤
 ) {
     var focused by remember { mutableStateOf(false) }
     val border = if (isError) Color(0xFFFE4C00) else Color.Black
@@ -797,7 +807,9 @@ fun DSTextField(
                 singleLine = singleLine,
                 textStyle = TextStyle(fontFamily = Spoqa, fontSize = 15.sp, color = Color.Black),
                 cursorBrush = SolidColor(Color.Black),
-                modifier = Modifier.fillMaxWidth().heightIn(min = if (singleLine) 24.dp else 52.dp)
+                modifier = Modifier.fillMaxWidth()
+                    .heightIn(min = if (singleLine) 24.dp else minHeight, max = maxHeight ?: Dp.Unspecified)
+                    .verticalScroll(rememberScrollState())   // maxHeight 초과분 내부 스크롤
                     .onFocusChanged { focused = it.isFocused },
                 decorationBox = { inner -&gt;
                     if (value.isEmpty()) Text(placeholder, fontFamily = Spoqa, fontSize = 15.sp,
