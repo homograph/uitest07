@@ -126,7 +126,7 @@
             <h3 style="margin-top:0">띠배너 (도킹)</h3>
             <p>풀블리드 <code>blue-50 #E2F2FE</code> 스트립, 13px. 넛지 단독은 <b>풀 문구</b>, ⚡와 함께면 <b>한 줄 병합</b>.</p>
             <div class="samp"><div class="band">🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요</div><div class="cap">넛지 단독 = 풀 문구</div></div>
-            <div class="samp"><div class="band">예약 2배 몰림 ⚡ 공항 예약 시 <b>100% 확정</b></div><div class="cap">넛지+⚡ 병합 = 넛지 축약 + ⚡ 풀</div></div>
+            <div class="samp"><div class="band">예약 2배 몰림 ⚡ 넥스트 예약 시 <b>100% 확정</b></div><div class="cap">넛지+⚡ 병합 = 넛지 축약 + ⚡ 풀</div></div>
           </div>
         </div>
         <p style="margin-top:10px;font-size:13.5px;color:var(--g600)">넛지·⚡ 모두 없으면 <b>미표시</b>. ⚡만 있으면 <b>띠배너만</b>(플로팅 없음).</p>
@@ -140,12 +140,12 @@
           <tbody>
             <tr><td>🔥 수요</td><td>🔥 이 날은 예약이 평소 대비 <b style="color:var(--blue-600)">2배</b> 몰리고 있어요</td><td>예약 2배 몰림</td></tr>
             <tr><td>무료 취소</td><td>출발 12시간 전까지 <b>무료 취소</b> 가능해요</td><td>무료 취소 가능</td></tr>
-            <tr><td>⚡ 공항·넥스트</td><td colspan="2">⚡ 공항 예약 시 <b style="color:var(--blue-600)">100% 확정</b> <span class="tag g">플로팅 없음 · 띠배너 전용</span></td></tr>
+            <tr><td>⚡ 공항·넥스트</td><td colspan="2">⚡ 넥스트 예약 시 <b style="color:var(--blue-600)">100% 확정</b> <span class="tag g">플로팅 없음 · 띠배너 전용</span></td></tr>
             <tr><td>⚡ 프리미엄 밴</td><td colspan="2">⚡ 프리미엄 밴은 <b style="color:var(--blue-600)">100% 예약 확정</b> <span class="tag g">플로팅 없음 · 띠배너 전용</span></td></tr>
           </tbody>
         </table>
         <h3>병합 예시</h3>
-        <div class="samp"><div class="band">예약 2배 몰림 ⚡ 공항 예약 시 <b>100% 확정</b></div><div class="cap">수요 + 공항·넥스트</div></div>
+        <div class="samp"><div class="band">예약 2배 몰림 ⚡ 넥스트 예약 시 <b>100% 확정</b></div><div class="cap">수요 + 공항·넥스트</div></div>
         <div class="samp"><div class="band">무료 취소 가능 ⚡ 프리미엄 밴은 <b>100% 예약 확정</b></div><div class="cap">무료 취소 + 프리미엄 밴</div></div>
         <div class="note" style="margin-top:12px"><b>N배는 실시간 실데이터</b>로만. 가짜 수치는 다크패턴/공정위 리스크 (프로토타입은 2배 고정 예시).</div>
       </section>
@@ -247,7 +247,7 @@ extension Nudge {
 extension Guarantee {
   var full: Text {
     switch self {
-    case .air: return Text("⚡ 공항 예약 시 ")   + Text("100% 확정").bold().foregroundColor(.blue600)
+    case .air: return Text("⚡ 넥스트 예약 시 ")   + Text("100% 확정").bold().foregroundColor(.blue600)
     case .van: return Text("⚡ 프리미엄 밴은 ") + Text("100% 예약 확정").bold().foregroundColor(.blue600)
     }
   }
