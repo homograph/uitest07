@@ -39,6 +39,14 @@
   .kw{font-size:12px; color:var(--accent); background:var(--accent-soft); border:0; border-radius:20px; padding:5px 11px; cursor:pointer; font-family:inherit}
   .kw:hover{filter:brightness(.97)}
   .kw:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  /* 예약 조건 셀렉터(안내 문구가 이 값에 따라 분기) */
+  .ctxbar{width:390px; max-width:100%; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:9px}
+  .ctxrow{display:flex; align-items:center; gap:10px}
+  .ctxlbl{font-size:12px; color:var(--fg2); width:70px; flex:0 0 auto}
+  .seg{display:inline-flex; background:var(--page-bg); border:1px solid var(--line); border-radius:8px; padding:2px; gap:2px}
+  .seg button{font-family:inherit; font-size:12px; color:var(--fg2); background:transparent; border:0; border-radius:6px; padding:5px 10px; cursor:pointer; white-space:nowrap}
+  .seg button:hover{color:var(--fg)}
+  .seg button.on{background:var(--navy); color:#fff}
 
   /* device */
   .phone{
@@ -201,7 +209,7 @@
     .wrap{min-height:100dvh}
     .stage{padding:0}
     .left{gap:0}
-    .head{display:none}
+    .head,.ctxbar{display:none}
     .phone{width:100%; max-width:none; height:100dvh; border-radius:0; box-shadow:none}
     .foot{z-index:20}
   }
@@ -215,11 +223,26 @@
     <h1>요청사항 · 스마트 안내</h1>
     <p>입력창에 요청을 적어 보세요. 문장 속 키워드를 감지해 관련 안내를 실시간으로 보여줍니다.</p>
     <div class="try"><b>이렇게 해보세요</b>
-      <button class="kw" data-fill="카시트 2개 주세요.">카시트</button>
-      <button class="kw" data-fill="강아지랑 같이 타요.">강아지</button>
-      <button class="kw" data-fill="카니발로 와주세요.">카니발</button>
-      <button class="kw" data-fill="골프백이랑 악기 있어요.">골프백</button>
-      <button class="kw" data-fill="카시트 2개랑 강아지, 골프백, 카니발로 와주세요. 010으로 불러주기 할게요.">전부 감지</button>
+      <button class="kw" data-fill="카시트 필요해요">카시트</button>
+      <button class="kw" data-fill="6명 타요">6명</button>
+      <button class="kw" data-fill="24인치 캐리어 3개랑 골프백 있어요">짐</button>
+      <button class="kw" data-fill="중간에 경유지 들를게요">경유</button>
+      <button class="kw" data-fill="강아지랑 같이 타요">강아지</button>
+      <button class="kw" data-fill="6명이고 카시트랑 강아지, 캐리어 있어요. 중간에 경유하고 010 불러주기요.">전부</button>
+    </div>
+  </div>
+
+  <div class="ctxbar" aria-label="예약 조건(안내 문구가 이 조건에 따라 달라짐)">
+    <div class="ctxrow"><span class="ctxlbl">차종</span>
+      <div class="seg" data-ctx="ride">
+        <button data-val="next" class="on">넥스트</button><button data-val="plus">플러스</button><button data-val="van">프리미엄밴</button>
+      </div>
+    </div>
+    <div class="ctxrow"><span class="ctxlbl">카시트 옵션</span>
+      <div class="seg" data-ctx="seat"><button data-val="off" class="on">미선택</button><button data-val="on">선택</button></div>
+    </div>
+    <div class="ctxrow"><span class="ctxlbl">예약 종류</span>
+      <div class="seg" data-ctx="resv"><button data-val="normal" class="on">일반</button><button data-val="hourly">시간</button></div>
     </div>
   </div>
 
@@ -264,9 +287,9 @@
 
     <section class="dg-sec" id="s-overview">
       <h2><span class="num">1</span>개요</h2>
-      <p class="dg-lead">입력 텍스트의 <b>키워드를 결정론적으로(규칙 매칭)</b> 감지해, 관련 정책 안내 카드를 입력창 바로 아래에 인라인으로 보여줍니다. <b>생성형 AI가 아닙니다</b> — LLM 호출·비결정 출력 없음. 요청사항 화면과 탑승 사유 화면이 <b>같은 컴포넌트</b>를 공유합니다.</p>
+      <p class="dg-lead">입력 텍스트의 <b>키워드를 결정론적으로(규칙 매칭)</b> 감지해, 관련 정책 안내 카드를 입력창 바로 아래에 인라인으로 보여줍니다. <b>생성형 AI가 아닙니다</b> — LLM 호출·비결정 출력 없음. <b>8개 기본 단어(카테고리)</b>에 대한 변형·오타 키워드를 매칭하며, 서버 없이 <b>클라이언트에서만</b> 동작합니다. (Notion 스펙 <code class="i">TADA-5627</code> 기준)</p>
       <p>데이터 흐름: <code class="i">입력(debounce 520ms)</code> → <code class="i">detect(text)</code> → <code class="i">[Advisory]</code> → 상태 매핑 → 카드 리스트 렌더. 네트워크 왕복이 없으므로 기본은 즉시 표시입니다.</p>
-      <div class="callout">핵심 원칙 — ① 규칙 매칭이라 <b>즉시성</b>(스켈레톤은 실제 async 소스일 때만) ② 감지된 안내는 <b>가리지 않고 전부</b> 표시(마지막 입력 키워드가 위) ③ 정책 문구는 단정적, 어시스트 헤더만 부드럽게.</p></div>
+      <div class="callout">핵심 원칙 — ① 규칙 매칭이라 <b>즉시성</b>(스켈레톤은 실제 async 소스일 때만) ② 감지된 안내는 <b>가리지 않고 전부</b> 표시(마지막 입력 키워드가 위) ③ 문구는 <b>현재 예약 조건 기준</b>으로 분기(§3) ④ 정책 문구는 단정적, 어시스트 헤더만 부드럽게.</p></div>
     </section>
 
     <section class="dg-sec" id="s-states">
@@ -285,13 +308,26 @@
     <section class="dg-sec" id="s-detect">
       <h2><span class="num">3</span>감지 로직</h2>
       <ul>
-        <li><b>딕셔너리</b>: 규칙마다 <code class="i">variants[]</code>(오타·동의어). 예: <code class="i">카시트 / 카싯트 / 유아용 의자</code>. 문장에서 <b>가장 먼저 등장</b>하는 변형의 위치를 규칙 대표 위치로.</li>
-        <li><b>정렬</b>: 규칙별 대표 위치 <b>내림차순</b> → 마지막에 입력된 키워드가 카드 맨 위.</li>
+        <li><b>딕셔너리</b>: 카테고리(기본 단어)마다 <code class="i">kws[]</code>(변형·오타). 예: <code class="i">카시트 / 카싯트 / car seat / 아기 / 쌍둥이</code>. 문장에서 <b>가장 먼저 등장</b>하는 변형 위치를 카테고리 대표 위치로.</li>
+        <li><b>정렬</b>: 카테고리별 대표 위치 <b>내림차순</b> → 마지막에 입력된 키워드가 카드 맨 위. 감지된 카테고리는 <b>전부 표시</b>.</li>
         <li><b>디바운스</b>: 520ms(규칙 매칭이라 짧게). 실제 서버 조회로 바뀌면 스켈레톤 노출.</li>
-        <li><b>오타</b>: 변형 배열로 흡수(카싯트→카시트). 형태소 분석 아님 — 부분 문자열 <code class="i">indexOf</code> 매칭.</li>
-        <li><b>중복 방지</b>: 규칙 id 기준 1규칙=1카드(같은 규칙의 여러 변형이 매칭돼도 1개).</li>
+        <li><b>오타</b>: 변형 배열로 흡수(카싯트→카시트, 강쥐→강아지). 형태소 분석 아님 — 부분 문자열 <code class="i">indexOf</code> 매칭.</li>
+        <li><b>중복 방지</b>: 카테고리 id 기준 1카테고리=1카드(같은 카테고리의 여러 변형이 매칭돼도 1개).</li>
+        <li><b>컨텍스트 분기</b>: 일부 카테고리는 키워드가 트리거하고, <b>문구는 예약 조건</b>(rideType·carSeatOption·예약종류)<b>으로 선택</b>. 예약이 바뀌면(US-04) 현재 조건 기준으로 재계산.</li>
       </ul>
-      <div class="callout warn"><b>확인 필요</b> — 키워드 사전을 <b>클라이언트 번들</b>로 둘지, <b>서버 config(원격 갱신)</b>로 둘지 확정 필요. 정책 문구가 자주 바뀌면 서버 구동 권장(앱 심사 없이 갱신). 아래 코드는 로컬 상수 예시.</div>
+      <h3>8개 카테고리 & 컨텍스트 의존</h3>
+      <table>
+        <tr><th>카테고리</th><th>분기 기준</th><th>대표 키워드</th></tr>
+        <tr><td>탑승 인원 안내</td><td>rideType</td><td>6명, 6인, 여섯명, headcount…</td></tr>
+        <tr><td>짐 적재 안내</td><td>rideType</td><td>캐리어, 24인치, 골프백, 트렁크…</td></tr>
+        <tr><td>아동·카시트 안내</td><td>rideType + carSeatOption</td><td>카시트, car seat, 아기, 쌍둥이…</td></tr>
+        <tr><td>경유·대기 안내</td><td>예약종류(일반/시간)</td><td>경유, 중간에, 픽업, 대기…</td></tr>
+        <tr><td>불러주기 안내</td><td>정적</td><td>010</td></tr>
+        <tr><td>반려동물 탑승 안내</td><td>정적</td><td>강아지, 강쥐, 케이지, cat…</td></tr>
+        <tr><td>차종 선택 안내</td><td>정적</td><td>카니발, 스타리아, 리무진…</td></tr>
+        <tr><td>결제 방식 변경 안내</td><td>정적</td><td>결제, 현장결제, 현금, cash…</td></tr>
+      </table>
+      <div class="callout"><b>사전 소스 = 클라이언트 번들 (확정)</b> — Notion 스펙상 "웹만 배포(서버 없음), 클라에서 키워드 기반으로만 구성"(8/6 결정). 원격 갱신 불필요. <b>전체 키워드·오타 목록(카테고리당 수십 개)은 Notion <code class="i">TADA-5627</code> '스펙 기준'이 정본</b> — 프로토타입/코드에는 대표 변형만 발췌.</div>
     </section>
 
     <section class="dg-sec" id="s-components">
@@ -310,86 +346,103 @@
       <p class="dg-lead">각 코드 카드에서 <b>iOS · SwiftUI / Android · Compose 탭</b>을 전환하세요. 우측 <b>복사</b> 버튼은 현재 탭 코드를 복사합니다.</p>
       <h3>모델 &amp; 딕셔너리</h3>
       <div class="plat ios">iOS · SwiftUI</div>
-<pre><code>struct Advisory: Identifiable {
-    let id: String        // 규칙 id (중복 방지)
+<pre><code>enum RideType { case next, plus, van }
+struct Ctx { var ride: RideType; var carSeat: Bool; var hourly: Bool }   // 예약 조건
+
+struct Advisory: Identifiable {
+    let id: String        // 카테고리 id (중복 방지)
     let keyword: String   // 매칭된 표시 키워드 → 카드 상단 라벨
     let title: String
-    let body: String
-    let action: String?   // 선택 액션칩 (없으면 nil)
+    let body: String      // 컨텍스트로 확정된 문구
+    let action: String?
 }
 
 private struct Rule {
     let id: String
-    let variants: [String]      // 오타·동의어 (먼저 나타나는 것 우선)
-    let title, body: String
+    let kws: [String]             // 변형·오타 (먼저 나타나는 것 우선)
+    let title: String
     let action: String?
+    let msg: (Ctx) -&gt; String      // 예약 조건 → 문구
 }
 
 private let rules: [Rule] = [
-    .init(id: "seat", variants: ["카시트","카싯트","유아용 의자"],
-          title: "아동·카시트 안내",
-          body: "카시트는 최대 1개까지 제공돼요. 2개 이상은 직접 가져와 설치해 주세요.",
-          action: "짐 적재 가이드 보기"),
-    .init(id: "pet", variants: ["강아지","반려동물","고양이","반려견","펫"],
-          title: "반려동물 탑승 안내",
-          body: "반려동물과 함께 타는 경우 케이지를 지참해 주세요.", action: nil),
-    // veh · load · pay · call … 동일 패턴
+    // 컨텍스트 의존: rideType에 따라 문구 분기
+    Rule(id: "load", kws: ["캐리어","24인치","골프백","트렁크","짐"],
+         title: "짐 적재 안내", action: "짐 적재 가이드 보기",
+         msg: { c in
+             switch c.ride {
+             case .plus: return "최대 3개의 캐리어 혹은 골프채까지 실을 수 있습니다."
+             case .van:  return "24인치 캐리어 기준 최대 13개까지 실을 수 있습니다."
+             case .next: return "최대 5개의 캐리어, 골프채까지 실을 수 있습니다."
+             }
+         }),
+    // 정적: 조건 무관
+    Rule(id: "pet", kws: ["강아지","강쥐","케이지","cat","반려동물"],
+         title: "반려동물 탑승 안내", action: nil,
+         msg: { _ in "반려동물이 함께 탑승하는 경우 케이지를 꼭 지참해 주세요." }),
+    // people·seat·stop·call·veh·pay … 전체 키워드는 Notion TADA-5627
 ]</code></pre>
       <div class="plat aos">Android · Compose</div>
-<pre><code>data class Advisory(
-    val id: String,
-    val keyword: String,
-    val title: String,
-    val body: String,
-    val action: String? = null,
+<pre><code>enum class RideType { NEXT, PLUS, VAN }
+data class Ctx(val ride: RideType, val carSeat: Boolean, val hourly: Boolean)  // 예약 조건
+
+data class Advisory(
+    val id: String, val keyword: String,
+    val title: String, val body: String, val action: String? = null,
 )
 
 private data class Rule(
     val id: String,
-    val variants: List&lt;String&gt;,   // 오타·동의어 (먼저 나타나는 것 우선)
+    val kws: List&lt;String&gt;,               // 변형·오타 (먼저 나타나는 것 우선)
     val title: String,
-    val body: String,
     val action: String? = null,
+    val msg: (Ctx) -&gt; String,            // 예약 조건 → 문구
 )
 
 private val rules = listOf(
-    Rule("seat", listOf("카시트","카싯트","유아용 의자"),
-        "아동·카시트 안내",
-        "카시트는 최대 1개까지 제공돼요. 2개 이상은 직접 가져와 설치해 주세요.",
-        "짐 적재 가이드 보기"),
-    Rule("pet", listOf("강아지","반려동물","고양이","반려견","펫"),
-        "반려동물 탑승 안내", "반려동물과 함께 타는 경우 케이지를 지참해 주세요."),
-    // veh · load · pay · call …
+    // 컨텍스트 의존: rideType에 따라 문구 분기
+    Rule("load", listOf("캐리어","24인치","골프백","트렁크","짐"),
+        "짐 적재 안내", "짐 적재 가이드 보기") { c -&gt;
+        when (c.ride) {
+            RideType.PLUS -&gt; "최대 3개의 캐리어 혹은 골프채까지 실을 수 있습니다."
+            RideType.VAN  -&gt; "24인치 캐리어 기준 최대 13개까지 실을 수 있습니다."
+            RideType.NEXT -&gt; "최대 5개의 캐리어, 골프채까지 실을 수 있습니다."
+        }
+    },
+    // 정적
+    Rule("pet", listOf("강아지","강쥐","케이지","cat","반려동물"),
+        "반려동물 탑승 안내") { _ -&gt; "반려동물이 함께 탑승하는 경우 케이지를 꼭 지참해 주세요." },
+    // people·seat·stop·call·veh·pay … 전체 키워드는 Notion TADA-5627
 )</code></pre>
 
       <h3>감지 함수</h3>
       <div class="plat ios">iOS · SwiftUI</div>
-<pre><code>func detect(_ text: String) -&gt; [Advisory] {
+<pre><code>func detect(_ text: String, _ ctx: Ctx) -&gt; [Advisory] {
     var hits: [(adv: Advisory, at: Int)] = []
     for rule in rules {
-        var firstAt: Int? = nil          // 규칙 내 변형 중 가장 먼저 등장 위치
+        var firstAt: Int? = nil          // 카테고리 내 변형 중 가장 먼저 등장
         var matched = ""
-        for v in rule.variants {
+        for v in rule.kws {
             if let r = text.range(of: v) {
                 let at = text.distance(from: text.startIndex, to: r.lowerBound)
                 if firstAt == nil || at &lt; firstAt! { firstAt = at; matched = v }
             }
         }
         if let at = firstAt {
-            hits.append((Advisory(id: rule.id, keyword: matched,
-                title: rule.title, body: rule.body, action: rule.action), at))
+            hits.append((Advisory(id: rule.id, keyword: matched, title: rule.title,
+                body: rule.msg(ctx), action: rule.action), at))   // 문구는 예약 조건으로 확정
         }
     }
     return hits.sorted { $0.at &gt; $1.at }.map(\.adv)   // 마지막 입력이 위로
 }</code></pre>
       <div class="plat aos">Android · Compose</div>
-<pre><code>fun detect(text: String): List&lt;Advisory&gt; =
+<pre><code>fun detect(text: String, ctx: Ctx): List&lt;Advisory&gt; =
     rules.mapNotNull { rule -&gt;
-        rule.variants
+        rule.kws
             .mapNotNull { v -&gt; text.indexOf(v).takeIf { it &gt;= 0 }?.let { it to v } }
             .minByOrNull { it.first }                 // 가장 먼저 등장
             ?.let { (at, word) -&gt;
-                Advisory(rule.id, word, rule.title, rule.body, rule.action) to at
+                Advisory(rule.id, word, rule.title, rule.msg(ctx), rule.action) to at
             }
     }
     .sortedByDescending { it.second }                 // 마지막 입력이 위로
@@ -405,13 +458,13 @@ private val rules = listOf(
     // error → case 없음: 뷰를 렌더하지 않음(조용히 숨김)
 }
 
-$text
-    .removeDuplicates()
+// 텍스트 + 예약 조건 둘 다 감시 → 조건이 바뀌면 문구 재계산(US-04)
+Publishers.CombineLatest($text, $ctx)
     .debounce(for: .milliseconds(520), scheduler: RunLoop.main)
-    .map { t -&gt; GuidanceState in
+    .map { (t, ctx) -&gt; GuidanceState in
         let s = t.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !s.isEmpty else { return .empty }
-        let hits = detect(t)
+        let hits = detect(t, ctx)
         return hits.isEmpty ? .noResult : .result(hits)
     }
     .assign(to: &amp;$state)</code></pre>
@@ -424,15 +477,16 @@ $text
     // Error → 상태 없음: 컴포저블 미방출(조용히 숨김)
 }
 
+// 텍스트 + 예약 조건(ctxFlow) 결합 → 조건 변경 시 재계산(US-04)
 val state: StateFlow&lt;GuidanceState&gt; =
-    snapshotFlow { field.text }
+    combine(snapshotFlow { field.text }, ctxFlow) { t, ctx -&gt; t to ctx }
         .debounce(520)
         .distinctUntilChanged()
-        .mapLatest { t -&gt;
+        .mapLatest { (t, ctx) -&gt;
             when {
-                t.isBlank()         -&gt; GuidanceState.Empty
-                detect(t).isEmpty() -&gt; GuidanceState.NoResult
-                else                -&gt; GuidanceState.Result(detect(t))
+                t.isBlank()              -&gt; GuidanceState.Empty
+                detect(t, ctx).isEmpty() -&gt; GuidanceState.NoResult
+                else                     -&gt; GuidanceState.Result(detect(t, ctx))
             }
         }
         .stateIn(scope, SharingStarted.WhileSubscribed(5_000), GuidanceState.Empty)</code></pre>
@@ -673,13 +727,32 @@ fun RequestTextField(
 
 <script>
 (function(){
+  // 예약 컨텍스트(셀렉터로 변경) — 안내 문구가 이 값에 따라 분기
+  var CTX={ride:"next", seat:false, resv:"normal"};
   var DICT=[
-    {id:"seat", vars:["카시트","카싯트","카시트기","유아용 의자"], title:"아동·카시트 안내", body:"카시트는 최대 1개까지 제공돼요. 2개 이상은 직접 가져와 설치해 주세요.", action:"짐 적재 가이드 보기"},
-    {id:"pet", vars:["강아지","반려동물","고양이","반려견","펫"], title:"반려동물 탑승 안내", body:"반려동물과 함께 타는 경우 케이지를 지참해 주세요."},
-    {id:"veh", vars:["카니발","스타리아","특정 차종","특정 차량"], title:"차종 선택 안내", body:"특정 차종은 요청하실 수 없어요. 차량은 배차 시 자동 배정돼요."},
-    {id:"load", vars:["골프백","캐리어","악기","자전거"], title:"적재 안내", body:"캐리어 5개·골프백까지 실을 수 있어요. 초과 시 다른 차량이 필요할 수 있어요."},
-    {id:"pay", vars:["현장결제","현금","카드결제"], title:"결제 방식 안내", body:"타다 이용이 완료되면 등록된 결제 수단으로 자동 결제돼요."},
-    {id:"call", vars:["불러주기","010","전화번호"], title:"불러주기 안내", body:"불러주기 기능을 쓰면 예약자와 탑승자 모두에게 예약 현황이 공유돼요."}
+    {id:"people", title:"탑승 인원 안내",
+     kws:"2명,두명,2 명,두 명,2 인,2사람,두사람,2 people,2 person,3명,삼명,3 명,세명,세 명,3인,3사람,세사람,3 people,3 person,4명,사명,4 명,네명,네 명,4인,4사람,네사람,4 people,4 person,5명,오명,5 명,다섯명,5인,5사람,다섯사람,5 people,5 person,6명,육명,6 명,여섯명,6인,6사람,여섯사람,6 people,6 person,7명,칠명,7 명,일곱명,7인,7사람,일곱사람,7 people,7 person,8명,팔명,8 명,여덟명,8인,8사람,여덟사람,8 people,8 person,9명,구명,9 명,아홉명,9인,9사람,아홉사람,9 people,9 person,10명,십명,10 명,열명,10인,10사람,열사람,10 people,10 person,11명,십일명,11 명,열한명,11인,11사람,열한사람,11 people,11 person,12명,십이명,12 명,열두명,12인,12사람,열두사람,12 people,12 person,13명,십삼명,13 명,열세명,13인,13사람,열세사람,13 people,13 person,인원,인원 수,인워,인원숫자,정원,제한인원,정원수,capacity,사람,몇 명,몇명,몇 인,몇사람,명수,headcount".split(","),
+     msg:function(c){return c.ride==="plus"?"플러스 차량에는 아동 포함 최대 3인까지 탑승 가능합니다.":c.ride==="van"?"프리미엄밴에는 아동 포함 최대 13인까지 탑승 가능합니다.":"넥스트 차량에는 아동 포함 최대 5인까지 탑승 가능합니다.";}},
+    {id:"load", title:"짐 적재 안내", action:"짐 적재 가이드 보기",
+     kws:"캐리어,케리어,캐리여,케리여,캐리오,캐뤼어,케뤼어,인치,inch,inches,인취,인찌,carriers,carry-on,carry on,luggage,박스,박쓰,빡스,box,boxes,baggage,트렁크,트렁커,트렁끄,트렁크스,trunk,trunck,기내용,기내영,기내욘,기내용품,기내용짐,cabin,cabin bag,이민가방,이민가빵,이민용가방,이민짐,이민캐리어,골프백,골프벡,골프빽,골프가방,golf bag,golfbag,golf pack,자전거,자정거,자잔거,자전거짐,자전거가방,bike,bicycle,cycle,자젼거,자전꺼,악기,악끼,악긔,악기류,악기짐,instrument,악기케이스,짐,이사짐,이삿짐,이삿찜,suitcase,suit case,유모차,유아차,여행가방".split(","),
+     msg:function(c){return c.ride==="plus"?"최대 3개의 캐리어 혹은 골프채까지 실을 수 있습니다.":c.ride==="van"?"24인치 캐리어 기준 최대 13개까지 실을 수 있습니다.":"최대 5개의 캐리어, 골프채까지 실을 수 있습니다.";}},
+    {id:"seat", title:"아동·카시트 안내",
+     kws:"카시트,카시뜨,카싯트,카싯,카시트요,carseat,car seat,아기,애기,애긔,애깅이,아긔,baby,toddler,child,children,신생아,newborn,신샹아,갓난쟁이,갓난아기,간난쟁이,쌍둥이,쌍동이,쌍둥,twin,트윈,삼둥이,kid,kids,babies,개월".split(","),
+     msg:function(c){return (c.ride==="plus"||c.ride==="van")?"해당 차량 옵션에서는 카시트가 제공되지 않습니다.":c.seat?"카시트는 1개만 제공됩니다. 2개 이상의 카시트가 필요하신 경우, 별도 지참해 주세요.":"부가서비스에서 카시트를 최대 1개까지 신청하실 수 있습니다.";}},
+    {id:"stop", title:"경유·대기 안내",
+     kws:"경유,중간에,중간정차,중간들림,중간정도,중간경유,중간승차,중간에 정차,중간쯤,중간 위치,중간 경유지,중간에 잠깐,픽업,pick up,pick-up,pickup,대기".split(","),
+     msg:function(c){return c.resv==="hourly"?"경유지에서의 대기 시간까지 포함된 시간으로 예약해 주세요.":"지금 예약에는 경유지에서의 대기 시간이 포함되지 않아요. 대기가 예상된다면 시간 예약을 이용해 주세요.";}},
+    {id:"call", title:"불러주기 안내", kws:["010"],
+     msg:function(){return "탑승자 정보를 변경하면 예약자·탑승자 모두 예약 현황을 확인할 수 있습니다.";}},
+    {id:"pet", title:"반려동물 탑승 안내",
+     kws:"반려동물,강아지,강쥐,강쥐요,갱얼쥐,댕댕이,멍멍이,반려견,dog,puppy,소형견,소형 강아지,중형견,중간개,동물,애완동물,펫,pet,애완,애견,애묘,동물동반,pet 동반,고양이,냥이,캣,cat,반려묘,반려고양이,길고양이,kitten,animal,케이지,이동장,이동가방,이동박스,펫케이지,펫캐리어,애완동물용 캐리어,반려동물 가방,켄넬박스,켄넬가방,크레이트,소프트크레이트,crate,kennel".split(","),
+     msg:function(){return "반려동물이 함께 탑승하는 경우 케이지를 꼭 지참해 주세요.";}},
+    {id:"veh", title:"차종 선택 안내",
+     kws:"스타리아,카니발,리무진,staria,carnival,limousine,그랜저,K5,K7,K8,알파드,리클라이너".split(","),
+     msg:function(){return "특정 차종을 요청하실 수 없어요.";}},
+    {id:"pay", title:"결제 방식 안내",
+     kws:"결제,현장결제,현금,cash,pay on site".split(","),
+     msg:function(){return "타다 이용이 완료되면 등록된 결제 수단으로 결제가 자동으로 진행되요. 호출 후 결제 방식을 변경할 수 없습니다.";}}
   ];
   var STAR='<svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5l2.3 7.2 7.2 2.3-7.2 2.3L12 22.5l-2.3-7.2L2.5 13l7.2-2.3z" fill="#32a2fa"/></svg>';
   var ARROW='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="#383d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -693,28 +766,15 @@ fun RequestTextField(
 
   function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
-  function allRanges(v){
-    var r=[];
-    for(var i=0;i<DICT.length;i++){var vs=DICT[i].vars;
-      for(var j=0;j<vs.length;j++){var w=vs[j],from=0,idx;
-        while((idx=v.indexOf(w,from))!==-1){r.push([idx,idx+w.length]); from=idx+w.length;}
-      }}
-    r.sort(function(a,b){return a[0]-b[0]});
-    var m=[];for(var k=0;k<r.length;k++){if(m.length&&r[k][0]<=m[m.length-1][1]){if(r[k][1]>m[m.length-1][1])m[m.length-1][1]=r[k][1];}else m.push(r[k].slice());}
-    return m;
-  }
   function highlight(v){
     if(!v) return '<span class="ph">'+esc(PH)+'</span>';
-    var m=allRanges(v),out='',pos=0;
-    for(var i=0;i<m.length;i++){out+=esc(v.slice(pos,m[i][0]))+'<mark>'+esc(v.slice(m[i][0],m[i][1]))+'</mark>';pos=m[i][1];}
-    out+=esc(v.slice(pos));
-    return out.replace(/\n$/,'\n​');
+    return esc(v).replace(/\n$/,'\n​');
   }
   function detect(v){
     var act=[];
     for(var i=0;i<DICT.length;i++){var e=DICT[i],best=-1,word="";
-      for(var j=0;j<e.vars.length;j++){var idx=v.indexOf(e.vars[j]);if(idx!==-1&&(best===-1||idx<best)){best=idx;word=e.vars[j];}}
-      if(best!==-1)act.push({e:e,index:best,word:word});
+      for(var j=0;j<e.kws.length;j++){var idx=v.indexOf(e.kws[j]);if(idx!==-1&&(best===-1||idx<best)){best=idx;word=e.kws[j];}}
+      if(best!==-1)act.push({e:e,index:best,word:word,body:e.msg(CTX)});
     }
     act.sort(function(a,b){return b.index-a.index;}); // last-typed on top
     return act;
@@ -724,7 +784,7 @@ fun RequestTextField(
     var foot=act?'<div class="chip-row">'+act+'</div>':'';
     return '<div class="card fade" style="animation-delay:'+((i||0)*90)+'ms">'+
       '<div class="kw-label">‘'+esc(a.word)+'’</div>'+
-      '<h4>'+a.e.title+'</h4><p>'+a.e.body+'</p>'+foot+'</div>';
+      '<h4>'+a.e.title+'</h4><p>'+a.body+'</p>'+foot+'</div>';
   }
   function renderGuide(v){
     if(!v.trim()){ guide.innerHTML='<div class="helper"><span class="dot"></span>참고할 안내가 있으면 여기에 보여드려요.</div>'; updatePeek(); return; }
@@ -778,6 +838,19 @@ fun RequestTextField(
   ta.addEventListener('scroll',function(){bd.scrollTop=ta.scrollTop;});
   document.querySelectorAll('[data-fill]').forEach(function(b){
     b.addEventListener('click',function(){ta.value=b.getAttribute('data-fill').slice(0,100);expanded=false;render();ta.focus();});
+  });
+  // 예약 조건 셀렉터 → CTX 갱신 후 안내 즉시 재렌더(문구 분기)
+  document.querySelectorAll('.seg').forEach(function(seg){
+    var key=seg.getAttribute('data-ctx');
+    seg.querySelectorAll('button').forEach(function(b){
+      b.addEventListener('click',function(){
+        seg.querySelectorAll('button').forEach(function(x){x.classList.remove('on');});
+        b.classList.add('on');
+        var val=b.getAttribute('data-val');
+        if(key==='seat')CTX.seat=(val==='on'); else CTX[key]=val;
+        if(ta.value.trim())renderGuide(ta.value);
+      });
+    });
   });
   cta.addEventListener('click',function(){
     if(cta.disabled)return; toast.classList.add('on');
