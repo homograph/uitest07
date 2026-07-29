@@ -41,6 +41,8 @@
   .kw:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
   /* 예약 조건 셀렉터(안내 문구가 이 값에 따라 분기) */
   .ctxbar{width:390px; max-width:100%; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:12px 14px; display:flex; flex-direction:column; gap:9px}
+  .fieldnote{width:390px; max-width:100%; font-size:11.5px; line-height:1.5; color:var(--fg2); margin:0; padding:0 2px}
+  .fieldnote b{color:var(--fg)}
   .ctxrow{display:flex; align-items:center; gap:10px}
   .ctxlbl{font-size:12px; color:var(--fg2); width:70px; flex:0 0 auto}
   .seg{display:inline-flex; background:var(--page-bg); border:1px solid var(--line); border-radius:8px; padding:2px; gap:2px}
@@ -213,7 +215,7 @@
     .wrap{min-height:100dvh}
     .stage{padding:0}
     .left{gap:0}
-    .head,.ctxbar{display:none}
+    .head,.ctxbar,.fieldnote{display:none}
     .phone{width:100%; max-width:none; height:100dvh; border-radius:0; box-shadow:none}
     .foot{z-index:20}
   }
@@ -249,6 +251,8 @@
       <div class="seg" data-ctx="resv"><button data-val="normal" class="on">일반</button><button data-val="hourly">시간</button></div>
     </div>
   </div>
+
+  <p class="fieldnote">↓ 입력창은 <b>min 52</b>에서 내용 따라 확장하고, <b>maxHeight 도달 시 내부 스크롤</b>됩니다. 요청사항(100자)은 대개 상한 전에 멈춰요. (가이드 → 텍스트 필드 참고)</p>
 
   <div class="phone">
     <div class="appbar">
