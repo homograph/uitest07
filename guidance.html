@@ -375,7 +375,7 @@ private struct Rule {
 private let rules: [Rule] = [
     // 컨텍스트 의존: rideType에 따라 문구 분기
     Rule(id: "load", kws: ["캐리어","24인치","골프백","트렁크","짐"],
-         title: "짐 적재 안내", action: "짐 적재 가이드 보기",
+         title: "짐 적재 안내", action: "수하물 가이드 보기",
          msg: { c in
              switch c.ride {
              case .plus: return "최대 3개의 캐리어 혹은 골프채까지 실을 수 있습니다."
@@ -409,7 +409,7 @@ private data class Rule(
 private val rules = listOf(
     // 컨텍스트 의존: rideType에 따라 문구 분기
     Rule("load", listOf("캐리어","24인치","골프백","트렁크","짐"),
-        "짐 적재 안내", "짐 적재 가이드 보기") { c -&gt;
+        "짐 적재 안내", "수하물 가이드 보기") { c -&gt;
         when (c.ride) {
             RideType.PLUS -&gt; "최대 3개의 캐리어 혹은 골프채까지 실을 수 있습니다."
             RideType.VAN  -&gt; "24인치 캐리어 기준 최대 13개까지 실을 수 있습니다."
@@ -739,7 +739,7 @@ fun RequestTextField(
     {id:"people", title:"탑승 인원 안내",
      kws:"2명,두명,2 명,두 명,2 인,2사람,두사람,2 people,2 person,3명,삼명,3 명,세명,세 명,3인,3사람,세사람,3 people,3 person,4명,사명,4 명,네명,네 명,4인,4사람,네사람,4 people,4 person,5명,오명,5 명,다섯명,5인,5사람,다섯사람,5 people,5 person,6명,육명,6 명,여섯명,6인,6사람,여섯사람,6 people,6 person,7명,칠명,7 명,일곱명,7인,7사람,일곱사람,7 people,7 person,8명,팔명,8 명,여덟명,8인,8사람,여덟사람,8 people,8 person,9명,구명,9 명,아홉명,9인,9사람,아홉사람,9 people,9 person,10명,십명,10 명,열명,10인,10사람,열사람,10 people,10 person,11명,십일명,11 명,열한명,11인,11사람,열한사람,11 people,11 person,12명,십이명,12 명,열두명,12인,12사람,열두사람,12 people,12 person,13명,십삼명,13 명,열세명,13인,13사람,열세사람,13 people,13 person,인원,인원 수,인워,인원숫자,인운,정원,정운,정언,제한인원,정원수,capacity,사람,사라믄,몇 명,몇명,몇 인,몇사람,몇명이요,명수,명 인원,headcount".split(","),
      msg:function(c){return c.ride==="plus"?"플러스 차량에는 아동 포함 최대 3인까지 탑승 가능합니다.":c.ride==="van"?"프리미엄밴에는 아동 포함 최대 13인까지 탑승 가능합니다.":"넥스트 차량에는 아동 포함 최대 5인까지 탑승 가능합니다.";}},
-    {id:"load", title:"짐 적재 안내", action:"짐 적재 가이드 보기",
+    {id:"load", title:"짐 적재 안내", action:"수하물 가이드 보기",
      kws:"캐리어,케리어,캐리여,케리여,캐리오,캐뤼어,케뤼어,인치,inch,inches,인취,인찌,carriers,carry-on,carry on,luggage,박스,박쓰,박수,빡스,box,bax,boxes,baggage,트렁크,트렁커,트렁끄,트렁ㅋ,트렁쿤,트렁크스,트렁,trunk,trunck,trnk,기내용,기내영,기네여,기내욘,기내용품,기내용짐,cabin,cabin bag,이민가방,이민가빵,이미인가방,이민용가방,이민짐,이민캐리어,골프백,골프벡,골프빽,골프가방,golf bag,golfbag,golf pack,자전거,자정거,자잔거,자전거짐,자전거가방,bike,bicycle,cycle,자젼거,자전꺼,악기,악끼,악긔,악기류,악기짐,instrument,instument,악기케이스,짐,이사짐,이삿짐,이사지므,이삿찜,suitcase,suit case,case,유모차,유아차,여행가방".split(","),
      msg:function(c){return c.ride==="plus"?"최대 3개의 캐리어 혹은 골프채까지 실을 수 있습니다.":c.ride==="van"?"24인치 캐리어 기준 최대 13개까지 실을 수 있습니다.":"최대 5개의 캐리어, 골프채까지 실을 수 있습니다.";}},
     {id:"seat", title:"아동·카시트 안내",
