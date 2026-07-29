@@ -94,7 +94,7 @@
   .assist span{font-size:13px; color:#868b9c; font-weight:400; line-height:18px}
   .assist svg{flex:0 0 auto}
   .card{background:transparent; border-top:1px solid #f5f6f7; padding:18px 0; margin:0}
-  .card h4{margin:0 0 6px; font-size:16px; font-weight:700; color:#262a38; line-height:24px}
+  .card h4{margin:0 0 6px; font-size:16px; font-weight:500; color:#262a38; line-height:24px}
   .card p{margin:0; font-size:14px; line-height:20px; color:#383d4f}
   .kw-label{font-size:12px; color:#73788b; font-weight:500; margin:0 0 6px; line-height:16px}
   .chip-row{display:flex; justify-content:flex-end; margin-top:6px}
@@ -296,10 +296,10 @@
       <h2><span class="num">2</span>상태 머신</h2>
       <table>
         <tr><th>상태</th><th>조건</th><th>표시</th></tr>
-        <tr><td><code class="i">empty</code></td><td>입력 없음/공백</td><td>얇은 헬퍼 한 줄 "참고할 안내가 있으면 여기에 보여드려요."</td></tr>
+        <tr><td><code class="i">empty</code></td><td>입력 없음/공백</td><td>✦ 헬퍼(회색 별 #868B9C) "요청 내용을 분석해 참고할 만한 정보를 안내해 드려요."</td></tr>
         <tr><td><code class="i">analyzing</code></td><td>실제 async 소스일 때만</td><td>스켈레톤(shimmer) + "요청 내용 분석 중"</td></tr>
         <tr><td><code class="i">result(N)</code></td><td>키워드 1개 이상</td><td>어시스트 헤더 + 카드 N개(전부)</td></tr>
-        <tr><td><code class="i">noResult</code></td><td>입력은 있으나 키워드 0개</td><td>헬퍼 "지금은 따로 안내드릴 내용이 없어요."</td></tr>
+        <tr><td><code class="i">noResult</code></td><td>입력은 있으나 키워드 0개</td><td>empty와 <b>동일 헬퍼</b>(Figma "결과없음/입력없음" 단일 상태)</td></tr>
         <tr><td><code class="i">error</code></td><td>규칙 로드 실패 등</td><td><b>조용히 숨김</b> — 뷰 자체를 렌더하지 않음</td></tr>
       </table>
       <p>부가 상태: <b>CTA</b>는 입력이 비면 disabled(#99A5C0). <b>키보드</b> up/down에 따라 CTA가 키보드 위로 부상(§6).</p>
@@ -507,7 +507,7 @@ val state: StateFlow&lt;GuidanceState&gt; =
             Text("‘\(adv.keyword)’")
                 .spoqa(.medium, 12).foregroundColor(Color(hex: 0x73788B))
             Text(adv.title)
-                .spoqa(.bold, 16).foregroundColor(Color(hex: 0x262A38))
+                .spoqa(.medium, 16).foregroundColor(Color(hex: 0x262A38))
             Text(adv.body)
                 .spoqa(.regular, 14).lineSpacing(6)        // 14 → lh 20
                 .foregroundColor(Color(hex: 0x383D4F))
@@ -531,7 +531,7 @@ fun AdvisoryCard(adv: Advisory) {
     ) {
         Text("‘${adv.keyword}’", fontFamily = Spoqa, fontWeight = FontWeight.Medium,
             fontSize = 12.sp, color = Color(0xFF73788B))
-        Text(adv.title, fontFamily = Spoqa, fontWeight = FontWeight.Bold,
+        Text(adv.title, fontFamily = Spoqa, fontWeight = FontWeight.Medium,
             fontSize = 16.sp, lineHeight = 24.sp, color = Color(0xFF262A38))
         Text(adv.body, fontFamily = Spoqa, fontWeight = FontWeight.Normal,
             fontSize = 14.sp, lineHeight = 20.sp, color = Color(0xFF383D4F))
@@ -703,8 +703,7 @@ fun RequestTextField(
         <tr><th>키</th><th>문안</th></tr>
         <tr><td>헤더</td><td>요청 내용에서 참고할 점 <b>{N}</b>개를 찾았어요</td></tr>
         <tr><td>분석 중</td><td>요청 내용 분석 중</td></tr>
-        <tr><td>empty</td><td>참고할 안내가 있으면 여기에 보여드려요.</td></tr>
-        <tr><td>noResult</td><td>지금은 따로 안내드릴 내용이 없어요.</td></tr>
+        <tr><td>empty / noResult</td><td>요청 내용을 분석해 참고할 만한 정보를 안내해 드려요. (✦ 회색 별)</td></tr>
       </table>
       <p>요청사항·탑승사유가 같은 컴포넌트를 공유하므로 어시스트 카피는 <b>기능 중립어 "요청 내용"</b>으로 통일(앱바 타이틀만 화면별로 다름). <code class="i">{N}</code>은 카드 개수, 1개도 "1개"로 표기(복수 규칙 단순화).</p>
     </section>
@@ -762,6 +761,9 @@ fun RequestTextField(
      msg:function(){return "타다 이용이 완료되면 등록된 결제 수단으로 결제가 자동으로 진행되요. 호출 후 결제 방식을 변경할 수 없습니다.";}}
   ];
   var STAR='<svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5l2.3 7.2 7.2 2.3-7.2 2.3L12 22.5l-2.3-7.2L2.5 13l7.2-2.3z" fill="#32a2fa"/></svg>';
+  // 결과없음/입력없음 헬퍼용 회색 별(Figma 57099:129953: Star #868B9C 16px)
+  var STAR_GRAY='<svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="flex:0 0 auto"><path d="M12 1.5l2.3 7.2 7.2 2.3-7.2 2.3L12 22.5l-2.3-7.2L2.5 13l7.2-2.3z" fill="#868b9c"/></svg>';
+  var HELPER_MSG='요청 내용을 분석해 참고할 만한 정보를 안내해 드려요.';
   var ARROW='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="#383d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var ta=document.getElementById('ta'), bd=document.getElementById('bd'), cnt=document.getElementById('cnt'),
       guide=document.getElementById('guide'), cta=document.getElementById('cta'),
@@ -794,9 +796,9 @@ fun RequestTextField(
       '<h4>'+a.e.title+'</h4><p>'+a.body+'</p>'+foot+'</div>';
   }
   function renderGuide(v){
-    if(!v.trim()){ guide.innerHTML='<div class="helper"><span class="dot"></span>참고할 안내가 있으면 여기에 보여드려요.</div>'; updatePeek(); return; }
+    if(!v.trim()){ guide.innerHTML='<div class="helper">'+STAR_GRAY+'<span>'+HELPER_MSG+'</span></div>'; updatePeek(); return; }
     var act=detect(v);
-    if(!act.length){ guide.innerHTML='<div class="helper"><span class="dot"></span>지금은 따로 안내드릴 내용이 없어요.</div>'; updatePeek(); return; }
+    if(!act.length){ guide.innerHTML='<div class="helper">'+STAR_GRAY+'<span>'+HELPER_MSG+'</span></div>'; updatePeek(); return; }
     var n=act.length;
     var headText='요청 내용에서 참고할 점 '+n+'개를 찾았어요';
     var head='<div class="assist">'+STAR+'<span>'+headText+'</span></div>';
