@@ -154,7 +154,11 @@
   .dg-nav{position:sticky; top:0; z-index:30; display:flex; flex-wrap:wrap; gap:6px; margin:0 0 26px; padding:14px 0 14px; border-bottom:1px solid var(--line); background:var(--page-bg)}
   .dg-nav a{font-size:12px; color:var(--fg2); text-decoration:none; padding:5px 11px; border-radius:20px; background:var(--panel); border:1px solid var(--line)}
   .dg-nav a:hover{color:#fff; background:var(--accent); border-color:var(--accent)}
+  .dg-nav a.on{color:#fff; background:var(--navy); border-color:var(--navy)}
   .dg-sec{margin:0 0 38px; scroll-margin-top:20px}
+  /* 탭 모드(JS 활성): 한 섹션만 표시. JS 없으면 전체 스크롤 폴백 */
+  .devguide.tabbed .dg-sec{display:none}
+  .devguide.tabbed .dg-sec.active{display:block; margin-bottom:12px}
   .dg-sec h2{font-size:19px; font-weight:700; margin:0 0 8px; display:flex; align-items:baseline; gap:9px}
   .dg-sec h2 .num{font-size:12px; font-weight:700; color:var(--accent); background:var(--accent-soft); width:22px; height:22px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center; flex:0 0 auto; align-self:center}
   .dg-sec h3{font-size:14px; font-weight:700; margin:20px 0 8px}
@@ -920,6 +924,24 @@ fun RequestTextField(
       card.appendChild(hd);
       group.forEach(function(u){card.appendChild(u.pre);});
     }
+  })();
+  // 개발 가이드: nav를 탭으로 — 클릭 시 해당 섹션만 표시(앵커 스크롤 대신)
+  (function(){
+    var dg=document.querySelector('.devguide');
+    if(!dg)return;
+    var links=[].slice.call(dg.querySelectorAll('.dg-nav a'));
+    var secs=[].slice.call(dg.querySelectorAll('.dg-sec'));
+    if(!links.length||!secs.length)return;
+    dg.classList.add('tabbed');
+    function show(id){
+      secs.forEach(function(s){s.classList.toggle('active', s.id===id);});
+      links.forEach(function(a){a.classList.toggle('on', a.getAttribute('href')==='#'+id);});
+      window.scrollTo(0,0); // 새 섹션을 처음부터 보이게(즉시)
+    }
+    links.forEach(function(a){
+      a.addEventListener('click',function(e){e.preventDefault();show(a.getAttribute('href').slice(1));});
+    });
+    show(secs[0].id); // 기본: 첫 섹션(개요)
   })();
   // 키보드 위로 버튼 올리기 — 실기기에서 입력 포커스 시 버튼이 키보드 위에 붙음(내리면 하단)
   var foot=document.querySelector('.foot');
