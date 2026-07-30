@@ -951,7 +951,7 @@ DSTextField(value = note, onValueChange = { note = it },
     var v=ta.value;
     bd.innerHTML=highlight(v);
     ta.style.height='auto'; ta.style.height=Math.min(Math.max(ta.scrollHeight,52),112)+'px'; // min 52 ~ max 112(내용 초과 시 내부 스크롤)
-    var n=v.length, atMax=n>=100;
+    var n=Math.min(v.length,100), atMax=n>=100;
     cnt.className='counter'+(atMax?' max':'');
     cnt.innerHTML='<span class="n">'+n+'</span><span class="m">/100</span>';
     cta.disabled=!v.trim();
@@ -962,7 +962,12 @@ DSTextField(value = note, onValueChange = { note = it },
     skeleton();
     timer=setTimeout(function(){renderGuide(ta.value);},520);
   }
-  ta.addEventListener('input',render);
+  // 글자수 상한 강제 — maxlength는 IME 조합 중엔 못 막으므로 JS로 100자 절단
+  var composing=false;
+  function clampLen(){ if(ta.value.length>100){ ta.value=ta.value.slice(0,100); } }
+  ta.addEventListener('compositionstart',function(){composing=true;});
+  ta.addEventListener('compositionend',function(){composing=false; clampLen(); render();});
+  ta.addEventListener('input',function(){ if(!composing) clampLen(); render(); });
   ta.addEventListener('scroll',function(){bd.scrollTop=ta.scrollTop;});
   document.querySelectorAll('[data-fill]').forEach(function(b){
     b.addEventListener('click',function(){ta.value=b.getAttribute('data-fill').slice(0,100);expanded=false;render();ta.focus();});
