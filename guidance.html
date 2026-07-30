@@ -132,15 +132,6 @@
   .peek.show{opacity:1; transform:translateX(-50%) translateY(0); pointer-events:auto}
   .peek .peek-n{font-weight:700}
 
-  /* nice-to-have: 스크롤로 입력이 사라지면 접힌 입력 앵커 */
-  .minibar{flex:0 0 auto; overflow:hidden; max-height:0; cursor:pointer; background:var(--white);
-    border-bottom:1px solid var(--dline); transition:max-height .22s ease}
-  .minibar.show{max-height:54px}
-  .minibar-inner{display:flex; align-items:center; gap:10px; padding:11px 20px}
-  .minibar-txt{flex:1 1 auto; min-width:0; font-size:14px; color:#5a6070;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .minibar-edit{flex:0 0 auto; display:flex; align-items:center; gap:3px;
-    font-size:13px; font-weight:500; color:var(--blue)}
 
   .legend{max-width:520px;width:100%;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
   .lg{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
@@ -202,7 +193,7 @@
     .nth{background:#3a2f0a; color:#e6c869}
   }
 
-  @media (prefers-reduced-motion:reduce){.bar.shim{animation:none}.fade{animation:none}.minibar{transition:none}}
+  @media (prefers-reduced-motion:reduce){.bar.shim{animation:none}.fade{animation:none}}
 
   /* 태블릿 이하: 개발 가이드 숨김(데스크톱 전용), 폰만 중앙 */
   @media (max-width:900px){
@@ -258,12 +249,6 @@
     <div class="appbar">
       <div class="statusbar"><span class="time">12:45</span></div>
       <div class="navbar"><span class="back">‹</span><span class="ttl">요청사항</span></div>
-    </div>
-    <div class="minibar" id="minibar" role="button" tabindex="0" aria-label="입력 내용 수정하러 이동">
-      <div class="minibar-inner">
-        <span class="minibar-txt" id="minibarTxt"></span>
-        <span class="minibar-edit">수정<svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 20h4L18 10l-4-4L4 16v4z" stroke="#0086ea" stroke-width="2" stroke-linejoin="round"/></svg></span>
-      </div>
     </div>
     <div class="scroll">
       <div class="inputCard">
@@ -911,8 +896,7 @@ DSTextField(value = note, onValueChange = { note = it },
   var ARROW='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="#383d4f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var ta=document.getElementById('ta'), bd=document.getElementById('bd'), cnt=document.getElementById('cnt'),
       guide=document.getElementById('guide'), cta=document.getElementById('cta'),
-      toast=document.getElementById('toast'), peek=document.getElementById('peek'),
-      minibar=document.getElementById('minibar'), minibarTxt=document.getElementById('minibarTxt');
+      toast=document.getElementById('toast'), peek=document.getElementById('peek');
   var tadaCol=getComputedStyle(document.documentElement).getPropertyValue('--tada').trim()||'#32a2fa';
   var PH="예: 24인치 캐리어와 골프백이 2개 있어요";
   var timer=null, expanded=false, lastKey="";
@@ -960,15 +944,6 @@ DSTextField(value = note, onValueChange = { note = it },
     if(moreBelow){ peek.querySelector('.peek-n').textContent=cards; peek.classList.add('show'); }
     else peek.classList.remove('show');
   }
-  // 접힌 입력 앵커: 입력필드가 스크롤로 사라지면 앱바 아래 요약바 노출
-  function updateMinibar(){
-    if(!minibar)return;
-    var sc=document.querySelector('.scroll'), ic=document.querySelector('.inputCard');
-    if(!sc||!ic){ minibar.classList.remove('show'); return; }
-    var off=ic.getBoundingClientRect().bottom < sc.getBoundingClientRect().top + 4;
-    if(off && ta.value.trim()){ minibarTxt.textContent=ta.value.replace(/\s+/g,' ').trim(); minibar.classList.add('show'); }
-    else minibar.classList.remove('show');
-  }
   function skeleton(){
     guide.innerHTML='<div class="ai-panel analyzing"><div class="assist">'+STAR+'<span>요청 내용 분석 중</span></div><div class="bar shim" style="width:70%;margin-top:6px"></div><div class="bar shim" style="width:45%;margin-bottom:0"></div></div>';
   }
@@ -1009,17 +984,12 @@ DSTextField(value = note, onValueChange = { note = it },
     if(cta.disabled)return; toast.classList.add('on');
     setTimeout(function(){toast.classList.remove('on');},1400);
   });
-  document.querySelector('.scroll').addEventListener('scroll',function(){updatePeek();updateMinibar();});
-  window.addEventListener('resize',function(){updatePeek();updateMinibar();});
+  document.querySelector('.scroll').addEventListener('scroll',updatePeek);
+  window.addEventListener('resize',updatePeek);
   if(peek){
     var goDown=function(){var sc=document.querySelector('.scroll');sc.scrollTo({top:sc.scrollHeight,behavior:'smooth'});};
     peek.addEventListener('click',goDown);
     peek.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();goDown();}});
-  }
-  if(minibar){
-    var goTop=function(){var sc=document.querySelector('.scroll');sc.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){ta.focus();},300);};
-    minibar.addEventListener('click',goTop);
-    minibar.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();goTop();}});
   }
   // 개발 가이드: iOS/Android 코드를 기능별 탭 카드로 묶고 복사 버튼 부여
   var COPY_ICON='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2"/><path d="M16 4H6a2 2 0 0 0-2 2v10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
@@ -1099,7 +1069,7 @@ DSTextField(value = note, onValueChange = { note = it },
       if(scrollEl) scrollEl.style.paddingBottom='';
       if(peek){ peek.style.position=''; peek.style.bottom=''; }
     }
-    updatePeek(); updateMinibar();
+    updatePeek();
   }
   if(window.visualViewport){
     window.visualViewport.addEventListener('resize', syncKb);
