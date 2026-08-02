@@ -61,7 +61,7 @@
 
   /* mini band/floating samples */
   .samp{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:6px 0;}
-  .samp .band{background:var(--blue-50);color:var(--g800);font-size:13px;text-align:center;padding:10px 12px;white-space:nowrap;overflow:hidden;}
+  .samp .band{background:var(--blue-50);color:var(--g800);font-size:12px;font-weight:500;line-height:1.4;text-align:center;padding:8px 24px;}
   .samp .band b{color:var(--blue-600);font-weight:700;}
   .samp .band .dk{color:var(--g800);font-weight:700;}
   .samp .float{background:linear-gradient(90deg,var(--g1),var(--g2));color:#fff;font-size:14px;text-align:center;padding:12px 16px;white-space:nowrap;}
@@ -124,7 +124,7 @@
           </div>
           <div class="card">
             <h3 style="margin-top:0">띠배너 (도킹)</h3>
-            <p>풀블리드 <code>blue-50 #E2F2FE</code> 스트립, 13px. 넛지 단독은 <b>풀 문구</b>, ⚡와 함께면 <b>한 줄 병합</b>.</p>
+            <p>풀블리드 <code>blue-50 #E2F2FE</code> 스트립, <b>12px/Medium</b>(확정 Bold), 패딩 <code>8·24</code>. 넛지 단독은 <b>풀 문구</b>, ⚡와 함께면 <b>한 줄 병합</b>. 문구가 길면 <b>2줄 도킹</b>(세로 중앙).</p>
             <div class="samp"><div class="band">🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요</div><div class="cap">넛지 단독 = 풀 문구</div></div>
             <div class="samp"><div class="band">예약 2배 몰림 ⚡ 넥스트 예약 시 <b>100% 확정</b></div><div class="cap">넛지+⚡ 병합 = 넛지 축약 + ⚡ 풀</div></div>
           </div>
@@ -139,14 +139,14 @@
           <thead><tr><th style="width:120px">메시지</th><th>플로팅 · 단독 띠배너 (풀)</th><th>⚡ 병합용 축약</th></tr></thead>
           <tbody>
             <tr><td>🔥 수요</td><td>🔥 이 날은 예약이 평소 대비 <b style="color:var(--blue-600)">2배</b> 몰리고 있어요</td><td>예약 2배 몰림</td></tr>
-            <tr><td>무료 취소</td><td>출발 12시간 전까지 <b>무료 취소</b> 가능해요</td><td>무료 취소 가능</td></tr>
+            <tr><td>무료 취소</td><td>출발 12시간 전까지 <b>무료 취소</b> 가능해요</td><td>12시간 전 무료 취소 가능</td></tr>
             <tr><td>⚡ 공항·넥스트</td><td colspan="2">⚡ 넥스트 예약 시 <b style="color:var(--blue-600)">100% 확정</b> <span class="tag g">플로팅 없음 · 띠배너 전용</span></td></tr>
             <tr><td>⚡ 프리미엄 밴</td><td colspan="2">⚡ 프리미엄 밴은 <b style="color:var(--blue-600)">100% 예약 확정</b> <span class="tag g">플로팅 없음 · 띠배너 전용</span></td></tr>
           </tbody>
         </table>
         <h3>병합 예시</h3>
         <div class="samp"><div class="band">예약 2배 몰림 ⚡ 넥스트 예약 시 <b>100% 확정</b></div><div class="cap">수요 + 공항·넥스트</div></div>
-        <div class="samp"><div class="band">무료 취소 가능 ⚡ 프리미엄 밴은 <b>100% 예약 확정</b></div><div class="cap">무료 취소 + 프리미엄 밴</div></div>
+        <div class="samp"><div class="band">12시간 전 무료 취소 가능 ⚡ 프리미엄 밴은 <b>100% 예약 확정</b></div><div class="cap">무료 취소 + 프리미엄 밴 (길면 2줄 도킹)</div></div>
         <div class="note" style="margin-top:12px"><b>N배는 실시간 실데이터</b>로만. 가짜 수치는 다크패턴/공정위 리스크 (프로토타입은 2배 고정 예시).</div>
       </section>
 
@@ -206,11 +206,12 @@ struct NudgeBar: View {
   var body: some View {
     if let text = (form == .floating ? data.floatingText : data.bandText) {   <span class="c">// 없으면 미표시</span>
       Text(text)
-        .font(.system(size: form == .floating ? 15 : 13))
+        .font(.system(size: form == .floating ? 15 : 12, weight: form == .floating ? .regular : .medium))
         .foregroundColor(form == .floating ? .white : Color(hex: "#383D4F"))
-        .lineLimit(1)
-        .padding(.horizontal, form == .floating ? 18 : 12)
-        .padding(.vertical,   form == .floating ? 12 : 10)
+        .lineLimit(form == .floating ? 1 : 2)                       <span class="c">// 띠배너: 길면 2줄 도킹</span>
+        .multilineTextAlignment(.center)
+        .padding(.horizontal, form == .floating ? 18 : 24)         <span class="c">// 도킹 좌우 24</span>
+        .padding(.vertical,   form == .floating ? 12 : 8)          <span class="c">// 도킹 상하 8</span>
         .frame(maxWidth: .infinity)
         .background(bg(for: form))                       <span class="c">// 그라데이션 / blue-50 (+쉬머)</span>
         .clipShape(RoundedRectangle(cornerRadius: form == .floating ? 8 : 0))
@@ -279,11 +280,13 @@ fun NudgeBar(data: BannerData) {
       )
       .then(if (floating) Modifier.shimmer() else Modifier)               <span class="c">// 쉬머</span>
       .clickable(enabled = !floating &amp;&amp; data.floatable) { form = NudgeForm.Floating }  <span class="c">// 탭 → 플로팅</span>
-      .padding(horizontal = if (floating) 18.dp else 12.dp,
-               vertical   = if (floating) 12.dp else 10.dp),
+      .padding(horizontal = if (floating) 18.dp else 24.dp,      <span class="c">// 도킹 좌우 24</span>
+               vertical   = if (floating) 12.dp else 8.dp),      <span class="c">// 도킹 상하 8</span>
     horizontalArrangement = Arrangement.Center
   ) {
-    Text(text, fontSize = if (floating) 15.sp else 13.sp, maxLines = 1,
+    Text(text, fontSize = if (floating) 15.sp else 12.sp,
+      fontWeight = if (floating) FontWeight.Normal else FontWeight.Medium,
+      maxLines = if (floating) 1 else 2, textAlign = TextAlign.Center,  <span class="c">// 띠배너: 길면 2줄</span>
       color = if (floating) Color.White else Color(0xFF383D4F))
   }
 }
@@ -296,10 +299,14 @@ fun NudgeBar(data: BannerData) {
           <div class="lang">CSS · JS 상태 전이 (실제 구현은 index.html)</div>
 <pre><code><span class="c">/* --e: cubic-bezier(.4,0,.2,1) — 배너 z는 요금바(다음 버튼)보다 아래 → 바 뒤에서 emerge */</span>
 .info-bar{ position:absolute; left:0; right:0; bottom:var(--cta-h); z-index:4;
+  display:flex; align-items:center; justify-content:center; padding:8px 24px;   <span class="c">/* 도킹: 상하8·좌우24 */</span>
   background:#E2F2FE; border-radius:0; opacity:0; overflow:hidden; visibility:hidden;
   transition:left .42s var(--e), right .42s var(--e), bottom .42s var(--e),
     border-radius .42s var(--e), box-shadow .42s var(--e); }
-.info-bar.floating{ left:16px; right:16px; bottom:calc(var(--cta-h) + 16px);
+.info-bar .txt{ font-size:12px; font-weight:500; line-height:1.4; text-align:center; }  <span class="c">/* 띠배너 12px Medium */</span>
+.info-bar:not(.floating) .txt{ white-space:normal; word-break:keep-all; }   <span class="c">/* 길면 2줄 (세로 중앙) */</span>
+.info-bar.floating .txt{ font-size:15px; white-space:nowrap; color:#fff; }
+.info-bar.floating{ left:16px; right:16px; bottom:calc(var(--cta-h) + 16px); padding:12px 18px;
   border-radius:8px; box-shadow:0 4px 12px rgba(25,37,77,.10); }   <span class="c">/* 옅은 단일 (글로우 폐기) */</span>
 .fare-bar{ z-index:5; }                                            <span class="c">/* 배너보다 위 → 배너가 바 뒤에서 올라옴 */</span>
 .info-bar .grad{ position:absolute; inset:0; opacity:0; transition:opacity .42s;
@@ -332,7 +339,7 @@ function rise(intoFloating){
             <tr><td>blue-50 (띠배너 배경)</td><td><code>#E2F2FE</code></td></tr>
             <tr><td>blue-600 (강조)</td><td><code>#0086EA</code></td></tr>
             <tr><td>플로팅 그라데이션 (90°)</td><td><code>#0094F9 → #32A2FA</code></td></tr>
-            <tr><td>텍스트 (띠배너)</td><td><code>gray-800 #383D4F</code>, 13px</td></tr>
+            <tr><td>텍스트 (띠배너)</td><td><code>gray-800 #383D4F</code>, 12px Medium (확정 Bold <code>#0086EA</code>) · 패딩 <code>8·24</code> · 길면 2줄</td></tr>
             <tr><td>navy (다음 버튼)</td><td><code>#19254D</code></td></tr>
             <tr><td>플로팅 섀도우</td><td><code>0 4px 12px rgba(25,37,77,.10)</code> — 옅은 단일</td></tr>
             <tr><td>플로팅 라운드 / 마진 / 요금바 간격</td><td><code>8</code> / 좌우 <code>16</code> / <code>16</code></td></tr>

@@ -113,7 +113,7 @@
   /* 통합 넛지: 밴드(기본) ↔ 플로팅(강조) */
   .infobar{position:absolute;left:0;right:0;bottom:calc(var(--cta-h) + env(safe-area-inset-bottom,0px));
     display:flex;align-items:center;justify-content:center;gap:4px;
-    padding:10px 12px;background:var(--blue-50);border-radius:0;box-shadow:none;overflow:hidden;z-index:4;opacity:0;visibility:hidden;cursor:pointer;
+    padding:8px 24px;background:var(--blue-50);border-radius:0;box-shadow:none;overflow:hidden;z-index:4;opacity:0;visibility:hidden;cursor:pointer;
     transition:left var(--dock-dur) cubic-bezier(.4,0,.2,1),right var(--dock-dur) cubic-bezier(.4,0,.2,1),
       bottom var(--dock-dur) cubic-bezier(.4,0,.2,1),border-radius var(--dock-dur) cubic-bezier(.4,0,.2,1),
       box-shadow var(--dock-dur) cubic-bezier(.4,0,.2,1),transform var(--dock-dur) cubic-bezier(.4,0,.2,1),opacity .18s ease;}
@@ -121,8 +121,10 @@
     background:linear-gradient(90deg, #0094F9 0%, #32A2FA 100%);}
   .ib-shimmer{position:absolute;top:0;bottom:0;left:0;width:var(--shim-w);transform:translateX(var(--shim-x0));
     background:linear-gradient(90deg, transparent 0%, rgba(255,255,255,var(--shim-peak)) 50%, transparent 100%);}
-  .ib-text{position:relative;z-index:1;font-size:13px;line-height:18px;color:var(--gray-800);text-align:center;white-space:nowrap;transition:color var(--dock-dur) ease,font-size var(--dock-dur) ease,line-height var(--dock-dur) ease;}
+  .ib-text{position:relative;z-index:1;font-size:12px;line-height:16px;color:var(--gray-800);text-align:center;white-space:nowrap;transition:color var(--dock-dur) ease,font-size var(--dock-dur) ease,line-height var(--dock-dur) ease;}
   .ib-text b{font-weight:700;color:var(--blue-600);transition:color var(--dock-dur) ease;}
+  /* 도킹(띠배너)은 문구가 길면 2줄 허용 — Figma To-be(9386:9113): pad 8/24, 12px, 세로 중앙 */
+  .infobar:not(.floating) .ib-text{white-space:normal;line-height:1.4;word-break:keep-all;font-weight:500;}
   /* 분할(세그먼트) */
   .ib-text.is-seg{display:flex;gap:6px;align-items:center;white-space:nowrap;}
   .ib-text .ib-seg{background:rgba(90,110,150,.14);border-radius:9999px;padding:3px 10px;}
@@ -548,7 +550,7 @@
   // 넛지: full=플로팅·단독 띠배너 공통 풀 문구 / micro=⚡ 병합용 축약
   const NUDGE={
     demand:    {full:'🔥 이 날은 예약이 평소 대비 <b>2배</b> 몰리고 있어요', micro:'예약 2배 몰림'},
-    freecancel:{full:'출발 12시간 전까지 <b style="color:inherit">무료 취소</b> 가능해요', micro:'무료 취소 가능'}
+    freecancel:{full:'출발 12시간 전까지 <b style="color:inherit">무료 취소</b> 가능해요', micro:'12시간 전 무료 취소 가능'}
   };
   // ⚡ 보장 : 플로팅 없음(띠배너에만). full=단독/병합 공통 문구
   const GUAR={
