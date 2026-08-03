@@ -599,7 +599,9 @@
   bar.addEventListener('click',()=>{  // 띠배너 탭 → 플로팅 (넛지 있을 때만)
     if(!bar.classList.contains('floating') && activeNudge()){
       setForm(true);
-      armDock();   // 즉시 스크롤 도킹 무장 — 펼치는 morph 도중 스크롤해도 그 자리에서 부드럽게 띠배너로 되돌아 안착 (스크롤 우선)
+      // 펼치는 모프 동안은 스크롤 도킹 무시(탭 직후 남은 관성 스크롤의 오발 방지) → 안착 후에만 무장. 진입 플로팅과 동일 규칙.
+      // 실제 앱: 도킹 트리거를 scrollViewDidScroll(관성 포함) 대신 scrollViewWillBeginDragging(새 드래그)로 두면 관성은 구조적으로 무시됨.
+      armTimer=setTimeout(armDock, 460);
     }
   });
 
