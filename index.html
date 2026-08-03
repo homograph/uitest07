@@ -599,7 +599,7 @@
   bar.addEventListener('click',()=>{  // 띠배너 탭 → 플로팅 (넛지 있을 때만)
     if(!bar.classList.contains('floating') && activeNudge()){
       setForm(true);
-      armTimer=setTimeout(armDock, 500);
+      armDock();   // 즉시 스크롤 도킹 무장 — 펼치는 morph 도중 스크롤해도 그 자리에서 부드럽게 띠배너로 되돌아 안착 (스크롤 우선)
     }
   });
 
