@@ -160,9 +160,10 @@
   .bottom .next{width:120px;background:var(--navy);color:#fff;font-size:16px;line-height:24px;font-weight:700;
     border:none;border-radius:4px;padding:14px 18px;flex:0 0 auto;}
 
-  /* 토스트 — 아래 끝이 바텀바 위 10px. 플로팅 넛지는 도킹되고 토스트가 (도킹된) 띠배너를 가림 */
+  /* 토스트 — 띠배너까지 하단 컨테이너에 포함. 아래 끝이 (도킹된) 띠배너 위 10px (가리지 않음).
+     띠배너 없으면 --toast-band=0 → 바텀바 위 10px. 띠배너 높이는 1줄/2줄 가변이라 표시 직전 실측 주입 */
   .toast{position:absolute;left:16px;right:16px;z-index:6;
-    bottom:calc(var(--cta-h) + env(safe-area-inset-bottom,0px) + 10px);
+    bottom:calc(var(--cta-h) + env(safe-area-inset-bottom,0px) + var(--toast-band,0px) + 10px);
     background:rgba(38,42,56,.96);color:#fff;font-size:13px;line-height:18px;text-align:center;
     padding:12px 16px;border-radius:8px;box-shadow:0 8px 24px rgba(20,30,55,.28);
     opacity:0;transform:translateY(8px);pointer-events:none;
@@ -686,7 +687,25 @@
   // 토스트: 뜨면 플로팅 넛지를 도킹시키고, 토스트가 (도킹된) 띠배너를 가림. 소멸 후 띠배너 유지.
   const toast=document.getElementById('toast');
   let toastTimer=null;
+  // 도킹된 띠배너의 최종 높이(1줄/2줄)를 플래시 없이 동기 측정 — 토스트를 밴드 위로 띄우기 위함
+  function dockedBandH(){
+    const html=bandContent();
+    if(html==null) return 0;                                  // 밴드 없음 → 0 (토스트는 바텀바 위 10px)
+    const wasFloat=bar.classList.contains('floating');
+    const savedHTML=ibtext.innerHTML, savedVis=bar.style.visibility, savedOp=bar.style.opacity;
+    const bt=bar.style.transition, it=ibtext.style.transition;
+    bar.style.transition='none'; ibtext.style.transition='none';   // 측정 중 애니 제거 → 최종값
+    bar.classList.remove('floating');
+    ibtext.innerHTML=html; bar.style.visibility='visible'; bar.style.opacity='1';
+    const h=Math.round(bar.getBoundingClientRect().height);
+    bar.classList.toggle('floating', wasFloat);                    // 원상 복구 (paint 전이라 무깜빡)
+    ibtext.innerHTML=savedHTML; bar.style.visibility=savedVis; bar.style.opacity=savedOp;
+    bar.style.transition=bt; ibtext.style.transition=it;
+    return h;
+  }
   function showToast(msg){
+    const h=dockedBandH();
+    toast.style.setProperty('--toast-band', h ? h+'px' : '0px');  // 토스트를 도킹 띠배너 위 10px에
     if(bar.classList.contains('floating')){ clearArm(); setForm(false); }   // 플로팅 → 도킹(트리거)
     toast.textContent=msg;
     toast.classList.add('show');
