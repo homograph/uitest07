@@ -114,6 +114,20 @@
   .fade{animation:fade .25s ease both}
   @keyframes fade{from{opacity:0}to{opacity:1}}
 
+  /* 웨딩 이스터에그 — 프리미엄 카드 */
+  .card.wedding{position:relative; background:linear-gradient(180deg,#fff8f4 0%,#ffffff 72%); border-top:0; border-radius:14px; margin:8px -12px; padding:16px 16px 16px; overflow:hidden; box-shadow:0 8px 24px -14px rgba(201,138,58,.5), inset 0 0 0 1px #f4e3d0}
+  .card.wedding::before{content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#e8b04b,#f4c9a3,#e79ab0,#e8b04b); background-size:200% 100%; animation:goldflow 3s linear infinite}
+  .card.wedding::after{content:''; position:absolute; inset:0; background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.75) 50%,transparent 65%); transform:translateX(-130%); animation:shimmer 1.7s ease .25s 1; pointer-events:none}
+  .card.wedding .kw-label{color:#c98a3a}
+  .card.wedding h4{color:#7a4b52; font-weight:700}
+  .card.wedding p{color:#5f4a4e}
+  @keyframes goldflow{to{background-position:200% 0}}
+  @keyframes shimmer{to{transform:translateX(130%)}}
+  /* 꽃잎 버스트 */
+  .petals{position:absolute; inset:0; overflow:hidden; pointer-events:none; z-index:30}
+  .petal{position:absolute; top:-18px; border-radius:100% 0 100% 0; opacity:0; box-shadow:0 1px 2px rgba(0,0,0,.06); animation-name:petalfall; animation-timing-function:cubic-bezier(.42,.1,.55,1); animation-fill-mode:forwards}
+  @keyframes petalfall{0%{transform:translate(0,-18px) rotate(0);opacity:0}10%{opacity:.95}100%{transform:translate(var(--x,0),820px) rotate(var(--rot,360deg));opacity:0}}
+
   .foot{flex:0 0 auto; background:var(--white); padding-bottom:env(safe-area-inset-bottom)}
   .cta{display:block; width:100%; border:0; border-radius:0; height:60px; font-size:16px; font-weight:700; font-family:inherit; color:#fff; background:var(--navy); cursor:pointer}
   .cta:disabled{background:#99a5c0; color:#c0c8d9; cursor:default}
@@ -192,7 +206,7 @@
     .nth{background:#3a2f0a; color:#e6c869}
   }
 
-  @media (prefers-reduced-motion:reduce){.bar.shim{animation:none}.fade{animation:none}}
+  @media (prefers-reduced-motion:reduce){.bar.shim{animation:none}.fade{animation:none}.card.wedding::before,.card.wedding::after,.petal{animation:none}}
 
   /* 태블릿 이하: 개발 가이드 숨김(데스크톱 전용), 폰만 중앙 */
   @media (max-width:900px){
@@ -264,6 +278,7 @@
       <button class="cta" id="cta" disabled>작성완료</button>
     </div>
     <div class="toast" id="toast">저장했어요</div>
+    <div class="petals" id="petals" aria-hidden="true"></div>
   </div>
   </div><!-- /.left -->
 
@@ -886,7 +901,10 @@ DSTextField(value = note, onValueChange = { note = it },
      msg:function(){return "특정 차종을 요청하실 수 없어요.";}},
     {id:"pay", title:"결제 방식 안내",
      kws:"결제,현장결제,현금,cash,pay on site".split(","),
-     msg:function(){return "타다 이용이 완료되면 등록된 결제 수단으로 결제가 자동으로 진행되요. 호출 후 결제 방식을 변경할 수 없습니다.";}}
+     msg:function(){return "타다 이용이 완료되면 등록된 결제 수단으로 결제가 자동으로 진행되요. 호출 후 결제 방식을 변경할 수 없습니다.";}},
+    {id:"wedding", title:"결혼을 진심으로 축하드려요 💐", special:"wedding",
+     kws:"웨딩,결혼식,결혼,신혼,신혼여행,허니문,wedding,honeymoon,예식,예식장".split(","),
+     msg:function(){return "소중한 첫 시작을 타다와 함께 해주셔서 감사합니다. 오늘 하루, 가장 편안하게 모시겠습니다. 🎉";}}
   ];
   var STAR='<svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 1.5l2.3 7.2 7.2 2.3-7.2 2.3L12 22.5l-2.3-7.2L2.5 13l7.2-2.3z" fill="#32a2fa"/></svg>';
   // 결과없음/입력없음 헬퍼용 회색 별(Figma 57099:129953: Star #868B9C 16px)
@@ -898,7 +916,25 @@ DSTextField(value = note, onValueChange = { note = it },
       toast=document.getElementById('toast'), peek=document.getElementById('peek');
   var tadaCol=getComputedStyle(document.documentElement).getPropertyValue('--tada').trim()||'#32a2fa';
   var PH="예: 24인치 캐리어와 골프백이 2개 있어요";
-  var timer=null, expanded=false, lastKey="";
+  var timer=null, expanded=false, lastKey="", weddingFired=false;
+  // 웨딩 이스터에그: 꽃잎 버스트(첫 감지 1회, reduced-motion 시 생략)
+  function petalBurst(){
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    var host=document.getElementById('petals'); if(!host) return;
+    var COLORS=['#f7c8d6','#fbe0e8','#ffffff','#f3d9a4','#e9b7c6'];
+    for(var i=0;i<26;i++){
+      var p=document.createElement('span'); p.className='petal';
+      var size=8+Math.round(Math.random()*8);
+      p.style.left=(Math.random()*100)+'%'; p.style.width=size+'px'; p.style.height=size+'px';
+      p.style.background=COLORS[i%COLORS.length];
+      var dur=1.6+Math.random()*1.4, delay=Math.random()*0.5;
+      p.style.animationDuration=dur+'s'; p.style.animationDelay=delay+'s';
+      p.style.setProperty('--x',(Math.random()*90-45)+'px');
+      p.style.setProperty('--rot',(Math.random()*720-360)+'deg');
+      host.appendChild(p);
+      (function(el,t){setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},(t+0.7)*1000);})(p,dur+delay);
+    }
+  }
 
   function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -918,13 +954,17 @@ DSTextField(value = note, onValueChange = { note = it },
   function cardHTML(a,i){
     var act=a.e.action?'<button class="chip-btn">'+a.e.action+ARROW+'</button>':'';
     var foot=act?'<div class="chip-row">'+act+'</div>':'';
-    return '<div class="card fade" style="animation-delay:'+((i||0)*90)+'ms">'+
+    var cls='card fade'+(a.e.special==='wedding'?' wedding':'');
+    return '<div class="'+cls+'" style="animation-delay:'+((i||0)*90)+'ms">'+
       '<div class="kw-label">‘'+esc(a.word)+'’</div>'+
       '<h4>'+a.e.title+'</h4><p>'+a.body+'</p>'+foot+'</div>';
   }
   function renderGuide(v){
     if(!v.trim()){ guide.innerHTML='<div class="helper">'+STAR_GRAY+'<span>'+HELPER_MSG+'</span></div>'; updatePeek(); return; }
     var act=detect(v);
+    var hasWedding=act.some(function(a){return a.e.special==='wedding';});
+    if(hasWedding && !weddingFired){ weddingFired=true; petalBurst(); }
+    else if(!hasWedding){ weddingFired=false; }
     if(!act.length){ guide.innerHTML='<div class="helper">'+STAR_GRAY+'<span>'+HELPER_MSG+'</span></div>'; updatePeek(); return; }
     var n=act.length;
     var headText='요청 내용에서 참고할 점 '+n+'개를 찾았어요';
