@@ -174,8 +174,8 @@
           <li><b>예약확인(미리보기)</b> — 진입 시점 형태로 따라옴. 넛지 있으면 그 띠배너도 <b>탭 → 플로팅</b>. ⚡ 단독(플로팅 조건 미충족)은 탭 무반응, 넛지·⚡ 모두 없으면 미표시.</li>
           <li><b>토스트</b> — 뜨면 플로팅 넛지는 <b>띠배너로 도킹</b>되고, 토스트는 <b>도킹된 띠배너 위 10px</b>에 뜬다(띠배너까지 하단 컨테이너 포함 → 가리지 않음). 띠배너 높이는 1줄/2줄 가변이라 표시 직전 실측해 얹음. 띠배너 없으면 바텀바 위 10px.</li>
         </ul>
-        <div class="note"><b>규칙 한 줄:</b> <b>생성 = 바 뒤에서 올라옴</b>(transform translateY <code>0.42s</code> <b>+ 알파 0→1 페이드 <code>0.3s ease-out</code></b> → 덜 튀게) / <b>세션 중 전환(접기·펼치기) = 제자리 모프</b>(left/right/bottom/radius/shadow) <code>0.42s cubic-bezier(.4,0,.2,1)</code>.</div>
-        <p style="font-size:13.5px;color:var(--g600)">배너 z-index는 <b>요금바(다음 버튼)보다 아래</b> → 바 뒤에서 emerge. 상승 거리는 짧게(플로팅 ~14 / 띠배너 ~12) — 시작 opacity 0이라 짧아도 자연스럽고 덜 튐. 플로팅 쉬머: 흰 하이라이트 좌→우 sweep(<code>~155px, α .25</code>). 전이 시작은 rAF 대신 <code>setTimeout</code>(백그라운드 탭 rAF 정지 대비).</p>
+        <div class="note"><b>규칙 한 줄:</b> <b>생성 = 바 뒤에서 올라옴</b>(transform translateY <code>0.42s</code>). 생성은 <b>모프가 아니므로 텍스트·색·배경은 즉시 최종값</b>(폰트 스케일·색 전이 없음 — <code>.creating</code>으로 자식 전이 정지). <b>띠배너</b>는 바 뒤(~46)에서 <b>알파 없이 위치만</b> 슬라이드, <b>플로팅</b>은 열린 공간이라 살짝(~14)만 오르며 <b>알파 0→1 페이드 <code>0.3s</code></b>로 덜 튀게. / <b>세션 중 전환(접기·펼치기) = 제자리 모프</b>(left/right/bottom/radius/shadow·<b>폰트·색</b>) <code>0.42s cubic-bezier(.4,0,.2,1)</code>.</div>
+        <p style="font-size:13.5px;color:var(--g600)">배너 z-index는 <b>요금바(다음 버튼)보다 아래</b> → 바 뒤에서 emerge. <b>띠배너는 바 뒤로 충분히 내려(~46) 숨겼다가 알파 없이 위치만 슬라이드</b>(요금바에 가려 있다 드러남), <b>플로팅은 열린 공간이라 살짝(~14)만 + 알파 0→1 페이드</b>. 생성 중 자식 전이 정지(<code>.creating *{transition:none}</code>)로 폰트 스케일·색 전이를 없앰. 플로팅 쉬머: 흰 하이라이트 좌→우 sweep(<code>~155px, α .25</code>). 전이 시작은 rAF 대신 <code>setTimeout</code>(백그라운드 탭 rAF 정지 대비).</p>
       </section>
 
       <section id="impl">
@@ -233,10 +233,13 @@ struct NudgeBar: View {
 
   <span class="c">// 생성(진입·새로고침): 스크롤 이력으로 끝 형태 결정 후 바 뒤에서 +y → 0 으로 상승·안착</span>
   private func create() {
-    form  = (!scrolled && data.floatable) ? .floating : .band   <span class="c">// 스크롤 전 & 넛지 → 플로팅 / 그 외 → 띠배너</span>
-    riseY = form == .floating ? 14 : 12                   <span class="c">// 시작 오프셋(살짝만 — 거리 축소로 덜 튀게)</span>
-    riseOp = 0                                            <span class="c">// 시작: 투명</span>
-    withAnimation { riseY = 0; riseOp = 1 }               <span class="c">// 위치 상승 + 알파 페이드로 안착</span>
+    let floating = !scrolled &amp;&amp; data.floatable
+    var t = Transaction(); t.disablesAnimations = true              <span class="c">// 생성은 모프 아님 → form(폰트·색)은 애니 없이 즉시 최종값</span>
+    withTransaction(t) { form = floating ? .floating : .band }
+    riseY  = floating ? 14 : 46                           <span class="c">// 띠배너는 바 뒤로 충분히(46) 숨겼다 슬라이드 / 플로팅은 살짝(14)</span>
+    riseOp = floating ? 0 : 1                             <span class="c">// 플로팅만 알파 0→1 페이드 / 띠배너는 알파 없이</span>
+    withAnimation(.timingCurve(0.4,0,0.2,1, duration: 0.42)) { riseY = 0 }   <span class="c">// 위치만 상승</span>
+    if floating { withAnimation(.easeOut(duration: 0.3)) { riseOp = 1 } }    <span class="c">// 플로팅만 페이드</span>
   }
 
   <span class="c">// 데이터 새로고침(차종 변경): 플로팅·띠배너 공통 — 기존 배너 알파0으로 페이드아웃 → 그 자리에 새 배너 상승</span>
@@ -272,8 +275,8 @@ fun NudgeBar(data: BannerData, scrolled: Boolean) {   <span class="c">// scrolle
   val e = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
   <span class="c">// 생성 애니: 바텀바 뒤(+y)에서 0 으로 상승 (zIndex &lt; 바텀바)</span>
   var risen by remember(data) { mutableStateOf(false) }
-  val riseY by animateDpAsState(if (risen) 0.dp else if (floating) 14.dp else 12.dp, tween(420, easing = e))
-  val riseAlpha by animateFloatAsState(if (risen) 1f else 0f, tween(300, easing = LinearOutSlowInEasing))   <span class="c">// 알파 0→1 페이드 0.3s(위치보다 짧게)</span>
+  val riseY by animateDpAsState(if (risen) 0.dp else if (floating) 14.dp else 46.dp, tween(420, easing = e))   <span class="c">// 띠배너는 바 뒤로 46, 플로팅은 14</span>
+  val riseAlpha by animateFloatAsState(if (risen || !floating) 1f else 0f, tween(300, easing = LinearOutSlowInEasing))   <span class="c">// 플로팅만 알파 0→1 / 띠배너는 1 고정(알파 없음)</span>
   LaunchedEffect(data) { risen = true }
 
   val side   by animateDpAsState(if (floating) 16.dp else 0.dp, tween(420, easing = e))
@@ -332,16 +335,22 @@ fun NudgeBar(data: BannerData, scrolled: Boolean) {   <span class="c">// scrolle
 
 <span class="c">// 생성(진입·새로고침): 바 뒤(+y)에서 최종 형태로 올라와 안착</span>
 function rise(intoFloating){
+  bar.classList.add('creating');                                        <span class="c">// 생성 동안 자식 전이 정지 → 폰트 스케일·색·배경 전이 없음(모프 아님)</span>
   bar.classList.toggle('floating', intoFloating);
-  ibtext.innerHTML = intoFloating ? data.floatingText : data.bandText;   <span class="c">// 서버 문구</span>
-  bar.style.visibility = 'visible'; bar.style.opacity = '0';             <span class="c">// 시작: 투명 (알파 0→1 페이드로 덜 튀게)</span>
+  ibtext.innerHTML = intoFloating ? data.floatingText : data.bandText;   <span class="c">// 서버 문구(즉시 최종 크기·색)</span>
+  bar.style.visibility = 'visible';
+  bar.style.opacity = intoFloating ? '0' : '1';                          <span class="c">// 플로팅만 알파 0→1 / 띠배너는 알파 없이</span>
   bar.style.transition = 'none';
-  bar.style.transform  = `translateY(${intoFloating ? 14 : 12}px)`;      <span class="c">// 살짝만 떠오름(거리 축소 → 덜 튀게)</span>
+  bar.style.transform  = `translateY(${intoFloating ? 14 : 46}px)`;      <span class="c">// 띠배너는 바 뒤로 충분히(46) 숨겼다 슬라이드 / 플로팅은 살짝(14)</span>
   void bar.offsetWidth;                                                  <span class="c">// reflow</span>
-  bar.style.transition = 'transform .42s var(--e), opacity .3s ease-out'; <span class="c">// 위치 .42s + 페이드 .3s(먼저 떠오름)</span>
+  bar.style.transition = intoFloating
+    ? 'transform .42s var(--e), opacity .3s ease-out'                    <span class="c">// 플로팅: 위치 + 페이드</span>
+    : 'transform .42s var(--e)';                                        <span class="c">// 띠배너: 위치(transform)만 — 알파 없음</span>
   bar.style.opacity    = '1';
-  bar.style.transform  = 'translateY(0)';                                <span class="c">// 상승·안착</span>
+  bar.style.transform  = 'translateY(0)';                                <span class="c">// 아래→위로 올라와 안착</span>
+  setTimeout(() => bar.classList.remove('creating'), 460);              <span class="c">// 복원 — 이후 스크롤/탭 모프는 폰트·색 전이 정상</span>
 }
+<span class="c">/* CSS: .info-bar.creating *{transition:none !important;} — 생성 중 텍스트·그라데이션 전이 정지 */</span>
 <span class="c">// 진입: rise(floatable) — 넛지면 플로팅으로, ⚡만이면 띠배너로 올라옴</span>
 <span class="c">// 도킹: 첫 화면 터치(#screen-select pointerdown) OR 스크롤 → 제자리 모프로 band + scrolled=true. 단 배너 자신(bar.contains(target))은 제외 → 플로팅 배너 탭은 무동작. 띠배너 탭 → 제자리 모프로 floating(scrolled 유지).</span>
 <span class="c">// 차량 pill 탭: 일반 pointerdown 도킹에선 제외 + pill 핸들러에서 scrolled=true만 세팅 → 아래 refreshBand의 페이드아웃→상승이 곧 도킹(모프 중첩 방지).</span>
