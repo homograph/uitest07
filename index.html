@@ -679,9 +679,12 @@
     bar.style.opacity='0';
     refreshTimer=setTimeout(()=>rise(!scrolled && !!activeNudge()), 200);   // 그 자리에 새 차종 배너가 올라옴
   }
-  // 차량 pill 탭 = 차종 변경(데이터 새로고침) → 배너 재생성(끝 형태는 scrolled 플래그로: 스크롤 전=플로팅 / 후=띠배너)
+  // 차량 pill 탭 = 상호작용(터치) + 차종 변경. 상호작용이므로 scrolled=true 세팅 → refreshBand의 페이드아웃→상승이 그대로 띠배너로 안착(=도킹).
+  // (일반 pointerdown 도킹에선 pill을 제외해 '모프+페이드+상승' 중첩을 막고, 여기서 플래그만 세팅해 단일 애니로 처리)
   document.querySelectorAll('.carpill').forEach(p=>p.addEventListener('click',()=>{
-    const car=p.dataset.car; paintCar(car); refreshBand(CARS[car].guar);
+    const car=p.dataset.car;
+    scrolled=true;                       // 차종 변경도 상호작용 → 플로팅이면 띠배너로 내려감(이전 '차종 변경 시 플로팅 유지' 규칙 폐기)
+    paintCar(car); refreshBand(CARS[car].guar);
   }));
   // ⚙ 패널 보장 세그먼트 = 차량 시각 동기화 + 진입 재생(데모용)
   document.querySelectorAll('#guarantee button').forEach(b=>b.addEventListener('click',()=>{

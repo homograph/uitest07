@@ -167,10 +167,10 @@
         <h2><span class="n">05</span>인터랙션 · 모션</h2>
         <ul>
           <li><b>문구는 서버에서 내려옴</b> — 각 상태(플로팅/띠배너) 문구를 서버가 완성해 내려줌. 클라는 표시만 (병합 조합을 클라에서 하지 않음).</li>
-          <li><b>생성(진입 · 데이터 새로고침)</b> — 배너가 <b>바텀바(다음 버튼) 뒤(z 아래)에서 +y로 올라와 안착</b>. 끝 형태 = <b>스크롤 전이면 플로팅 디폴트</b>(넛지 있을 때) / <b>스크롤 후면 띠배너 디폴트</b>, ⚡만이면 항상 띠배너. 각자 최종 형태의 서버 문구를 처음부터 표시 → <b>자동 전환 중 글씨가 바뀌지 않음(깜빡임 0)</b>.</li>
-          <li><b>화면 터치 또는 스크롤 → 도킹</b> — 플로팅이 제자리에서 <b>띠배너로 모프</b>(띠배너 문구로). 첫 상호작용 1회. <b>차량 pill 탭은 제외</b>(차종 변경 로직으로 처리 — 도킹 트리거 아님).</li>
+          <li><b>생성(진입 · 데이터 새로고침)</b> — 배너가 <b>바텀바(다음 버튼) 뒤(z 아래)에서 +y로 올라와 안착</b>. 끝 형태 = <b>상호작용 전이면 플로팅 디폴트</b>(넛지 있을 때) / <b>상호작용 후면 띠배너 디폴트</b>, ⚡만이면 항상 띠배너. (플로팅 디폴트는 사실상 진입 직후에만 — 터치·스크롤·차종변경 중 뭐라도 하면 이후는 띠배너.) 각자 최종 형태의 서버 문구를 처음부터 표시 → <b>자동 전환 중 글씨가 바뀌지 않음(깜빡임 0)</b>.</li>
+          <li><b>화면 터치 또는 스크롤 → 도킹</b> — 플로팅이 제자리에서 <b>띠배너로 모프</b>(띠배너 문구로). 첫 상호작용 1회. <b>차량 pill 탭도 상호작용이라 도킹</b>되지만, 그건 차종 변경(페이드아웃→상승)으로 새 차종 띠배너에 안착시켜 처리 — 일반 도킹 모프와 <b>중첩되지 않게</b> 분리(pill 핸들러에서 engaged 플래그만 세팅).</li>
           <li><b>띠배너 탭 → 플로팅</b> — 도킹의 역(제자리 모프). 사용자가 유발하므로 문구가 바뀌어도 자연스러움. <b>펼치는 모프 동안은 스크롤 도킹을 무시</b>(탭 직후 남은 관성 스크롤의 오발 방지) → 안착 후에만 스크롤 도킹 활성(진입 플로팅과 동일). 실제 앱은 도킹 트리거를 <code>scrollViewWillBeginDragging</code>(새 드래그)로 두면 관성이 구조적으로 무시됨.</li>
-          <li><b>차종 변경 = 데이터 새로고침</b> — ⚡(보장)만 바뀌고 🔥수요는 유지. <b>플로팅·띠배너 공통</b>: <b>기존 배너가 알파0으로 페이드아웃 → 그 자리에 새 차종 배너가 상승(+페이드인)</b>. 끝 형태는 상호작용 이력으로 — 상호작용 전이면 <b>플로팅으로</b>(다시 플로팅), 1회라도 터치/스크롤했으면 <b>띠배너로</b>. 차종 변경 자체는 도킹 트리거 아님.</li>
+          <li><b>차종 변경 = 데이터 새로고침 = 상호작용</b> — ⚡(보장)만 바뀌고 🔥수요는 유지. <b>플로팅·띠배너 공통</b>으로 <b>기존 배너가 알파0으로 페이드아웃 → 그 자리에 새 차종 배너가 상승(+페이드인)</b>. 차종 변경은 상호작용이므로 <b>플로팅이었다면 띠배너로 내려감</b>(engaged 세팅 → 항상 띠배너로 안착). <i>이전 "차종 변경 시 플로팅 유지" 규칙은 폐기</i> — 띠배너로 내려가야 새 차종 ⚡가 보이므로 정보적으로도 이득.</li>
           <li><b>예약확인(미리보기)</b> — 진입 시점 형태로 따라옴. 넛지 있으면 그 띠배너도 <b>탭 → 플로팅</b>. ⚡ 단독(플로팅 조건 미충족)은 탭 무반응, 넛지·⚡ 모두 없으면 미표시.</li>
           <li><b>토스트</b> — 뜨면 플로팅 넛지는 <b>띠배너로 도킹</b>되고, 토스트는 <b>도킹된 띠배너 위 10px</b>에 뜬다(띠배너까지 하단 컨테이너 포함 → 가리지 않음). 띠배너 높이는 1줄/2줄 가변이라 표시 직전 실측해 얹음. 띠배너 없으면 바텀바 위 10px.</li>
         </ul>
@@ -246,9 +246,10 @@ struct NudgeBar: View {
   }
 }
 <span class="c">// zIndex: 배너 &lt; 바텀바(다음 버튼) → 바 뒤에서 emerge. bg(for:)는 쉬머 오버레이 포함.</span>
-<span class="c">// 도킹 트리거: 첫 화면 터치 OR 스크롤 → scrolled=true, form=.band. 차량 pill 탭은 제외(차종 변경 로직). 탭→플로팅은 scrolled 안 바꿈.</span>
-<span class="c">// 차종 변경 = 데이터 새로고침 → BannerData 교체(⚡만 갱신, 🔥수요 유지) → refresh(): 페이드아웃 후 재생성.</span>
-<span class="c">//   끝 형태는 scrolled로: 상호작용 전이면 플로팅으로(다시 플로팅) / 1회라도 터치·스크롤했으면 띠배너로.</span>
+<span class="c">// 도킹 트리거: 첫 화면 터치 OR 스크롤 → scrolled=true, form=.band. 탭→플로팅은 scrolled 안 바꿈.</span>
+<span class="c">// 차량 pill 탭: 일반 터치 도킹에선 제외하고 pill 핸들러에서 scrolled=true만 세팅 → refresh()의 페이드아웃→상승이 곧 도킹(모프 중첩 방지).</span>
+<span class="c">// 차종 변경 = 상호작용 → BannerData 교체(⚡만 갱신, 🔥수요 유지) + scrolled=true → refresh(): 페이드아웃 후 재생성.</span>
+<span class="c">//   차종 변경은 상호작용이라 끝 형태는 항상 띠배너(플로팅이었다면 내려감). 이전 '플로팅 유지' 규칙 폐기.</span>
 <span class="c">// ⚠️ 문구·강조·병합은 서버 문자열(AttributedString) 그대로 렌더 — 클라에서 조합하지 않음.</span></code></pre>
         </div>
 
@@ -304,9 +305,10 @@ fun NudgeBar(data: BannerData, scrolled: Boolean) {   <span class="c">// scrolle
       color = if (floating) Color.White else Color(0xFF383D4F))
   }
 }
-<span class="c">// 도킹 트리거: 첫 화면 터치 OR 스크롤 → scrolled=true(상위 보관), form=Band. 차량 pill 탭은 제외(차종 변경 로직). 탭→플로팅은 scrolled 안 바꿈.</span>
-<span class="c">// 차종·데이터 변경 → data 교체(⚡만 갱신, 🔥수요 유지). 플로팅·띠배너 공통: 알파 0으로 페이드아웃(riseAlpha=0) → 그 자리에 새 배너 상승(재생성).</span>
-<span class="c">//   끝 형태는 scrolled로: 상호작용 전이면 플로팅으로(다시 플로팅) / 1회라도 터치·스크롤했으면 띠배너로.</span>
+<span class="c">// 도킹 트리거: 첫 화면 터치 OR 스크롤 → scrolled=true(상위 보관), form=Band. 탭→플로팅은 scrolled 안 바꿈.</span>
+<span class="c">// 차량 pill 탭: 일반 터치 도킹에선 제외하고 pill 핸들러에서 scrolled=true만 세팅 → 페이드아웃→상승이 곧 도킹(모프 중첩 방지).</span>
+<span class="c">// 차종·데이터 변경 = 상호작용 → data 교체(⚡만 갱신, 🔥수요 유지) + scrolled=true. 공통: 알파 0 페이드아웃(riseAlpha=0) → 새 배너 상승.</span>
+<span class="c">//   차종 변경은 상호작용이라 끝 형태는 항상 띠배너(플로팅이었다면 내려감). 이전 '플로팅 유지' 규칙 폐기.</span>
 <span class="c">// ⚠️ floatingText/bandText 는 서버 문자열(강조·병합 포함) 그대로 — 클라 조합 없음.</span></code></pre>
         </div>
 
@@ -341,10 +343,10 @@ function rise(intoFloating){
   bar.style.transform  = 'translateY(0)';                                <span class="c">// 상승·안착</span>
 }
 <span class="c">// 진입: rise(floatable) — 넛지면 플로팅으로, ⚡만이면 띠배너로 올라옴</span>
-<span class="c">// 도킹: 첫 화면 터치(#screen-select pointerdown) OR 스크롤 → 제자리 모프로 band + scrolled=true. 차량 pill 탭은 제외.</span>
-<span class="c">// 띠배너 탭 → 제자리 모프로 floating (scrolled 안 바꿈)</span>
-<span class="c">// 차종·데이터 새로고침 → 플로팅·띠배너 공통: 기존 배너 opacity .2s로 0 페이드아웃 → 200ms 후 rise(!scrolled &amp;&amp; floatable).</span>
-<span class="c">//   상호작용 전이면 플로팅으로(다시 플로팅) / 1회라도 터치·스크롤했으면 띠배너로.</span>
+<span class="c">// 도킹: 첫 화면 터치(#screen-select pointerdown) OR 스크롤 → 제자리 모프로 band + scrolled=true. 띠배너 탭 → 제자리 모프로 floating(scrolled 유지).</span>
+<span class="c">// 차량 pill 탭: 일반 pointerdown 도킹에선 제외 + pill 핸들러에서 scrolled=true만 세팅 → 아래 refreshBand의 페이드아웃→상승이 곧 도킹(모프 중첩 방지).</span>
+<span class="c">// 차종·데이터 새로고침 = 상호작용 → 공통: 기존 배너 opacity .2s로 0 페이드아웃 → 200ms 후 rise(!scrolled &amp;&amp; floatable).</span>
+<span class="c">//   차종 변경 시 scrolled=true라 항상 띠배너로 안착(플로팅이었다면 내려감). 이전 '플로팅 유지' 규칙 폐기.</span>
 <span class="c">// 토스트 발생 → 플로팅이면 먼저 도킹(setForm(false)) 후 토스트 노출</span>
 <span class="c">// ⚠️ data.floatingText / data.bandText 는 서버 문자열 — 클라에서 병합·조합하지 않음</span></code></pre>
         </div>
