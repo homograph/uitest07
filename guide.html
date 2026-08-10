@@ -175,7 +175,7 @@
           <li><b>토스트</b> — 뜨면 플로팅 넛지는 <b>띠배너로 도킹</b>되고, 토스트는 <b>도킹된 띠배너 위 10px</b>에 뜬다(띠배너까지 하단 컨테이너 포함 → 가리지 않음). 띠배너 높이는 1줄/2줄 가변이라 표시 직전 실측해 얹음. 띠배너 없으면 바텀바 위 10px.</li>
         </ul>
         <div class="note"><b>규칙 한 줄:</b> <b>생성 = 바 뒤에서 올라옴</b>(transform translateY <code>0.42s</code> <b>+ 알파 0→1 페이드 <code>0.3s ease-out</code></b> → 덜 튀게) / <b>세션 중 전환(접기·펼치기) = 제자리 모프</b>(left/right/bottom/radius/shadow) <code>0.42s cubic-bezier(.4,0,.2,1)</code>.</div>
-        <p style="font-size:13.5px;color:var(--g600)">배너 z-index는 <b>요금바(다음 버튼)보다 아래</b> → 바 뒤에서 emerge. 플로팅은 위쪽에 뜨므로 상승 시작 y가 띠배너보다 큼(플로팅 ~64 / 띠배너 ~46). 플로팅 쉬머: 흰 하이라이트 좌→우 sweep(<code>~155px, α .25</code>). 전이 시작은 rAF 대신 <code>setTimeout</code>(백그라운드 탭 rAF 정지 대비).</p>
+        <p style="font-size:13.5px;color:var(--g600)">배너 z-index는 <b>요금바(다음 버튼)보다 아래</b> → 바 뒤에서 emerge. 상승 거리는 짧게(플로팅 ~14 / 띠배너 ~12) — 시작 opacity 0이라 짧아도 자연스럽고 덜 튐. 플로팅 쉬머: 흰 하이라이트 좌→우 sweep(<code>~155px, α .25</code>). 전이 시작은 rAF 대신 <code>setTimeout</code>(백그라운드 탭 rAF 정지 대비).</p>
       </section>
 
       <section id="impl">
@@ -234,7 +234,7 @@ struct NudgeBar: View {
   <span class="c">// 생성(진입·새로고침): 스크롤 이력으로 끝 형태 결정 후 바 뒤에서 +y → 0 으로 상승·안착</span>
   private func create() {
     form  = (!scrolled && data.floatable) ? .floating : .band   <span class="c">// 스크롤 전 & 넛지 → 플로팅 / 그 외 → 띠배너</span>
-    riseY = form == .floating ? 64 : 46                   <span class="c">// 시작 오프셋(바 뒤)</span>
+    riseY = form == .floating ? 14 : 12                   <span class="c">// 시작 오프셋(살짝만 — 거리 축소로 덜 튀게)</span>
     riseOp = 0                                            <span class="c">// 시작: 투명</span>
     withAnimation { riseY = 0; riseOp = 1 }               <span class="c">// 위치 상승 + 알파 페이드로 안착</span>
   }
@@ -265,7 +265,7 @@ fun NudgeBar(data: BannerData, scrolled: Boolean) {   <span class="c">// scrolle
   val e = CubicBezierEasing(0.4f, 0f, 0.2f, 1f)
   <span class="c">// 생성 애니: 바텀바 뒤(+y)에서 0 으로 상승 (zIndex &lt; 바텀바)</span>
   var risen by remember(data) { mutableStateOf(false) }
-  val riseY by animateDpAsState(if (risen) 0.dp else if (floating) 64.dp else 46.dp, tween(420, easing = e))
+  val riseY by animateDpAsState(if (risen) 0.dp else if (floating) 14.dp else 12.dp, tween(420, easing = e))
   val riseAlpha by animateFloatAsState(if (risen) 1f else 0f, tween(300, easing = LinearOutSlowInEasing))   <span class="c">// 알파 0→1 페이드 0.3s(위치보다 짧게)</span>
   LaunchedEffect(data) { risen = true }
 
@@ -328,7 +328,7 @@ function rise(intoFloating){
   ibtext.innerHTML = intoFloating ? data.floatingText : data.bandText;   <span class="c">// 서버 문구</span>
   bar.style.visibility = 'visible'; bar.style.opacity = '0';             <span class="c">// 시작: 투명 (알파 0→1 페이드로 덜 튀게)</span>
   bar.style.transition = 'none';
-  bar.style.transform  = `translateY(${intoFloating ? 64 : 46}px)`;      <span class="c">// 바 뒤 시작</span>
+  bar.style.transform  = `translateY(${intoFloating ? 14 : 12}px)`;      <span class="c">// 살짝만 떠오름(거리 축소 → 덜 튀게)</span>
   void bar.offsetWidth;                                                  <span class="c">// reflow</span>
   bar.style.transition = 'transform .42s var(--e), opacity .3s ease-out'; <span class="c">// 위치 .42s + 페이드 .3s(먼저 떠오름)</span>
   bar.style.opacity    = '1';

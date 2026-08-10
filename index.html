@@ -654,7 +654,7 @@
     bar.classList.toggle('floating', intoFloating);
     ibtext.innerHTML=html;
     bar.style.visibility='visible'; bar.style.opacity='0';           // 시작: 투명 → 알파 0→1 페이드로 덜 튀게
-    bar.style.transform='translateY('+(intoFloating?64:46)+'px)';   // 바텀바 뒤로 숨김(플로팅은 위쪽이라 더 내림)
+    bar.style.transform='translateY('+(intoFloating?14:12)+'px)';   // 살짝만 떠오름(거리 축소 → 덜 튀게). 시작 opacity 0이라 짧아도 자연스러움
     void bar.offsetWidth;
     bar.style.transition='transform var(--dock-dur) cubic-bezier(.4,0,.2,1), opacity .3s ease-out';
     bar.style.opacity='1';                                           // 페이드 인 0.3s(위치보다 먼저 떠오름) → 더 은은하게
