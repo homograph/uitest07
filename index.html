@@ -653,10 +653,11 @@
     bar.style.transition='none';
     bar.classList.toggle('floating', intoFloating);
     ibtext.innerHTML=html;
-    bar.style.visibility='visible'; bar.style.opacity='1';
+    bar.style.visibility='visible'; bar.style.opacity='0';           // 시작: 투명 → 알파 0→1 페이드로 덜 튀게
     bar.style.transform='translateY('+(intoFloating?64:46)+'px)';   // 바텀바 뒤로 숨김(플로팅은 위쪽이라 더 내림)
     void bar.offsetWidth;
-    bar.style.transition='transform var(--dock-dur) cubic-bezier(.4,0,.2,1)';
+    bar.style.transition='transform var(--dock-dur) cubic-bezier(.4,0,.2,1), opacity var(--dock-dur) ease';
+    bar.style.opacity='1';                                           // 위치 상승과 함께 페이드 인 → 부드럽게 안착
     bar.style.transform='translateY(0)';                             // 위로 올라와 안착
     setTimeout(()=>{
       bar.style.transition=''; bar.style.transform='';
