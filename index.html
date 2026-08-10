@@ -545,7 +545,7 @@
 <script>
   const bar=document.getElementById('infobar'), ibtext=document.getElementById('ib-text'),
         scroller=document.querySelector('#screen-select .scroll'), phoneEl=document.getElementById('phone'),
-        tlEl=document.getElementById('tl');
+        screenSel=document.getElementById('screen-select'), tlEl=document.getElementById('tl');
 
   // 넛지(플로팅↔띠배너) : floating=자세히 / band=단독 축약 / micro=⚡ 병합용 초압축
   // 넛지: full=플로팅·단독 띠배너 공통 풀 문구 / micro=⚡ 병합용 축약
@@ -560,8 +560,8 @@
   };
   const GAP=' ';   // 넛지 축약 ↔ ⚡ 사이 한 칸 띄어쓰기
   const state={nudge:'demand', guarantee:'air'};   // 기본 넥스트 선택 = ⚡ 넥스트 예약 시 100% 확정
-  let armTimer=null, disarm=null;
-  let scrolled=false;   // 이 화면에서 1회라도 스크롤(도킹)했는가 → 새로고침/차종변경 디폴트 결정: false=플로팅, true=띠배너
+  let armTimer=null, disarm=null, refreshTimer=null;
+  let scrolled=false;   // 이 화면에서 1회라도 상호작용(화면 터치 또는 스크롤)해 도킹했는가 → 새로고침/차종변경 디폴트: false=플로팅, true=띠배너
 
   function activeNudge(){ return state.nudge!=='none' ? state.nudge : null; }  // 단일 선택(중복 없음)
   function activeGuar(){ return state.guarantee!=='none' ? state.guarantee : null; }
@@ -590,11 +590,14 @@
   }
 
   function clearArm(){ if(disarm){disarm();disarm=null;} clearTimeout(armTimer); }
-  function armDock(){                 // 첫 스크롤 → 띠배너로 도킹 (1회)
+  function armDock(){                 // 플로팅 안착 후: 첫 스크롤 또는 화면 터치 → 띠배너로 도킹 (1회)
     clearArm();
-    const trigger=()=>{ scrolled=true; off(); if(bar.classList.contains('floating')) setForm(false); };   // 1회 스크롤 → 이후 디폴트는 띠배너
-    function off(){ scroller.removeEventListener('scroll',trigger); disarm=null; }
-    scroller.addEventListener('scroll',trigger,{passive:true,once:true});
+    function off(){ scroller.removeEventListener('scroll',onScroll); screenSel.removeEventListener('pointerdown',onTouch); disarm=null; }
+    function dock(){ off(); scrolled=true; if(bar.classList.contains('floating')) setForm(false); }   // 1회 상호작용(터치/스크롤) → 이후 디폴트는 띠배너
+    function onScroll(){ dock(); }
+    function onTouch(e){ if(e.target.closest('.carpill')) return; dock(); }   // 차량 pill 탭은 제외 — 차종 변경 로직으로 처리(도킹 트리거 아님)
+    scroller.addEventListener('scroll',onScroll,{passive:true});
+    screenSel.addEventListener('pointerdown',onTouch);
     disarm=off;
   }
   bar.addEventListener('click',()=>{  // 띠배너 탭 → 플로팅 (넛지 있을 때만)
@@ -664,13 +667,17 @@
       if(intoFloating) armDock();     // 플로팅 안착 후 스크롤 도킹 무장
     }, 460);
   }
-  // 데이터 새로고침(차종/보장 변경) → 이전 배너 즉시 사라지고 새 배너 생성 애니 재생.
-  // 끝 형태는 스크롤 이력으로 갈림: 스크롤 전이면 플로팅 디폴트(자동 도킹 X), 1회라도 스크롤했으면 띠배너.
+  // 데이터 새로고침(차종/보장 변경) → 플로팅·띠배너 공통:
+  //  기존 배너를 알파0으로 페이드아웃 → 그 자리에 새 차종 배너가 올라옴(rise+페이드인).
+  //  끝 형태는 scrolled로: 상호작용 전이면 플로팅으로, 1회라도 터치/스크롤했으면 띠배너로.
   function refreshBand(g){
     state.guarantee=g;
     document.querySelectorAll('#guarantee button').forEach(x=>x.classList.toggle('on', x.dataset.g===g));
     setTL();
-    rise(!scrolled && !!activeNudge());   // 스크롤 전 + 플로팅 대상(넛지 있음) → 플로팅으로 재생성 / 그 외 → 띠배너
+    clearTimeout(refreshTimer);
+    bar.style.transition='opacity .2s ease';    // 기존 배너 알파0으로 페이드아웃
+    bar.style.opacity='0';
+    refreshTimer=setTimeout(()=>rise(!scrolled && !!activeNudge()), 200);   // 그 자리에 새 차종 배너가 올라옴
   }
   // 차량 pill 탭 = 차종 변경(데이터 새로고침) → 배너 재생성(끝 형태는 scrolled 플래그로: 스크롤 전=플로팅 / 후=띠배너)
   document.querySelectorAll('.carpill').forEach(p=>p.addEventListener('click',()=>{
