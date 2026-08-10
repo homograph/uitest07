@@ -561,6 +561,7 @@
   const GAP=' ';   // 넛지 축약 ↔ ⚡ 사이 한 칸 띄어쓰기
   const state={nudge:'demand', guarantee:'air'};   // 기본 넥스트 선택 = ⚡ 넥스트 예약 시 100% 확정
   let armTimer=null, disarm=null;
+  let scrolled=false;   // 이 화면에서 1회라도 스크롤(도킹)했는가 → 새로고침/차종변경 디폴트 결정: false=플로팅, true=띠배너
 
   function activeNudge(){ return state.nudge!=='none' ? state.nudge : null; }  // 단일 선택(중복 없음)
   function activeGuar(){ return state.guarantee!=='none' ? state.guarantee : null; }
@@ -591,7 +592,7 @@
   function clearArm(){ if(disarm){disarm();disarm=null;} clearTimeout(armTimer); }
   function armDock(){                 // 첫 스크롤 → 띠배너로 도킹 (1회)
     clearArm();
-    const trigger=()=>{ off(); if(bar.classList.contains('floating')) setForm(false); };
+    const trigger=()=>{ scrolled=true; off(); if(bar.classList.contains('floating')) setForm(false); };   // 1회 스크롤 → 이후 디폴트는 띠배너
     function off(){ scroller.removeEventListener('scroll',trigger); disarm=null; }
     scroller.addEventListener('scroll',trigger,{passive:true,once:true});
     disarm=off;
@@ -612,8 +613,9 @@
     tlEl.innerHTML='<b>동작</b><br>① 넛지 플로팅 시작<br>② 스크롤 → 띠배너'+(g?'(넛지 축약 + ⚡ 병합)':'(넛지 풀 문구)')+'<br>③ 탭 → 플로팅';
   }
 
-  function play(){                    // 진입 재생
+  function play(){                    // 진입 재생 (화면 새로 진입 = 스크롤 이력 리셋)
     clearArm();
+    scrolled=false;                   // 진입 = 플로팅 디폴트로 복귀
     scroller.scrollTop=0;
     bar.style.transition='none'; bar.classList.remove('floating'); bar.style.transform=''; void bar.offsetWidth; bar.style.transition='';
     setTL();
@@ -661,14 +663,15 @@
       if(intoFloating) armDock();     // 플로팅 안착 후 스크롤 도킹 무장
     }, 460);
   }
-  // 데이터 새로고침(차종/보장 변경) → 이전 띠배너 즉시 사라지고 새 띠배너 생성 애니 재생 (재플로팅 X)
+  // 데이터 새로고침(차종/보장 변경) → 이전 배너 즉시 사라지고 새 배너 생성 애니 재생.
+  // 끝 형태는 스크롤 이력으로 갈림: 스크롤 전이면 플로팅 디폴트(자동 도킹 X), 1회라도 스크롤했으면 띠배너.
   function refreshBand(g){
     state.guarantee=g;
     document.querySelectorAll('#guarantee button').forEach(x=>x.classList.toggle('on', x.dataset.g===g));
     setTL();
-    rise(false);   // 데이터 새로고침(차종 변경) = 띠배너로 재생성(재플로팅 없음)
+    rise(!scrolled && !!activeNudge());   // 스크롤 전 + 플로팅 대상(넛지 있음) → 플로팅으로 재생성 / 그 외 → 띠배너
   }
-  // 차량 pill 탭 = 차종 변경(데이터 새로고침) → 띠배너 재생성
+  // 차량 pill 탭 = 차종 변경(데이터 새로고침) → 배너 재생성(끝 형태는 scrolled 플래그로: 스크롤 전=플로팅 / 후=띠배너)
   document.querySelectorAll('.carpill').forEach(p=>p.addEventListener('click',()=>{
     const car=p.dataset.car; paintCar(car); refreshBand(CARS[car].guar);
   }));
