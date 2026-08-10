@@ -174,7 +174,7 @@
           <li><b>예약확인(미리보기)</b> — 진입 시점 형태로 따라옴. 넛지 있으면 그 띠배너도 <b>탭 → 플로팅</b>. ⚡ 단독(플로팅 조건 미충족)은 탭 무반응, 넛지·⚡ 모두 없으면 미표시.</li>
           <li><b>토스트</b> — 뜨면 플로팅 넛지는 <b>띠배너로 도킹</b>되고, 토스트는 <b>도킹된 띠배너 위 10px</b>에 뜬다(띠배너까지 하단 컨테이너 포함 → 가리지 않음). 띠배너 높이는 1줄/2줄 가변이라 표시 직전 실측해 얹음. 띠배너 없으면 바텀바 위 10px.</li>
         </ul>
-        <div class="note"><b>규칙 한 줄:</b> <b>생성 = 바 뒤에서 올라옴</b>(transform translateY <b>+ 알파 0→1 페이드</b> → 덜 튀게) / <b>세션 중 전환(접기·펼치기) = 제자리 모프</b>(left/right/bottom/radius/shadow). 둘 다 <code>0.42s cubic-bezier(.4,0,.2,1)</code>.</div>
+        <div class="note"><b>규칙 한 줄:</b> <b>생성 = 바 뒤에서 올라옴</b>(transform translateY <code>0.42s</code> <b>+ 알파 0→1 페이드 <code>0.3s ease-out</code></b> → 덜 튀게) / <b>세션 중 전환(접기·펼치기) = 제자리 모프</b>(left/right/bottom/radius/shadow) <code>0.42s cubic-bezier(.4,0,.2,1)</code>.</div>
         <p style="font-size:13.5px;color:var(--g600)">배너 z-index는 <b>요금바(다음 버튼)보다 아래</b> → 바 뒤에서 emerge. 플로팅은 위쪽에 뜨므로 상승 시작 y가 띠배너보다 큼(플로팅 ~64 / 띠배너 ~46). 플로팅 쉬머: 흰 하이라이트 좌→우 sweep(<code>~155px, α .25</code>). 전이 시작은 rAF 대신 <code>setTimeout</code>(백그라운드 탭 rAF 정지 대비).</p>
       </section>
 
@@ -224,7 +224,7 @@ struct NudgeBar: View {
         .opacity(riseOp)                                           <span class="c">// 생성 애니: 알파 0→1 페이드</span>
         .animation(.timingCurve(0.4, 0, 0.2, 1, duration: 0.42), value: form)
         .animation(.timingCurve(0.4, 0, 0.2, 1, duration: 0.42), value: riseY)
-        .animation(.easeOut(duration: 0.42), value: riseOp)
+        .animation(.easeOut(duration: 0.30), value: riseOp)       <span class="c">// 페이드 0.3s(위치보다 짧게)</span>
         .onTapGesture { if form == .band, data.floatable { form = .floating } }   <span class="c">// 띠배너 탭 → 플로팅</span>
         .onAppear { create() }                                    <span class="c">// 진입 = 생성</span>
         .onChange(of: data) { _ in create() }                     <span class="c">// 데이터 새로고침(차종 변경 등) = 재생성</span>
@@ -266,7 +266,7 @@ fun NudgeBar(data: BannerData, scrolled: Boolean) {   <span class="c">// scrolle
   <span class="c">// 생성 애니: 바텀바 뒤(+y)에서 0 으로 상승 (zIndex &lt; 바텀바)</span>
   var risen by remember(data) { mutableStateOf(false) }
   val riseY by animateDpAsState(if (risen) 0.dp else if (floating) 64.dp else 46.dp, tween(420, easing = e))
-  val riseAlpha by animateFloatAsState(if (risen) 1f else 0f, tween(420, easing = e))   <span class="c">// 알파 0→1 페이드</span>
+  val riseAlpha by animateFloatAsState(if (risen) 1f else 0f, tween(300, easing = LinearOutSlowInEasing))   <span class="c">// 알파 0→1 페이드 0.3s(위치보다 짧게)</span>
   LaunchedEffect(data) { risen = true }
 
   val side   by animateDpAsState(if (floating) 16.dp else 0.dp, tween(420, easing = e))
@@ -330,7 +330,7 @@ function rise(intoFloating){
   bar.style.transition = 'none';
   bar.style.transform  = `translateY(${intoFloating ? 64 : 46}px)`;      <span class="c">// 바 뒤 시작</span>
   void bar.offsetWidth;                                                  <span class="c">// reflow</span>
-  bar.style.transition = 'transform .42s var(--e), opacity .42s ease';   <span class="c">// 위치 + 페이드 동시</span>
+  bar.style.transition = 'transform .42s var(--e), opacity .3s ease-out'; <span class="c">// 위치 .42s + 페이드 .3s(먼저 떠오름)</span>
   bar.style.opacity    = '1';
   bar.style.transform  = 'translateY(0)';                                <span class="c">// 상승·안착</span>
 }
