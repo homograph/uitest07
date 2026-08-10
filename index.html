@@ -595,7 +595,7 @@
     function off(){ scroller.removeEventListener('scroll',onScroll); screenSel.removeEventListener('pointerdown',onTouch); disarm=null; }
     function dock(){ off(); scrolled=true; if(bar.classList.contains('floating')) setForm(false); }   // 1회 상호작용(터치/스크롤) → 이후 디폴트는 띠배너
     function onScroll(){ dock(); }
-    function onTouch(e){ if(e.target.closest('.carpill')) return; dock(); }   // 차량 pill 탭은 제외 — 차종 변경 로직으로 처리(도킹 트리거 아님)
+    function onTouch(e){ if(bar.contains(e.target) || e.target.closest('.carpill')) return; dock(); }   // 플로팅 배너 자신 탭은 무동작(도킹 아님) · 차량 pill 탭도 제외(차종 변경 로직)
     scroller.addEventListener('scroll',onScroll,{passive:true});
     screenSel.addEventListener('pointerdown',onTouch);
     disarm=off;
