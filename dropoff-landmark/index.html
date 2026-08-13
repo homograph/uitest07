@@ -47,23 +47,24 @@
   .statusbar .bat::before{content:"";position:absolute;inset:1.5px;width:70%;background:#000;border-radius:1px;}
   .statusbar .bat::after{content:"";position:absolute;right:-3px;top:3.5px;width:2px;height:5px;background:#000;border-radius:0 2px 2px 0;}
 
-  /* ── pannable world ── */
-  .world{position:absolute;top:0;left:0;width:1040px;height:1560px;will-change:transform;}
+  /* ── pannable world (translate + zoom, origin top-left) ── */
+  .world{position:absolute;top:0;left:0;width:1040px;height:1560px;will-change:transform;transform-origin:0 0;--inv:1;}
   .world.snapping{transition:transform var(--snap-dur) cubic-bezier(.22,.61,.36,1);}
 
   .mapart{position:absolute;inset:0;width:100%;height:100%;display:block;}
 
-  /* candidate dots (navy filled, no number) */
-  .cand{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;
-    background:var(--navy-marker);border:2.5px solid #fff;
-    box-shadow:0 2px 5px rgba(20,30,55,.28);
-    transition:width .16s ease, height .16s ease, background .16s ease, box-shadow .16s ease;}
-  .cand.near{width:28px;height:28px;margin:-14px 0 0 -14px;background:var(--navy);
-    box-shadow:0 4px 12px rgba(20,30,55,.42);}
-  .cand.selected{background:var(--navy);}
+  /* candidate markers — Figma ic_number_blue_stroke3: white fill + navy ring (hollow).
+     counter-scaled (var(--inv)) so they keep constant screen size while the map zooms. */
+  .cand{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
+    background:#fff;border:3px solid var(--navy-marker);
+    box-shadow:0 2px 5px rgba(20,30,55,.20);
+    transform:scale(var(--inv,1));
+    transition:width .16s ease, height .16s ease, border-width .16s ease, box-shadow .16s ease;}
+  .cand.near{width:20px;height:20px;margin:-10px 0 0 -10px;border-width:5px;
+    box-shadow:0 4px 12px rgba(20,30,55,.34);}
 
-  /* my location (ic_gps) */
-  .myloc{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;}
+  /* my location (ic_gps) — constant screen size while zooming */
+  .myloc{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;transform:scale(var(--inv,1));}
   .myloc .halo{position:absolute;inset:-14px;border-radius:50%;background:rgba(50,162,250,.20);border:1px solid var(--tada-blue);}
   .myloc .dot{position:absolute;inset:0;border-radius:50%;background:var(--tada-blue);border:1.5px solid #fff;box-shadow:0 1px 4px rgba(20,30,55,.3);}
 
@@ -83,11 +84,11 @@
   .pin-wrap{position:absolute;left:0;bottom:0;transform:translate(-50%,0);
     display:flex;flex-direction:column;align-items:center;
     opacity:0;transition:opacity .16s ease, transform .2s cubic-bezier(.22,.61,.36,1);}
-  .pin-head{width:34px;height:34px;border-radius:50%;background:var(--tada-blue);
+  .pin-head{width:26px;height:26px;border-radius:50%;background:var(--tada-blue);
     display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(50,162,250,.5);}
-  .pin-head::after{content:"";width:12px;height:12px;border-radius:50%;background:#fff;}
-  .pin-stem{width:3px;height:14px;background:var(--tada-blue);}
-  .pin-base{width:12px;height:4px;border-radius:50%;background:var(--tada-blue);opacity:.55;margin-top:2px;}
+  .pin-head::after{content:"";width:9px;height:9px;border-radius:50%;background:#fff;}
+  .pin-stem{width:3px;height:13px;background:var(--tada-blue);}
+  .pin-base{width:10px;height:4px;border-radius:50%;background:var(--tada-blue);opacity:.55;margin-top:2px;}
 
   /* state toggles */
   .phone.dragging .badge-wrap,
@@ -112,7 +113,7 @@
     transition:opacity .16s ease;}
   .phone.dragging .sheet .title,
   .phone.dragging .sheet .addr{opacity:.35;}
-  .sheet .btnwrap{padding:10px 10px calc(10px + env(safe-area-inset-bottom, 0px));}
+  .sheet .btnwrap{padding:10px 24px calc(10px + env(safe-area-inset-bottom, 0px));}
   .cta{width:100%;border:0;border-radius:4px;background:var(--navy);color:#fff;
     font-family:inherit;font-weight:700;font-size:16px;line-height:1;padding:16px 12px;
     transition:background .18s ease, color .18s ease;cursor:pointer;}
@@ -251,12 +252,12 @@
   var sheet   = document.querySelector('.sheet');
   var STATUSBAR_H = 36;
 
-  var tx=0, ty=0;            // world translation
-  var selected = 0;          // settled candidate index
-  var nearIdx = 0;
+  var tx=0, ty=0, scale=1;    // world translate + zoom
+  var MINZ=0.75, MAXZ=2.6;
+  var selected = 0, nearIdx = 0, snapTimer=null, wheelTimer=null;
 
-  // build candidate dot elements
-  var dots = CANDS.map(function(c, i){
+  // build candidate marker elements
+  var dots = CANDS.map(function(c){
     var el = document.createElement('div');
     el.className = 'cand';
     el.style.left = c.wx + 'px';
@@ -265,20 +266,34 @@
     return el;
   });
 
-  function applyTransform(){ world.style.transform = 'translate(' + tx + 'px,' + ty + 'px)'; }
+  function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
+  function applyTransform(){
+    world.style.transform = 'translate('+tx+'px,'+ty+'px) scale('+scale+')';
+    world.style.setProperty('--inv', (1/scale).toFixed(4));   // keep markers constant size
+  }
 
-  // center a candidate under the anchor
-  function centerOn(i){ tx = ANCHOR.x - CANDS[i].wx; ty = ANCHOR.y - CANDS[i].wy; applyTransform(); }
+  // center a candidate under the anchor (respecting zoom)
+  function centerOn(i){ tx = ANCHOR.x - CANDS[i].wx*scale; ty = ANCHOR.y - CANDS[i].wy*scale; applyTransform(); }
 
-  // nearest candidate to the anchor given current transform
+  // nearest candidate to the anchor for the current transform
   function nearestToAnchor(){
     var best=0, bd=Infinity;
     for(var i=0;i<CANDS.length;i++){
-      var sx = CANDS[i].wx + tx, sy = CANDS[i].wy + ty;
+      var sx = CANDS[i].wx*scale + tx, sy = CANDS[i].wy*scale + ty;
       var d = (sx-ANCHOR.x)*(sx-ANCHOR.x) + (sy-ANCHOR.y)*(sy-ANCHOR.y);
       if(d<bd){bd=d;best=i;}
     }
     return best;
+  }
+
+  // zoom keeping the world point under (fx,fy) fixed on screen
+  function zoomAround(newScale, fx, fy){
+    newScale = clamp(newScale, MINZ, MAXZ);
+    if(newScale===scale) return;
+    tx = fx - (fx - tx) * (newScale/scale);
+    ty = fy - (fy - ty) * (newScale/scale);
+    scale = newScale;
+    applyTransform();
   }
 
   function markNear(i){
@@ -287,21 +302,14 @@
     nearIdx = i;
     dots[nearIdx].classList.add('near');
   }
-
   function setSheet(i){ poiName.textContent = CANDS[i].name; poiAddr.textContent = CANDS[i].addr; }
-
-  function setSelected(i){
-    dots[selected].classList.remove('selected');
-    selected = i;
-    dots[selected].classList.add('selected');
-  }
+  function setSelected(i){ dots[selected].classList.remove('selected'); selected = i; dots[selected].classList.add('selected'); }
 
   // ── responsive layout: anchor follows real screen height ──
   function layout(){
     var w = screen.clientWidth, h = screen.clientHeight;
     var sheetH = sheet.offsetHeight;
     ANCHOR.x = Math.round(w / 2);
-    // vertical center of the visible map area (between status bar and the sheet)
     ANCHOR.y = Math.round(STATUSBAR_H + (h - STATUSBAR_H - sheetH) / 2);
     reticle.style.left = ANCHOR.x + 'px';
     reticle.style.top  = ANCHOR.y + 'px';
@@ -310,77 +318,111 @@
   }
 
   // ── init ──
-  setSelected(0);
-  setSheet(0);
+  setSelected(0); setSheet(0);
   dots[0].classList.add('near'); nearIdx = 0;
-  layout();                        // sets ANCHOR + centers on selected
+  layout();
   window.addEventListener('resize', layout);
   window.addEventListener('orientationchange', function(){ setTimeout(layout, 250); });
 
-  // ── drag handling ──
-  var dragging=false, startX=0, startY=0, startTx=0, startTy=0, moved=false, snapTimer=null;
+  // ── gestures: 1 pointer = pan→snap, 2 pointers = pinch zoom, wheel = zoom ──
+  var pointers = new Map();
+  var mode = null;                 // 'pan' | 'pinch'
+  var panStart = null;             // {x,y,tx,ty}
+  var pinchStart = null;           // {dist, scale}
 
-  function onDown(e){
-    if(e.target.closest('.sheet') || e.target.closest('.cloc')) return;
-    dragging=true; moved=false;
+  function localPt(e){ var r = screen.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
+  function pts(){ return Array.from(pointers.values()); }
+  function distOf(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
+
+  function beginGestureVisual(){
     if(snapTimer){ clearTimeout(snapTimer); snapTimer=null; }
+    world.removeEventListener('transitionend', onWorldTE);
     world.classList.remove('snapping');
     phone.classList.remove('snapping');
     phone.classList.add('dragging');
-    var p = point(e);
-    startX=p.x; startY=p.y; startTx=tx; startTy=ty;
+  }
+  function startPan(){ var p = pts()[0]; panStart = {x:p.x, y:p.y, tx:tx, ty:ty}; mode='pan'; }
+  function startPinch(){ var a = pts(); pinchStart = {dist:Math.max(1,distOf(a[0],a[1])), scale:scale}; mode='pinch'; }
+
+  function onDown(e){
+    if(e.target.closest('.sheet') || e.target.closest('.cloc')) return;
+    pointers.set(e.pointerId, localPt(e));
     try{ if(e.pointerId!=null && screen.setPointerCapture) screen.setPointerCapture(e.pointerId); }catch(_){}
+    beginGestureVisual();
+    if(pointers.size === 1) startPan();
+    else if(pointers.size === 2) startPinch();
+    if(e.cancelable) e.preventDefault();
   }
   function onMove(e){
-    if(!dragging) return;
-    var p = point(e);
-    var dx=p.x-startX, dy=p.y-startY;
-    if(Math.abs(dx)>2 || Math.abs(dy)>2) moved=true;
-    tx = startTx + dx; ty = startTy + dy;
-    applyTransform();
+    if(!pointers.has(e.pointerId)) return;
+    pointers.set(e.pointerId, localPt(e));
+    if(mode === 'pan'){
+      var p = pointers.get(e.pointerId);
+      tx = panStart.tx + (p.x - panStart.x);
+      ty = panStart.ty + (p.y - panStart.y);
+      applyTransform();
+    } else if(mode === 'pinch'){
+      var a = pts(); if(a.length < 2) return;
+      var mid = {x:(a[0].x+a[1].x)/2, y:(a[0].y+a[1].y)/2};
+      zoomAround(pinchStart.scale * (distOf(a[0],a[1]) / pinchStart.dist), mid.x, mid.y);
+    }
     markNear(nearestToAnchor());
     if(e.cancelable) e.preventDefault();
   }
+  function onUp(e){
+    if(!pointers.has(e.pointerId)) return;
+    pointers.delete(e.pointerId);
+    try{ if(e.pointerId!=null && screen.releasePointerCapture) screen.releasePointerCapture(e.pointerId); }catch(_){}
+    if(pointers.size === 1) startPan();          // pinch→pan handoff without jump
+    else if(pointers.size >= 2) startPinch();
+    else { mode=null; doSnap(); }                // all fingers up → snap to nearest
+  }
+
   function finishSnap(){
     world.classList.remove('snapping');
-    phone.classList.remove('snapping');  // → badge 복귀
+    phone.classList.remove('snapping');          // → badge 복귀
     world.removeEventListener('transitionend', onWorldTE);
     if(snapTimer){ clearTimeout(snapTimer); snapTimer=null; }
   }
   function onWorldTE(e){ if(e.propertyName==='transform') finishSnap(); }
 
-  function onUp(e){
-    if(!dragging) return;
-    dragging=false;
+  function doSnap(){
     var target = nearestToAnchor();
-    var changed = (tx !== ANCHOR.x - CANDS[target].wx) || (ty !== ANCHOR.y - CANDS[target].wy);
-    // snap: animate world so nearest lands under the anchor
+    var tTx = ANCHOR.x - CANDS[target].wx*scale, tTy = ANCHOR.y - CANDS[target].wy*scale;
+    var changed = (Math.abs(tx-tTx) > 0.5 || Math.abs(ty-tTy) > 0.5);
     phone.classList.remove('dragging');
     phone.classList.add('snapping');
     world.classList.add('snapping');
-    setSelected(target); markNear(target);
-    setSheet(target);                     // 주소 갱신 (스냅과 동시)
+    setSelected(target); markNear(target); setSheet(target);   // 주소 갱신
     world.addEventListener('transitionend', onWorldTE);
-    centerOn(target);                     // triggers transition (if position changed)
-    // transitionend drives finish; timer is a fallback (and the only path when nothing moved)
+    centerOn(target);
     snapTimer = setTimeout(finishSnap, changed ? 520 : 0);
   }
-  function point(e){ return {x:e.clientX, y:e.clientY}; }
 
   screen.addEventListener('pointerdown', onDown);
   screen.addEventListener('pointermove', onMove);
   screen.addEventListener('pointerup', onUp);
   screen.addEventListener('pointercancel', onUp);
-  // mouse fallback (environments without pointer events)
-  screen.addEventListener('mousedown', onDown);
-  window.addEventListener('mousemove', onMove);
-  window.addEventListener('mouseup', onUp);
+  if(!window.PointerEvent){    // mouse fallback (no pointer events)
+    screen.addEventListener('mousedown', function(e){ e.pointerId='m'; onDown(e); });
+    window.addEventListener('mousemove', function(e){ if(pointers.size){ e.pointerId='m'; onMove(e); } });
+    window.addEventListener('mouseup',   function(e){ e.pointerId='m'; onUp(e); });
+  }
 
+  // wheel zoom (desktop) — zoom toward cursor, then settle-snap
+  screen.addEventListener('wheel', function(e){
+    e.preventDefault();
+    var p = localPt(e);
+    beginGestureVisual();
+    zoomAround(scale * Math.exp(-e.deltaY * 0.0015), p.x, p.y);
+    markNear(nearestToAnchor());
+    if(wheelTimer) clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(function(){ if(pointers.size===0){ mode=null; doSnap(); } }, 240);
+  }, {passive:false});
 
   // CTA
   document.getElementById('cta').addEventListener('click', function(){
-    var el = this;
-    var prev = el.textContent;
+    var el = this, prev = el.textContent;
     el.textContent = '✓ ' + CANDS[selected].name.split(' ')[0] + ' 하차지 설정됨';
     setTimeout(function(){ el.textContent = prev; }, 1400);
   });
