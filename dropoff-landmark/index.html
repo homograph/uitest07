@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>타다 · 목적지 랜드마크 스냅 선택 프로토타입</title>
+<style>
+  :root{
+    color-scheme: light;
+    --white:#ffffff;
+    --blue-500:#0094f9; --blue-600:#0086ea; --tada-blue:#32a2fa;
+    --navy:#19254d; --navy-marker:#293f71; --navy-ico:#283873;
+    --gray-950:#171a24; --gray-900:#262a38; --gray-600:#60667a; --gray-400:#868b9c;
+    --gray-100:#d5d7dc; --gray-80:#e3e4e8; --gray-30:#f5f6f7;
+    --btn-disabled-bg:#99a5c0; --btn-disabled-tx:#c0c8d9;
+    /* fake map palette */
+    --map-bg:#eef1f3; --map-block:#e5e8ee; --map-road:#ffffff; --map-road2:#f6f8fa;
+    --map-rail:#dbe4f4; --map-water:#cfe6fb; --map-green:#dfeede;
+    --snap-dur:.42s;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:"Spoqa Han Sans Neo",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    background:#eef1f5;color:var(--gray-950);-webkit-font-smoothing:antialiased;}
+  .stage{min-height:100dvh;display:flex;align-items:center;justify-content:center;gap:40px;padding:24px;flex-wrap:wrap;}
+
+  .phone{width:393px;height:820px;background:#fff;border-radius:40px;border:1px solid #e6eaf0;
+    box-shadow:0 24px 60px rgba(20,30,55,.22);position:relative;overflow:hidden;flex:0 0 auto;}
+  .screen{position:absolute;inset:0;overflow:hidden;background:var(--map-bg);touch-action:none;}
+
+  /* ── status bar ── */
+  .statusbar{position:absolute;top:0;left:0;right:0;height:36px;z-index:40;
+    display:flex;align-items:center;justify-content:space-between;padding:0 22px 0 24px;pointer-events:none;}
+  .statusbar .time{font-size:13px;letter-spacing:-.2px;color:#000;font-weight:500;}
+  .statusbar .sysico{display:flex;align-items:center;gap:5px;}
+  .statusbar .sig{width:17px;height:11px;background:linear-gradient(90deg,#000 0 70%,#b9bcc4 70%);border-radius:2px;}
+  .statusbar .wifi{width:16px;height:11px;background:#000;
+    -webkit-mask:radial-gradient(circle at 50% 100%, #000 32%, transparent 33%) bottom/100% 100% no-repeat;}
+  .statusbar .bat{width:24px;height:12px;border:1px solid #000;border-radius:3px;position:relative;}
+  .statusbar .bat::before{content:"";position:absolute;inset:1.5px;width:70%;background:#000;border-radius:1px;}
+  .statusbar .bat::after{content:"";position:absolute;right:-3px;top:3.5px;width:2px;height:5px;background:#000;border-radius:0 2px 2px 0;}
+
+  /* ── pannable world ── */
+  .world{position:absolute;top:0;left:0;width:1040px;height:1560px;will-change:transform;}
+  .world.snapping{transition:transform var(--snap-dur) cubic-bezier(.22,.61,.36,1);}
+
+  .mapart{position:absolute;inset:0;width:100%;height:100%;display:block;}
+
+  /* candidate dots (navy filled, no number) */
+  .cand{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;
+    background:var(--navy-marker);border:2.5px solid #fff;
+    box-shadow:0 2px 5px rgba(20,30,55,.28);
+    transition:width .16s ease, height .16s ease, background .16s ease, box-shadow .16s ease;}
+  .cand.near{width:28px;height:28px;margin:-14px 0 0 -14px;background:var(--navy);
+    box-shadow:0 4px 12px rgba(20,30,55,.42);}
+  .cand.selected{background:var(--navy);}
+
+  /* my location (ic_gps) */
+  .myloc{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;}
+  .myloc .halo{position:absolute;inset:-14px;border-radius:50%;background:rgba(50,162,250,.20);border:1px solid var(--tada-blue);}
+  .myloc .dot{position:absolute;inset:0;border-radius:50%;background:var(--tada-blue);border:1.5px solid #fff;box-shadow:0 1px 4px rgba(20,30,55,.3);}
+
+  /* ── fixed reticle (badge + pin) at anchor ── */
+  .reticle{position:absolute;left:196.5px;top:330px;z-index:30;transform:translate(-50%,0);pointer-events:none;}
+
+  /* settled: 목적지 badge with stem, tip at anchor */
+  .badge-wrap{position:absolute;left:0;bottom:0;transform:translate(-50%,0);
+    display:flex;flex-direction:column;align-items:center;
+    transition:opacity .16s ease, transform .18s ease;}
+  .badge{background:var(--blue-500);border:1px solid var(--blue-600);border-radius:24px;
+    padding:3px 10px;color:#fff;font-weight:700;font-size:13px;line-height:1.5;white-space:nowrap;
+    box-shadow:0 4px 10px rgba(0,134,234,.35);}
+  .badge-stem{width:3px;height:16px;background:var(--blue-500);}
+
+  /* dragging: floating balloon pin, tip at anchor */
+  .pin-wrap{position:absolute;left:0;bottom:0;transform:translate(-50%,0);
+    display:flex;flex-direction:column;align-items:center;
+    opacity:0;transition:opacity .16s ease, transform .2s cubic-bezier(.22,.61,.36,1);}
+  .pin-head{width:34px;height:34px;border-radius:50%;background:var(--tada-blue);
+    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(50,162,250,.5);}
+  .pin-head::after{content:"";width:12px;height:12px;border-radius:50%;background:#fff;}
+  .pin-stem{width:3px;height:14px;background:var(--tada-blue);}
+  .pin-base{width:12px;height:4px;border-radius:50%;background:var(--tada-blue);opacity:.55;margin-top:2px;}
+
+  /* state toggles */
+  .phone.dragging .badge-wrap,
+  .phone.snapping .badge-wrap{opacity:0;}
+  .phone.dragging .pin-wrap,
+  .phone.snapping .pin-wrap{opacity:1;}
+  .phone.dragging .pin-wrap{transform:translate(-50%,-6px);} /* lift while floating */
+
+  /* ── current-location button ── */
+  .cloc{position:absolute;right:16px;z-index:35;width:40px;height:40px;border-radius:20px;background:#fff;
+    box-shadow:0 4px 12px rgba(20,30,55,.18);display:flex;align-items:center;justify-content:center;
+    bottom:196px;transition:bottom var(--snap-dur) cubic-bezier(.22,.61,.36,1);}
+  .cloc svg{display:block;}
+
+  /* ── bottom sheet ── */
+  .sheet{position:absolute;left:0;right:0;bottom:0;z-index:38;background:#fff;
+    border-radius:12px 12px 0 0;box-shadow:0 -8px 24px rgba(20,30,55,.10);}
+  .sheet .info{padding:25px 25px 20px;}
+  .sheet .title{font-size:18px;font-weight:700;color:#000;line-height:1.35;
+    transition:opacity .16s ease;}
+  .sheet .addr{font-size:14px;font-weight:400;color:#000;line-height:1.4;margin-top:5px;
+    transition:opacity .16s ease;}
+  .phone.dragging .sheet .title,
+  .phone.dragging .sheet .addr{opacity:.35;}
+  .sheet .btnwrap{padding:10px;}
+  .cta{width:100%;border:0;border-radius:4px;background:var(--navy);color:#fff;
+    font-family:inherit;font-weight:700;font-size:16px;line-height:1;padding:16px 12px;
+    transition:background .18s ease, color .18s ease;cursor:pointer;}
+  .phone.dragging .cta{background:var(--btn-disabled-bg);color:var(--btn-disabled-tx);pointer-events:none;}
+
+  .hint{position:absolute;left:50%;top:60px;transform:translateX(-50%);z-index:36;
+    background:rgba(23,26,36,.82);color:#fff;font-size:12.5px;font-weight:500;
+    padding:7px 14px;border-radius:16px;white-space:nowrap;pointer-events:none;
+    transition:opacity .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2);}
+  .phone.dragging .hint{opacity:0;}
+</style>
+</head>
+<body>
+  <div class="stage">
+    <div class="phone" id="phone">
+      <div class="screen" id="screen">
+
+        <!-- pannable world -->
+        <div class="world" id="world">
+          <svg class="mapart" viewBox="0 0 1040 1560" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="1040" height="1560" fill="var(--map-bg)"/>
+            <!-- water strip (right) -->
+            <path d="M980 0 L1040 0 L1040 1560 L900 1560 Z" fill="var(--map-water)" opacity=".8"/>
+            <!-- railway band (diagonal) -->
+            <path d="M120 -40 L360 -40 L900 1600 L660 1600 Z" fill="var(--map-rail)"/>
+            <line x1="200" y1="-40" x2="740" y2="1600" stroke="#c2cfe6" stroke-width="2" stroke-dasharray="10 12"/>
+            <line x1="280" y1="-40" x2="820" y2="1600" stroke="#c2cfe6" stroke-width="2" stroke-dasharray="10 12"/>
+            <!-- green blocks -->
+            <rect x="40" y="120" width="150" height="110" rx="10" fill="var(--map-green)"/>
+            <rect x="740" y="1180" width="180" height="150" rx="12" fill="var(--map-green)"/>
+            <!-- building blocks -->
+            <g fill="var(--map-block)">
+              <rect x="60" y="300" width="180" height="140" rx="8"/>
+              <rect x="60" y="470" width="180" height="120" rx="8"/>
+              <rect x="430" y="120" width="150" height="120" rx="8"/>
+              <rect x="430" y="270" width="150" height="150" rx="8"/>
+              <rect x="620" y="300" width="150" height="120" rx="8"/>
+              <rect x="80" y="720" width="200" height="160" rx="8"/>
+              <rect x="330" y="900" width="170" height="150" rx="8"/>
+              <rect x="560" y="760" width="160" height="140" rx="8"/>
+              <rect x="120" y="1150" width="190" height="150" rx="8"/>
+              <rect x="600" y="1080" width="150" height="140" rx="8"/>
+            </g>
+            <!-- roads -->
+            <g stroke="var(--map-road)" fill="none" stroke-linecap="round">
+              <path d="M0 260 L1040 300" stroke-width="26"/>
+              <path d="M0 660 L1040 700" stroke-width="30"/>
+              <path d="M0 1080 L1040 1050" stroke-width="26"/>
+              <path d="M300 -20 L360 1580" stroke-width="24"/>
+              <path d="M720 -20 L680 1580" stroke-width="22"/>
+            </g>
+            <g stroke="var(--map-road2)" fill="none" stroke-linecap="round" stroke-width="12">
+              <path d="M0 460 L1040 480"/>
+              <path d="M520 -20 L540 1580"/>
+              <path d="M0 880 L1040 860"/>
+            </g>
+          </svg>
+
+          <!-- my location -->
+          <div class="myloc" style="left:250px;top:520px;"><span class="halo"></span><span class="dot"></span></div>
+
+          <!-- candidate dots injected by JS -->
+        </div>
+
+        <!-- fixed reticle -->
+        <div class="reticle" id="reticle">
+          <div class="badge-wrap">
+            <div class="badge">목적지</div>
+            <div class="badge-stem"></div>
+          </div>
+          <div class="pin-wrap">
+            <div class="pin-head"></div>
+            <div class="pin-stem"></div>
+            <div class="pin-base"></div>
+          </div>
+        </div>
+
+        <!-- current location button -->
+        <button class="cloc" aria-label="현재 위치">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="4.2" stroke="var(--navy-ico)" stroke-width="2.2"/>
+            <circle cx="12" cy="12" r="1.6" fill="var(--navy-ico)"/>
+            <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="var(--navy-ico)" stroke-width="2.2" stroke-linecap="round"/>
+          </svg>
+        </button>
+
+        <!-- hint -->
+        <div class="hint" id="hint">지도를 움직여 하차 지점을 선택하세요</div>
+
+        <!-- status bar -->
+        <div class="statusbar">
+          <span class="time">12:45</span>
+          <span class="sysico"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span>
+        </div>
+
+        <!-- bottom sheet -->
+        <div class="sheet">
+          <div class="info">
+            <div class="title" id="poiName">KTX 서울역 3번 출구</div>
+            <div class="addr" id="poiAddr">서울 중구 봉래동2가 122</div>
+          </div>
+          <div class="btnwrap">
+            <button class="cta" id="cta">목적지 설정 완료</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  var ANCHOR = {x:196.5, y:330};
+
+  // 서울역 하차 후보 10개 (world 좌표계)
+  var CANDS = [
+    {name:"KTX 서울역 3번 출구",    addr:"서울 중구 봉래동2가 122",    wx:470, wy:560},
+    {name:"공항철도 서울역",        addr:"서울 용산구 동자동 43-205",   wx:610, wy:470},
+    {name:"서부광장 (중림동)",      addr:"서울 중구 중림동 355",        wx:270, wy:640},
+    {name:"동부 택시승강장",        addr:"서울 중구 봉래동2가 84",      wx:560, wy:700},
+    {name:"서울역 버스환승센터",    addr:"서울 중구 남대문로5가 73",    wx:700, wy:640},
+    {name:"롯데마트 서울역점",      addr:"서울 중구 봉래동2가 122-11",  wx:390, wy:800},
+    {name:"1호선 1번 출구",         addr:"서울 중구 남대문로5가 84-1",  wx:640, wy:840},
+    {name:"서울역우체국",           addr:"서울 중구 봉래동1가 20",      wx:330, wy:470},
+    {name:"연세세브란스빌딩",       addr:"서울 중구 봉래동2가 284-6",   wx:770, wy:900},
+    {name:"경의중앙선 9-1 게이트",  addr:"서울 중구 봉래동2가 137",     wx:500, wy:960}
+  ];
+
+  var world   = document.getElementById('world');
+  var phone   = document.getElementById('phone');
+  var screen  = document.getElementById('screen');
+  var poiName = document.getElementById('poiName');
+  var poiAddr = document.getElementById('poiAddr');
+
+  var tx=0, ty=0;            // world translation
+  var selected = 0;          // settled candidate index
+  var nearIdx = 0;
+
+  // build candidate dot elements
+  var dots = CANDS.map(function(c, i){
+    var el = document.createElement('div');
+    el.className = 'cand';
+    el.style.left = c.wx + 'px';
+    el.style.top  = c.wy + 'px';
+    world.appendChild(el);
+    return el;
+  });
+
+  function applyTransform(){ world.style.transform = 'translate(' + tx + 'px,' + ty + 'px)'; }
+
+  // center a candidate under the anchor
+  function centerOn(i){ tx = ANCHOR.x - CANDS[i].wx; ty = ANCHOR.y - CANDS[i].wy; applyTransform(); }
+
+  // nearest candidate to the anchor given current transform
+  function nearestToAnchor(){
+    var best=0, bd=Infinity;
+    for(var i=0;i<CANDS.length;i++){
+      var sx = CANDS[i].wx + tx, sy = CANDS[i].wy + ty;
+      var d = (sx-ANCHOR.x)*(sx-ANCHOR.x) + (sy-ANCHOR.y)*(sy-ANCHOR.y);
+      if(d<bd){bd=d;best=i;}
+    }
+    return best;
+  }
+
+  function markNear(i){
+    if(i===nearIdx) return;
+    dots[nearIdx].classList.remove('near');
+    nearIdx = i;
+    dots[nearIdx].classList.add('near');
+  }
+
+  function setSheet(i){ poiName.textContent = CANDS[i].name; poiAddr.textContent = CANDS[i].addr; }
+
+  function setSelected(i){
+    dots[selected].classList.remove('selected');
+    selected = i;
+    dots[selected].classList.add('selected');
+  }
+
+  // ── init ──
+  centerOn(0);
+  setSelected(0);
+  setSheet(0);
+  dots[0].classList.add('near'); nearIdx = 0;
+
+  // ── drag handling ──
+  var dragging=false, startX=0, startY=0, startTx=0, startTy=0, moved=false, snapTimer=null;
+
+  function onDown(e){
+    if(e.target.closest('.sheet') || e.target.closest('.cloc')) return;
+    dragging=true; moved=false;
+    if(snapTimer){ clearTimeout(snapTimer); snapTimer=null; }
+    world.classList.remove('snapping');
+    phone.classList.remove('snapping');
+    phone.classList.add('dragging');
+    var p = point(e);
+    startX=p.x; startY=p.y; startTx=tx; startTy=ty;
+    try{ if(e.pointerId!=null && screen.setPointerCapture) screen.setPointerCapture(e.pointerId); }catch(_){}
+  }
+  function onMove(e){
+    if(!dragging) return;
+    var p = point(e);
+    var dx=p.x-startX, dy=p.y-startY;
+    if(Math.abs(dx)>2 || Math.abs(dy)>2) moved=true;
+    tx = startTx + dx; ty = startTy + dy;
+    applyTransform();
+    markNear(nearestToAnchor());
+    if(e.cancelable) e.preventDefault();
+  }
+  function finishSnap(){
+    world.classList.remove('snapping');
+    phone.classList.remove('snapping');  // → badge 복귀
+    world.removeEventListener('transitionend', onWorldTE);
+    if(snapTimer){ clearTimeout(snapTimer); snapTimer=null; }
+  }
+  function onWorldTE(e){ if(e.propertyName==='transform') finishSnap(); }
+
+  function onUp(e){
+    if(!dragging) return;
+    dragging=false;
+    var target = nearestToAnchor();
+    var changed = (tx !== ANCHOR.x - CANDS[target].wx) || (ty !== ANCHOR.y - CANDS[target].wy);
+    // snap: animate world so nearest lands under the anchor
+    phone.classList.remove('dragging');
+    phone.classList.add('snapping');
+    world.classList.add('snapping');
+    setSelected(target); markNear(target);
+    setSheet(target);                     // 주소 갱신 (스냅과 동시)
+    world.addEventListener('transitionend', onWorldTE);
+    centerOn(target);                     // triggers transition (if position changed)
+    // transitionend drives finish; timer is a fallback (and the only path when nothing moved)
+    snapTimer = setTimeout(finishSnap, changed ? 520 : 0);
+  }
+  function point(e){ return {x:e.clientX, y:e.clientY}; }
+
+  screen.addEventListener('pointerdown', onDown);
+  screen.addEventListener('pointermove', onMove);
+  screen.addEventListener('pointerup', onUp);
+  screen.addEventListener('pointercancel', onUp);
+  // mouse fallback (environments without pointer events)
+  screen.addEventListener('mousedown', onDown);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+
+
+  // CTA
+  document.getElementById('cta').addEventListener('click', function(){
+    var el = this;
+    var prev = el.textContent;
+    el.textContent = '✓ ' + CANDS[selected].name.split(' ')[0] + ' 하차지 설정됨';
+    setTimeout(function(){ el.textContent = prev; }, 1400);
+  });
+})();
+</script>
+</body>
+</html>
