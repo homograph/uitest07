@@ -19,13 +19,20 @@
     --snap-dur:.42s;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0;padding:0;height:100%;overflow:hidden;overscroll-behavior:none;}
   body{font-family:"Spoqa Han Sans Neo",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
     background:#eef1f5;color:var(--gray-950);-webkit-font-smoothing:antialiased;}
-  .stage{min-height:100dvh;display:flex;align-items:center;justify-content:center;gap:40px;padding:24px;flex-wrap:wrap;}
+  .stage{min-height:100dvh;display:flex;align-items:center;justify-content:center;}
 
-  .phone{width:393px;height:820px;background:#fff;border-radius:40px;border:1px solid #e6eaf0;
-    box-shadow:0 24px 60px rgba(20,30,55,.22);position:relative;overflow:hidden;flex:0 0 auto;}
+  /* mobile-first: fill the actual screen height (no clipping) */
+  .phone{position:relative;overflow:hidden;background:#fff;flex:0 0 auto;
+    width:100vw;max-width:520px;height:100dvh;}
+  /* desktop / roomy viewport: restore the framed phone look */
+  @media (min-width:520px) and (min-height:860px){
+    .stage{padding:24px;}
+    .phone{width:393px;height:820px;border-radius:40px;border:1px solid #e6eaf0;
+      box-shadow:0 24px 60px rgba(20,30,55,.22);}
+  }
   .screen{position:absolute;inset:0;overflow:hidden;background:var(--map-bg);touch-action:none;}
 
   /* ── status bar ── */
@@ -60,8 +67,8 @@
   .myloc .halo{position:absolute;inset:-14px;border-radius:50%;background:rgba(50,162,250,.20);border:1px solid var(--tada-blue);}
   .myloc .dot{position:absolute;inset:0;border-radius:50%;background:var(--tada-blue);border:1.5px solid #fff;box-shadow:0 1px 4px rgba(20,30,55,.3);}
 
-  /* ── fixed reticle (badge + pin) at anchor ── */
-  .reticle{position:absolute;left:196.5px;top:330px;z-index:30;transform:translate(-50%,0);pointer-events:none;}
+  /* ── fixed reticle (badge + pin) at anchor — left/top set by JS layout() ── */
+  .reticle{position:absolute;left:50%;top:44%;z-index:30;transform:translate(-50%,0);pointer-events:none;}
 
   /* settled: 목적지 badge with stem, tip at anchor */
   .badge-wrap{position:absolute;left:0;bottom:0;transform:translate(-50%,0);
@@ -92,7 +99,7 @@
   /* ── current-location button ── */
   .cloc{position:absolute;right:16px;z-index:35;width:40px;height:40px;border-radius:20px;background:#fff;
     box-shadow:0 4px 12px rgba(20,30,55,.18);display:flex;align-items:center;justify-content:center;
-    bottom:196px;transition:bottom var(--snap-dur) cubic-bezier(.22,.61,.36,1);}
+    bottom:196px;/* set by JS layout() */}
   .cloc svg{display:block;}
 
   /* ── bottom sheet ── */
@@ -105,7 +112,7 @@
     transition:opacity .16s ease;}
   .phone.dragging .sheet .title,
   .phone.dragging .sheet .addr{opacity:.35;}
-  .sheet .btnwrap{padding:10px;}
+  .sheet .btnwrap{padding:10px 10px calc(10px + env(safe-area-inset-bottom, 0px));}
   .cta{width:100%;border:0;border-radius:4px;background:var(--navy);color:#fff;
     font-family:inherit;font-weight:700;font-size:16px;line-height:1;padding:16px 12px;
     transition:background .18s ease, color .18s ease;cursor:pointer;}
@@ -239,6 +246,10 @@
   var screen  = document.getElementById('screen');
   var poiName = document.getElementById('poiName');
   var poiAddr = document.getElementById('poiAddr');
+  var reticle = document.getElementById('reticle');
+  var cloc    = document.querySelector('.cloc');
+  var sheet   = document.querySelector('.sheet');
+  var STATUSBAR_H = 36;
 
   var tx=0, ty=0;            // world translation
   var selected = 0;          // settled candidate index
@@ -285,11 +296,26 @@
     dots[selected].classList.add('selected');
   }
 
+  // ── responsive layout: anchor follows real screen height ──
+  function layout(){
+    var w = screen.clientWidth, h = screen.clientHeight;
+    var sheetH = sheet.offsetHeight;
+    ANCHOR.x = Math.round(w / 2);
+    // vertical center of the visible map area (between status bar and the sheet)
+    ANCHOR.y = Math.round(STATUSBAR_H + (h - STATUSBAR_H - sheetH) / 2);
+    reticle.style.left = ANCHOR.x + 'px';
+    reticle.style.top  = ANCHOR.y + 'px';
+    cloc.style.bottom  = (sheetH + 16) + 'px';
+    centerOn(selected);            // keep the selected candidate under the anchor
+  }
+
   // ── init ──
-  centerOn(0);
   setSelected(0);
   setSheet(0);
   dots[0].classList.add('near'); nearIdx = 0;
+  layout();                        // sets ANCHOR + centers on selected
+  window.addEventListener('resize', layout);
+  window.addEventListener('orientationchange', function(){ setTimeout(layout, 250); });
 
   // ── drag handling ──
   var dragging=false, startX=0, startY=0, startTx=0, startTy=0, moved=false, snapTimer=null;
