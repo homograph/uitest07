@@ -9,7 +9,7 @@
     color-scheme: light;
     --white:#ffffff;
     --blue-500:#0094f9; --blue-600:#0086ea; --tada-blue:#32a2fa;
-    --navy:#19254d; --navy-marker:#293f71; --navy-ico:#283873;
+    --navy:#19254d; --navy-marker:#293f71; --marker-ring:#60667a; --navy-ico:#283873;
     --gray-950:#171a24; --gray-900:#262a38; --gray-600:#60667a; --gray-400:#868b9c;
     --gray-100:#d5d7dc; --gray-80:#e3e4e8; --gray-30:#f5f6f7;
     --btn-disabled-bg:#99a5c0; --btn-disabled-tx:#c0c8d9;
@@ -59,11 +59,11 @@
   /* candidate markers — Figma ic_number_blue_stroke3: white fill + navy ring (hollow).
      counter-scaled (var(--inv)) so they keep constant screen size while the map zooms. */
   .cand{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
-    background:#fff;border:3px solid var(--navy-marker);
+    background:#fff;border:4px solid var(--marker-ring);
     box-shadow:0 2px 5px rgba(20,30,55,.20);
     transform:scale(var(--inv,1));
     transition:width .16s ease, height .16s ease, border-width .16s ease, box-shadow .16s ease;}
-  .cand.near{width:20px;height:20px;margin:-10px 0 0 -10px;border-width:5px;
+  .cand.near{width:24px;height:24px;margin:-12px 0 0 -12px;border-width:6px;
     box-shadow:0 4px 12px rgba(20,30,55,.34);}
 
   /* my location (ic_gps) — constant screen size while zooming */
@@ -105,6 +105,7 @@
     box-shadow:0 4px 12px rgba(20,30,55,.18);display:flex;align-items:center;justify-content:center;
     bottom:196px;/* set by JS layout() */}
   .cloc svg{display:block;}
+  .cloc-ic{width:22px;height:22px;display:block;pointer-events:none;}
 
   /* ── bottom sheet ── */
   .sheet{position:absolute;left:0;right:0;bottom:0;z-index:38;background:#fff;
@@ -159,13 +160,7 @@
         </div>
 
         <!-- current location button -->
-        <button class="cloc" aria-label="현재 위치">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="4.2" stroke="var(--navy-ico)" stroke-width="2.2"/>
-            <circle cx="12" cy="12" r="1.6" fill="var(--navy-ico)"/>
-            <path d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="var(--navy-ico)" stroke-width="2.2" stroke-linecap="round"/>
-          </svg>
-        </button>
+        <button class="cloc" aria-label="현재 위치"><img class="cloc-ic" src="data:image/png;base64,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" alt="" draggable="false"></button>
 
         <!-- hint -->
         <div class="hint" id="hint">지도를 움직여 하차 지점을 선택하세요</div>
