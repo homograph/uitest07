@@ -13,9 +13,11 @@
     --gray-950:#171a24; --gray-900:#262a38; --gray-600:#60667a; --gray-400:#868b9c;
     --gray-100:#d5d7dc; --gray-80:#e3e4e8; --gray-30:#f5f6f7;
     --btn-disabled-bg:#99a5c0; --btn-disabled-tx:#c0c8d9;
-    /* fake map palette */
-    --map-bg:#eef1f3; --map-block:#e5e8ee; --map-road:#ffffff; --map-road2:#f6f8fa;
-    --map-rail:#dbe4f4; --map-water:#cfe6fb; --map-green:#dfeede;
+    /* naver-map-like palette (sampled from real map) */
+    --map-bg:#f7f8f9; --map-block:#e7e8ea; --map-block2:#eceef0; --map-road:#ffffff; --map-road-casing:#e5e7ea;
+    --map-rail-zone:#efe9f1; --map-rail:#a9adcf; --map-water:#7cc0e8; --map-water-edge:#addaf1;
+    --map-green:#d9e8d4; --map-green2:#cfe3c6; --map-route:#243585; --map-route-casing:#8790c4;
+    --poi-subway:#12a7de; --poi-yellow:#f5b301; --poi-red:#f2724b;
     --snap-dur:.42s;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -134,41 +136,71 @@
         <!-- pannable world -->
         <div class="world" id="world">
           <svg class="mapart" viewBox="0 0 1040 1560" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <!-- city-block grid: gray building blocks separated by white roads -->
+              <pattern id="blocks" width="198" height="174" patternUnits="userSpaceOnUse">
+                <rect width="198" height="174" fill="var(--map-road)"/>
+                <rect x="13" y="12" width="172" height="150" rx="6" fill="var(--map-block)"/>
+              </pattern>
+            </defs>
+
+            <!-- land base + block grid -->
             <rect width="1040" height="1560" fill="var(--map-bg)"/>
-            <!-- water strip (right) -->
-            <path d="M980 0 L1040 0 L1040 1560 L900 1560 Z" fill="var(--map-water)" opacity=".8"/>
-            <!-- railway band (diagonal) -->
-            <path d="M120 -40 L360 -40 L900 1600 L660 1600 Z" fill="var(--map-rail)"/>
-            <line x1="200" y1="-40" x2="740" y2="1600" stroke="#c2cfe6" stroke-width="2" stroke-dasharray="10 12"/>
-            <line x1="280" y1="-40" x2="820" y2="1600" stroke="#c2cfe6" stroke-width="2" stroke-dasharray="10 12"/>
-            <!-- green blocks -->
-            <rect x="40" y="120" width="150" height="110" rx="10" fill="var(--map-green)"/>
-            <rect x="740" y="1180" width="180" height="150" rx="12" fill="var(--map-green)"/>
-            <!-- building blocks -->
-            <g fill="var(--map-block)">
-              <rect x="60" y="300" width="180" height="140" rx="8"/>
-              <rect x="60" y="470" width="180" height="120" rx="8"/>
-              <rect x="430" y="120" width="150" height="120" rx="8"/>
-              <rect x="430" y="270" width="150" height="150" rx="8"/>
-              <rect x="620" y="300" width="150" height="120" rx="8"/>
-              <rect x="80" y="720" width="200" height="160" rx="8"/>
-              <rect x="330" y="900" width="170" height="150" rx="8"/>
-              <rect x="560" y="760" width="160" height="140" rx="8"/>
-              <rect x="120" y="1150" width="190" height="150" rx="8"/>
-              <rect x="600" y="1080" width="150" height="140" rx="8"/>
+            <rect width="1040" height="1560" fill="url(#blocks)"/>
+
+            <!-- a few merged / lighter superblocks to break the grid -->
+            <g fill="var(--map-block2)">
+              <rect x="46" y="118" width="320" height="150" rx="9"/>
+              <rect x="600" y="690" width="250" height="230" rx="9"/>
+              <rect x="120" y="1116" width="270" height="188" rx="9"/>
+              <rect x="410" y="360" width="180" height="330" rx="9"/>
             </g>
-            <!-- roads -->
+
+            <!-- green / parks -->
+            <g>
+              <rect x="34" y="392" width="160" height="150" rx="18" fill="var(--map-green)"/>
+              <path d="M690 108 q128 18 128 150 q-8 96 -150 96 q-74 -22 -64 -138 q10 -86 86 -108Z" fill="var(--map-green)"/>
+              <circle cx="236" cy="980" r="74" fill="var(--map-green2)"/>
+            </g>
+
+            <!-- station / railway diagonal zone (soft purple) -->
+            <path d="M300 -60 L520 -60 L1000 1620 L780 1620 Z" fill="var(--map-rail-zone)"/>
+            <g stroke="var(--map-rail)" fill="none" stroke-linecap="round">
+              <line x1="384" y1="-60" x2="864" y2="1620" stroke-width="3.5" stroke-dasharray="2 16"/>
+              <line x1="452" y1="-60" x2="932" y2="1620" stroke-width="3.5" stroke-dasharray="2 16"/>
+            </g>
+
+            <!-- 한강 (water) on the right, wavy edge -->
+            <path d="M936 -20 Q902 380 952 780 Q1002 1180 972 1580 L1060 1580 L1060 -20 Z" fill="var(--map-water)"/>
+            <path d="M936 -20 Q902 380 952 780 Q1002 1180 972 1580" fill="none" stroke="var(--map-water-edge)" stroke-width="6"/>
+
+            <!-- major white arterials (road hierarchy) -->
+            <g stroke="var(--map-road-casing)" fill="none" stroke-linecap="round">
+              <path d="M0 250 L980 250" stroke-width="34"/>
+              <path d="M0 622 L980 642" stroke-width="38"/>
+              <path d="M0 980 L960 962" stroke-width="34"/>
+              <path d="M250 -20 L250 1580" stroke-width="30"/>
+              <path d="M600 -20 L622 1580" stroke-width="34"/>
+            </g>
             <g stroke="var(--map-road)" fill="none" stroke-linecap="round">
-              <path d="M0 260 L1040 300" stroke-width="26"/>
-              <path d="M0 660 L1040 700" stroke-width="30"/>
-              <path d="M0 1080 L1040 1050" stroke-width="26"/>
-              <path d="M300 -20 L360 1580" stroke-width="24"/>
-              <path d="M720 -20 L680 1580" stroke-width="22"/>
+              <path d="M0 250 L980 250" stroke-width="28"/>
+              <path d="M0 622 L980 642" stroke-width="32"/>
+              <path d="M0 980 L960 962" stroke-width="28"/>
+              <path d="M250 -20 L250 1580" stroke-width="24"/>
+              <path d="M600 -20 L622 1580" stroke-width="28"/>
             </g>
-            <g stroke="var(--map-road2)" fill="none" stroke-linecap="round" stroke-width="12">
-              <path d="M0 460 L1040 480"/>
-              <path d="M520 -20 L540 1580"/>
-              <path d="M0 880 L1040 860"/>
+
+            <!-- subtle POI markers for a naver-like feel -->
+            <g font-family="'Spoqa Han Sans Neo',sans-serif">
+              <g transform="translate(198,300)"><circle r="11" fill="var(--poi-yellow)"/><text x="0" y="4" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">1</text></g>
+              <g transform="translate(858,760)"><circle r="11" fill="var(--poi-yellow)"/><text x="0" y="4" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">2</text></g>
+              <circle cx="708" cy="452" r="8.5" fill="var(--poi-subway)"/><circle cx="708" cy="452" r="3.4" fill="#fff"/>
+              <circle cx="330" cy="700" r="8.5" fill="var(--poi-subway)"/><circle cx="330" cy="700" r="3.4" fill="#fff"/>
+              <g fill="var(--poi-red)" font-size="12">
+                <text x="352" y="828">한양식당</text>
+                <text x="150" y="474" fill="#9aa0ad">스타벅스</text>
+                <text x="470" y="712" fill="#9aa0ad">GS25</text>
+              </g>
             </g>
           </svg>
 
