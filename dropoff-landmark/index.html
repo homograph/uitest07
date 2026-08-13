@@ -128,6 +128,20 @@
     padding:7px 14px;border-radius:16px;white-space:nowrap;pointer-events:none;
     transition:opacity .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2);}
   .phone.dragging .hint{opacity:0;}
+  .phone.used .hint{opacity:0;}
+
+  /* snap confirmation toast */
+  .toast{position:absolute;left:50%;top:56px;transform:translate(-50%,-8px);z-index:37;
+    display:flex;align-items:center;gap:7px;
+    background:rgba(23,26,36,.9);color:#fff;font-size:13px;font-weight:600;letter-spacing:-.2px;
+    padding:9px 16px 9px 11px;border-radius:20px;white-space:nowrap;pointer-events:none;
+    opacity:0;transition:opacity .25s ease, transform .25s cubic-bezier(.22,.61,.36,1);
+    box-shadow:0 6px 18px rgba(0,0,0,.28);}
+  .toast .tick{width:18px;height:18px;border-radius:50%;background:#25c26e;color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:0 0 auto;}
+  .phone.toasting .toast{opacity:1;transform:translate(-50%,0);}
+  .phone.toasting .hint{opacity:0;}
+  .phone.dragging .toast{opacity:0;transform:translate(-50%,-8px);}
 </style>
 </head>
 <body>
@@ -164,6 +178,8 @@
 
         <!-- hint -->
         <div class="hint" id="hint">지도를 움직여 하차 지점을 선택하세요</div>
+        <!-- snap confirmation toast -->
+        <div class="toast" id="toast"><span class="tick">✓</span><span>추천 하차지로 조정되었습니다.</span></div>
 
         <!-- status bar -->
         <div class="statusbar">
@@ -297,12 +313,20 @@
   function pts(){ return Array.from(pointers.values()); }
   function distOf(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
 
+  var toastTimer = null;
+  function showToast(){
+    phone.classList.add('toasting');
+    if(toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ phone.classList.remove('toasting'); toastTimer=null; }, 2000);
+  }
+
   function beginGestureVisual(){
     if(snapTimer){ clearTimeout(snapTimer); snapTimer=null; }
+    if(toastTimer){ clearTimeout(toastTimer); toastTimer=null; }
     world.removeEventListener('transitionend', onWorldTE);
     world.classList.remove('snapping');
-    phone.classList.remove('snapping');
-    phone.classList.add('dragging');
+    phone.classList.remove('snapping', 'toasting');
+    phone.classList.add('dragging', 'used');   // 'used' hides the initial guidance hint
   }
   function startPan(){ var p = pts()[0]; panStart = {x:p.x, y:p.y, tx:tx, ty:ty}; mode='pan'; }
   function startPinch(){ var a = pts(); pinchStart = {dist:Math.max(1,distOf(a[0],a[1])), scale:scale}; mode='pinch'; }
@@ -360,6 +384,7 @@
     world.addEventListener('transitionend', onWorldTE);
     centerOn(target);
     snapTimer = setTimeout(finishSnap, changed ? 520 : 0);
+    if(changed) showToast();               // 핀이 추천 마커로 조정될 때만 안내
   }
 
   screen.addEventListener('pointerdown', onDown);
