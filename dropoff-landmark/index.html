@@ -63,13 +63,15 @@
 
   /* candidate markers — Figma ic_number_blue_stroke3: white fill + navy ring (hollow).
      counter-scaled (var(--inv)) so they keep constant screen size while the map zooms. */
-  .cand{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
-    background:#fff;border:4px solid var(--marker-ring);
-    box-shadow:0 2px 5px rgba(20,30,55,.20);
-    transform:scale(var(--inv,1));
-    transition:width .16s ease, height .16s ease, border-width .16s ease, box-shadow .16s ease;}
-  .cand.near{width:24px;height:24px;margin:-12px 0 0 -12px;border-width:6px;border-color:var(--marker-near);
-    box-shadow:0 4px 12px rgba(20,30,55,.34);}
+  .cand{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;
+    background:#fff;border:1.5px solid var(--blue-600);color:var(--blue-600);
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 5px rgba(20,30,55,.20);transform:scale(var(--inv,1));
+    transition:background .16s ease, color .16s ease, width .16s ease, height .16s ease, box-shadow .16s ease;}
+  .cand svg{width:12px;height:12px;display:block;}
+  .cand.near{width:24px;height:24px;margin:-12px 0 0 -12px;background:var(--blue-600);border-color:var(--blue-600);color:#fff;
+    box-shadow:0 5px 14px rgba(0,134,234,.45);}
+  .cand.near svg{width:14px;height:14px;}
 
   /* numbered designated markers (inside geofence) — Figma ic_number_blue(_stroke) */
   .nmark{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
@@ -119,9 +121,9 @@
   .reticle{position:absolute;left:50%;top:44%;z-index:30;transform:translate(-50%,0);pointer-events:none;}
 
   /* settled: 목적지 badge with stem, tip at anchor */
-  .badge-wrap{position:absolute;left:0;bottom:0;transform:translate(-50%,0);
+  .badge-wrap{position:absolute;left:0;bottom:11px;transform:translate(-50%,0);
     display:flex;flex-direction:column;align-items:center;
-    transition:opacity .16s ease, transform .18s ease;}
+    transition:opacity .16s ease, transform .18s ease;}  /* bottom=marker반지름: stem 끝이 마커 상단에 닿게 */
   .badge{background:var(--blue-500);border:1px solid var(--blue-600);border-radius:24px;
     padding:3px 10px;color:#fff;font-weight:700;font-size:13px;line-height:1.5;white-space:nowrap;
     box-shadow:0 4px 10px rgba(0,134,234,.35);}
@@ -329,8 +331,9 @@
     var el=document.createElement('div'); el.className='nmark'; el.textContent=c.n;
     el.style.left=c.wx+'px'; el.style.top=c.wy+'px'; world.appendChild(el); return el;
   });
+  var THUMB='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91z"/></svg>';
   var omarks = OUTSIDE.map(function(c){
-    var el=document.createElement('div'); el.className='cand';
+    var el=document.createElement('div'); el.className='cand'; el.innerHTML=THUMB;
     el.style.left=c.wx+'px'; el.style.top=c.wy+'px'; world.appendChild(el); return el;
   });
   // build wheel list items
