@@ -71,6 +71,45 @@
   .cand.near{width:24px;height:24px;margin:-12px 0 0 -12px;border-width:6px;border-color:var(--marker-near);
     box-shadow:0 4px 12px rgba(20,30,55,.34);}
 
+  /* numbered designated markers (inside geofence) — Figma ic_number_blue(_stroke) */
+  .nmark{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
+    background:#fff;border:2px solid var(--blue-600);color:var(--blue-600);
+    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;line-height:1;
+    box-shadow:0 2px 5px rgba(20,30,55,.22);transform:scale(var(--inv,1));
+    transition:background .16s ease, color .16s ease, border-color .16s ease, box-shadow .16s ease;}
+  .nmark.sel{background:var(--blue-500);border-color:var(--blue-600);color:#fff;
+    box-shadow:0 5px 14px rgba(0,148,249,.45);}
+
+  /* ── wheel picker panel (inside-geofence designated points) ── */
+  .sheet-wheel{display:none;}
+  .phone.wheelmode .sheet-wheel{display:block;}
+  .phone.wheelmode .sheet-single{display:none;}
+  .phone.dragging .sheet-wheel{opacity:.45;}
+  .wtitle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:25px 25px 0;}
+  .wtitle b{font-size:18px;font-weight:700;color:#262a38;}
+  .wclose{border:0;background:none;padding:4px;cursor:pointer;line-height:0;color:#000;flex:0 0 auto;}
+  .wclose svg{display:block;}
+  .wheel{position:relative;height:168px;margin:6px 0 2px;overflow:hidden;}
+  .wlist{list-style:none;margin:0;padding:56px 0;height:100%;overflow-y:auto;
+    scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;
+    scrollbar-width:none;-ms-overflow-style:none;}
+  .wlist::-webkit-scrollbar{display:none;width:0;}
+  .witem{height:56px;scroll-snap-align:center;display:flex;align-items:center;gap:8px;
+    padding:0 25px;cursor:pointer;}
+  .witem .wn{width:20px;height:20px;flex:0 0 auto;border-radius:50%;background:#fff;
+    border:1.5px solid var(--gray-600);color:var(--gray-600);
+    display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;line-height:1;
+    transition:background .15s, color .15s, border-color .15s;}
+  .witem .wname{font-size:14px;font-weight:400;color:var(--gray-700);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:font-size .15s, color .15s;}
+  .witem.sel .wn{background:var(--blue-500);border-color:var(--blue-600);color:#fff;}
+  .witem.sel .wname{font-size:16px;color:var(--blue-500);}
+  .wband{position:absolute;left:0;right:0;top:56px;height:56px;pointer-events:none;
+    border-top:1px solid #b9ddfd;border-bottom:1px solid #b9ddfd;}
+  .wfade{position:absolute;left:0;right:0;height:44px;pointer-events:none;z-index:2;}
+  .wfade.top{top:0;background:linear-gradient(#fff,rgba(255,255,255,0));}
+  .wfade.bot{bottom:0;background:linear-gradient(rgba(255,255,255,0),#fff);}
+
   /* my location (ic_gps) — constant screen size while zooming */
   .myloc{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;transform:scale(var(--inv,1));}
   .myloc .halo{position:absolute;inset:-14px;border-radius:50%;background:rgba(50,162,250,.20);border:1px solid var(--tada-blue);}
@@ -134,6 +173,7 @@
     transition:opacity .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2);}
   .phone.dragging .hint{opacity:0;}
   .phone.used .hint{opacity:0;}
+  .phone.wheelmode .hint{opacity:0;}
 
   /* snap confirmation toast */
   .toast{position:absolute;left:50%;top:56px;transform:translate(-50%,-8px);z-index:37;
@@ -171,7 +211,7 @@
         <!-- fixed reticle -->
         <div class="reticle" id="reticle">
           <div class="badge-wrap">
-            <div class="badge">목적지</div>
+            <div class="badge" id="badgeText">여기서 하차</div>
             <div class="badge-stem"></div>
           </div>
           <div class="pin-wrap">
@@ -197,12 +237,30 @@
 
         <!-- bottom sheet -->
         <div class="sheet">
-          <div class="info">
-            <div class="title" id="poiName">KTX 서울역 3번 출구</div>
-            <div class="addr" id="poiAddr">서울 중구 봉래동2가 122</div>
+          <!-- wheel picker (reticle inside geofence = 지정 하차지) -->
+          <div class="sheet-wheel">
+            <div class="wtitle">
+              <b>지정된 위치에서 하차하세요</b>
+              <button class="wclose" id="wclose" aria-label="닫기">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+            <div class="wheel">
+              <ul class="wlist" id="wlist"></ul>
+              <div class="wfade top"></div><div class="wfade bot"></div>
+              <div class="wband"></div>
+            </div>
+            <div class="btnwrap"><button class="cta" id="ctaW">목적지 설정 완료</button></div>
           </div>
-          <div class="btnwrap">
-            <button class="cta" id="cta">목적지 설정 완료</button>
+          <!-- single address (reticle outside geofence = 추천 하차지) -->
+          <div class="sheet-single">
+            <div class="info">
+              <div class="title" id="poiName">서울역 버스환승센터</div>
+              <div class="addr" id="poiAddr">서울 중구 한강대로 405</div>
+            </div>
+            <div class="btnwrap">
+              <button class="cta" id="cta">목적지 설정 완료</button>
+            </div>
           </div>
         </div>
 
@@ -214,214 +272,248 @@
 (function(){
   var ANCHOR = {x:196.5, y:330};
 
-  // 서울역 하차 후보 10개 (world 좌표계)
-  // world = 2200 × 1243 (real 서울역 map image aspect). positions over real spots.
-  var CANDS = [
-    {name:"서울역 광장 (정문)",     addr:"서울 중구 한강대로 405",      wx:1195, wy:640},
-    {name:"서울역 버스환승센터",    addr:"서울 중구 한강대로 405",      wx:1205, wy:520},
-    {name:"서울역 2번 출구",        addr:"서울 중구 한강대로 405",      wx:1175, wy:720},
-    {name:"롯데마트 서울역점",      addr:"서울 중구 한강대로 405",      wx:1185, wy:410},
-    {name:"서울역 택시승강장",      addr:"서울 중구 봉래동2가 122",     wx:1105, wy:835},
-    {name:"서울역 3번 출구",        addr:"서울 중구 봉래동2가 122",     wx:925, wy:560},
-    {name:"서울역 4번 출구",        addr:"서울 중구 봉래동2가 121",     wx:935, wy:440},
-    {name:"서울역 서부광장",        addr:"서울 중구 청파로 378",        wx:945, wy:695},
-    {name:"서울로7017 입구",        addr:"서울 중구 청파로 432",        wx:1140, wy:318},
-    {name:"공항철도 서울역",        addr:"서울 용산구 동자동 43",       wx:1008, wy:300}
+  // geofence polygon (world coords) — 서울역 랜드마크 영역
+  var GEO = [[1020,320],[1110,340],[1150,560],[1120,780],[1030,860],[965,620],[985,420]];
+
+  // 지정 하차지 (지오펜스 안 · 번호 마커 · 휠 피커로 선택)
+  var INSIDE = [
+    {n:1, name:"KTX 서울역 3번 출구",    addr:"서울 중구 봉래동2가 122", wx:1040, wy:430},
+    {n:2, name:"롯데마트 서울역점 입구", addr:"서울 중구 한강대로 405", wx:1085, wy:475},
+    {n:3, name:"서울역 서부 출입구",     addr:"서울 중구 청파로 378",   wx:1005, wy:560},
+    {n:4, name:"공항철도 서울역",        addr:"서울 용산구 동자동 43",  wx:1100, wy:610},
+    {n:5, name:"KTX 대합실 정문",        addr:"서울 중구 한강대로 405", wx:1040, wy:690},
+    {n:6, name:"경의중앙선 게이트",      addr:"서울 중구 봉래동2가 122", wx:1085, wy:745}
+  ];
+  // 추천 하차지 (지오펜스 바깥 · 링 마커 · 지도 드래그로 선택)
+  var OUTSIDE = [
+    {name:"서울역 버스환승센터",  addr:"서울 중구 한강대로 405", wx:1205, wy:520},
+    {name:"서울로7017 입구",      addr:"서울 중구 청파로 432",   wx:1150, wy:320},
+    {name:"서울역 택시승강장",    addr:"서울 중구 봉래동2가 122", wx:1110, wy:838},
+    {name:"청파로 정류장 (서부)", addr:"서울 중구 청파로 384",   wx:930,  wy:600},
+    {name:"남대문시장 방면",      addr:"서울 중구 남대문로 47",  wx:1235, wy:665},
+    {name:"서울역센트럴자이",     addr:"서울 중구 청파로 464",   wx:905,  wy:470}
   ];
 
-  var world   = document.getElementById('world');
-  var phone   = document.getElementById('phone');
-  var screen  = document.getElementById('screen');
-  var poiName = document.getElementById('poiName');
-  var poiAddr = document.getElementById('poiAddr');
-  var reticle = document.getElementById('reticle');
-  var cloc    = document.querySelector('.cloc');
-  var sheet   = document.querySelector('.sheet');
-  var STATUSBAR_H = 36;
+  var world=document.getElementById('world'), phone=document.getElementById('phone'),
+      screen=document.getElementById('screen'), reticle=document.getElementById('reticle'),
+      badgeText=document.getElementById('badgeText'), cloc=document.querySelector('.cloc'),
+      sheet=document.querySelector('.sheet'), poiName=document.getElementById('poiName'),
+      poiAddr=document.getElementById('poiAddr'), wlist=document.getElementById('wlist');
+  var STATUSBAR_H = 36, ITEM_H = 56;
 
-  var tx=0, ty=0, scale=1;    // world translate + zoom
-  var MINZ=0.75, MAXZ=2.6;
-  var selected = 0, nearIdx = 0, snapTimer=null, wheelTimer=null;
+  var tx=0, ty=0, scale=1, MINZ=0.75, MAXZ=2.6;
+  var mode='wheel', wsel=0, ssel=0;
+  var snapTimer=null, wheelTimer=null, toastTimer=null, wheelScrollTimer=null, syncingWheel=false;
 
-  // build candidate marker elements
-  var dots = CANDS.map(function(c){
-    var el = document.createElement('div');
-    el.className = 'cand';
-    el.style.left = c.wx + 'px';
-    el.style.top  = c.wy + 'px';
-    world.appendChild(el);
-    return el;
+  // ── build markers ──
+  var nmarks = INSIDE.map(function(c){
+    var el=document.createElement('div'); el.className='nmark'; el.textContent=c.n;
+    el.style.left=c.wx+'px'; el.style.top=c.wy+'px'; world.appendChild(el); return el;
   });
+  var omarks = OUTSIDE.map(function(c){
+    var el=document.createElement('div'); el.className='cand';
+    el.style.left=c.wx+'px'; el.style.top=c.wy+'px'; world.appendChild(el); return el;
+  });
+  // build wheel list items
+  INSIDE.forEach(function(c,i){
+    var li=document.createElement('li'); li.className='witem';
+    li.innerHTML='<span class="wn">'+c.n+'</span><span class="wname">'+c.name+'</span>';
+    li.addEventListener('click', function(){ scrollWheelTo(i, true); });
+    wlist.appendChild(li);
+  });
+  var witems = Array.prototype.slice.call(wlist.children);
 
   function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
   function applyTransform(){
-    world.style.transform = 'translate('+tx+'px,'+ty+'px) scale('+scale+')';
-    world.style.setProperty('--inv', (1/scale).toFixed(4));   // keep markers constant size
+    world.style.transform='translate('+tx+'px,'+ty+'px) scale('+scale+')';
+    world.style.setProperty('--inv',(1/scale).toFixed(4));
   }
-
-  // center a candidate under the anchor (respecting zoom)
-  function centerOn(i){ tx = ANCHOR.x - CANDS[i].wx*scale; ty = ANCHOR.y - CANDS[i].wy*scale; applyTransform(); }
-
-  // nearest candidate to the anchor for the current transform
-  function nearestToAnchor(){
-    var best=0, bd=Infinity;
-    for(var i=0;i<CANDS.length;i++){
-      var sx = CANDS[i].wx*scale + tx, sy = CANDS[i].wy*scale + ty;
-      var d = (sx-ANCHOR.x)*(sx-ANCHOR.x) + (sy-ANCHOR.y)*(sy-ANCHOR.y);
+  function centerXY(wx,wy){ tx=ANCHOR.x-wx*scale; ty=ANCHOR.y-wy*scale; applyTransform(); }
+  function reticleWorld(){ return {x:(ANCHOR.x-tx)/scale, y:(ANCHOR.y-ty)/scale}; }
+  function pointInPoly(p, poly){
+    var inside=false;
+    for(var i=0,j=poly.length-1;i<poly.length;j=i++){
+      var xi=poly[i][0],yi=poly[i][1], xj=poly[j][0],yj=poly[j][1];
+      if(((yi>p.y)!==(yj>p.y)) && (p.x < (xj-xi)*(p.y-yi)/(yj-yi)+xi)) inside=!inside;
+    }
+    return inside;
+  }
+  function reticleInsideGeo(){ return pointInPoly(reticleWorld(), GEO); }
+  function nearestOf(list){
+    var best=0,bd=Infinity;
+    for(var i=0;i<list.length;i++){
+      var sx=list[i].wx*scale+tx, sy=list[i].wy*scale+ty;
+      var d=(sx-ANCHOR.x)*(sx-ANCHOR.x)+(sy-ANCHOR.y)*(sy-ANCHOR.y);
       if(d<bd){bd=d;best=i;}
     }
     return best;
   }
+  function zoomAround(ns,fx,fy){ ns=clamp(ns,MINZ,MAXZ); if(ns===scale)return;
+    tx=fx-(fx-tx)*(ns/scale); ty=fy-(fy-ty)*(ns/scale); scale=ns; applyTransform(); }
 
-  // zoom keeping the world point under (fx,fy) fixed on screen
-  function zoomAround(newScale, fx, fy){
-    newScale = clamp(newScale, MINZ, MAXZ);
-    if(newScale===scale) return;
-    tx = fx - (fx - tx) * (newScale/scale);
-    ty = fy - (fy - ty) * (newScale/scale);
-    scale = newScale;
-    applyTransform();
+  // ── marker highlight helpers ──
+  function markInsideSel(i){ nmarks.forEach(function(el,k){ el.classList.toggle('sel', k===i); }); }
+  function markOutsideNear(i){ omarks.forEach(function(el,k){ el.classList.toggle('near', k===i); }); }
+  function setWheelSelClass(i){ witems.forEach(function(el,k){ el.classList.toggle('sel', k===i); }); }
+
+  function setMode(m){
+    if(mode!==m){ mode=m; phone.classList.toggle('wheelmode', m==='wheel');
+      badgeText.textContent = (m==='wheel') ? '여기서 하차' : '목적지'; }
   }
 
-  function markNear(i){
-    if(i===nearIdx) return;
-    dots[nearIdx].classList.remove('near');
-    nearIdx = i;
-    dots[nearIdx].classList.add('near');
-  }
-  function setSheet(i){ poiName.textContent = CANDS[i].name; poiAddr.textContent = CANDS[i].addr; }
-  function setSelected(i){ dots[selected].classList.remove('selected'); selected = i; dots[selected].classList.add('selected'); }
-
-  // ── responsive layout: anchor follows real screen height ──
-  function layout(){
-    var w = screen.clientWidth, h = screen.clientHeight;
-    var sheetH = sheet.offsetHeight;
-    ANCHOR.x = Math.round(w / 2);
-    ANCHOR.y = Math.round(STATUSBAR_H + (h - STATUSBAR_H - sheetH) / 2);
-    reticle.style.left = ANCHOR.x + 'px';
-    reticle.style.top  = ANCHOR.y + 'px';
-    cloc.style.bottom  = (sheetH + 16) + 'px';
-    centerOn(selected);            // keep the selected candidate under the anchor
-  }
-
-  // ── init ──
-  setSelected(0); setSheet(0);
-  dots[0].classList.add('near'); nearIdx = 0;
-  layout();
-  window.addEventListener('resize', layout);
-  window.addEventListener('orientationchange', function(){ setTimeout(layout, 250); });
-
-  // ── gestures: 1 pointer = pan→snap, 2 pointers = pinch zoom, wheel = zoom ──
-  var pointers = new Map();
-  var mode = null;                 // 'pan' | 'pinch'
-  var panStart = null;             // {x,y,tx,ty}
-  var pinchStart = null;           // {dist, scale}
-
-  function localPt(e){ var r = screen.getBoundingClientRect(); return {x:e.clientX-r.left, y:e.clientY-r.top}; }
-  function pts(){ return Array.from(pointers.values()); }
-  function distOf(a,b){ return Math.hypot(a.x-b.x, a.y-b.y); }
-
-  var toastTimer = null;
-  function showToast(){
-    phone.classList.add('toasting');
-    if(toastTimer) clearTimeout(toastTimer);
-    toastTimer = setTimeout(function(){ phone.classList.remove('toasting'); toastTimer=null; }, 2000);
-  }
-
-  function beginGestureVisual(){
-    if(snapTimer){ clearTimeout(snapTimer); snapTimer=null; }
-    if(toastTimer){ clearTimeout(toastTimer); toastTimer=null; }
+  // ── snapping animation to a world point ──
+  function finishSnap(){
+    world.classList.remove('snapping'); phone.classList.remove('snapping');
     world.removeEventListener('transitionend', onWorldTE);
-    world.classList.remove('snapping');
-    phone.classList.remove('snapping', 'toasting');
-    phone.classList.add('dragging', 'used');   // 'used' hides the initial guidance hint
+    if(snapTimer){ clearTimeout(snapTimer); snapTimer=null; }
   }
-  function startPan(){ var p = pts()[0]; panStart = {x:p.x, y:p.y, tx:tx, ty:ty}; mode='pan'; }
-  function startPinch(){ var a = pts(); pinchStart = {dist:Math.max(1,distOf(a[0],a[1])), scale:scale}; mode='pinch'; }
+  function onWorldTE(e){ if(e.propertyName==='transform') finishSnap(); }
+  function snapTo(wx,wy){
+    var tTx=ANCHOR.x-wx*scale, tTy=ANCHOR.y-wy*scale;
+    var changed=(Math.abs(tx-tTx)>0.5||Math.abs(ty-tTy)>0.5);
+    phone.classList.remove('dragging'); phone.classList.add('snapping'); world.classList.add('snapping');
+    world.addEventListener('transitionend', onWorldTE);
+    tx=tTx; ty=tTy; applyTransform();
+    if(snapTimer) clearTimeout(snapTimer);
+    snapTimer=setTimeout(finishSnap, changed?520:0);
+    return changed;
+  }
 
+  function showToast(){ phone.classList.add('toasting');
+    if(toastTimer)clearTimeout(toastTimer);
+    toastTimer=setTimeout(function(){ phone.classList.remove('toasting'); toastTimer=null; },2000); }
+
+  // ── wheel → select inside marker (+ optionally recenter map) ──
+  function scrollWheelTo(i, recenter){
+    wsel=i; syncingWheel=true;
+    wlist.scrollTop = i*ITEM_H;
+    setWheelSelClass(i); markInsideSel(i);
+    setTimeout(function(){ syncingWheel=false; }, 90);
+    if(recenter) snapTo(INSIDE[i].wx, INSIDE[i].wy);
+  }
+
+  // ── decide mode + snap on gesture end ──
+  function doSnap(){
+    if(reticleInsideGeo()){
+      setMode('wheel');
+      var t=nearestOf(INSIDE);
+      scrollWheelTo(t, false);
+      snapTo(INSIDE[t].wx, INSIDE[t].wy);
+    } else {
+      setMode('single');
+      var t=nearestOf(OUTSIDE);
+      ssel=t; markOutsideNear(t);
+      poiName.textContent=OUTSIDE[t].name; poiAddr.textContent=OUTSIDE[t].addr;
+      var changed=snapTo(OUTSIDE[t].wx, OUTSIDE[t].wy);
+      if(changed) showToast();
+    }
+  }
+
+  // ── live marker highlight while dragging ──
+  function liveMark(){
+    if(reticleInsideGeo()){ markInsideSel(nearestOf(INSIDE)); markOutsideNear(-1); }
+    else { markOutsideNear(nearestOf(OUTSIDE)); markInsideSel(-1); }
+  }
+
+  // ── responsive layout ──
+  function layout(){
+    var w=screen.clientWidth, h=screen.clientHeight, sh=sheet.offsetHeight;
+    ANCHOR.x=Math.round(w/2); ANCHOR.y=Math.round(STATUSBAR_H+(h-STATUSBAR_H-sh)/2);
+    reticle.style.left=ANCHOR.x+'px'; reticle.style.top=ANCHOR.y+'px';
+    cloc.style.bottom=(sh+16)+'px';
+    if(mode==='wheel') centerXY(INSIDE[wsel].wx, INSIDE[wsel].wy);
+    else centerXY(OUTSIDE[ssel].wx, OUTSIDE[ssel].wy);
+  }
+
+  // ── init: 서울역 검색 진입 → 휠 피커 모드 ──
+  phone.classList.add('wheelmode');
+  setWheelSelClass(0); markInsideSel(0);
+  layout();
+  wlist.scrollTop = 0;
+  window.addEventListener('resize', layout);
+  window.addEventListener('orientationchange', function(){ setTimeout(layout,250); });
+
+  // ── wheel scroll → select inside marker + recenter map ──
+  wlist.addEventListener('scroll', function(){
+    if(syncingWheel) return;
+    if(wheelScrollTimer) clearTimeout(wheelScrollTimer);
+    wheelScrollTimer=setTimeout(function(){
+      var i=clamp(Math.round(wlist.scrollTop/ITEM_H),0,INSIDE.length-1);
+      setWheelSelClass(i); markInsideSel(i);
+      if(i!==wsel){ wsel=i; snapTo(INSIDE[i].wx, INSIDE[i].wy); }
+    }, 100);
+  });
+
+  // ── X: 지도 자유선택 모드로 전환 (가장 가까운 바깥 추천지로 이동) ──
+  function closeToFree(){
+    var t=nearestOf(OUTSIDE); ssel=t; markOutsideNear(t); markInsideSel(-1);
+    poiName.textContent=OUTSIDE[t].name; poiAddr.textContent=OUTSIDE[t].addr;
+    setMode('single');
+    snapTo(OUTSIDE[t].wx, OUTSIDE[t].wy);
+  }
+  document.getElementById('wclose').addEventListener('click', closeToFree);
+
+  // ── gestures: 1 pointer pan→snap, 2 pinch zoom, wheel(desktop) zoom ──
+  var pointers=new Map(), gmode=null, panStart=null, pinchStart=null;
+  function localPt(e){ var r=screen.getBoundingClientRect(); return {x:e.clientX-r.left,y:e.clientY-r.top}; }
+  function gpts(){ return Array.from(pointers.values()); }
+  function distOf(a,b){ return Math.hypot(a.x-b.x,a.y-b.y); }
+  function beginGestureVisual(){
+    if(snapTimer){clearTimeout(snapTimer);snapTimer=null;}
+    if(toastTimer){clearTimeout(toastTimer);toastTimer=null;}
+    world.removeEventListener('transitionend', onWorldTE);
+    world.classList.remove('snapping'); phone.classList.remove('snapping','toasting');
+    phone.classList.add('dragging');
+  }
+  function startPan(){ var p=gpts()[0]; panStart={x:p.x,y:p.y,tx:tx,ty:ty}; gmode='pan'; }
+  function startPinch(){ var a=gpts(); pinchStart={dist:Math.max(1,distOf(a[0],a[1])),scale:scale}; gmode='pinch'; }
   function onDown(e){
-    if(e.target.closest('.sheet') || e.target.closest('.cloc')) return;
+    if(e.target.closest('.sheet')||e.target.closest('.cloc')) return;
     pointers.set(e.pointerId, localPt(e));
-    try{ if(e.pointerId!=null && screen.setPointerCapture) screen.setPointerCapture(e.pointerId); }catch(_){}
+    try{ if(e.pointerId!=null&&screen.setPointerCapture) screen.setPointerCapture(e.pointerId); }catch(_){}
     beginGestureVisual();
-    if(pointers.size === 1) startPan();
-    else if(pointers.size === 2) startPinch();
+    if(pointers.size===1) startPan(); else if(pointers.size===2) startPinch();
     if(e.cancelable) e.preventDefault();
   }
   function onMove(e){
     if(!pointers.has(e.pointerId)) return;
     pointers.set(e.pointerId, localPt(e));
-    if(mode === 'pan'){
-      var p = pointers.get(e.pointerId);
-      tx = panStart.tx + (p.x - panStart.x);
-      ty = panStart.ty + (p.y - panStart.y);
-      applyTransform();
-    } else if(mode === 'pinch'){
-      var a = pts(); if(a.length < 2) return;
-      var mid = {x:(a[0].x+a[1].x)/2, y:(a[0].y+a[1].y)/2};
-      zoomAround(pinchStart.scale * (distOf(a[0],a[1]) / pinchStart.dist), mid.x, mid.y);
-    }
-    markNear(nearestToAnchor());
+    if(gmode==='pan'){ var p=pointers.get(e.pointerId); tx=panStart.tx+(p.x-panStart.x); ty=panStart.ty+(p.y-panStart.y); applyTransform(); }
+    else if(gmode==='pinch'){ var a=gpts(); if(a.length<2)return; var mid={x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2}; zoomAround(pinchStart.scale*(distOf(a[0],a[1])/pinchStart.dist),mid.x,mid.y); }
+    liveMark();
     if(e.cancelable) e.preventDefault();
   }
   function onUp(e){
     if(!pointers.has(e.pointerId)) return;
     pointers.delete(e.pointerId);
-    try{ if(e.pointerId!=null && screen.releasePointerCapture) screen.releasePointerCapture(e.pointerId); }catch(_){}
-    if(pointers.size === 1) startPan();          // pinch→pan handoff without jump
-    else if(pointers.size >= 2) startPinch();
-    else { mode=null; doSnap(); }                // all fingers up → snap to nearest
+    try{ if(e.pointerId!=null&&screen.releasePointerCapture) screen.releasePointerCapture(e.pointerId); }catch(_){}
+    if(pointers.size===1) startPan(); else if(pointers.size>=2) startPinch();
+    else { gmode=null; doSnap(); }
   }
-
-  function finishSnap(){
-    world.classList.remove('snapping');
-    phone.classList.remove('snapping');          // → badge 복귀
-    world.removeEventListener('transitionend', onWorldTE);
-    if(snapTimer){ clearTimeout(snapTimer); snapTimer=null; }
+  screen.addEventListener('pointerdown',onDown);
+  screen.addEventListener('pointermove',onMove);
+  screen.addEventListener('pointerup',onUp);
+  screen.addEventListener('pointercancel',onUp);
+  if(!window.PointerEvent){
+    screen.addEventListener('mousedown',function(e){e.pointerId='m';onDown(e);});
+    window.addEventListener('mousemove',function(e){if(pointers.size){e.pointerId='m';onMove(e);}});
+    window.addEventListener('mouseup',function(e){e.pointerId='m';onUp(e);});
   }
-  function onWorldTE(e){ if(e.propertyName==='transform') finishSnap(); }
-
-  function doSnap(){
-    var target = nearestToAnchor();
-    var tTx = ANCHOR.x - CANDS[target].wx*scale, tTy = ANCHOR.y - CANDS[target].wy*scale;
-    var changed = (Math.abs(tx-tTx) > 0.5 || Math.abs(ty-tTy) > 0.5);
-    phone.classList.remove('dragging');
-    phone.classList.add('snapping');
-    world.classList.add('snapping');
-    setSelected(target); markNear(target); setSheet(target);   // 주소 갱신
-    world.addEventListener('transitionend', onWorldTE);
-    centerOn(target);
-    snapTimer = setTimeout(finishSnap, changed ? 520 : 0);
-    if(changed) showToast();               // 핀이 추천 마커로 조정될 때만 안내
-  }
-
-  screen.addEventListener('pointerdown', onDown);
-  screen.addEventListener('pointermove', onMove);
-  screen.addEventListener('pointerup', onUp);
-  screen.addEventListener('pointercancel', onUp);
-  if(!window.PointerEvent){    // mouse fallback (no pointer events)
-    screen.addEventListener('mousedown', function(e){ e.pointerId='m'; onDown(e); });
-    window.addEventListener('mousemove', function(e){ if(pointers.size){ e.pointerId='m'; onMove(e); } });
-    window.addEventListener('mouseup',   function(e){ e.pointerId='m'; onUp(e); });
-  }
-
-  // wheel zoom (desktop) — zoom toward cursor, then settle-snap
   screen.addEventListener('wheel', function(e){
-    e.preventDefault();
-    var p = localPt(e);
-    beginGestureVisual();
-    zoomAround(scale * Math.exp(-e.deltaY * 0.0015), p.x, p.y);
-    markNear(nearestToAnchor());
-    if(wheelTimer) clearTimeout(wheelTimer);
-    wheelTimer = setTimeout(function(){ if(pointers.size===0){ mode=null; doSnap(); } }, 240);
+    e.preventDefault(); var p=localPt(e); beginGestureVisual();
+    zoomAround(scale*Math.exp(-e.deltaY*0.0015), p.x, p.y); liveMark();
+    if(wheelTimer)clearTimeout(wheelTimer);
+    wheelTimer=setTimeout(function(){ if(pointers.size===0){ gmode=null; doSnap(); } },240);
   }, {passive:false});
 
-  // CTA
-  document.getElementById('cta').addEventListener('click', function(){
-    var el = this, prev = el.textContent;
-    el.textContent = '✓ ' + CANDS[selected].name.split(' ')[0] + ' 하차지 설정됨';
-    setTimeout(function(){ el.textContent = prev; }, 1400);
-  });
+  // CTA (both panels)
+  function ctaClick(el){ var prev=el.textContent;
+    var nm=(mode==='wheel')?INSIDE[wsel].name:OUTSIDE[ssel].name;
+    el.textContent='✓ '+nm.split(' ')[0]+' 하차지 설정됨';
+    setTimeout(function(){ el.textContent=prev; },1400); }
+  var ctaS=document.getElementById('cta'), ctaW=document.getElementById('ctaW');
+  if(ctaS) ctaS.addEventListener('click', function(){ ctaClick(this); });
+  if(ctaW) ctaW.addEventListener('click', function(){ ctaClick(this); });
 })();
 </script>
 </body>
