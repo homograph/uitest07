@@ -294,6 +294,25 @@
     {name:"서울역센트럴자이",     addr:"서울 중구 청파로 464",   wx:905,  wy:470}
   ];
 
+  var SNAP_PX = 62;   // 추천 마커 자석 반경(px). 이보다 멀면 자유 지점(임의 하차)으로 처리
+  // 지도 라벨(역지오코딩용): 랜드마크/추천지 밖 임의 지점의 주소 표기에 사용
+  var LABELS = [
+    {name:"청파동 주민센터 별관", addr:"서울 용산구 청파로47길 66", wx:830,  wy:620},
+    {name:"서울의료보건고등학교", addr:"서울 중구 중림로 47",       wx:625,  wy:290},
+    {name:"손기정체육공원",       addr:"서울 중구 손기정로 101",    wx:620,  wy:420},
+    {name:"서울역센트럴자이",     addr:"서울 중구 청파로 464",      wx:470,  wy:505},
+    {name:"환일고등학교",         addr:"서울 중구 손기정로 61",     wx:450,  wy:600},
+    {name:"봉래초등학교",         addr:"서울 중구 만리재로 33",     wx:560,  wy:360},
+    {name:"GS칼텍스 서울역주유소",addr:"서울 용산구 한강대로 366",  wx:830,  wy:720},
+    {name:"배문고등학교",         addr:"서울 용산구 청파로 227",    wx:550,  wy:880},
+    {name:"소의초등학교",         addr:"서울 중구 칠패로 73",       wx:300,  wy:700},
+    {name:"서울남대문경찰서",     addr:"서울 중구 한강대로 410",    wx:1250, wy:530},
+    {name:"백범광장공원",         addr:"서울 중구 소월로 91",       wx:1560, wy:460},
+    {name:"후암시장",             addr:"서울 용산구 후암로 106",    wx:1420, wy:1010},
+    {name:"충정로역 4번 출구",    addr:"서울 중구 충정로 30",       wx:290,  wy:60},
+    {name:"삼성래미안공덕",       addr:"서울 마포구 백범로 175",    wx:150,  wy:850}
+  ];
+
   var world=document.getElementById('world'), phone=document.getElementById('phone'),
       screen=document.getElementById('screen'), reticle=document.getElementById('reticle'),
       badgeText=document.getElementById('badgeText'), cloc=document.querySelector('.cloc'),
@@ -347,6 +366,21 @@
       if(d<bd){bd=d;best=i;}
     }
     return best;
+  }
+  function screenDist(m){ var sx=m.wx*scale+tx, sy=m.wy*scale+ty; return Math.hypot(sx-ANCHOR.x, sy-ANCHOR.y); }
+  function nearestLabel(){
+    var best=LABELS[0],bd=Infinity;
+    for(var i=0;i<LABELS.length;i++){
+      var sx=LABELS[i].wx*scale+tx, sy=LABELS[i].wy*scale+ty;
+      var d=(sx-ANCHOR.x)*(sx-ANCHOR.x)+(sy-ANCHOR.y)*(sy-ANCHOR.y);
+      if(d<bd){bd=d;best=LABELS[i];}
+    }
+    return best;
+  }
+  function settleFree(){   // 자유 지점: 지도 이동 없이 그 자리를 목적지로 확정
+    if(snapTimer){clearTimeout(snapTimer);snapTimer=null;}
+    world.classList.remove('snapping');
+    phone.classList.remove('dragging','snapping');
   }
   function zoomAround(ns,fx,fy){ ns=clamp(ns,MINZ,MAXZ); if(ns===scale)return;
     tx=fx-(fx-tx)*(ns/scale); ty=fy-(fy-ty)*(ns/scale); scale=ns; applyTransform(); }
@@ -402,17 +436,27 @@
     } else {
       setMode('single');
       var t=nearestOf(OUTSIDE);
-      ssel=t; markOutsideNear(t);
-      poiName.textContent=OUTSIDE[t].name; poiAddr.textContent=OUTSIDE[t].addr;
-      var changed=snapTo(OUTSIDE[t].wx, OUTSIDE[t].wy);
-      if(changed) showToast();
+      if(screenDist(OUTSIDE[t]) <= SNAP_PX){          // 추천 하차지 근처 → 자석 스냅
+        ssel=t; markOutsideNear(t);
+        poiName.textContent=OUTSIDE[t].name; poiAddr.textContent=OUTSIDE[t].addr;
+        var changed=snapTo(OUTSIDE[t].wx, OUTSIDE[t].wy);
+        if(changed) showToast();
+      } else {                                        // 그 밖의 임의 지점 → 자유 목적지 지정
+        markOutsideNear(-1);
+        var L=nearestLabel();
+        poiName.textContent=L.name; poiAddr.textContent=L.addr;
+        settleFree();
+      }
     }
   }
 
   // ── live marker highlight while dragging ──
   function liveMark(){
     if(reticleInsideGeo()){ markInsideSel(nearestOf(INSIDE)); markOutsideNear(-1); }
-    else { markOutsideNear(nearestOf(OUTSIDE)); markInsideSel(-1); }
+    else { markInsideSel(-1);
+      var t=nearestOf(OUTSIDE);
+      markOutsideNear(screenDist(OUTSIDE[t])<=SNAP_PX ? t : -1);
+    }
   }
 
   // ── responsive layout ──
@@ -508,7 +552,7 @@
 
   // CTA (both panels)
   function ctaClick(el){ var prev=el.textContent;
-    var nm=(mode==='wheel')?INSIDE[wsel].name:OUTSIDE[ssel].name;
+    var nm=(mode==='wheel')?INSIDE[wsel].name:poiName.textContent;
     el.textContent='✓ '+nm.split(' ')[0]+' 하차지 설정됨';
     setTimeout(function(){ el.textContent=prev; },1400); }
   var ctaS=document.getElementById('cta'), ctaW=document.getElementById('ctaW');
