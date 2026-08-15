@@ -207,6 +207,14 @@
   .dreq-field.gap .dreq-cnt{position:absolute; right:14px; bottom:12px; margin:0}
   .dreq-note{font-size:11px; color:var(--muted); margin:6px 0 0}
   .dreq-ac{font-size:12.5px; color:#20242e; background:#eef7f0; border-left:3px solid #1a9e5f; border-radius:0 6px 6px 0; padding:8px 12px; margin:12px 0 0}
+  .dreq-live{margin:14px 0 10px}
+  .dreq-livelabel{display:block; font-size:12px; font-weight:700; color:var(--fg); margin:0 0 6px}
+  .dreq-livehint{font-weight:400; color:var(--fg2)}
+  .dreq-input{width:100%; box-sizing:border-box; font-family:inherit; font-size:13px; line-height:1.6; color:#111; background:#fff; border:1px solid #cfd3dc; border-radius:8px; padding:10px 12px; resize:none; min-height:40px; max-height:160px; overflow:auto; display:block}
+  .dreq-input:focus{outline:none; border-color:#000}
+  .dreq-input::placeholder{color:#9da0ae}
+  .dreq-mirror{display:block; white-space:pre-wrap; word-break:break-word; min-height:1.6em}
+  .dreq-field.max .dreq-cnt b{color:#32a2fa}
   /* 복사 가능한 코드 카드 (JS가 pre를 감쌈) */
   .code{margin:10px 0 16px; border:1px solid #1e2740; border-radius:10px; overflow:hidden; background:#0f1626}
   .code-hd{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 10px 7px 14px; background:#141d33; border-bottom:1px solid #1e2740}
@@ -924,18 +932,22 @@ BasicTextField(
       <div class="dreq-issue">
         <h3><span class="dreq-tag n">이슈 2</span>카운터 하단 여백이 과해 블록처럼 보임</h3>
         <p class="dreq-meta"><b>증상</b> 마지막 줄과 "n/100" 사이가 크게 벌어져 바닥이 빈 블록처럼 튐. · <b>원인</b> 카운터를 코너에 절대배치하며 하단 예약 패딩을 <b>40</b>으로 크게 잡음.</p>
+        <div class="dreq-live" id="dreqLive">
+          <label class="dreq-livelabel" for="dreqTA">✍️ 직접 입력해 보며 비교해 보세요 <span class="dreq-livehint">— 아래 두 필드가 실시간으로 같은 텍스트를 렌더링합니다 (최대 100자)</span></label>
+          <textarea class="dreq-input" id="dreqTA" rows="1" maxlength="100" placeholder="예: 아이 둘과 함께 타요. 카시트 필요하고 짐도 많아요...">조용히 가주세요.</textarea>
+        </div>
         <div class="dreq-cmp">
           <div class="dreq-col">
             <p class="dreq-cap bad">❌ 현재(예약 40)</p>
-            <div class="dreq-field gap">조용히 가주세요.
-              <div class="dreq-cnt"><b>12</b>/100</div>
+            <div class="dreq-field gap" id="dreqBadField"><span class="dreq-mirror" id="dreqBad"></span>
+              <div class="dreq-cnt"><b id="dreqBadN">0</b>/100</div>
             </div>
             <p class="dreq-note">텍스트와 카운터 사이 빈 여백 과다</p>
           </div>
           <div class="dreq-col">
             <p class="dreq-cap good">✅ 수정(A flow / B 24)</p>
-            <div class="dreq-field">조용히 가주세요.
-              <div class="dreq-cnt"><b>12</b>/100</div>
+            <div class="dreq-field" id="dreqGoodField"><span class="dreq-mirror" id="dreqGood"></span>
+              <div class="dreq-cnt"><b id="dreqGoodN">0</b>/100</div>
             </div>
             <p class="dreq-note">카운터가 텍스트 바로 아래로 붙음</p>
           </div>
@@ -1243,6 +1255,27 @@ Box(Modifier.fillMaxWidth()) {
       a.addEventListener('click',function(e){e.preventDefault();show(a.getAttribute('href').slice(1));});
     });
     show(secs[0].id); // 기본: 첫 섹션(개요)
+  })();
+  // 개발 수정 요청 — 이슈2 라이브 데모(개발자가 직접 입력 → ❌/✅ 실시간 비교)
+  (function(){
+    var ta=document.getElementById('dreqTA');
+    if(!ta)return;
+    var bad=document.getElementById('dreqBad'), good=document.getElementById('dreqGood');
+    var badN=document.getElementById('dreqBadN'), goodN=document.getElementById('dreqGoodN');
+    var badF=document.getElementById('dreqBadField'), goodF=document.getElementById('dreqGoodField');
+    var composing=false, LIMIT=100;
+    function clamp(){ if(ta.value.length>LIMIT) ta.value=ta.value.slice(0,LIMIT); }
+    function render(){
+      ta.style.height='auto'; ta.style.height=Math.min(Math.max(ta.scrollHeight,40),160)+'px';
+      var v=ta.value, n=Math.min(v.length,LIMIT), atMax=n>=LIMIT;
+      bad.textContent=v; good.textContent=v;
+      badN.textContent=n; goodN.textContent=n;
+      badF.classList.toggle('max',atMax); goodF.classList.toggle('max',atMax);
+    }
+    ta.addEventListener('compositionstart',function(){composing=true;});
+    ta.addEventListener('compositionend',function(){composing=false; clamp(); render();});
+    ta.addEventListener('input',function(){ if(!composing) clamp(); render(); });
+    render();
   })();
   // 키보드 위로 버튼 올리기 — 실기기에서 입력 포커스 시 버튼이 키보드 위에 붙음(내리면 하단)
   var foot=document.querySelector('.foot');
