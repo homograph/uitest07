@@ -67,11 +67,11 @@
 
   .inputCard{background:var(--card); border:1px solid transparent; border-radius:8px; padding:16px}
   .inputCard:focus-within{border-color:#000}
-  .textwrap{position:relative; min-height:52px; max-height:112px}
+  .textwrap{position:relative; min-height:52px; max-height:152px}
   .backdrop{position:absolute; inset:0; margin:0; padding:0; border:0;
     font-family:inherit; font-size:15px; line-height:1.6; white-space:pre-wrap; word-break:break-word;
     overflow:hidden; background:transparent; box-sizing:border-box; color:#000; pointer-events:none}
-  #ta{position:relative; display:block; width:100%; min-height:52px; max-height:112px; height:auto; margin:0; padding:0; border:0;
+  #ta{position:relative; display:block; width:100%; min-height:52px; max-height:152px; height:auto; margin:0; padding:0; border:0;
     font-family:inherit; font-size:15px; line-height:1.6; white-space:pre-wrap; word-break:break-word;
     overflow-y:auto; overflow-x:hidden; resize:none; outline:none; background:transparent; color:transparent; caret-color:#000; box-sizing:border-box}
   .backdrop .ph{color:#73788b}
@@ -256,7 +256,7 @@
     </div>
   </div>
 
-  <p class="fieldnote">↓ 입력창은 <b>min 52</b>에서 내용 따라 확장하고, <b>maxHeight 도달 시 내부 스크롤</b>됩니다. 요청사항(100자)은 대개 상한 전에 멈춰요. (가이드 → 텍스트 필드 참고)</p>
+  <p class="fieldnote">↓ 입력창은 <b>min 52</b>에서 내용 따라 <b>확장(auto-grow)</b>. maxHeight는 <b>100자가 다 들어갈 만큼(≈6줄)</b>이라 <b>한도 내에선 잘리지 않습니다.</b> (가이드 → 텍스트 필드 참고)</p>
 
   <div class="phone">
     <div class="appbar">
@@ -646,7 +646,7 @@ Button(
         <tr><td><code class="i">field.radius</code></td><td>모서리</td><td>8</td></tr>
         <tr><td><code class="i">field.padding</code></td><td>내부 여백</td><td>16</td></tr>
         <tr><td><code class="i">field.minHeight</code></td><td>최소 높이(텍스트 영역)</td><td>52 · 컴포넌트 min ~96(카운터·패딩 포함)</td></tr>
-        <tr><td><code class="i">field.maxHeight</code></td><td>최대 높이(auto-grow 상한)</td><td>옵션 · 초과 시 내부 스크롤. 예) 100자→168 / 150자→212</td></tr>
+        <tr><td><code class="i">field.maxHeight</code></td><td>최대 높이(auto-grow 상한)</td><td><b>글자 한도가 다 들어갈 높이 이상</b>이어야 함(한도 내 클립 금지). 100자 ≈ 6줄 → 텍스트영역 ~152. ⚠ Figma 168(component)은 실제 100자(≈5~6줄)엔 부족 → 상향 필요</td></tr>
         <tr><td><code class="i">field.border.focus</code></td><td>포커스 보더</td><td>#000 · 1px</td></tr>
         <tr><td><code class="i">field.text</code></td><td>값 텍스트</td><td>#000 · Regular 15</td></tr>
         <tr><td><code class="i">field.placeholder</code></td><td>플레이스홀더</td><td>#73788B → focus #9DA0AE</td></tr>
@@ -989,7 +989,7 @@ DSTextField(value = note, onValueChange = { note = it },
   function render(){
     var v=ta.value;
     bd.innerHTML=highlight(v);
-    ta.style.height='auto'; ta.style.height=Math.min(Math.max(ta.scrollHeight,52),112)+'px'; // min 52 ~ max 112(내용 초과 시 내부 스크롤)
+    ta.style.height='auto'; ta.style.height=Math.min(Math.max(ta.scrollHeight,52),152)+'px'; // min 52 ~ max 152(100자 6줄까지 여유 → 한도 내 안 잘림)
     var n=Math.min(v.length,100), atMax=n>=100;
     cnt.className='counter'+(atMax?' max':'');
     cnt.innerHTML='<span class="n">'+n+'</span><span class="m">/100</span>';
