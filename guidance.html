@@ -184,6 +184,29 @@
   .callout{border-left:3px solid var(--accent); background:var(--accent-soft); padding:11px 15px; border-radius:0 8px 8px 0; margin:12px 0; font-size:13px; color:var(--fg)}
   .callout.warn{border-color:#e0a500; background:#fff7e0}
   .devguide a.link{color:var(--accent)}
+  /* 개발 수정 요청 탭 강조 + 화면예시 목업 */
+  .dg-nav a.dg-req{color:#8a6100; background:#fff3d6; border-color:#f0d48a; font-weight:700}
+  .dg-nav a.dg-req.on{color:#fff; background:#e0a500; border-color:#e0a500}
+  .dg-nav a.dg-req::before{content:"🔧 "; font-weight:400}
+  .dreq-issue{border:1px solid var(--dline); border-radius:12px; padding:16px 18px 18px; margin:0 0 22px; background:var(--panel)}
+  .dreq-issue > h3:first-child{margin-top:0}
+  .dreq-tag{display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.03em; padding:2px 8px; border-radius:20px; margin-right:8px; vertical-align:middle}
+  .dreq-tag.n{color:#fff; background:#e0a500}
+  .dreq-meta{font-size:12.5px; color:var(--fg2); margin:2px 0 10px}
+  .dreq-meta b{color:var(--fg)}
+  .dreq-cmp{display:flex; gap:14px; flex-wrap:wrap; margin:12px 0 14px}
+  .dreq-col{flex:1 1 180px; min-width:168px}
+  .dreq-cap{font-size:12px; font-weight:700; margin:0 0 6px}
+  .dreq-cap.bad{color:#c0392b} .dreq-cap.good{color:#1a9e5f}
+  .dreq-field{position:relative; background:#f5f6f7; border-radius:8px; padding:14px; font-size:12.5px; line-height:1.6; color:#111}
+  .dreq-field.clip{height:74px; overflow:hidden}
+  .dreq-clipline{position:absolute; left:0; right:0; bottom:0; height:22px; background:linear-gradient(180deg,rgba(245,246,247,0) 0%,#f5f6f7 70%); color:#c0392b; font-size:10.5px; font-weight:700; text-align:center; line-height:30px}
+  .dreq-field.gap{padding-bottom:42px}
+  .dreq-cnt{text-align:right; font-size:11px; color:#73788b; margin-top:8px}
+  .dreq-cnt b{color:#111}
+  .dreq-field.gap .dreq-cnt{position:absolute; right:14px; bottom:12px; margin:0}
+  .dreq-note{font-size:11px; color:var(--muted); margin:6px 0 0}
+  .dreq-ac{font-size:12.5px; color:#20242e; background:#eef7f0; border-left:3px solid #1a9e5f; border-radius:0 6px 6px 0; padding:8px 12px; margin:12px 0 0}
   /* 복사 가능한 코드 카드 (JS가 pre를 감쌈) */
   .code{margin:10px 0 16px; border:1px solid #1e2740; border-radius:10px; overflow:hidden; background:#0f1626}
   .code-hd{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 10px 7px 14px; background:#141d33; border-bottom:1px solid #1e2740}
@@ -289,6 +312,7 @@
     <nav class="dg-nav">
       <a href="#s-overview">개요</a><a href="#s-states">상태</a><a href="#s-detect">감지 로직</a>
       <a href="#s-components">컴포넌트</a><a href="#s-code">예시 코드</a><a href="#s-input">텍스트 필드</a>
+      <a href="#s-devreq" class="dg-req">개발 수정 요청</a>
       <a href="#s-copy">카피·i18n</a><a href="#s-a11y">접근성</a><a href="#s-edge">엣지·세션</a>
     </nav>
 
@@ -672,13 +696,7 @@ Button(
         <li><b>clear / submit</b> — 트레일링 clear · 키보드 확정 콜백.</li>
       </ul>
 
-      <div class="callout warn"><b>🔧 개발 수정 요청 — 요청사항 입력 필드</b> · 실기기 캡처 확인 결과, 아래 2건이 설계 의도와 다름.
-        <ul style="margin:8px 0 0">
-          <li><b>① 높이: auto-grow + max = 한도높이</b> — 100자 한도 <b>내에서 텍스트가 잘림</b>. 입력창은 내용 따라 auto-grow하고, <code class="i">maxHeight</code>는 <b>100자가 다 들어가는 높이 이상</b>(좁은 폭 360px에서 5~6줄 → 텍스트영역 <b>≈150 이상</b>). ⚠ <b>Figma 컴포넌트 max 값(168 등)은 100자를 다 못 담아 상향 필요.</b> <span class="nth">수용기준</span> 한글 100자 입력 시 어느 줄도 안 잘리고 전부 보임.</li>
-          <li><b>② 카운터 하단 여백 과다</b> — 마지막 줄과 "n/100" 사이가 <b>빈 블록처럼</b> 벌어짐. 위 <b>배치 A</b>(텍스트 아래 flow)로 바꾸거나, <b>배치 B 유지 시 하단 예약 40 → ~24 이하</b>로 축소. <span class="nth">수용기준</span> 마지막 줄–카운터 간격이 과하게 벌어지지 않고 텍스트와 겹치지 않음.</li>
-          <li><b>동작 기준</b> — 배포 프로토타입 <code class="i">guidance.html</code>(auto-grow + 배치 A로 구현)을 그대로 참고.</li>
-        </ul>
-      </div>
+      <div class="callout warn"><b>🔧 개발 수정 요청 2건</b> — 실기기 캡처 대조 결과 <b>① 100자 내 텍스트 잘림</b>, <b>② 카운터 하단 여백 과다</b>가 설계 의도와 다름. 화면예시·예시코드·수용기준은 <b>상단 탭 「개발 수정 요청」</b>에 정리했습니다.</div>
 
       <h3>7. API / Props</h3>
       <div class="plat ios">iOS · SwiftUI</div>
@@ -852,6 +870,121 @@ DSTextField(value = note, onValueChange = { note = it },
 
       <h3>12. 채택 / 마이그레이션</h3>
       <div class="callout">앱 전역의 산발적 입력(회색 well · bare row 등)을 이 컴포넌트로 통일. 순서 — ① semantic 토큰 정합 확인 ② 기존 입력 인벤토리 ③ 라벨·한도만 파라미터로 치환 ④ 접근성 회귀 테스트. 관련: 입력 필드 통일 프로젝트.</div>
+    </section>
+
+    <section class="dg-sec" id="s-devreq">
+      <h2><span class="num" style="background:#fff3d6;color:#8a6100">!</span>개발 수정 요청 <span class="nth">Action required</span></h2>
+      <p class="dg-lead">실기기(iOS) 캡처를 프로토타입·예시코드 의도와 대조한 결과 <b>2건</b>이 설계와 다릅니다. 기준은 배포 프로토타입 <code class="i">guidance.html</code>(auto-grow + 카운터 배치 A). 각 항목에 <b>화면예시 · 예시코드 · 수용기준</b>을 정리했습니다.</p>
+
+      <!-- ISSUE 1 -->
+      <div class="dreq-issue">
+        <h3><span class="dreq-tag n">이슈 1</span>100자 한도 내에서 텍스트가 잘림</h3>
+        <p class="dreq-meta"><b>증상</b> 100자를 다 입력하기 전에 아래 줄이 잘려 안 보임. · <b>원인</b> 입력창 <code class="i">maxHeight</code>가 글자 한도를 다 담기엔 작음(고정/과소). · <b>설계 의도</b> 한도(100자) 내에선 <b>절대 잘리지 않음</b> — 내용 따라 auto-grow.</p>
+        <div class="dreq-cmp">
+          <div class="dreq-col">
+            <p class="dreq-cap bad">❌ 현재(개발본)</p>
+            <div class="dreq-field clip">아이 둘이 타요. 카시트 필요하고 유아차도 실어요. 짐이 많아 트렁크가 넉넉했으면 해요. 목적지 전 편의점 잠깐 들러주세요. 조용히 부탁드려요.
+              <div class="dreq-clipline">✂ 100자 안인데 잘림</div>
+            </div>
+          </div>
+          <div class="dreq-col">
+            <p class="dreq-cap good">✅ 수정 후</p>
+            <div class="dreq-field">아이 둘이 타요. 카시트 필요하고 유아차도 실어요. 짐이 많아 트렁크가 넉넉했으면 해요. 목적지 전 편의점 잠깐 들러주세요. 조용히 부탁드려요.</div>
+            <p class="dreq-note">내용에 맞춰 늘어나 전부 보임(auto-grow)</p>
+          </div>
+        </div>
+        <p><b>수정</b> — 입력창을 내용 따라 auto-grow시키고, <code class="i">maxHeight</code> = <b>100자가 다 들어가는 높이 이상</b>으로. 좁은 폭(360px)에서 100자 ≈ <b>6줄</b> → 텍스트영역 <b>≈150 이상</b>. ⚠ <b>Figma 컴포넌트 max(168 등)도 부족 → 상향 필요.</b></p>
+        <div class="plat ios">iOS · SwiftUI</div>
+<pre><code>// 100자가 다 들어가는 높이 = 줄높이 × 최대줄수 + 상하 패딩
+// 본문 15pt ≈ 22pt/줄, 좁은 폭(360)에서 100자 ≈ 6줄
+private let contentMaxHeight: CGFloat = 22 * 6 + 16 * 2   // ≈ 164
+
+TextEditor(text: $text)
+    .frame(minHeight: 52, maxHeight: contentMaxHeight, alignment: .top)
+    .fixedSize(horizontal: false, vertical: true)   // 내용 높이만큼 확장(auto-grow)
+    .scrollDisabled(text.count &lt; characterLimit)   // 한도 전엔 스크롤 없이 확장
+// ⚠️ maxHeight를 이 값보다 작게 잡으면 100자 입력이 잘립니다.
+//    Figma 컴포넌트 max(168 등)도 부족 → 상향 필요.</code></pre>
+        <div class="plat aos">Android · Compose</div>
+<pre><code>// 100자 다 들어가는 max = 줄높이 × 최대줄수 + 상하 패딩
+val maxH = with(LocalDensity.current) { 22.sp.toDp() } * 6 + 16.dp * 2   // ≈ 150+
+
+BasicTextField(
+    value = text,
+    onValueChange = { if (it.length &lt;= characterLimit) text = it },
+    modifier = Modifier
+        .heightIn(min = 52.dp, max = maxH)       // 내용 따라 확장, 한도 내 클립 없음
+        .verticalScroll(rememberScrollState()),  // max 도달 시에만 내부 스크롤
+)
+// ⚠️ max를 이보다 작게 잡으면 100자가 잘립니다. Figma 168도 부족 → 상향.</code></pre>
+        <p class="dreq-ac"><b>수용기준</b> — 한글 100자 입력 시 <b>어느 줄도 잘리지 않고 전부 보임</b>. 한도 도달 전까지 내부 스크롤이 생기지 않음.</p>
+      </div>
+
+      <!-- ISSUE 2 -->
+      <div class="dreq-issue">
+        <h3><span class="dreq-tag n">이슈 2</span>카운터 하단 여백이 과해 블록처럼 보임</h3>
+        <p class="dreq-meta"><b>증상</b> 마지막 줄과 "n/100" 사이가 크게 벌어져 바닥이 빈 블록처럼 튐. · <b>원인</b> 카운터를 코너에 절대배치하며 하단 예약 패딩을 <b>40</b>으로 크게 잡음.</p>
+        <div class="dreq-cmp">
+          <div class="dreq-col">
+            <p class="dreq-cap bad">❌ 현재(예약 40)</p>
+            <div class="dreq-field gap">조용히 가주세요.
+              <div class="dreq-cnt"><b>12</b>/100</div>
+            </div>
+            <p class="dreq-note">텍스트와 카운터 사이 빈 여백 과다</p>
+          </div>
+          <div class="dreq-col">
+            <p class="dreq-cap good">✅ 수정(A flow / B 24)</p>
+            <div class="dreq-field">조용히 가주세요.
+              <div class="dreq-cnt"><b>12</b>/100</div>
+            </div>
+            <p class="dreq-note">카운터가 텍스트 바로 아래로 붙음</p>
+          </div>
+        </div>
+        <p><b>수정 — 둘 중 택1</b>(둘 다 허용):</p>
+        <ul>
+          <li><b>A. 텍스트 아래 flow</b>(권장·단순, 프로토타입 방식) — 카운터를 <b>별도 줄</b>에 두어 겹침 없음. 하단 예약 패딩 불필요.</li>
+          <li><b>B. 코너 절대배치 유지</b>(Figma 구조) — 하단 예약 <b>40 → ~24 이하</b>로만 축소.</li>
+        </ul>
+        <div class="plat ios">iOS · SwiftUI</div>
+<pre><code>// A. 카운터를 텍스트 아래 별도 줄에 flow — 하단 예약 불필요(권장)
+VStack(alignment: .trailing, spacing: 8) {
+    TextEditor(text: $text)
+        .frame(minHeight: 52, maxHeight: contentMaxHeight)
+    Text("\(text.count)/\(characterLimit)")
+        .font(.system(size: 12, weight: .bold))
+        .foregroundColor(text.count &gt;= characterLimit ? .brandBlue : .counterGray)
+}
+.padding(16)   // 상하좌우 균일 — 하단만 큰 예약 없음
+
+// B. 코너 유지 시엔 예약만 축소(40 → 24)
+ZStack(alignment: .bottomTrailing) {
+    TextEditor(text: $text)
+        .padding(EdgeInsets(top: 16, leading: 16, bottom: 24, trailing: 16)) // 40→24
+    Text("\(text.count)/\(characterLimit)")
+        .font(.system(size: 12, weight: .bold))
+        .padding([.trailing, .bottom], 16)
+}</code></pre>
+        <div class="plat aos">Android · Compose</div>
+<pre><code>// A. 카운터를 텍스트 아래 별도 줄에 flow — 하단 예약 불필요(권장)
+Column(Modifier.padding(16.dp), horizontalAlignment = Alignment.End) {
+    BasicTextField(value = text, onValueChange = { /* … */ },
+        modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp, max = maxH))
+    Spacer(Modifier.height(8.dp))
+    Text("${text.length}/$characterLimit", fontWeight = FontWeight.Bold,
+        color = if (text.length &gt;= characterLimit) BrandBlue else CounterGray)
+}
+
+// B. 코너 유지 시엔 예약만 축소(40 → 24)
+Box(Modifier.fillMaxWidth()) {
+    BasicTextField(value = text, onValueChange = { /* … */ },
+        modifier = Modifier.padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 24.dp)) // 40→24
+    Text("${text.length}/$characterLimit", fontWeight = FontWeight.Bold,
+        modifier = Modifier.align(Alignment.BottomEnd).padding(16.dp))
+}</code></pre>
+        <p class="dreq-ac"><b>수용기준</b> — 마지막 텍스트 줄과 카운터 간격이 <b>과하게 벌어지지 않음</b>. 텍스트와 카운터가 겹치지 않음. 가로 정렬은 필드 좌우 패딩(16)과 일치.</p>
+      </div>
+
+      <div class="callout">두 이슈는 사실 <b>한 뿌리</b> — 입력창이 auto-grow 대신 <b>작은 고정/클립 박스</b>로 구현돼 (1) 텍스트가 잘리고 (2) 하단 여백이 블록처럼 보입니다. <b>auto-grow + 한도 다 담는 max + 카운터 배치 A</b>면 둘 다 해결됩니다.</div>
     </section>
 
     <section class="dg-sec" id="s-copy">
