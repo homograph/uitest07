@@ -201,10 +201,11 @@
   .dreq-field{position:relative; background:#f5f6f7; border-radius:8px; padding:14px; font-size:12.5px; line-height:1.6; color:#111}
   .dreq-field.clip{height:74px; overflow:hidden}
   .dreq-clipline{position:absolute; left:0; right:0; bottom:0; height:22px; background:linear-gradient(180deg,rgba(245,246,247,0) 0%,#f5f6f7 70%); color:#c0392b; font-size:10.5px; font-weight:700; text-align:center; line-height:30px}
-  .dreq-field.gap{padding-bottom:42px}
   .dreq-cnt{text-align:right; font-size:11px; color:#73788b; margin-top:8px}
   .dreq-cnt b{color:#111}
-  .dreq-field.gap .dreq-cnt{position:absolute; right:14px; bottom:12px; margin:0}
+  /* ❌ 예약 40 — 텍스트와 카운터 사이에 항상 40px 빈 여백(글 길이와 무관하게 벌어짐) */
+  .dreq-field.gap .dreq-cnt{margin-top:40px; position:relative}
+  .dreq-field.gap .dreq-cnt::before{content:""; position:absolute; left:0; right:0; top:-33px; height:26px; background:repeating-linear-gradient(135deg,rgba(224,60,0,.07) 0 6px,transparent 6px 12px); border-radius:4px}
   .dreq-note{font-size:11px; color:var(--muted); margin:6px 0 0}
   .dreq-ac{font-size:12.5px; color:#20242e; background:#eef7f0; border-left:3px solid #1a9e5f; border-radius:0 6px 6px 0; padding:8px 12px; margin:12px 0 0}
   .dreq-live{margin:14px 0 10px}
@@ -942,14 +943,14 @@ BasicTextField(
             <div class="dreq-field gap" id="dreqBadField"><span class="dreq-mirror" id="dreqBad"></span>
               <div class="dreq-cnt"><b id="dreqBadN">0</b>/100</div>
             </div>
-            <p class="dreq-note">텍스트와 카운터 사이 빈 여백 과다</p>
+            <p class="dreq-note"><span style="color:#c0392b">빗금 부분 = 예약된 빈 여백(40)</span> · 글 길이와 무관하게 항상 벌어짐</p>
           </div>
           <div class="dreq-col">
             <p class="dreq-cap good">✅ 수정(A flow / B 24)</p>
             <div class="dreq-field" id="dreqGoodField"><span class="dreq-mirror" id="dreqGood"></span>
               <div class="dreq-cnt"><b id="dreqGoodN">0</b>/100</div>
             </div>
-            <p class="dreq-note">카운터가 텍스트 바로 아래로 붙음</p>
+            <p class="dreq-note">카운터가 텍스트 바로 아래(8) 붙음 · 빈 여백 없음</p>
           </div>
         </div>
         <p><b>수정 — 둘 중 택1</b>(둘 다 허용):</p>
