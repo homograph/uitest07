@@ -657,14 +657,28 @@ Button(
 
       <h3>6. 동작 (Behavior)</h3>
       <ul>
-        <li><b>Auto-grow / 높이</b>(멀티라인) — <code class="i">field.minHeight</code>(52)에서 시작 → 내용 따라 확장 → <code class="i">field.maxHeight</code> 도달 시 <b>내부 스크롤(clip)</b>. maxHeight 미지정이면 글자 한도가 자연 상한. 카운터는 well 하단 우측 고정.</li>
+        <li><b>Auto-grow / 높이</b>(멀티라인) — <code class="i">field.minHeight</code>(52)에서 시작 → 내용 따라 확장 → <code class="i">field.maxHeight</code> 도달 시 <b>내부 스크롤(clip)</b>. <b><code class="i">maxHeight</code>는 글자 한도가 다 들어갈 높이 이상</b>이어야 함(한도 내 클립 금지 — <b>100자 안에선 절대 안 잘림</b>). maxHeight 미지정이면 글자 한도가 자연 상한.</li>
+        <li><b>카운터 배치</b> — well 안 <b>하단 우측</b>. 아래 <b>A/B 중 택1</b>(둘 다 허용):
+          <ul style="margin:4px 0 0">
+            <li><b>A. 텍스트 아래 flow</b>(권장·단순) — 카운터가 텍스트 <b>바로 아래 별도 줄</b>. 겹침 없음 → 하단 예약 패딩 불필요. 간격 <code class="i">margin-top 8~12</code>. <b>본 프로토타입이 A 방식.</b></li>
+            <li><b>B. 코너 절대배치</b>(Figma 구조 유지) — 우하단에 띄우고 텍스트가 밑으로 안 들어오게 하단 패딩으로 자리 확보. <b>단 하단 예약은 ~24 이하</b>(현재 40은 과함 → 빈 블록처럼 보임).</li>
+          </ul>
+        </li>
         <li><b>하드 리밋</b>(옵션) — <code class="i">characterLimit</code> 초과 입력 차단.</li>
         <li><b>Focus</b> — 보더 등장/제거, 배경색 유지.</li>
-        <li><b>카운터</b> — 실시간, 현재값 Bold, 도달 시 브랜드블루.</li>
+        <li><b>카운터</b> — 실시간, 현재값 Bold, 도달 시 브랜드블루. 가로 정렬은 필드 좌우 패딩(16)과 맞춤.</li>
         <li><b>IME 조합입력</b> — 조합 중 글자수 카운트 주의(한글·일본어). 확정 기준으로 리밋 적용 권장.</li>
         <li><b>붙여넣기</b> — 한도 초과분 <b>절단</b>(전체 거부 X).</li>
         <li><b>clear / submit</b> — 트레일링 clear · 키보드 확정 콜백.</li>
       </ul>
+
+      <div class="callout warn"><b>🔧 개발 수정 요청 — 요청사항 입력 필드</b> · 실기기 캡처 확인 결과, 아래 2건이 설계 의도와 다름.
+        <ul style="margin:8px 0 0">
+          <li><b>① 높이: auto-grow + max = 한도높이</b> — 100자 한도 <b>내에서 텍스트가 잘림</b>. 입력창은 내용 따라 auto-grow하고, <code class="i">maxHeight</code>는 <b>100자가 다 들어가는 높이 이상</b>(좁은 폭 360px에서 5~6줄 → 텍스트영역 <b>≈150 이상</b>). ⚠ <b>Figma 컴포넌트 max 값(168 등)은 100자를 다 못 담아 상향 필요.</b> <span class="nth">수용기준</span> 한글 100자 입력 시 어느 줄도 안 잘리고 전부 보임.</li>
+          <li><b>② 카운터 하단 여백 과다</b> — 마지막 줄과 "n/100" 사이가 <b>빈 블록처럼</b> 벌어짐. 위 <b>배치 A</b>(텍스트 아래 flow)로 바꾸거나, <b>배치 B 유지 시 하단 예약 40 → ~24 이하</b>로 축소. <span class="nth">수용기준</span> 마지막 줄–카운터 간격이 과하게 벌어지지 않고 텍스트와 겹치지 않음.</li>
+          <li><b>동작 기준</b> — 배포 프로토타입 <code class="i">guidance.html</code>(auto-grow + 배치 A로 구현)을 그대로 참고.</li>
+        </ul>
+      </div>
 
       <h3>7. API / Props</h3>
       <div class="plat ios">iOS · SwiftUI</div>
