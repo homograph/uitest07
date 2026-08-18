@@ -137,8 +137,7 @@
     transition:opacity .16s ease;}
   .reticle-center{position:absolute;left:0;top:0;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;
     background:#101a3d;transition:opacity .16s ease;}
-  .phone.dragging .reticle-ring, .phone.snapping .reticle-ring,
-  .phone.dragging .reticle-center, .phone.snapping .reticle-center{opacity:0;}
+  .phone.dragging .reticle-ring, .phone.dragging .reticle-center{opacity:0;}
   /* 랜드마크(지오펜스 안)에서만 파란 링 표시. 밖(비랜드마크)=네이비 점만 (Figma 안/밖 마커 차이) */
   .phone:not(.geo-on) .reticle-ring{opacity:0;}
 
@@ -153,11 +152,9 @@
   .pin-base{width:10px;height:4px;border-radius:50%;background:var(--navy-ico);opacity:.55;margin-top:2px;}
 
   /* state toggles */
-  .phone.dragging .badge-wrap,
-  .phone.snapping .badge-wrap{opacity:0;}
-  .phone.dragging .pin-wrap,
-  .phone.snapping .pin-wrap{opacity:1;}
-  .phone.dragging .pin-wrap{transform:translate(-50%,-6px);} /* lift while floating */
+  /* 스냅 즉시 핀→마커 전환: snapping 중엔 핀 숨김·마커 표시(지도만 슬라이드). dragging 때만 핀 표시 */
+  .phone.dragging .badge-wrap{opacity:0;}
+  .phone.dragging .pin-wrap{opacity:1;transform:translate(-50%,-6px);} /* lift while floating */
 
   /* ── current-location button ── */
   .cloc{position:absolute;right:16px;z-index:35;width:40px;height:40px;border-radius:20px;background:#fff;
