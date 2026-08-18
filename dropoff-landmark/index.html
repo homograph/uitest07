@@ -57,7 +57,9 @@
     -webkit-user-select:none;user-select:none;-webkit-user-drag:none;pointer-events:none;}
 
   /* geofence: 하차 가능 영역 (선로 가운데는 제외). Figma: #0094f9 10% fill, #8cc9fc/2 border, r4 */
-  .geofence{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;}
+  .geofence{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;
+    opacity:0;transition:opacity .28s ease;}
+  .phone.geo-on .geofence{opacity:1;}
   .geofence path{fill:rgba(0,148,249,.10);stroke:#8cc9fc;stroke-width:2;
     stroke-linejoin:round;vector-effect:non-scaling-stroke;}
 
@@ -74,20 +76,20 @@
   .cand.near svg{width:14px;height:14px;}
 
   /* numbered designated markers (inside geofence) — Figma ic_number_blue(_stroke) */
-  .nmark{position:absolute;width:22px;height:22px;margin:-11px 0 0 -11px;border-radius:50%;
-    background:#fff;border:2px solid var(--blue-600);color:var(--blue-600);
-    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;line-height:1;
+  .nmark{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
+    background:#fff;border:4px solid #4b5064;
     box-shadow:0 2px 5px rgba(20,30,55,.22);transform:scale(var(--inv,1));
-    transition:background .16s ease, color .16s ease, border-color .16s ease, box-shadow .16s ease;}
-  .nmark.sel{background:var(--blue-500);border-color:var(--blue-600);color:#fff;
-    box-shadow:0 5px 14px rgba(0,148,249,.45);}
+    opacity:0;transition:border-color .16s ease, box-shadow .16s ease, opacity .22s ease;}
+  .phone.geo-on .nmark{opacity:1;}
+  .nmark.sel{border-color:var(--blue-600);box-shadow:0 5px 14px rgba(0,134,234,.5);}
 
   /* ── wheel picker panel (inside-geofence designated points) ── */
   .sheet-wheel{display:none;}
   .phone.wheelmode .sheet-wheel{display:block;}
   .phone.wheelmode .sheet-single{display:none;}
   .phone.dragging .sheet-wheel{opacity:.45;}
-  .wtitle{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:25px 25px 0;}
+  .draghandle{width:36px;height:4px;border-radius:2px;background:#e3e4e8;margin:10px auto 2px;}
+  .wtitle{display:flex;align-items:center;justify-content:center;padding:12px 24px 4px;}
   .wtitle b{font-size:18px;font-weight:700;color:#262a38;}
   .wclose{border:0;background:none;padding:4px;cursor:pointer;line-height:0;color:#000;flex:0 0 auto;}
   .wclose svg{display:block;}
@@ -96,18 +98,12 @@
     scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;
     scrollbar-width:none;-ms-overflow-style:none;}
   .wlist::-webkit-scrollbar{display:none;width:0;}
-  .witem{height:56px;scroll-snap-align:center;display:flex;align-items:center;gap:8px;
-    padding:0 25px;cursor:pointer;}
-  .witem .wn{width:20px;height:20px;flex:0 0 auto;border-radius:50%;background:#fff;
-    border:1.5px solid var(--gray-600);color:var(--gray-600);
-    display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;line-height:1;
-    transition:background .15s, color .15s, border-color .15s;}
-  .witem .wname{font-size:14px;font-weight:400;color:var(--gray-700);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:font-size .15s, color .15s;}
-  .witem.sel .wn{background:var(--blue-500);border-color:var(--blue-600);color:#fff;}
-  .witem.sel .wname{font-size:16px;color:var(--blue-500);}
-  .wband{position:absolute;left:0;right:0;top:56px;height:56px;pointer-events:none;
-    border-top:1px solid #b9ddfd;border-bottom:1px solid #b9ddfd;}
+  .witem{height:56px;scroll-snap-align:center;display:flex;align-items:center;justify-content:center;
+    margin:0 20px;border-radius:8px;cursor:pointer;transition:background .16s ease;}
+  .witem .wname{font-size:16px;font-weight:400;color:#7282a6;text-align:center;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .16s ease;}
+  .witem.sel{background:#f1f9fe;}
+  .witem.sel .wname{color:var(--blue-500);font-weight:500;}
   .wfade{position:absolute;left:0;right:0;height:44px;pointer-events:none;z-index:2;}
   .wfade.top{top:0;background:linear-gradient(#fff,rgba(255,255,255,0));}
   .wfade.bot{bottom:0;background:linear-gradient(rgba(255,255,255,0),#fff);}
@@ -213,7 +209,7 @@
         <!-- fixed reticle -->
         <div class="reticle" id="reticle">
           <div class="badge-wrap">
-            <div class="badge" id="badgeText">여기서 하차</div>
+            <div class="badge" id="badgeText">목적지</div>
             <div class="badge-stem"></div>
           </div>
           <div class="pin-wrap">
@@ -241,16 +237,11 @@
         <div class="sheet">
           <!-- wheel picker (reticle inside geofence = 지정 하차지) -->
           <div class="sheet-wheel">
-            <div class="wtitle">
-              <b>지정된 위치에서 하차하세요</b>
-              <button class="wclose" id="wclose" aria-label="닫기">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#000" stroke-width="2" stroke-linecap="round"/></svg>
-              </button>
-            </div>
+            <div class="draghandle"></div>
+            <div class="wtitle"><b>하차 위치를 선택해주세요</b></div>
             <div class="wheel">
               <ul class="wlist" id="wlist"></ul>
               <div class="wfade top"></div><div class="wfade bot"></div>
-              <div class="wband"></div>
             </div>
             <div class="btnwrap"><button class="cta" id="ctaW">목적지 설정 완료</button></div>
           </div>
@@ -279,12 +270,12 @@
 
   // 지정 하차지 (지오펜스 안 · 번호 마커 · 휠 피커로 선택)
   var INSIDE = [
-    {n:1, name:"KTX 서울역 3번 출구",    addr:"서울 중구 봉래동2가 122", wx:1040, wy:430},
-    {n:2, name:"롯데마트 서울역점 입구", addr:"서울 중구 한강대로 405", wx:1085, wy:475},
-    {n:3, name:"서울역 서부 출입구",     addr:"서울 중구 청파로 378",   wx:1005, wy:560},
-    {n:4, name:"공항철도 서울역",        addr:"서울 용산구 동자동 43",  wx:1100, wy:610},
-    {n:5, name:"KTX 대합실 정문",        addr:"서울 중구 한강대로 405", wx:1040, wy:690},
-    {n:6, name:"경의중앙선 게이트",      addr:"서울 중구 봉래동2가 122", wx:1085, wy:745}
+    {n:1, name:"서울역 광장",            addr:"서울 중구 한강대로 405", wx:1040, wy:430},
+    {n:2, name:"서울역 동문 9번 출구",   addr:"서울 중구 한강대로 405", wx:1085, wy:475},
+    {n:3, name:"서울역 서문 3번 출구",   addr:"서울 중구 봉래동2가 122", wx:1005, wy:560},
+    {n:4, name:"롯데마트 서울역점 입구", addr:"서울 중구 한강대로 405", wx:1100, wy:610},
+    {n:5, name:"공항철도 서울역 입구",   addr:"서울 용산구 동자동 43",  wx:1040, wy:690},
+    {n:6, name:"서울역 서부광장",        addr:"서울 중구 청파로 378",   wx:1085, wy:745}
   ];
   // 추천 하차지 (지오펜스 바깥 · 링 마커 · 지도 드래그로 선택)
   var OUTSIDE = [
@@ -328,7 +319,7 @@
 
   // ── build markers ──
   var nmarks = INSIDE.map(function(c){
-    var el=document.createElement('div'); el.className='nmark'; el.textContent=c.n;
+    var el=document.createElement('div'); el.className='nmark';
     el.style.left=c.wx+'px'; el.style.top=c.wy+'px'; world.appendChild(el); return el;
   });
   var THUMB='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-1.91z"/></svg>';
@@ -339,7 +330,7 @@
   // build wheel list items
   INSIDE.forEach(function(c,i){
     var li=document.createElement('li'); li.className='witem';
-    li.innerHTML='<span class="wn">'+c.n+'</span><span class="wname">'+c.name+'</span>';
+    li.innerHTML='<span class="wname">'+c.name+'</span>';
     li.addEventListener('click', function(){ scrollWheelTo(i, true); });
     wlist.appendChild(li);
   });
@@ -395,7 +386,7 @@
 
   function setMode(m){
     if(mode!==m){ mode=m; phone.classList.toggle('wheelmode', m==='wheel');
-      badgeText.textContent = (m==='wheel') ? '여기서 하차' : '목적지'; }
+      badgeText.textContent = '목적지'; }
   }
 
   // ── snapping animation to a world point ──
@@ -431,6 +422,7 @@
 
   // ── decide mode + snap on gesture end ──
   function doSnap(){
+    phone.classList.toggle('geo-on', reticleInsideGeo());
     if(reticleInsideGeo()){
       setMode('wheel');
       var t=nearestOf(INSIDE);
@@ -455,7 +447,9 @@
 
   // ── live marker highlight while dragging ──
   function liveMark(){
-    if(reticleInsideGeo()){ markInsideSel(nearestOf(INSIDE)); markOutsideNear(-1); }
+    var ins=reticleInsideGeo();
+    phone.classList.toggle('geo-on', ins);   // 핀이 지오펜스 안일 때만 지오펜스/번호마커 표시
+    if(ins){ markInsideSel(nearestOf(INSIDE)); markOutsideNear(-1); }
     else { markInsideSel(-1);
       var t=nearestOf(OUTSIDE);
       markOutsideNear(screenDist(OUTSIDE[t])<=SNAP_PX ? t : -1);
@@ -473,7 +467,7 @@
   }
 
   // ── init: 서울역 검색 진입 → 휠 피커 모드 ──
-  phone.classList.add('wheelmode');
+  phone.classList.add('wheelmode','geo-on');
   setWheelSelClass(0); markInsideSel(0);
   layout();
   wlist.scrollTop = 0;
@@ -498,7 +492,7 @@
     setMode('single');
     snapTo(OUTSIDE[t].wx, OUTSIDE[t].wy);
   }
-  document.getElementById('wclose').addEventListener('click', closeToFree);
+
 
   // ── gestures: 1 pointer pan→snap, 2 pinch zoom, wheel(desktop) zoom ──
   var pointers=new Map(), gmode=null, panStart=null, pinchStart=null;
