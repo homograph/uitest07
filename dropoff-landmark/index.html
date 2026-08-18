@@ -18,7 +18,7 @@
     --map-rail-zone:#efe9f1; --map-rail:#a9adcf; --map-water:#7cc0e8; --map-water-edge:#addaf1;
     --map-green:#d9e8d4; --map-green2:#cfe3c6; --map-route:#243585; --map-route-casing:#8790c4;
     --poi-subway:#12a7de; --poi-yellow:#f5b301; --poi-red:#f2724b;
-    --snap-dur:.42s;
+    --snap-dur:.2s;   /* 스냅 시 지도 슬라이드 = 마커 축소·핀→뱃지(.16s)와 비슷하게 짧게 (동시 안착) */
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;height:100%;overflow:hidden;overscroll-behavior:none;}
@@ -411,7 +411,7 @@
     world.addEventListener('transitionend', onWorldTE);
     tx=tTx; ty=tTy; applyTransform();
     if(snapTimer) clearTimeout(snapTimer);
-    snapTimer=setTimeout(finishSnap, changed?520:0);
+    snapTimer=setTimeout(finishSnap, changed?240:0);
     return changed;
   }
 
