@@ -137,6 +137,8 @@
     background:#101a3d;transition:opacity .16s ease;}
   .phone.dragging .reticle-ring, .phone.snapping .reticle-ring,
   .phone.dragging .reticle-center, .phone.snapping .reticle-center{opacity:0;}
+  /* 랜드마크(지오펜스 안)에서만 파란 링 표시. 밖(비랜드마크)=네이비 점만 (Figma 안/밖 마커 차이) */
+  .phone:not(.geo-on) .reticle-ring{opacity:0;}
 
   /* dragging: floating balloon pin, tip at anchor */
   .pin-wrap{position:absolute;left:0;bottom:0;transform:translate(-50%,0);
