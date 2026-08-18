@@ -81,7 +81,7 @@
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 2px 5px rgba(20,30,55,.22);transform:scale(var(--inv,1));
     opacity:0;transition:border-color .16s ease, box-shadow .16s ease, opacity .22s ease;}
-  .nmark::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue-500);transition:background .16s ease;}
+  .nmark::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--blue-500);transition:background .16s ease;}
   .phone.geo-on .nmark{opacity:1;}
   .nmark.sel{border-color:var(--blue-600);box-shadow:0 5px 14px rgba(0,134,234,.5);}
   .nmark.sel::after{background:var(--blue-600);}
@@ -120,13 +120,13 @@
   .reticle{position:absolute;left:50%;top:44%;z-index:30;transform:translate(-50%,0);pointer-events:none;}
 
   /* settled: 목적지 badge with stem, tip at anchor */
-  .badge-wrap{position:absolute;left:0;bottom:11px;transform:translate(-50%,0);
+  .badge-wrap{position:absolute;left:0;bottom:9px;transform:translate(-50%,0);
     display:flex;flex-direction:column;align-items:center;
     transition:opacity .16s ease, transform .18s ease;}  /* bottom=marker반지름: stem 끝이 마커 상단에 닿게 */
   .badge{background:var(--blue-500);border:1px solid var(--blue-600);border-radius:24px;
     padding:3px 10px;color:#fff;font-weight:700;font-size:13px;line-height:1.5;white-space:nowrap;
     box-shadow:0 4px 10px rgba(0,134,234,.35);}
-  .badge-stem{width:3px;height:16px;background:var(--blue-500);}
+  .badge-stem{width:3px;height:8px;background:var(--blue-500);}
 
   /* dragging: floating balloon pin, tip at anchor */
   .pin-wrap{position:absolute;left:0;bottom:0;transform:translate(-50%,0);
