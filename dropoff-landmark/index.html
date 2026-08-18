@@ -120,21 +120,23 @@
   .reticle{position:absolute;left:50%;top:44%;z-index:30;transform:translate(-50%,0);pointer-events:none;}
 
   /* settled: 목적지 badge with stem, tip at anchor */
-  .badge-wrap{position:absolute;left:0;bottom:9px;transform:translate(-50%,0);
+  /* settled: 목적지 badge. bottom:0 → 네이비 stem 끝이 마커 중앙(anchor)까지 내려감 */
+  .badge-wrap{position:absolute;left:0;bottom:0;transform:translate(-50%,0);
     display:flex;flex-direction:column;align-items:center;
-    transition:opacity .16s ease, transform .18s ease;}  /* bottom=marker반지름: stem 끝이 마커 상단에 닿게 */
+    transition:opacity .16s ease, transform .18s ease;}
   .badge{background:var(--blue-500);border:1px solid var(--blue-600);border-radius:24px;
     padding:3px 10px;color:#fff;font-weight:700;font-size:13px;line-height:1.5;white-space:nowrap;
-    box-shadow:0 1px 3px rgba(20,30,55,.18);}  /* Figma는 평평 — 파란 글로우 제거, 아주 옅은 중립 그림자만 */
-  .badge-stem{width:3px;height:8px;background:var(--blue-500);}
+    box-shadow:0 1px 3px rgba(20,30,55,.18);}
+  .badge-stem{width:3px;height:14px;background:#101a3d;}  /* Figma: 네이비 stem, pill→마커중앙까지 */
 
-  /* 선택 마커: 리티클 내 뱃지보다 위(DOM 뒤) → 마커가 stem을 덮음 (Figma z-index 스펙 #2 > #3) */
-  .reticle-dot{position:absolute;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;
-    background:#fff;border:2px solid var(--blue-500);
-    display:flex;align-items:center;justify-content:center;
-    box-shadow:0 2px 5px rgba(20,30,55,.22);transition:opacity .16s ease;}
-  .reticle-dot::after{content:"";width:5px;height:5px;border-radius:50%;background:#101a3d;}  /* 선택 마커 중앙 점 = 진네이비 */
-  .phone.dragging .reticle-dot, .phone.snapping .reticle-dot{opacity:0;}
+  /* 선택 마커 = 파란 링(아래) + 네이비 stem(관통) + 네이비 중앙 점(위) — Frame 41425 구조 */
+  .reticle-ring{position:absolute;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;
+    background:#fff;border:2px solid var(--blue-500);box-shadow:0 2px 5px rgba(20,30,55,.22);
+    transition:opacity .16s ease;}
+  .reticle-center{position:absolute;left:0;top:0;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;
+    background:#101a3d;transition:opacity .16s ease;}
+  .phone.dragging .reticle-ring, .phone.snapping .reticle-ring,
+  .phone.dragging .reticle-center, .phone.snapping .reticle-center{opacity:0;}
 
   /* dragging: floating balloon pin, tip at anchor */
   .pin-wrap{position:absolute;left:0;bottom:0;transform:translate(-50%,0);
@@ -219,6 +221,7 @@
 
         <!-- fixed reticle -->
         <div class="reticle" id="reticle">
+          <div class="reticle-ring"></div>
           <div class="badge-wrap">
             <div class="badge" id="badgeText">목적지</div>
             <div class="badge-stem"></div>
@@ -228,8 +231,8 @@
             <div class="pin-stem"></div>
             <div class="pin-base"></div>
           </div>
-          <!-- 선택 마커: z-index 스펙상 뱃지보다 위 (마커가 뱃지 stem을 덮음) -->
-          <div class="reticle-dot"></div>
+          <!-- 선택 마커 중앙 네이비 점 (최상단: 네이비 stem 끝에 얹힘) -->
+          <div class="reticle-center"></div>
         </div>
 
         <!-- current location button -->
