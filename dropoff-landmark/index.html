@@ -454,7 +454,7 @@
   function liveMark(){
     var ins=reticleInsideGeo();
     phone.classList.toggle('geo-on', ins);   // 핀이 지오펜스 안일 때만 지오펜스/마커 표시
-    markInsideSel(ins ? nearestOf(INSIDE) : -1);
+    markInsideSel(-1);   // 패닝 중엔 어떤 마커도 선택 강조 안 함(모두 미선택). 선택은 놓을 때(doSnap)만.
   }
 
   // ── responsive layout ──
