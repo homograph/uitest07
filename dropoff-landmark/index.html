@@ -83,8 +83,8 @@
     opacity:0;transition:border-color .16s ease, box-shadow .16s ease, opacity .22s ease;}
   .nmark::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--blue-500);transition:background .16s ease;}
   .phone.geo-on .nmark{opacity:1;}
-  .nmark.sel{border-color:var(--blue-600);box-shadow:0 5px 14px rgba(0,134,234,.5);}
-  .nmark.sel::after{background:var(--blue-600);}
+  .nmark.sel{border-color:var(--blue-500);box-shadow:0 5px 14px rgba(0,134,234,.5);}  /* 링은 동일 #0094f9 */
+  .nmark.sel::after{background:#101a3d;}   /* 선택 마커 중앙 점 = 진네이비 (Figma 변경 스펙) */
 
   /* ── wheel picker panel (inside-geofence designated points) ── */
   .sheet-wheel{display:none;}
@@ -130,10 +130,10 @@
 
   /* 선택 마커: 리티클 내 뱃지보다 위(DOM 뒤) → 마커가 stem을 덮음 (Figma z-index 스펙 #2 > #3) */
   .reticle-dot{position:absolute;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;
-    background:#fff;border:2px solid var(--blue-600);
+    background:#fff;border:2px solid var(--blue-500);
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 2px 5px rgba(20,30,55,.22);transition:opacity .16s ease;}
-  .reticle-dot::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--blue-600);}
+  .reticle-dot::after{content:"";width:5px;height:5px;border-radius:50%;background:#101a3d;}  /* 선택 마커 중앙 점 = 진네이비 */
   .phone.dragging .reticle-dot, .phone.snapping .reticle-dot{opacity:0;}
 
   /* dragging: floating balloon pin, tip at anchor */
