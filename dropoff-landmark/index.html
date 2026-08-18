@@ -76,12 +76,15 @@
   .cand.near svg{width:14px;height:14px;}
 
   /* numbered designated markers (inside geofence) — Figma ic_number_blue(_stroke) */
-  .nmark{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:50%;
-    background:#fff;border:4px solid #4b5064;
+  .nmark{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;
+    background:#fff;border:2px solid var(--blue-500);
+    display:flex;align-items:center;justify-content:center;
     box-shadow:0 2px 5px rgba(20,30,55,.22);transform:scale(var(--inv,1));
     opacity:0;transition:border-color .16s ease, box-shadow .16s ease, opacity .22s ease;}
+  .nmark::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue-500);transition:background .16s ease;}
   .phone.geo-on .nmark{opacity:1;}
   .nmark.sel{border-color:var(--blue-600);box-shadow:0 5px 14px rgba(0,134,234,.5);}
+  .nmark.sel::after{background:var(--blue-600);}
 
   /* ── wheel picker panel (inside-geofence designated points) ── */
   .sheet-wheel{display:none;}
@@ -278,14 +281,7 @@
     {n:6, name:"서울역 서부광장",        addr:"서울 중구 청파로 378",   wx:1085, wy:745}
   ];
   // 추천 하차지 (지오펜스 바깥 · 링 마커 · 지도 드래그로 선택)
-  var OUTSIDE = [
-    {name:"서울역 버스환승센터",  addr:"서울 중구 한강대로 405", wx:1205, wy:520},
-    {name:"서울로7017 입구",      addr:"서울 중구 청파로 432",   wx:1150, wy:320},
-    {name:"서울역 택시승강장",    addr:"서울 중구 봉래동2가 122", wx:1110, wy:838},
-    {name:"청파로 정류장 (서부)", addr:"서울 중구 청파로 384",   wx:930,  wy:600},
-    {name:"남대문시장 방면",      addr:"서울 중구 남대문로 47",  wx:1235, wy:665},
-    {name:"서울역센트럴자이",     addr:"서울 중구 청파로 464",   wx:905,  wy:470}
-  ];
+  var OUTSIDE = [];   // 추천 하차지(썸업 마커) 삭제 — 지오펜스 밖은 자유 지정만
 
   var SNAP_PX = 62;   // 추천 마커 자석 반경(px). 이보다 멀면 자유 지점(임의 하차)으로 처리
   // 지도 라벨(역지오코딩용): 랜드마크/추천지 밖 임의 지점의 주소 표기에 사용
@@ -314,7 +310,7 @@
   var STATUSBAR_H = 36, ITEM_H = 56;
 
   var tx=0, ty=0, scale=1, MINZ=0.75, MAXZ=2.6;
-  var mode='wheel', wsel=0, ssel=0;
+  var mode='wheel', wsel=0, ssel=0, curX=0, curY=0;
   var snapTimer=null, wheelTimer=null, toastTimer=null, wheelScrollTimer=null, syncingWheel=false;
 
   // ── build markers ──
@@ -423,37 +419,27 @@
   // ── decide mode + snap on gesture end ──
   function doSnap(){
     phone.classList.toggle('geo-on', reticleInsideGeo());
-    if(reticleInsideGeo()){
+    if(reticleInsideGeo()){                           // 지오펜스 안 → 휠 피커(지정 하차지)
       setMode('wheel');
       var t=nearestOf(INSIDE);
       scrollWheelTo(t, false);
       snapTo(INSIDE[t].wx, INSIDE[t].wy);
-    } else {
+      curX=INSIDE[t].wx; curY=INSIDE[t].wy;
+    } else {                                          // 지오펜스 밖 → 자유 목적지 지정
       setMode('single');
-      var t=nearestOf(OUTSIDE);
-      if(screenDist(OUTSIDE[t]) <= SNAP_PX){          // 추천 하차지 근처 → 자석 스냅
-        ssel=t; markOutsideNear(t);
-        poiName.textContent=OUTSIDE[t].name; poiAddr.textContent=OUTSIDE[t].addr;
-        var changed=snapTo(OUTSIDE[t].wx, OUTSIDE[t].wy);
-        if(changed) showToast();
-      } else {                                        // 그 밖의 임의 지점 → 자유 목적지 지정
-        markOutsideNear(-1);
-        var L=nearestLabel();
-        poiName.textContent=L.name; poiAddr.textContent=L.addr;
-        settleFree();
-      }
+      markInsideSel(-1);
+      var L=nearestLabel();
+      poiName.textContent=L.name; poiAddr.textContent=L.addr;
+      var rw=reticleWorld(); curX=rw.x; curY=rw.y;
+      settleFree();
     }
   }
 
   // ── live marker highlight while dragging ──
   function liveMark(){
     var ins=reticleInsideGeo();
-    phone.classList.toggle('geo-on', ins);   // 핀이 지오펜스 안일 때만 지오펜스/번호마커 표시
-    if(ins){ markInsideSel(nearestOf(INSIDE)); markOutsideNear(-1); }
-    else { markInsideSel(-1);
-      var t=nearestOf(OUTSIDE);
-      markOutsideNear(screenDist(OUTSIDE[t])<=SNAP_PX ? t : -1);
-    }
+    phone.classList.toggle('geo-on', ins);   // 핀이 지오펜스 안일 때만 지오펜스/마커 표시
+    markInsideSel(ins ? nearestOf(INSIDE) : -1);
   }
 
   // ── responsive layout ──
@@ -463,12 +449,12 @@
     reticle.style.left=ANCHOR.x+'px'; reticle.style.top=ANCHOR.y+'px';
     cloc.style.bottom=(sh+16)+'px';
     if(mode==='wheel') centerXY(INSIDE[wsel].wx, INSIDE[wsel].wy);
-    else centerXY(OUTSIDE[ssel].wx, OUTSIDE[ssel].wy);
+    else centerXY(curX, curY);
   }
 
   // ── init: 서울역 검색 진입 → 휠 피커 모드 ──
   phone.classList.add('wheelmode','geo-on');
-  setWheelSelClass(0); markInsideSel(0);
+  setWheelSelClass(0); markInsideSel(0); curX=INSIDE[0].wx; curY=INSIDE[0].wy;
   layout();
   wlist.scrollTop = 0;
   window.addEventListener('resize', layout);
@@ -485,13 +471,7 @@
     }, 100);
   });
 
-  // ── X: 지도 자유선택 모드로 전환 (가장 가까운 바깥 추천지로 이동) ──
-  function closeToFree(){
-    var t=nearestOf(OUTSIDE); ssel=t; markOutsideNear(t); markInsideSel(-1);
-    poiName.textContent=OUTSIDE[t].name; poiAddr.textContent=OUTSIDE[t].addr;
-    setMode('single');
-    snapTo(OUTSIDE[t].wx, OUTSIDE[t].wy);
-  }
+  function closeToFree(){}   // (미사용) 추천 하차지 삭제로 dead
 
 
   // ── gestures: 1 pointer pan→snap, 2 pinch zoom, wheel(desktop) zoom ──
