@@ -450,10 +450,12 @@
 
   // ── live marker highlight while dragging ──
   function liveMark(){
-    var ins=reticleInsideGeo();
-    phone.classList.toggle('geo-on', ins);   // 핀이 지오펜스 안일 때만 지오펜스/마커 표시
-    markInsideSel(-1);                        // 패닝 중엔 선택(navy) 없음
-    markInsideNear(ins ? nearestOf(INSIDE) : -1);  // 최근접 마커만 확대(미선택 파란 중앙 유지)
+    // 지오펜스 표시는 '안착(doSnap)' 시에만 바뀐다 — 드래그 중엔 직전 안착 상태 유지.
+    // 안에서 밖으로 끌어내는 중엔 지오펜스가 계속 보이다가 손 떼는 순간(밖) 사라지고,
+    // 밖에서 안으로 끌어오는 중엔 계속 숨겨지다가 손 떼는 순간(안) 나타난다.
+    var shown=phone.classList.contains('geo-on');
+    markInsideSel(-1);                                // 패닝 중엔 선택(navy) 없음
+    markInsideNear(shown ? nearestOf(INSIDE) : -1);   // 지오펜스 보일 때만 최근접 마커 확대
   }
 
   // ── responsive layout ──
