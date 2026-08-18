@@ -80,9 +80,11 @@
     background:#fff;border:2px solid var(--blue-500);
     display:flex;align-items:center;justify-content:center;
     box-shadow:0 2px 5px rgba(20,30,55,.22);transform:scale(var(--inv,1));
-    opacity:0;transition:border-color .16s ease, box-shadow .16s ease, opacity .22s ease;}
+    opacity:0;transition:width .16s ease, height .16s ease, margin .16s ease, border-color .16s ease, box-shadow .16s ease, opacity .22s ease;}
   .nmark::after{content:"";width:5px;height:5px;border-radius:50%;background:var(--blue-500);transition:background .16s ease;}
   .phone.geo-on .nmark{opacity:1;}
+  /* 패닝 중 최근접 마커 = 확대(18→24px), 디자인은 미선택 파란 중앙점 유지 (Figma 10047:20155) */
+  .nmark.near{width:24px;height:24px;margin:-12px 0 0 -12px;box-shadow:0 4px 12px rgba(0,148,249,.4);}
   .nmark.sel{border-color:var(--blue-500);box-shadow:0 5px 14px rgba(0,134,234,.5);}  /* 링은 동일 #0094f9 */
   .nmark.sel::after{background:#101a3d;}   /* 선택 마커 중앙 점 = 진네이비 (Figma 변경 스펙) */
 
@@ -392,6 +394,7 @@
 
   // ── marker highlight helpers ──
   function markInsideSel(i){ nmarks.forEach(function(el,k){ el.classList.toggle('sel', k===i); }); }
+  function markInsideNear(i){ nmarks.forEach(function(el,k){ el.classList.toggle('near', k===i); }); }
   function markOutsideNear(i){ omarks.forEach(function(el,k){ el.classList.toggle('near', k===i); }); }
   function setWheelSelClass(i){ witems.forEach(function(el,k){ el.classList.toggle('sel', k===i); }); }
 
@@ -434,6 +437,7 @@
   // ── decide mode + snap on gesture end ──
   function doSnap(){
     phone.classList.toggle('geo-on', reticleInsideGeo());
+    markInsideNear(-1);                               // 놓으면 확대 해제(선택으로 전환)
     if(reticleInsideGeo()){                           // 지오펜스 안 → 휠 피커(지정 하차지)
       setMode('wheel');
       var t=nearestOf(INSIDE);
@@ -454,7 +458,8 @@
   function liveMark(){
     var ins=reticleInsideGeo();
     phone.classList.toggle('geo-on', ins);   // 핀이 지오펜스 안일 때만 지오펜스/마커 표시
-    markInsideSel(-1);   // 패닝 중엔 어떤 마커도 선택 강조 안 함(모두 미선택). 선택은 놓을 때(doSnap)만.
+    markInsideSel(-1);                        // 패닝 중엔 선택(navy) 없음
+    markInsideNear(ins ? nearestOf(INSIDE) : -1);  // 최근접 마커만 확대(미선택 파란 중앙 유지)
   }
 
   // ── responsive layout ──
