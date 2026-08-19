@@ -416,7 +416,8 @@
 
   function setMode(m){
     if(mode!==m){ mode=m; phone.classList.toggle('wheelmode', m==='wheel');
-      badgeText.textContent = '목적지'; }
+      // 뱃지 라벨은 현재 출발지/목적지 모드를 따름 (하드코딩 금지 — 출발지에서 '목적지'로 덮어쓰던 버그)
+      badgeText.textContent = phone.classList.contains('mode-origin') ? '출발지' : '목적지'; }
   }
 
   // ── snapping animation to a world point ──
