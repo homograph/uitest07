@@ -177,8 +177,10 @@
 
   /* ── current-location button ── */
   .cloc{position:absolute;right:16px;z-index:35;width:40px;height:40px;border-radius:20px;background:#fff;
+    -webkit-appearance:none;appearance:none;border:0;outline:none;padding:0;cursor:pointer;
     box-shadow:0 4px 12px rgba(20,30,55,.18);display:flex;align-items:center;justify-content:center;
     bottom:196px;/* set by JS layout() */}
+  .cloc:focus,.cloc:focus-visible{outline:none;}  /* PC 포커스/기본 버튼 링 제거 (모바일과 동일하게) */
   .cloc svg{display:block;}
   .cloc-ic{width:22px;height:22px;display:block;pointer-events:none;}
 
