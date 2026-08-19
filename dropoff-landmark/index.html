@@ -208,12 +208,17 @@
   .phone.dragging .addrbox{opacity:.35;}
   .addrbox-ic{width:13px;height:13px;flex:0 0 auto;border:2px solid var(--navy);border-radius:3px;}
   /* 출발지 밖: 차량 도착 위치 핀(파란 물방울 + 차량 아이콘). 안착 시에만 노출 */
-  .recar{position:absolute;left:0;top:0;margin:-15px 0 0 -15px;width:30px;height:30px;z-index:5;
+  /* 차량 핀: anchor 기준 왼쪽 ~43px 오프셋(팁이 도착지점), 뱃지는 중앙 유지 */
+  .recar{position:absolute;left:0;top:0;margin:-30px 0 0 -58px;width:30px;height:30px;z-index:5;
     display:none;align-items:center;justify-content:center;
     background:var(--tada-blue);border:1px solid #19254d;border-radius:50% 50% 50% 0;transform:rotate(45deg);
     box-shadow:0 6px 16px rgba(50,162,250,.5);}
   .recar svg{transform:rotate(-45deg);display:block;}
   .phone.mode-origin:not(.geo-on):not(.dragging) .recar{display:flex;}
+  /* 차량 핀 ↔ 뱃지 stem을 잇는 가로 점선 (Figma Vector 31: #283873, 35px) */
+  .redash{position:absolute;left:0;top:0;margin:-2px 0 0 -40px;width:34px;height:0;z-index:5;
+    display:none;border-top:3px dotted #283873;}
+  .phone.mode-origin:not(.geo-on):not(.dragging) .redash{display:block;}
 </style>
 </head>
 <body>
@@ -249,7 +254,8 @@
           </div>
           <!-- 선택 마커 중앙 점 (최상단: stem 끝에 얹힘) -->
           <div class="reticle-center"></div>
-          <!-- 출발지 밖: 차량 도착 위치 핀 -->
+          <!-- 출발지 밖: 차량 도착 위치 핀(왼쪽 오프셋) + 뱃지와 잇는 가로 점선 -->
+          <div class="redash"></div>
           <div class="recar"><svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M5 11l1.5-4.5h11L19 11m-1.5 3.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m-11 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3M18.92 6.01A1.5 1.5 0 0 0 17.5 5h-11a1.5 1.5 0 0 0-1.42 1.01L3 12v8h2v-2h14v2h2v-8z"/></svg></div>
         </div>
 
