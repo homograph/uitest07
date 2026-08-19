@@ -95,6 +95,10 @@
   .phone.wheelmode .sheet-wheel{display:block;}
   .phone.wheelmode .sheet-single{display:none;}
   .phone.dragging .sheet-wheel{opacity:.45;}
+  /* 지오펜스 밖(단일): 목적지=POI 주소카드 / 출발지=탑승위치 조정 뷰 (Figma 10072:29364 vs 32874) */
+  .sheet-single-origin{display:none;}
+  .phone.mode-origin:not(.wheelmode) .sheet-single{display:none;}
+  .phone.mode-origin:not(.wheelmode) .sheet-single-origin{display:block;}
   .wtitle{display:flex;align-items:center;justify-content:center;padding:24px 24px 4px;}
   .wtitle b{font-size:18px;font-weight:700;color:#262a38;}
   .wclose{border:0;background:none;padding:4px;cursor:pointer;line-height:0;color:#000;flex:0 0 auto;}
@@ -193,6 +197,22 @@
     transition:background .18s ease, color .18s ease;cursor:pointer;}
   .phone.dragging .cta{background:var(--btn-disabled-bg);color:var(--btn-disabled-tx);pointer-events:none;}
 
+  /* 출발지 지오펜스 밖 뷰 (Figma 10072:29364) */
+  .sheet .subtitle{font-size:14px;font-weight:400;color:var(--gray-600);line-height:1.4;margin-top:7px;
+    transition:opacity .16s ease;}
+  .phone.dragging .sheet .subtitle{opacity:.35;}
+  .addrbox{display:flex;align-items:center;gap:9px;margin:2px 24px 0;padding:14px 16px;
+    border:1px solid var(--gray-100);border-radius:10px;font-size:15px;font-weight:500;color:#000;
+    transition:opacity .16s ease;}
+  .phone.dragging .addrbox{opacity:.35;}
+  .addrbox-ic{width:13px;height:13px;flex:0 0 auto;border:2px solid var(--navy);border-radius:3px;}
+  /* 출발지 밖: 차량 도착 위치 핀(파란 물방울 + 차량 아이콘). 안착 시에만 노출 */
+  .recar{position:absolute;left:0;top:0;margin:-15px 0 0 -15px;width:30px;height:30px;
+    display:none;align-items:center;justify-content:center;
+    background:var(--blue-500);border-radius:50% 50% 50% 0;transform:rotate(45deg);
+    box-shadow:0 6px 16px rgba(0,148,249,.5);}
+  .recar svg{transform:rotate(-45deg);display:block;}
+  .phone.mode-origin:not(.geo-on):not(.dragging) .recar{display:flex;}
 </style>
 </head>
 <body>
@@ -228,6 +248,8 @@
           </div>
           <!-- 선택 마커 중앙 점 (최상단: stem 끝에 얹힘) -->
           <div class="reticle-center"></div>
+          <!-- 출발지 밖: 차량 도착 위치 핀 -->
+          <div class="recar"><svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M5 11l1.5-4.5h11L19 11m-1.5 3.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3m-11 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3M18.92 6.01A1.5 1.5 0 0 0 17.5 5h-11a1.5 1.5 0 0 0-1.42 1.01L3 12v8h2v-2h14v2h2v-8z"/></svg></div>
         </div>
 
         <!-- 출발지/목적지 전환 세그먼트 컨트롤 -->
@@ -258,7 +280,7 @@
             </div>
             <div class="btnwrap"><button class="cta" id="ctaW">목적지 설정 완료</button></div>
           </div>
-          <!-- single address (reticle outside geofence = 추천 하차지) -->
+          <!-- 목적지 지오펜스 밖: POI 주소 카드 -->
           <div class="sheet-single">
             <div class="info">
               <div class="title" id="poiName">서울역 버스환승센터</div>
@@ -266,6 +288,17 @@
             </div>
             <div class="btnwrap">
               <button class="cta" id="cta">목적지 설정 완료</button>
+            </div>
+          </div>
+          <!-- 출발지 지오펜스 밖: 탑승 위치 조정 안내 + 지번 주소 박스 -->
+          <div class="sheet-single-origin">
+            <div class="info">
+              <div class="title">탑승 위치를 조정하려면 핀을 이동하세요.</div>
+              <div class="subtitle">차량이 도착하는 위치를 확인해주세요.</div>
+            </div>
+            <div class="addrbox"><span class="addrbox-ic"></span><span id="oPoiAddr">수송동 147</span></div>
+            <div class="btnwrap">
+              <button class="cta" id="ctaO">여기로 호출하기</button>
             </div>
           </div>
         </div>
@@ -437,6 +470,7 @@
       markInsideSel(-1);
       var L=nearestLabel();
       poiName.textContent=L.name; poiAddr.textContent=L.addr;
+      var oAddr=document.getElementById('oPoiAddr'); if(oAddr) oAddr.textContent=L.addr;  // 출발지 밖 주소 박스
       var rw=reticleWorld(); curX=rw.x; curY=rw.y;
       settleFree();
     }
