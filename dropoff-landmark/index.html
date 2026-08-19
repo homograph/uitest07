@@ -241,6 +241,27 @@
   .dc-lights i:nth-child(1){background:#ff5f57;} .dc-lights i:nth-child(2){background:#febc2e;} .dc-lights i:nth-child(3){background:#28c840;}
   .dc-title{font-size:13px;font-weight:700;color:#e6edf3;}
   .dc-badge{margin-left:auto;font-size:11px;font-weight:700;color:#7d8590;border:1px solid #30363d;border-radius:20px;padding:2px 9px;}
+  /* 상위 모드 탭 (개발 가이드 / AC) — 밑줄형 */
+  .dc-modes{display:flex;gap:2px;padding:0 12px;background:#161b22;border-bottom:1px solid #222b36;flex:0 0 auto;}
+  .md-btn{font-family:inherit;font-size:12.5px;font-weight:700;color:#8b949e;background:transparent;border:0;
+    border-bottom:2px solid transparent;padding:11px 12px;cursor:pointer;transition:color .15s,border-color .15s;}
+  .md-btn:hover{color:#c9d1d9;}
+  .md-btn.is-on{color:#fff;border-bottom-color:#1f6feb;}
+  /* AC(인수 조건) 뷰 */
+  .ac-intro{font-size:13px;color:#adbac7;line-height:1.65;margin:0 0 16px;}
+  .ac-gwt{display:flex;flex-direction:column;gap:8px;margin:0 0 6px;}
+  .ac-row{display:flex;gap:11px;padding:12px 14px;background:#0f1620;border:1px solid #222b36;border-radius:10px;}
+  .ac-tag{flex:0 0 auto;font-size:11px;font-weight:800;letter-spacing:.5px;padding:3px 9px;border-radius:6px;height:fit-content;}
+  .ac-tag.g{background:rgba(63,185,80,.16);color:#3fb950;}
+  .ac-tag.w{background:rgba(210,153,34,.16);color:#d29922;}
+  .ac-tag.t{background:rgba(88,166,255,.16);color:#58a6ff;}
+  .ac-row .txt b{color:#e6edf3;font-size:12.5px;display:block;margin-bottom:3px;}
+  .ac-row .txt span{color:#adbac7;font-size:12.5px;line-height:1.55;}
+  .ac-h{font-size:12.5px;font-weight:700;color:#79c0ff;margin:18px 0 9px;}
+  .ac-check{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:8px;}
+  .ac-check li{display:flex;gap:9px;font-size:12.5px;color:#c9d1d9;line-height:1.5;}
+  .ac-check li::before{content:"✓";color:#3fb950;font-weight:800;flex:0 0 auto;}
+  .ac-note{margin-top:16px;padding:11px 13px;background:#0f1620;border-left:3px solid #1f6feb;border-radius:0 8px 8px 0;font-size:12px;color:#adbac7;line-height:1.6;}
   .dc-platform{display:flex;gap:6px;padding:10px 14px;background:#0d1117;border-bottom:1px solid #222b36;flex:0 0 auto;}
   .pf-btn{font-family:inherit;font-size:12px;font-weight:700;color:#8b949e;background:#161b22;border:1px solid #30363d;
     border-radius:7px;padding:6px 12px;cursor:pointer;transition:color .15s,background .15s,border-color .15s;}
@@ -387,6 +408,10 @@
         <span class="dc-title">개발 가이드 · 목적지 랜드마크</span>
         <span class="dc-badge">Native</span>
       </header>
+      <div class="dc-modes" id="dcModes" role="tablist">
+        <button class="md-btn is-on" data-md="guide" type="button">개발 가이드</button>
+        <button class="md-btn" data-md="ac" type="button">AC · 인수 조건</button>
+      </div>
       <div class="dc-platform" id="dcPlatform" role="tablist">
         <button class="pf-btn is-on" data-pf="ios" type="button">iOS · Swift</button>
         <button class="pf-btn" data-pf="android" type="button">Android · Kotlin</button>
@@ -896,10 +921,48 @@
     apply(); upd();
   }
 
-  // ── 렌더 (플랫폼별) ──
-  var platform = 'ios';
+  // ── AC(인수 조건) 데이터 — QA/기획용 쉬운 명세 ──
+  var AC = {
+    title: '지오펜스 내 최근접 마커 강조 & 스냅',
+    intro: '지도를 움직이는 동안 가장 가까운 하차 지점을 미리 강조하고, 멈추면 그 지점으로 확정하는 동작의 인수 기준입니다.',
+    gwt: [
+      { k:'Given', t:'전제', p:'목적지가 지오펜스(랜드마크 영역) 안이고, 지도에 지정 하차 마커들이 표시된 상태' },
+      { k:'When',  t:'조건', p:'사용자가 지도를 드래그해 카메라를 움직인다' },
+      { k:'Then',  t:'결과', p:'화면 중앙 리티클에 가장 가까운 마커 1개가 20 → 28dp로 커지고, 손을 떼면 그 마커로 스냅되어 선택된다' }
+    ],
+    checklist: [
+      '항상 정확히 1개 마커만 커져 있다 (중앙에 가장 가까운 것)',
+      '확대·축소가 끊김 없이 부드럽다 (약 0.16초, 튀거나 깜빡임 없음)',
+      '최근접이 바뀌면 이전 마커는 축소, 새 마커는 확대된다',
+      '커져도 마커가 자기 좌표점에 고정된다 (위치가 밀리지 않음)',
+      '드래그를 멈추면 최근접 마커로 지도가 스냅되고, 하단 정보가 그 지점으로 갱신된다',
+      '커진 마커가 다른 마커·UI에 가리지 않는다 (최상단 표시)',
+      '지오펜스 밖으로 나가면 강조·스냅이 없다 (자유 지정 모드로 전환)'
+    ],
+    note: '값: 크기 20 → 28dp(pt), 전환 0.16초 ease-out. 확대는 "여기서 선택됨"을 미리 알려주는 역할입니다.'
+  };
+  function renderAC(){
+    var el = document.createElement('section'); el.className='guide';
+    var h = '<h3 class="guide-title"><span class="gnum" style="background:#3fb950">AC</span>'+esc(AC.title)+'</h3>'
+      + '<p class="ac-intro">'+esc(AC.intro)+'</p><div class="ac-gwt">';
+    AC.gwt.forEach(function(r){
+      h += '<div class="ac-row"><span class="ac-tag '+r.k.charAt(0).toLowerCase()+'">'+r.k+'</span>'
+        + '<span class="txt"><b>'+esc(r.t)+'</b><span>'+esc(r.p)+'</span></span></div>';
+    });
+    h += '</div><div class="ac-h">세부 인수 기준 (체크리스트)</div><ul class="ac-check">';
+    AC.checklist.forEach(function(c){ h += '<li>'+esc(c)+'</li>'; });
+    h += '</ul><div class="ac-note">'+esc(AC.note)+'</div>';
+    el.innerHTML = h;
+    body.appendChild(el);
+  }
+
+  // ── 렌더 (모드: 개발 가이드 / AC, 플랫폼: iOS/Android/Web) ──
+  var mode = 'guide', platform = 'ios';
+  var pf = document.getElementById('dcPlatform');
   function render(){
     body.innerHTML = '';
+    if(pf) pf.style.display = (mode === 'guide') ? '' : 'none';   // AC 모드엔 플랫폼 탭 숨김
+    if(mode === 'ac'){ renderAC(); return; }
     GUIDES.forEach(function(g, gi){
       var el = document.createElement('section'); el.className='guide';
       var html = '<h3 class="guide-title"><span class="gnum">'+(gi+1)+'</span>'+esc(g.title)+'</h3>'
@@ -911,8 +974,15 @@
       body.appendChild(el);
     });
   }
+  // 모드 탭 (개발 가이드 / AC)
+  var md = document.getElementById('dcModes');
+  if(md) md.addEventListener('click', function(e){
+    var b = e.target.closest('.md-btn'); if(!b) return;
+    mode = b.getAttribute('data-md');
+    md.querySelectorAll('.md-btn').forEach(function(x){ x.classList.toggle('is-on', x === b); });
+    render();
+  });
   // 플랫폼 전환 탭 (iOS / Android / Web)
-  var pf = document.getElementById('dcPlatform');
   if(pf) pf.addEventListener('click', function(e){
     var b = e.target.closest('.pf-btn'); if(!b) return;
     platform = b.getAttribute('data-pf');
