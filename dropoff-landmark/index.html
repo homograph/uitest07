@@ -559,7 +559,7 @@
   function startPan(){ var p=gpts()[0]; panStart={x:p.x,y:p.y,tx:tx,ty:ty}; gmode='pan'; }
   function startPinch(){ var a=gpts(); pinchStart={dist:Math.max(1,distOf(a[0],a[1])),scale:scale}; gmode='pinch'; }
   function onDown(e){
-    if(e.target.closest('.sheet')||e.target.closest('.cloc')) return;
+    if(e.target.closest('.sheet')||e.target.closest('.cloc')||e.target.closest('.segwrap')) return;
     pointers.set(e.pointerId, localPt(e));
     try{ if(e.pointerId!=null&&screen.setPointerCapture) screen.setPointerCapture(e.pointerId); }catch(_){}
     beginGestureVisual();
