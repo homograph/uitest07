@@ -157,6 +157,24 @@
   .phone.dragging .badge-wrap{opacity:0;}
   .phone.dragging .pin-wrap{opacity:1;transform:translate(-50%,-6px);} /* lift while floating */
 
+  /* ── 출발지/목적지 전환 세그먼트 컨트롤 (지도 상단 플로팅) ── */
+  .segwrap{position:absolute;left:50%;z-index:40;transform:translateX(-50%);
+    top:52px;/* 상태바 아래, JS layout()에서 미세조정 */}
+  .segctl{display:flex;gap:2px;padding:3px;border-radius:999px;
+    background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+    border:1px solid rgba(20,30,55,.08);box-shadow:0 3px 10px rgba(20,30,55,.16);}
+  .seg{appearance:none;-webkit-appearance:none;border:0;background:transparent;cursor:pointer;
+    font-family:inherit;font-size:13px;font-weight:700;line-height:1;color:var(--gray-600);
+    padding:7px 15px;border-radius:999px;white-space:nowrap;
+    transition:color .18s ease, background .18s ease;}
+  .phone.mode-origin .seg.is-on{background:#101a3d;color:#fff;}     /* 출발지 선택 = 네이비 */
+  .phone:not(.mode-origin) .seg.is-on{background:var(--blue-500);color:#fff;}  /* 목적지 선택 = 파랑 */
+
+  /* 출발지 모드: 드래그 핀·뱃지·stem = 네이비 (지도 마커 링/중앙점은 파랑 공유) */
+  .phone.mode-origin{--pin-dest:#283873;}
+  .phone.mode-origin .badge{background:#101a3d;border-color:#101a3d;}
+  .phone.mode-origin .badge-stem{background:#101a3d;}
+
   /* ── current-location button ── */
   .cloc{position:absolute;right:16px;z-index:35;width:40px;height:40px;border-radius:20px;background:#fff;
     box-shadow:0 4px 12px rgba(20,30,55,.18);display:flex;align-items:center;justify-content:center;
@@ -233,8 +251,16 @@
             <div class="pin-stem"></div>
             <div class="pin-base"></div>
           </div>
-          <!-- 선택 마커 중앙 네이비 점 (최상단: 네이비 stem 끝에 얹힘) -->
+          <!-- 선택 마커 중앙 점 (최상단: stem 끝에 얹힘) -->
           <div class="reticle-center"></div>
+        </div>
+
+        <!-- 출발지/목적지 전환 세그먼트 컨트롤 -->
+        <div class="segwrap">
+          <div class="segctl" id="segctl">
+            <button class="seg" data-mode="origin" type="button">출발지</button>
+            <button class="seg is-on" data-mode="dest" type="button">목적지</button>
+          </div>
         </div>
 
         <!-- current location button -->
@@ -476,6 +502,33 @@
   wlist.scrollTop = 0;
   window.addEventListener('resize', layout);
   window.addEventListener('orientationchange', function(){ setTimeout(layout,250); });
+
+  // ── 출발지/목적지 전환 (지도 상단 세그먼트 컨트롤) ──
+  // 색(핀·뱃지·stem)은 .mode-origin 클래스가 CSS로 처리. 여기선 텍스트/카피만 갱신.
+  var segctl = document.getElementById('segctl');
+  var wtitleB = document.querySelector('.sheet-wheel .wtitle b');
+  var ctaW = document.getElementById('ctaW'), ctaS = document.getElementById('cta');
+  var hintEl = document.getElementById('hint');
+  var toastTxt = document.querySelector('.toast span:last-child');
+  function setDepartMode(origin){
+    phone.classList.toggle('mode-origin', origin);
+    var noun = origin ? '출발지' : '목적지';
+    var verb = origin ? '탑승' : '하차';
+    badgeText.textContent = noun;
+    if(wtitleB) wtitleB.textContent = verb + ' 위치를 선택해주세요';
+    if(ctaW) ctaW.textContent = noun + ' 설정 완료';
+    if(ctaS) ctaS.textContent = noun + ' 설정 완료';
+    if(hintEl) hintEl.textContent = '지도를 움직여 ' + verb + ' 지점을 선택하세요';
+    if(toastTxt) toastTxt.textContent = '추천 ' + verb + '지로 조정되었습니다.';
+    segctl.querySelectorAll('.seg').forEach(function(b){
+      b.classList.toggle('is-on', (b.getAttribute('data-mode')==='origin')===origin);
+    });
+  }
+  segctl.addEventListener('click', function(e){
+    var b = e.target.closest('.seg'); if(!b) return;
+    setDepartMode(b.getAttribute('data-mode')==='origin');
+  });
+  setDepartMode(false);  // 기본 = 목적지
 
   // ── wheel scroll → select inside marker + recenter map ──
   wlist.addEventListener('scroll', function(){
