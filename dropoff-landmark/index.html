@@ -86,8 +86,9 @@
   .phone.geo-on .nmark{opacity:1;}
   /* 패닝 중 최근접 마커 = 확대(18→24px), 디자인은 미선택 파란 중앙점 유지 (Figma 10047:20155) */
   .nmark.near{width:24px;height:24px;margin:-12px 0 0 -12px;box-shadow:0 4px 12px rgba(0,148,249,.4);}
-  /* 선택된 지정지 마커는 뱃지 아래에 오므로 링을 숨김 — 뱃지+stem+점(reticle-center)만 노출 (Figma: 하단 원 제거) */
-  .phone.geo-on .nmark.sel{opacity:0;}
+  /* 선택된 지정지 마커 = 뱃지 아래의 랜드마크 마커(링). 뱃지 stem이 이 마커로 꽂힘. (핀 자체 점/링은 없음) */
+  .nmark.sel{border-color:var(--blue-500);box-shadow:0 5px 14px rgba(0,134,234,.5);}
+  .nmark.sel::after{background:var(--blue-600);}   /* 선택 마커 중앙 점 = #0086ea (Figma ic_number select) */
 
   /* ── wheel picker panel (inside-geofence designated points) ── */
   .sheet-wheel{display:none;}
@@ -132,11 +133,9 @@
     box-shadow:0 1px 3px rgba(20,30,55,.18);}
   .badge-stem{width:3px;height:14px;background:var(--blue-500);}  /* Figma 41425: 목적지=파란 stem(pill→마커중앙까지) */
 
-  /* 안착 핀 = 뱃지 + stem + 작은 점만 (Figma에서 하단 링(원) 제거됨 — 뱃지+stem+점 구조) */
-  .reticle-ring{display:none;}  /* 하단 원(링) 제거 */
-  .reticle-center{position:absolute;left:0;top:0;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;
-    background:var(--blue-600);transition:opacity .16s ease;}
-  .phone.dragging .reticle-center{opacity:0;}
+  /* 안착 핀 = 뱃지 + stem 만. 핀 자체의 원(링·점)은 없음. 끝은 아래 랜드마크 마커로 꽂힘. */
+  .reticle-ring{display:none;}    /* 핀 링 제거 */
+  .reticle-center{display:none;}  /* 핀 점 제거 */
 
   /* dragging: floating balloon pin, tip at anchor */
   .pin-wrap{position:absolute;left:0;bottom:0;transform:translate(-50%,0);
