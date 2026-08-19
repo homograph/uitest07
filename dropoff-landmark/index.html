@@ -307,7 +307,7 @@
             </div>
             <div class="addrbox"><span class="addrbox-ic"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></svg></span><span id="oPoiAddr">수송동 147</span></div>
             <div class="btnwrap">
-              <button class="cta" id="ctaO">여기로 호출하기</button>
+              <button class="cta" id="ctaO">출발지 설정 완료</button>
             </div>
           </div>
         </div>
@@ -470,6 +470,7 @@
     markInsideNear(-1);                               // 놓으면 확대 해제(선택으로 전환)
     if(reticleInsideGeo()){                           // 지오펜스 안 → 휠 피커(지정 하차지)
       setMode('wheel');
+      syncAnchor();                                   // 휠 시트 높이로 앵커·플로팅버튼 갱신
       var t=nearestOf(INSIDE);
       scrollWheelTo(t, false);
       snapTo(INSIDE[t].wx, INSIDE[t].wy);
@@ -477,10 +478,12 @@
     } else {                                          // 지오펜스 밖 → 자유 목적지 지정
       setMode('single');
       markInsideSel(-1);
+      var rw=reticleWorld(); curX=rw.x; curY=rw.y;    // 놓은 지점(구 앵커 기준) 먼저 확보
+      syncAnchor();                                   // 단일 시트 높이로 앵커·플로팅버튼 갱신
+      centerXY(curX, curY);                           // 놓은 지점을 새 앵커로 재센터(지점 유지)
       var L=nearestLabel();
       poiName.textContent=L.name; poiAddr.textContent=L.addr;
       var oAddr=document.getElementById('oPoiAddr'); if(oAddr) oAddr.textContent=L.addr;  // 출발지 밖 주소 박스
-      var rw=reticleWorld(); curX=rw.x; curY=rw.y;
       settleFree();
     }
   }
@@ -496,11 +499,16 @@
   }
 
   // ── responsive layout ──
-  function layout(){
+  // 앵커·리티클·플로팅버튼 위치만 갱신(지도 이동 없음). 시트 높이가 바뀔 때마다 호출해야
+  // cloc(플로팅 버튼)이 항상 시트 위 16px에 붙는다. (시트 종류마다 높이가 달라짐)
+  function syncAnchor(){
     var w=screen.clientWidth, h=screen.clientHeight, sh=sheet.offsetHeight;
     ANCHOR.x=Math.round(w/2); ANCHOR.y=Math.round(STATUSBAR_H+(h-STATUSBAR_H-sh)/2);
     reticle.style.left=ANCHOR.x+'px'; reticle.style.top=ANCHOR.y+'px';
-    cloc.style.bottom=(sh+16)+'px';
+    cloc.style.bottom=(sh+16)+'px';   // 시트 상단에서 16px 위
+  }
+  function layout(){
+    syncAnchor();
     if(mode==='wheel') centerXY(INSIDE[wsel].wx, INSIDE[wsel].wy);
     else centerXY(curX, curY);
   }
@@ -517,7 +525,7 @@
   // 색(핀·뱃지·stem)은 .mode-origin 클래스가 CSS로 처리. 여기선 텍스트/카피만 갱신.
   var segctl = document.getElementById('segctl');
   var wtitleB = document.querySelector('.sheet-wheel .wtitle b');
-  var ctaW = document.getElementById('ctaW'), ctaS = document.getElementById('cta');
+  var ctaW = document.getElementById('ctaW'), ctaS = document.getElementById('cta'), ctaO = document.getElementById('ctaO');
   function setDepartMode(origin){
     phone.classList.toggle('mode-origin', origin);
     var noun = origin ? '출발지' : '목적지';
@@ -525,9 +533,11 @@
     if(wtitleB) wtitleB.textContent = origin ? '지정된 위치에서 탑승하세요' : '하차 위치를 선택해주세요';
     if(ctaW) ctaW.textContent = noun + ' 설정 완료';
     if(ctaS) ctaS.textContent = noun + ' 설정 완료';
+    if(ctaO) ctaO.textContent = noun + ' 설정 완료';   // 지오펜스 밖 CTA (출발지 설정 완료)
     segctl.querySelectorAll('.seg').forEach(function(b){
       b.classList.toggle('is-on', (b.getAttribute('data-mode')==='origin')===origin);
     });
+    if(typeof layout==='function') layout();   // 시트 종류/높이 바뀜 → 앵커·플로팅버튼 재계산
   }
   segctl.addEventListener('click', function(e){
     var b = e.target.closest('.seg'); if(!b) return;
