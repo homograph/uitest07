@@ -170,7 +170,7 @@
   .sheet .shead{padding:12px 20px 4px;flex:0 0 auto;}
   .sheet .shead b{display:block;font-size:19px;line-height:27px;font-weight:700;letter-spacing:-.4px;}
   .sheet .shead small{display:block;font-size:13px;line-height:19px;color:var(--gray-500);margin-top:3px;}
-  .sheet .sbody{flex:1 1 auto;overflow-y:auto;padding:16px 20px 4px;scrollbar-width:none;}
+  .sheet .sbody{flex:1 1 auto;min-height:0;overflow-y:auto;padding:16px 20px 4px;scrollbar-width:none;}
   .sheet .sbody::-webkit-scrollbar{width:0;}
 
   .step{margin-bottom:20px;}
@@ -206,6 +206,20 @@
   .dchip.on{border-color:var(--blue-500);background:var(--blue-500);color:#fff;}
   .dchip.more{font-size:13px;font-weight:500;color:var(--gray-600);grid-column:span 2;}
   .srcnote{margin-top:9px;font-size:11.5px;line-height:17px;color:var(--gray-400);}
+
+  .sub{margin-top:16px;padding-top:15px;border-top:1px dashed var(--gray-80);}
+  .sublab{display:flex;align-items:center;gap:6px;margin-bottom:9px;}
+  .sublab b{font-size:14px;font-weight:600;letter-spacing:-.2px;color:var(--gray-800);}
+  .sublab .opt{font-size:11px;font-weight:600;color:var(--gray-400);background:var(--gray-30);
+    padding:2px 6px;border-radius:5px;}
+  .sublab .why{margin-left:auto;font-size:11px;color:var(--gray-400);}
+  .lines{display:flex;gap:7px;}
+  .lchip{flex:1 1 0;border:1.5px solid var(--gray-80);background:#fff;border-radius:9px;padding:11px 0;
+    font:inherit;font-size:14px;font-weight:600;color:var(--gray-700);cursor:pointer;transition:.14s;}
+  .lchip:hover{border-color:var(--gray-300);}
+  .lchip.on{border-color:var(--blue-500);background:var(--blue-500);color:#fff;}
+  .lchip.none{font-size:12.5px;font-weight:500;color:var(--gray-500);}
+  .lchip.none.on{background:var(--gray-700);border-color:var(--gray-700);color:#fff;}
 
   .kp{margin-top:2px;}
   .kpview{display:flex;align-items:center;justify-content:center;gap:2px;border:1.5px solid var(--blue-500);
@@ -428,6 +442,11 @@
                   <div class="kpad" id="kpad"></div>
                   <button class="kpback" id="kpback">목록에서 고르기</button>
                 </div>
+                <div class="reveal sub" id="lineWrap">
+                  <div class="sublab"><b>호수 라인</b><span class="opt">선택</span>
+                    <span class="why" id="lineWhy">한 동에 출입구가 여러 개일 때</span></div>
+                  <div class="lines" id="lines"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -534,12 +553,12 @@
   const $ = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
 
-  const SAVED = { lvl:'under', floor:2, dong:'101' };
+  const SAVED = { lvl:'under', floor:2, dong:'101', line:1 };
   const DONGS = ['101','102','103','104','105','106','107','108'];
 
   const S = {
     sc:'live',
-    draft:{lvl:null,floor:null,dong:null},
+    draft:{lvl:null,floor:null,dong:null,line:null},
     saved:null,
     sentence:null,
     input:'chip',
@@ -557,15 +576,18 @@
 
   /* ── text helpers ── */
   function levelText(p){ return p.lvl==='under' ? '지하 '+p.floor+'층' : '지상'; }
-  function slotText(p){ return levelText(p)+' · '+p.dong+'동'; }
-  function sentenceText(p){ return levelText(p)+' · '+p.dong+'동 앞에서 탈게요'; }
+  function placeText(p){ return p.dong+'동'+(p.line?' '+p.line+'호 라인':''); }
+  function slotText(p){ return levelText(p)+' · '+placeText(p); }
+  function sentenceText(p){
+    return levelText(p)+' · '+placeText(p)+(p.lvl==='under'&&p.line ? '에서 탈게요' : ' 앞에서 탈게요');
+  }
   function draftReady(){ const d=S.draft; return !!(d.lvl && d.dong && (d.lvl!=='under' || d.floor)); }
 
   /* ── scenario ── */
   function setScenario(sc){
     clearInterval(S.timer);
     S.sc = sc;
-    S.draft = {lvl:null,floor:null,dong:null};
+    S.draft = {lvl:null,floor:null,dong:null,line:null};
     S.saved = (sc==='repeat') ? Object.assign({},SAVED) : null;
     S.sentence = null;
     S.slot = null;
@@ -615,7 +637,7 @@
       const c = document.createElement('button');
       c.className='chip pick';
       c.textContent='🅿️ 지상/지하에서 탑승할게요';
-      c.addEventListener('click', ()=>{ S.draft={lvl:null,floor:null,dong:null}; openSheet(); });
+      c.addEventListener('click', ()=>{ S.draft={lvl:null,floor:null,dong:null,line:null}; openSheet(); });
       ps.appendChild(c);
     }
     ['조금만 기다려주세요','금방 나갈게요','감사합니다'].forEach(t=>{
@@ -635,8 +657,20 @@
   }
 
   /* ── sheet ── */
+  function scrollSheetDown(){
+    const sb = $('.sbody');
+    setTimeout(()=>sb.scrollTo({top:sb.scrollHeight,behavior:'smooth'}),180);
+    [420,700,1000].forEach(t=>setTimeout(()=>{ sb.scrollTop = sb.scrollHeight; },t));
+  }
+  // reveal 애니메이션이 끝난 뒤에도 한 번 더 (타이밍 편차 방지)
+  ['#dongWrap','#lineWrap','#floorWrap'].forEach(sel=>{
+    $(sel).addEventListener('transitionend', e=>{
+      if(e.propertyName!=='max-height' || !e.target.classList.contains('on')) return;
+      const sb=$('.sbody'); sb.scrollTop = sb.scrollHeight;
+    });
+  });
   function openSheet(){
-    S.sheet=true; S.input='chip'; S.kpVal='';
+    S.sheet=true; S.input='chip'; S.kpVal=''; S._lineShown=false; S._dongShown=false;
     $('#sheetCta').textContent = S.sc==='reserve' ? '이 위치로 저장' : '이대로 보내기';
     $('#sheetSub').textContent = S.sc==='reserve' ? '예약이 배차되면 기사님께 함께 전달돼요' : '기사님께 그대로 전달돼요';
     renderSheet();
@@ -653,11 +687,22 @@
     const s1done = !!(d.lvl && (d.lvl!=='under' || d.floor));
     $('#step1').classList.toggle('ok', s1done);
     $('#step2').classList.toggle('act', s1done);
+    if(s1done && !S._dongShown) scrollSheetDown();
+    S._dongShown = s1done;
     $('#dongWrap').classList.toggle('on', s1done);
 
     $('#dongChipBox').hidden = S.input!=='chip';
     $('#keypadBox').hidden  = S.input!=='keypad';
     $$('#donggrid .dchip[data-d]').forEach(b=>b.classList.toggle('on', b.dataset.d===d.dong));
+    const lineOn = !!d.dong;
+    if(lineOn && !S._lineShown) scrollSheetDown();
+    S._lineShown = lineOn;
+    $('#lineWrap').classList.toggle('on', lineOn);
+    $('#lineWhy').textContent = d.lvl==='under' ? '지하는 라인마다 엘리베이터가 달라요' : '한 동에 출입구가 여러 개일 때';
+    $$('#lines .lchip').forEach(b=>{
+      const v = b.dataset.line==='' ? null : +b.dataset.line;
+      b.classList.toggle('on', v===d.line && (v!==null || d.lineTouched));
+    });
 
     const kv = $('#kpview');
     kv.innerHTML = S.kpVal ? (S.kpVal+'<span class="u">동</span>') : '<span class="ph">동 번호 입력</span>';
@@ -742,12 +787,23 @@
     const dg = $('#donggrid');
     DONGS.forEach(d=>{
       const b=document.createElement('button'); b.className='dchip'; b.dataset.d=d; b.textContent=d;
-      b.addEventListener('click',()=>{ S.draft.dong=d; renderSheet(); });
+      b.addEventListener('click',()=>{ if(S.draft.dong!==d){ S.draft.line=null; S.draft.lineTouched=false; } S.draft.dong=d; renderSheet(); });
       dg.appendChild(b);
     });
     const more=document.createElement('button'); more.className='dchip more'; more.textContent='직접 입력';
     more.addEventListener('click',()=>{ S.input='keypad'; S.kpVal=''; S.draft.dong=null; renderSheet(); });
     dg.appendChild(more);
+
+    const lw = $('#lines');
+    [1,2,3,4].forEach(n=>{
+      const b=document.createElement('button'); b.className='lchip'; b.dataset.line=n; b.textContent=n+'호';
+      b.addEventListener('click',()=>{ S.draft.line = (S.draft.line===n?null:n); S.draft.lineTouched=true; renderSheet(); });
+      lw.appendChild(b);
+    });
+    const nb=document.createElement('button'); nb.className='lchip none'; nb.dataset.line='';
+    nb.textContent='몰라요';
+    nb.addEventListener('click',()=>{ S.draft.line=null; S.draft.lineTouched=true; renderSheet(); });
+    lw.appendChild(nb);
 
     const kp = $('#kpad');
     ['1','2','3','4','5','6','7','8','9','지움','0','완료'].forEach(k=>{
@@ -777,7 +833,7 @@
     if(S.sc==='reserve'){ S.sentence = sentenceText(S.draft); saveReservation(); }
     else sendPickup(S.draft);
   });
-  $('#openFromRes').addEventListener('click',()=>{ S.draft={lvl:null,floor:null,dong:null}; openSheet(); });
+  $('#openFromRes').addEventListener('click',()=>{ S.draft={lvl:null,floor:null,dong:null,line:null}; openSheet(); });
   $('#editFromRes').addEventListener('click', openSheet);
   $('#resSubmit').addEventListener('click',()=>{
     if(!S.sentence) return;
