@@ -216,6 +216,21 @@
   .dreq-input::placeholder{color:#9da0ae}
   .dreq-mirror{display:block; white-space:pre-wrap; word-break:break-word; min-height:1.6em}
   .dreq-field.max .dreq-cnt b{color:#32a2fa}
+  /* 멀티라인·개행 Enter A/B 라이브 데모 */
+  .mldemo-wrap{position:relative; margin:10px 0 16px}
+  .mldemo{display:flex; gap:14px; flex-wrap:wrap}
+  .mlcol{flex:1 1 210px; min-width:200px}
+  .mlcap{font-size:12px; font-weight:700; margin:0 0 6px; color:var(--fg)}
+  .mlta{width:100%; box-sizing:border-box; font-family:inherit; font-size:13px; line-height:1.6; color:#111; background:#fff; border:1px solid #cfd3dc; border-radius:8px; padding:12px; resize:none; min-height:48px; max-height:132px; overflow-y:auto; display:block}
+  .mlta:focus{outline:none; border-color:#000}
+  .mlta::placeholder{color:#9da0ae}
+  .mlcnt{text-align:right; font-size:11px; color:#73788b; margin-top:6px}
+  .mlcnt b{color:#111}
+  .mlcnt.max b{color:#32a2fa}
+  .mlmeta{color:var(--muted)}
+  .mlhint{font-size:11px; color:var(--muted); margin:4px 0 0}
+  .mlflash{position:absolute; right:8px; bottom:100%; transform:translateY(6px); opacity:0; pointer-events:none; font-size:11px; font-weight:700; color:#fff; background:#1a9e5f; padding:4px 10px; border-radius:20px; transition:opacity .15s, transform .15s}
+  .mlflash.show{opacity:1; transform:translateY(-2px)}
   /* 복사 가능한 코드 카드 (JS가 pre를 감쌈) */
   .code{margin:10px 0 16px; border:1px solid #1e2740; border-radius:10px; overflow:hidden; background:#0f1626}
   .code-hd{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 10px 7px 14px; background:#141d33; border-bottom:1px solid #1e2740}
@@ -704,6 +719,67 @@ Button(
         <li><b>붙여넣기</b> — 한도 초과분 <b>절단</b>(전체 거부 X).</li>
         <li><b>clear / submit</b> — 트레일링 clear · 키보드 확정 콜백.</li>
       </ul>
+
+      <h3>멀티라인 · 개행(Enter) 처리</h3>
+      <p>Enter로 빈 줄을 만들면 <b>글자 수 대비 높이가 과하게 커지는</b> 문제가 있습니다. 표준 해법은 "높이를 <b>글자 수가 아니라 줄 수</b>에 맞추되 <b>maxHeight로 상한</b>을 두는 것" — 아래 4개 레버로 다룹니다.</p>
+      <ul>
+        <li><b>① maxHeight 상한 + 내부 스크롤</b>(필수) — Enter를 아무리 눌러도 <b>N줄(예: 6줄)에서 멈추고</b> 그 이상은 내부 스크롤. 무한 성장 차단.</li>
+        <li><b>② 줄 수에 맞춰 커지는 건 정상</b> — textarea는 사용자의 줄바꿈을 반영하는 게 정의(Material·iOS·GitHub 동일). 높이를 "글자 수 비례"로 바꾸지 말 것.</li>
+        <li><b>③ 개행(\n)을 한도에 카운트</b> — <code class="i">text.count</code>에 개행도 1자로 포함 → 100자 안에서 만들 수 있는 줄 수가 자연히 제한됨(빈 줄 = 1자 소모).</li>
+        <li><b>④ 커밋 시 과잉 공백 정리</b> — 입력 중엔 두고, <b>blur/제출 시점</b>에만 앞뒤 개행 trim + 연속 3줄 이상 빈 줄 1줄로 collapse. (타이핑 중 정리 X — 커서 튐)</li>
+      </ul>
+      <p>그리고 제품 판단 — <b>이 필드에 줄바꿈이 정말 필요한가?</b> 짧은 메모성 필드면 Enter를 제출로 돌려 문제를 원천 차단할 수 있습니다.</p>
+      <table>
+        <tr><th>방식</th><th>Enter 동작</th><th>적합</th></tr>
+        <tr><td><b>A. 멀티라인</b></td><td>줄바꿈 삽입 · maxHeight 캡 + 내부 스크롤</td><td>주소·상세 요청 등 줄 구분이 의미 있을 때</td></tr>
+        <tr><td><b>B. 소프트</b></td><td>제출/키보드 내림 · 줄바꿈은 <b>자동 wrap만</b></td><td>짧은 한 문단 요청. 높이 과다 <b>원천 차단</b></td></tr>
+      </table>
+
+      <div class="mldemo-wrap">
+        <p class="dreq-livelabel">⌨️ 직접 <b>Enter</b>를 눌러 비교해 보세요 <span class="dreq-livehint">— A는 줄바꿈으로 높이가 늘고(6줄에서 캡), B는 Enter가 막혀 높이가 안 늘어납니다</span></p>
+        <div class="mldemo">
+          <div class="mlcol">
+            <p class="mlcap">A. 멀티라인 (Enter = 줄바꿈)</p>
+            <textarea class="mlta" id="mlA" maxlength="100" placeholder="여기서 Enter를 눌러보세요">조용히 가주세요.</textarea>
+            <div class="mlcnt"><b id="mlAN">0</b>/100 <span class="mlmeta" id="mlALines">· 1줄</span></div>
+            <p class="mlhint">Enter → 줄바꿈 · 6줄 초과분은 내부 스크롤(높이 캡)</p>
+          </div>
+          <div class="mlcol">
+            <p class="mlcap">B. 소프트 (Enter = 제출)</p>
+            <textarea class="mlta" id="mlB" maxlength="100" placeholder="여기서 Enter를 눌러보세요">조용히 가주세요.</textarea>
+            <div class="mlcnt"><b id="mlBN">0</b>/100 <span class="mlmeta" id="mlBLines">· 1줄</span></div>
+            <p class="mlhint">Enter → 제출(줄바꿈 안 됨) · 높이는 wrap으로만 늘어남</p>
+          </div>
+        </div>
+        <span class="mlflash" id="mlFlash">제출됨 ✓</span>
+      </div>
+
+      <div class="plat ios">iOS · SwiftUI</div>
+<pre><code>// ④ 커밋(blur/제출) 시 과잉 공백 정리 — 입력 중엔 호출 X
+func normalize(_ s: String) -&gt; String {
+    s.trimmingCharacters(in: .whitespacesAndNewlines)
+     .replacingOccurrences(of: #"\n{3,}"#, with: "\n\n", options: .regularExpression)
+}
+
+// B. 소프트 멀티라인 — Enter를 제출로(줄바꿈 소비 안 함)
+TextField("", text: $text, axis: .vertical)
+    .lineLimit(1...6)                 // ① 최대 6줄에서 캡
+    .submitLabel(.done)
+    .onSubmit { commit() }            // Enter → 제출</code></pre>
+      <div class="plat aos">Android · Compose</div>
+<pre><code>// ④ 커밋 시 과잉 공백 정리
+fun normalize(s: String) =
+    s.trim().replace(Regex("\\n{3,}"), "\n\n")
+
+// B. 소프트 멀티라인 — Enter를 제출로
+BasicTextField(
+    value = text,
+    onValueChange = { if (it.count { c -&gt; c == '\n' } == 0) text = it }, // 개행 차단
+    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+    keyboardActions = KeyboardActions(onDone = { commit() }),
+    modifier = Modifier.heightIn(min = 48.dp, max = maxH),  // ① 캡
+)
+// A(멀티라인)는 개행 허용 + heightIn 캡 + verticalScroll로 초과분 스크롤.</code></pre>
 
       <div class="callout warn"><b>🔧 개발 수정 요청 2건</b> — 실기기 캡처 대조 결과 <b>① 100자 내 텍스트 잘림</b>, <b>② 카운터 하단 여백 과다</b>가 설계 의도와 다름. 화면예시·예시코드·수용기준은 <b>상단 탭 「개발 수정 요청」</b>에 정리했습니다.</div>
 
@@ -1277,6 +1353,37 @@ Box(Modifier.fillMaxWidth()) {
     ta.addEventListener('compositionend',function(){composing=false; clamp(); render();});
     ta.addEventListener('input',function(){ if(!composing) clamp(); render(); });
     render();
+  })();
+  // 개발 가이드 §텍스트 필드 — 멀티라인/개행 Enter A/B 라이브 데모
+  (function(){
+    var flash=document.getElementById('mlFlash'), flashT=null, LIMIT=100;
+    function setup(id,nId,linesId,blockEnter){
+      var t=document.getElementById(id); if(!t)return;
+      var nEl=document.getElementById(nId), linesEl=document.getElementById(linesId);
+      var cntBox=nEl.parentNode, composing=false;
+      function clamp(){ if(t.value.length>LIMIT) t.value=t.value.slice(0,LIMIT); }
+      function grow(){ t.style.height='auto'; t.style.height=Math.min(Math.max(t.scrollHeight,48),132)+'px'; }
+      function render(){
+        grow();
+        var n=Math.min(t.value.length,LIMIT), lines=t.value.split('\n').length;
+        nEl.textContent=n; if(linesEl)linesEl.textContent='· '+lines+'줄';
+        cntBox.classList.toggle('max',n>=LIMIT);
+      }
+      if(blockEnter){
+        t.addEventListener('keydown',function(e){
+          if(e.key==='Enter' && !e.isComposing && !composing){
+            e.preventDefault();               // B: Enter로 줄바꿈 안 됨 → 제출로 처리
+            if(flash){ flash.classList.add('show'); clearTimeout(flashT); flashT=setTimeout(function(){flash.classList.remove('show');},900); }
+          }
+        });
+      }
+      t.addEventListener('compositionstart',function(){composing=true;});
+      t.addEventListener('compositionend',function(){composing=false; clamp(); render();});
+      t.addEventListener('input',function(){ if(!composing) clamp(); render(); });
+      render();
+    }
+    setup('mlA','mlAN','mlALines',false); // A: Enter 줄바꿈 허용 + 높이 캡
+    setup('mlB','mlBN','mlBLines',true);  // B: Enter 제출(줄바꿈 차단)
   })();
   // 키보드 위로 버튼 올리기 — 실기기에서 입력 포커스 시 버튼이 키보드 위에 붙음(내리면 하단)
   var foot=document.querySelector('.foot');
