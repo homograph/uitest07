@@ -241,6 +241,11 @@
   .dc-lights i:nth-child(1){background:#ff5f57;} .dc-lights i:nth-child(2){background:#febc2e;} .dc-lights i:nth-child(3){background:#28c840;}
   .dc-title{font-size:13px;font-weight:700;color:#e6edf3;}
   .dc-badge{margin-left:auto;font-size:11px;font-weight:700;color:#7d8590;border:1px solid #30363d;border-radius:20px;padding:2px 9px;}
+  .dc-platform{display:flex;gap:6px;padding:10px 14px;background:#0d1117;border-bottom:1px solid #222b36;flex:0 0 auto;}
+  .pf-btn{font-family:inherit;font-size:12px;font-weight:700;color:#8b949e;background:#161b22;border:1px solid #30363d;
+    border-radius:7px;padding:6px 12px;cursor:pointer;transition:color .15s,background .15s,border-color .15s;}
+  .pf-btn:hover{color:#c9d1d9;border-color:#3d444d;}
+  .pf-btn.is-on{color:#fff;background:#1f6feb;border-color:#1f6feb;}
   .dc-body{flex:1 1 auto;overflow-y:auto;padding:18px 18px 40px;}
   .dc-body::-webkit-scrollbar{width:10px;} .dc-body::-webkit-scrollbar-thumb{background:#30363d;border-radius:6px;border:2px solid #0d1117;}
   .guide{margin-bottom:26px;}
@@ -380,8 +385,13 @@
       <header class="dc-head">
         <span class="dc-lights"><i></i><i></i><i></i></span>
         <span class="dc-title">개발 가이드 · 목적지 랜드마크</span>
-        <span class="dc-badge">PC only</span>
+        <span class="dc-badge">Native</span>
       </header>
+      <div class="dc-platform" id="dcPlatform" role="tablist">
+        <button class="pf-btn is-on" data-pf="ios" type="button">iOS · Swift</button>
+        <button class="pf-btn" data-pf="android" type="button">Android · Kotlin</button>
+        <button class="pf-btn" data-pf="web" type="button">Web · 참고</button>
+      </div>
       <div class="dc-body" id="dcBody"></div>
     </aside>
   </div>
@@ -702,54 +712,111 @@
   // ── 가이드 데이터 (확장형: 여기 push 하면 콘솔에 카드 추가) ──
   var GUIDES = [{
     title: '지오펜스 내 최근접 마커 확대 애니메이션',
-    summary: '지오펜스 안에서 지도를 드래그하는 동안, 화면 중앙(리티클)에 <b>가장 가까운 지정 마커</b>가 20px&nbsp;→&nbsp;28px로 부드럽게 커져 "여기서 스냅됨"을 예고합니다. 손을 떼면 원래 크기로 복귀합니다.',
+    summary: '지오펜스 안에서 지도(카메라)를 드래그하는 동안, 화면 중앙의 고정 리티클에 <b>가장 가까운 지정 마커</b>가 <b>20&nbsp;→&nbsp;28dp(pt)</b>로 커져 "여기서 선택됨"을 예고합니다. 손을 떼면(카메라 idle) 그 마커로 스냅됩니다.',
     sections: [
-      { h: '핵심 원리', p: 'JS는 <code class="inl">.near</code> 클래스만 토글하고 <b>크기 보간은 CSS transition</b>이 담당합니다. requestAnimationFrame 루프가 없어 코드가 단순하고, 프레임은 브라우저가 보장합니다.' },
-      { h: '중심 고정 트릭', p: '마커는 <code class="inl">top/left</code> + <b>음수 margin(크기의 절반)</b>으로 배치됩니다. 확대 시 margin도 <code class="inl">-10 → -14</code>로 함께 갱신 → 사방으로 균등하게 커져 마커가 <b>자기 좌표점 위에 그대로</b> 붙어 있습니다.' },
-      { h: '최근접 판정', p: '이동마다 <code class="inl">nearestOf()</code>가 각 마커 화면좌표와 중앙 앵커의 <b>제곱거리</b>를 비교합니다. 대소 비교엔 sqrt가 불필요하므로 생략해 가볍습니다.' },
-      { h: '지도 확대 대응(선택)', p: '핀치로 지도를 확대해도 마커 크기가 흔들리지 않도록, 마커에 <code class="inl">transform:scale(var(--inv))</code>(지도 배율의 역수)를 곱해 화면상 크기를 일정하게 유지합니다.' }
+      { h: '동작 개요', p: '지도를 드래그(카메라 이동)하는 동안 화면 중앙 고정 리티클에 최근접한 지정 마커가 20&nbsp;→&nbsp;28dp(pt)로 확대. 손을 떼면(카메라 idle) 그 마커로 스냅됩니다.' },
+      { h: '프레임워크 내장 애니메이션 사용', p: '매 프레임 수동 보간(<code class="inl">CADisplayLink</code> / <code class="inl">Choreographer</code>)은 불필요합니다. <b>선택된 마커 상태만 바꾸고</b> 크기 보간은 플랫폼에 위임 — iOS <code class="inl">UIView.animate</code>, Android <code class="inl">View.animate()</code>. 권장: <b>0.16s · ease-out</b>.' },
+      { h: '앵커=중앙이면 오프셋 불필요', p: '스케일 pivot이 뷰 중심(iOS <code class="inl">iconView</code> · Android View 모두 기본값)이면 커져도 마커가 좌표점에 고정됩니다. 웹 프로토는 음수 margin으로 수동 처리했지만 <b>네이티브 마커 스케일은 자동</b>입니다.' },
+      { h: '최근접 판정', p: '카메라 이동 콜백에서 각 마커를 <code class="inl">projection</code>으로 화면 좌표로 변환 → 화면 중앙과의 <b>제곱거리</b>를 비교합니다. 대소 비교엔 sqrt가 불필요합니다.' },
+      { h: '콜백 연결 (Naver Maps SDK)', p: 'iOS <code class="inl">NMFMapViewCameraDelegate</code>의 <code class="inl">mapViewCameraIsChanging</code>(이동 중) / <code class="inl">mapViewCameraIdle</code>(스냅), Android <code class="inl">addOnCameraChangeListener</code> / <code class="inl">addOnCameraIdleListener</code>. 이동 중 매번 호출되니 계산은 가볍게.' },
+      { h: 'Compose (선택)', p: '마커를 Compose로 그린다면 <code class="inl">val size by animateDpAsState(if (isNearest) 28.dp else 20.dp)</code> 한 줄로 대체할 수 있습니다.' }
     ],
     code: [
-      { lang: 'css', label: '마커 확대 트랜지션', src:
-".nmark{                       /* 지정 마커: 기본 20px */\n"+
-"  width:20px; height:20px;\n"+
-"  margin:-10px 0 0 -10px;     /* 음수 margin = 크기/2 → 중심을 자기 좌표에 고정 */\n"+
-"  border:2px solid #0086ea; border-radius:50%; background:#fff;\n"+
-"  /* 크기·margin 트랜지션 → 클래스 토글만으로 부드럽게 확대/축소 */\n"+
-"  transition:width .16s ease, height .16s ease, margin .16s ease, box-shadow .16s ease;\n"+
-"}\n"+
-".nmark.near{                  /* 최근접 마커 = 확대(28px) */\n"+
-"  width:28px; height:28px;\n"+
-"  margin:-14px 0 0 -14px;     /* margin도 14로 갱신 → 커져도 중심 그대로 */\n"+
-"  box-shadow:0 4px 12px rgba(0,148,249,.4);\n"+
+      { label: '① 최근접 마커 인덱스 (제곱거리)', variants: {
+        ios: { lang: 'swift', src:
+"// 지도 중앙(고정 리티클)에 가장 가까운 마커 인덱스\n"+
+"func nearestIndex(_ markers: [NMFMarker], in mapView: NMFMapView) -> Int {\n"+
+"    let center = CGPoint(x: mapView.bounds.midX, y: mapView.bounds.midY)\n"+
+"    var best = 0\n"+
+"    var bestDist = CGFloat.greatestFiniteMagnitude\n"+
+"    for (i, m) in markers.enumerated() {\n"+
+"        let p = mapView.projection.point(from: m.position)   // 월드 → 화면\n"+
+"        let dx = p.x - center.x, dy = p.y - center.y\n"+
+"        let d = dx*dx + dy*dy                                 // 제곱거리(sqrt 불필요)\n"+
+"        if d < bestDist { bestDist = d; best = i }\n"+
+"    }\n"+
+"    return best\n"+
 "}" },
-      { lang: 'js', label: '최근접 계산 + 클래스 토글', src:
-"// (1) 화면 중앙(리티클)에 가장 가까운 지정 마커의 인덱스\n"+
+        android: { lang: 'kotlin', src:
+"// 지도 중앙(고정 리티클)에 가장 가까운 마커 인덱스\n"+
+"fun nearestIndex(markers: List<Marker>, map: NaverMap, mapView: MapView): Int {\n"+
+"    val cx = mapView.width / 2f\n"+
+"    val cy = mapView.height / 2f\n"+
+"    var best = 0\n"+
+"    var bestDist = Float.MAX_VALUE\n"+
+"    markers.forEachIndexed { i, m ->\n"+
+"        val p = map.projection.toScreenLocation(m.position)  // 월드 → 화면\n"+
+"        val dx = p.x - cx; val dy = p.y - cy\n"+
+"        val d = dx * dx + dy * dy                            // 제곱거리(sqrt 불필요)\n"+
+"        if (d < bestDist) { bestDist = d; best = i }\n"+
+"    }\n"+
+"    return best\n"+
+"}" },
+        web: { lang: 'js', src:
+"// 화면 중앙(리티클)에 가장 가까운 마커 인덱스 — 이 프로토타입 구현\n"+
 "function nearestOf(list){\n"+
 "  var best = 0, bd = Infinity;\n"+
 "  for (var i = 0; i < list.length; i++){\n"+
-"    var sx = list[i].wx * scale + tx;   // 월드 좌표 → 화면 좌표\n"+
+"    var sx = list[i].wx * scale + tx;   // 월드 → 화면\n"+
 "    var sy = list[i].wy * scale + ty;\n"+
 "    var d  = (sx-ANCHOR.x)*(sx-ANCHOR.x) + (sy-ANCHOR.y)*(sy-ANCHOR.y);\n"+
-"    if (d < bd){ bd = d; best = i; }    // 제곱거리 최소 = 최근접\n"+
+"    if (d < bd){ bd = d; best = i; }    // 제곱거리 최소\n"+
 "  }\n"+
 "  return best;\n"+
-"}\n\n"+
-"// (2) 그 마커에만 .near 부여, 나머지는 해제 → 크기 보간은 CSS\n"+
+"}" }
+      }},
+      { label: '② 최근접 마커 확대 + 카메라 콜백', variants: {
+        ios: { lang: 'swift', src:
+"// 최근접 마커만 20 → 28pt로 확대 (scale 1.4). 앵커=중앙이라 좌표점 고정\n"+
+"func highlightNearest(_ idx: Int) {\n"+
+"    UIView.animate(withDuration: 0.16, delay: 0,\n"+
+"                   options: [.curveEaseOut, .beginFromCurrentState]) {\n"+
+"        for (i, marker) in self.markers.enumerated() {\n"+
+"            let s: CGFloat = (i == idx) ? 1.4 : 1.0          // 20pt * 1.4 = 28pt\n"+
+"            marker.iconView?.transform = CGAffineTransform(scaleX: s, y: s)\n"+
+"        }\n"+
+"    }\n"+
+"}\n"+
+"\n"+
+"extension MapVC: NMFMapViewCameraDelegate {\n"+
+"    func mapViewCameraIsChanging(_ mapView: NMFMapView, byReason r: Int) {\n"+
+"        highlightNearest(nearestIndex(markers, in: mapView))  // 이동마다 갱신\n"+
+"    }\n"+
+"    func mapViewCameraIdle(_ mapView: NMFMapView) {\n"+
+"        snap(to: markers[nearestIndex(markers, in: mapView)]) // 손 떼면 스냅\n"+
+"    }\n"+
+"}" },
+        android: { lang: 'kotlin', src:
+"// 최근접 마커만 20 → 28dp로 확대 (scale 1.4). pivot=View 중심이라 좌표점 고정\n"+
+"fun highlightNearest(idx: Int) {\n"+
+"    markerViews.forEachIndexed { i, view ->\n"+
+"        val s = if (i == idx) 1.4f else 1f                   // 20dp * 1.4 = 28dp\n"+
+"        view.animate().scaleX(s).scaleY(s)\n"+
+"            .setDuration(160)\n"+
+"            .setInterpolator(DecelerateInterpolator())\n"+
+"            .start()\n"+
+"    }\n"+
+"}\n"+
+"\n"+
+"// 이동 중 매번 갱신, 손 떼면(idle) 스냅\n"+
+"naverMap.addOnCameraChangeListener { _, _ ->\n"+
+"    highlightNearest(nearestIndex(markers, naverMap, mapView))\n"+
+"}\n"+
+"naverMap.addOnCameraIdleListener {\n"+
+"    snapTo(markers[nearestIndex(markers, naverMap, mapView)])\n"+
+"}" },
+        web: { lang: 'js', src:
+"// 그 마커에만 .near 부여 → 크기 보간은 CSS transition (이 프로토타입)\n"+
 "function markInsideNear(idx){\n"+
 "  nmarks.forEach(function(el, i){ el.classList.toggle('near', i === idx); });\n"+
-"}\n\n"+
-"// (3) 드래그(패닝) 중 매 이동마다 호출 — 지오펜스 안일 때만 확대\n"+
-"function liveMark(){\n"+
-"  var inGeofence = phone.classList.contains('geo-on');\n"+
-"  markInsideNear(inGeofence ? nearestOf(INSIDE) : -1);\n"+
 "}\n"+
-"screen.addEventListener('pointermove', function(e){\n"+
-"  /* ...지도 translate 갱신... */\n"+
-"  liveMark();\n"+
-"});\n\n"+
-"// (4) 손을 떼면 확대 해제 → 같은 transition으로 원래 20px 복귀\n"+
-"function onUp(){ markInsideNear(-1); doSnap(); }" }
+"// 드래그 중 매 이동마다 (지오펜스 안일 때만)\n"+
+"screen.addEventListener('pointermove', function(){\n"+
+"  var inGeo = phone.classList.contains('geo-on');\n"+
+"  markInsideNear(inGeo ? nearestOf(INSIDE) : -1);\n"+
+"});\n"+
+"// CSS: .nmark{transition:width .16s,height .16s,margin .16s}  .nmark.near{width:28px;height:28px;margin:-14px}" }
+      }}
     ],
     demo: 'markerNear'
   }];
@@ -758,7 +825,7 @@
   function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function hl(code){
     return esc(code).replace(
-      /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)|\b(function|return|var|let|const|if|else|for|while|new|typeof|true|false|null|this|Infinity)\b|(\b\d+(?:\.\d+)?(?:px|s|ms)?\b)/g,
+      /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)|\b(func|fun|let|var|val|const|function|return|if|else|guard|for|in|while|when|class|struct|extension|override|self|this|new|typeof|is|as|true|false|nil|null|Int|Float|CGFloat|Bool|CGPoint|CGSize|CGAffineTransform|NMFMarker|NMFMapView|NaverMap|MapView|Marker|List|UIView|Infinity)\b|(\b\d+(?:\.\d+)?f?(?:px|pt|dp|s|ms)?\b)/g,
       function(m,c,s,kw,n){
         if(c) return '<span class="t-com">'+c+'</span>';
         if(s) return '<span class="t-str">'+s+'</span>';
@@ -767,12 +834,12 @@
         return m;
       });
   }
-  function codeBlock(cb){
+  function codeBlock(v, label){
     return '<div class="codewrap"><div class="code-bar">'
-      + '<span class="code-lang">'+cb.lang+'</span>'
-      + '<span class="code-label">'+esc(cb.label||'')+'</span>'
+      + '<span class="code-lang">'+v.lang+'</span>'
+      + '<span class="code-label">'+esc(label||'')+'</span>'
       + '<button class="code-copy" type="button">복사</button></div>'
-      + '<pre class="code"><code>'+hl(cb.src)+'</code></pre></div>';
+      + '<pre class="code"><code>'+hl(v.src)+'</code></pre></div>';
   }
 
   // ── 라이브 데모: 최근접 마커 확대 (독립 실행) ──
@@ -806,17 +873,30 @@
     apply(); upd();
   }
 
-  // ── 렌더 ──
-  GUIDES.forEach(function(g, gi){
-    var el = document.createElement('section'); el.className='guide';
-    var html = '<h3 class="guide-title"><span class="gnum">'+(gi+1)+'</span>'+esc(g.title)+'</h3>'
-      + '<p class="guide-sum">'+g.summary+'</p>';
-    (g.sections||[]).forEach(function(s){ html += '<div class="guide-sec"><h4>'+esc(s.h)+'</h4><p>'+s.p+'</p></div>'; });
-    (g.code||[]).forEach(function(cb){ html += codeBlock(cb); });
-    el.innerHTML = html;
-    if(g.demo) el.appendChild(buildDemo(g.demo));
-    body.appendChild(el);
+  // ── 렌더 (플랫폼별) ──
+  var platform = 'ios';
+  function render(){
+    body.innerHTML = '';
+    GUIDES.forEach(function(g, gi){
+      var el = document.createElement('section'); el.className='guide';
+      var html = '<h3 class="guide-title"><span class="gnum">'+(gi+1)+'</span>'+esc(g.title)+'</h3>'
+        + '<p class="guide-sum">'+g.summary+'</p>';
+      (g.sections||[]).forEach(function(s){ html += '<div class="guide-sec"><h4>'+esc(s.h)+'</h4><p>'+s.p+'</p></div>'; });
+      (g.code||[]).forEach(function(cb){ var v = cb.variants[platform] || cb.variants.web; html += codeBlock(v, cb.label); });
+      el.innerHTML = html;
+      if(g.demo) el.appendChild(buildDemo(g.demo));
+      body.appendChild(el);
+    });
+  }
+  // 플랫폼 전환 탭 (iOS / Android / Web)
+  var pf = document.getElementById('dcPlatform');
+  if(pf) pf.addEventListener('click', function(e){
+    var b = e.target.closest('.pf-btn'); if(!b) return;
+    platform = b.getAttribute('data-pf');
+    pf.querySelectorAll('.pf-btn').forEach(function(x){ x.classList.toggle('is-on', x === b); });
+    render();
   });
+  render();
 
   // ── 복사 버튼 ──
   body.addEventListener('click', function(e){
