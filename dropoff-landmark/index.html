@@ -193,26 +193,6 @@
     transition:background .18s ease, color .18s ease;cursor:pointer;}
   .phone.dragging .cta{background:var(--btn-disabled-bg);color:var(--btn-disabled-tx);pointer-events:none;}
 
-  .hint{position:absolute;left:50%;top:60px;transform:translateX(-50%);z-index:36;
-    background:rgba(23,26,36,.82);color:#fff;font-size:12.5px;font-weight:500;
-    padding:7px 14px;border-radius:16px;white-space:nowrap;pointer-events:none;
-    transition:opacity .3s ease;box-shadow:0 4px 12px rgba(0,0,0,.2);}
-  .phone.dragging .hint{opacity:0;}
-  .phone.used .hint{opacity:0;}
-  .phone.wheelmode .hint{opacity:0;}
-
-  /* snap confirmation toast */
-  .toast{position:absolute;left:50%;top:56px;transform:translate(-50%,-8px);z-index:37;
-    display:flex;align-items:center;gap:7px;
-    background:rgba(23,26,36,.9);color:#fff;font-size:13px;font-weight:600;letter-spacing:-.2px;
-    padding:9px 16px 9px 11px;border-radius:20px;white-space:nowrap;pointer-events:none;
-    opacity:0;transition:opacity .25s ease, transform .25s cubic-bezier(.22,.61,.36,1);
-    box-shadow:0 6px 18px rgba(0,0,0,.28);}
-  .toast .tick{width:18px;height:18px;border-radius:50%;background:#25c26e;color:#fff;
-    display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:0 0 auto;}
-  .phone.toasting .toast{opacity:1;transform:translate(-50%,0);}
-  .phone.toasting .hint{opacity:0;}
-  .phone.dragging .toast{opacity:0;transform:translate(-50%,-8px);}
 </style>
 </head>
 <body>
@@ -260,11 +240,6 @@
 
         <!-- current location button -->
         <button class="cloc" aria-label="현재 위치"><img class="cloc-ic" src="data:image/png;base64,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" alt="" draggable="false"></button>
-
-        <!-- hint -->
-        <div class="hint" id="hint">지도를 움직여 하차 지점을 선택하세요</div>
-        <!-- snap confirmation toast -->
-        <div class="toast" id="toast"><span class="tick">✓</span><span>추천 하차지로 조정되었습니다.</span></div>
 
         <!-- status bar -->
         <div class="statusbar">
@@ -437,9 +412,6 @@
     return changed;
   }
 
-  function showToast(){ phone.classList.add('toasting');
-    if(toastTimer)clearTimeout(toastTimer);
-    toastTimer=setTimeout(function(){ phone.classList.remove('toasting'); toastTimer=null; },2000); }
 
   // ── wheel → select inside marker (+ optionally recenter map) ──
   function scrollWheelTo(i, recenter){
@@ -503,18 +475,13 @@
   var segctl = document.getElementById('segctl');
   var wtitleB = document.querySelector('.sheet-wheel .wtitle b');
   var ctaW = document.getElementById('ctaW'), ctaS = document.getElementById('cta');
-  var hintEl = document.getElementById('hint');
-  var toastTxt = document.querySelector('.toast span:last-child');
   function setDepartMode(origin){
     phone.classList.toggle('mode-origin', origin);
     var noun = origin ? '출발지' : '목적지';
-    var verb = origin ? '탑승' : '하차';
     badgeText.textContent = noun;
     if(wtitleB) wtitleB.textContent = origin ? '지정된 위치에서 탑승하세요' : '하차 위치를 선택해주세요';
     if(ctaW) ctaW.textContent = noun + ' 설정 완료';
     if(ctaS) ctaS.textContent = noun + ' 설정 완료';
-    if(hintEl) hintEl.textContent = '지도를 움직여 ' + verb + ' 지점을 선택하세요';
-    if(toastTxt) toastTxt.textContent = '추천 ' + verb + '지로 조정되었습니다.';
     segctl.querySelectorAll('.seg').forEach(function(b){
       b.classList.toggle('is-on', (b.getAttribute('data-mode')==='origin')===origin);
     });
