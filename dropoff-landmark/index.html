@@ -9,7 +9,8 @@
     color-scheme: light;
     --white:#ffffff;
     --blue-500:#0094f9; --blue-600:#0086ea; --tada-blue:#32a2fa;
-    --navy:#19254d; --navy-marker:#293f71; --marker-ring:#0094f9; --marker-near:#32a2fa; --navy-ico:#283873;
+    --navy:#19254d; --navy-marker:#293f71; --marker-ring:#0094f9; --marker-near:#32a2fa;
+    --pin-dest:#0094f9;   /* 목적지(하차) 드래그 핀 = 파랑. (출발지 핀은 네이비 #283873 — 이 프로토는 목적지) */
     --gray-950:#171a24; --gray-900:#262a38; --gray-600:#60667a; --gray-400:#868b9c;
     --gray-100:#d5d7dc; --gray-80:#e3e4e8; --gray-30:#f5f6f7;
     --btn-disabled-bg:#99a5c0; --btn-disabled-tx:#c0c8d9;
@@ -86,7 +87,7 @@
   /* 패닝 중 최근접 마커 = 확대(18→24px), 디자인은 미선택 파란 중앙점 유지 (Figma 10047:20155) */
   .nmark.near{width:24px;height:24px;margin:-12px 0 0 -12px;box-shadow:0 4px 12px rgba(0,148,249,.4);}
   .nmark.sel{border-color:var(--blue-500);box-shadow:0 5px 14px rgba(0,134,234,.5);}  /* 링은 동일 #0094f9 */
-  .nmark.sel::after{background:#101a3d;}   /* 선택 마커 중앙 점 = 진네이비 (Figma 변경 스펙) */
+  .nmark.sel::after{background:var(--blue-600);}   /* 선택 마커 중앙 점 = #0086ea (Figma ic_number select 상태, 목적지=파랑) */
 
   /* ── wheel picker panel (inside-geofence designated points) ── */
   .sheet-wheel{display:none;}
@@ -129,14 +130,14 @@
   .badge{background:var(--blue-500);border:1px solid var(--blue-600);border-radius:24px;
     padding:3px 10px;color:#fff;font-weight:700;font-size:13px;line-height:1.5;white-space:nowrap;
     box-shadow:0 1px 3px rgba(20,30,55,.18);}
-  .badge-stem{width:3px;height:14px;background:#101a3d;}  /* Figma: 네이비 stem, pill→마커중앙까지 */
+  .badge-stem{width:3px;height:14px;background:var(--blue-500);}  /* Figma 41425: 목적지=파란 stem(pill→마커중앙까지) */
 
-  /* 선택 마커 = 파란 링(아래) + 네이비 stem(관통) + 네이비 중앙 점(위) — Frame 41425 구조 */
+  /* 선택 마커 = 파란 링(아래) + 파란 stem(관통) + 파란 중앙 점(위) — Frame 41425 목적지 구조 */
   .reticle-ring{position:absolute;left:0;top:0;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;
     background:#fff;border:2px solid var(--blue-500);box-shadow:0 2px 5px rgba(20,30,55,.22);
     transition:opacity .16s ease;}
   .reticle-center{position:absolute;left:0;top:0;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;
-    background:#101a3d;transition:opacity .16s ease;}
+    background:var(--blue-600);transition:opacity .16s ease;}
   .phone.dragging .reticle-ring, .phone.dragging .reticle-center{opacity:0;}
   /* 랜드마크(지오펜스 안)에서만 파란 링 표시. 밖(비랜드마크)=네이비 점만 (Figma 안/밖 마커 차이) */
   .phone:not(.geo-on) .reticle-ring{opacity:0;}
@@ -145,11 +146,11 @@
   .pin-wrap{position:absolute;left:0;bottom:0;transform:translate(-50%,0);
     display:flex;flex-direction:column;align-items:center;
     opacity:0;transition:opacity .16s ease, transform .2s cubic-bezier(.22,.61,.36,1);}
-  .pin-head{width:26px;height:26px;border-radius:50%;background:var(--navy-ico);
+  .pin-head{width:26px;height:26px;border-radius:50%;background:var(--pin-dest);
     display:flex;align-items:center;justify-content:center;box-shadow:0 6px 16px rgba(40,56,115,.5);}
   .pin-head::after{content:"";width:9px;height:9px;border-radius:50%;background:#fff;}
-  .pin-stem{width:3px;height:13px;background:var(--navy-ico);}
-  .pin-base{width:10px;height:4px;border-radius:50%;background:var(--navy-ico);opacity:.55;margin-top:2px;}
+  .pin-stem{width:3px;height:13px;background:var(--pin-dest);}
+  .pin-base{width:10px;height:4px;border-radius:50%;background:var(--pin-dest);opacity:.55;margin-top:2px;}
 
   /* state toggles */
   /* 스냅 즉시 핀→마커 전환: snapping 중엔 핀 숨김·마커 표시(지도만 슬라이드). dragging 때만 핀 표시 */
