@@ -153,16 +153,17 @@
 
   /* ── 출발지/목적지 전환 세그먼트 컨트롤 (지도 상단 플로팅) ── */
   .segwrap{position:absolute;left:50%;z-index:40;transform:translateX(-50%);
-    top:52px;/* 상태바 아래, JS layout()에서 미세조정 */}
-  .segctl{display:flex;gap:2px;padding:3px;border-radius:999px;
-    background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
-    border:1px solid rgba(20,30,55,.08);box-shadow:0 3px 10px rgba(20,30,55,.16);}
+    top:40px;/* 상태바 바로 아래 (더 위로) */}
+  .segctl{display:flex;gap:2px;padding:2px;border-radius:999px;
+    background:rgba(255,255,255,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    border:1px solid rgba(20,30,55,.04);box-shadow:0 1px 4px rgba(20,30,55,.07);}
   .seg{appearance:none;-webkit-appearance:none;border:0;background:transparent;cursor:pointer;
-    font-family:inherit;font-size:13px;font-weight:700;line-height:1;color:var(--gray-600);
-    padding:7px 15px;border-radius:999px;white-space:nowrap;
+    font-family:inherit;font-size:12px;font-weight:600;line-height:1;color:var(--gray-400);
+    padding:5px 12px;border-radius:999px;white-space:nowrap;
     transition:color .18s ease, background .18s ease;}
-  .phone.mode-origin .seg.is-on{background:#101a3d;color:#fff;}     /* 출발지 선택 = 네이비 */
-  .phone:not(.mode-origin) .seg.is-on{background:var(--blue-500);color:#fff;}  /* 목적지 선택 = 파랑 */
+  /* 선택 표시는 유지하되 대비를 낮춤: 반투명 채움 */
+  .phone.mode-origin .seg.is-on{background:rgba(16,26,61,.62);color:#fff;}      /* 출발지 선택 = 네이비(연) */
+  .phone:not(.mode-origin) .seg.is-on{background:rgba(0,148,249,.68);color:#fff;}  /* 목적지 선택 = 파랑(연) */
 
   /* 출발지 모드: 드래그 핀·뱃지·stem = 네이비 (지도 마커 링/중앙점은 파랑 공유) */
   .phone.mode-origin{--pin-dest:#283873;}
