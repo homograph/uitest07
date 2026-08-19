@@ -95,8 +95,7 @@
   .phone.wheelmode .sheet-wheel{display:block;}
   .phone.wheelmode .sheet-single{display:none;}
   .phone.dragging .sheet-wheel{opacity:.45;}
-  .draghandle{width:36px;height:4px;border-radius:2px;background:#e3e4e8;margin:10px auto 2px;}
-  .wtitle{display:flex;align-items:center;justify-content:center;padding:12px 24px 4px;}
+  .wtitle{display:flex;align-items:center;justify-content:center;padding:24px 24px 4px;}
   .wtitle b{font-size:18px;font-weight:700;color:#262a38;}
   .wclose{border:0;background:none;padding:4px;cursor:pointer;line-height:0;color:#000;flex:0 0 auto;}
   .wclose svg{display:block;}
@@ -276,7 +275,6 @@
         <div class="sheet">
           <!-- wheel picker (reticle inside geofence = 지정 하차지) -->
           <div class="sheet-wheel">
-            <div class="draghandle"></div>
             <div class="wtitle"><b>하차 위치를 선택해주세요</b></div>
             <div class="wheel">
               <ul class="wlist" id="wlist"></ul>
@@ -511,7 +509,7 @@
     var noun = origin ? '출발지' : '목적지';
     var verb = origin ? '탑승' : '하차';
     badgeText.textContent = noun;
-    if(wtitleB) wtitleB.textContent = verb + ' 위치를 선택해주세요';
+    if(wtitleB) wtitleB.textContent = origin ? '지정된 위치에서 탑승하세요' : '하차 위치를 선택해주세요';
     if(ctaW) ctaW.textContent = noun + ' 설정 완료';
     if(ctaS) ctaS.textContent = noun + ' 설정 완료';
     if(hintEl) hintEl.textContent = '지도를 움직여 ' + verb + ' 지점을 선택하세요';
