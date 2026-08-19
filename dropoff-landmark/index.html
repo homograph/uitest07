@@ -221,6 +221,61 @@
   .redash{position:absolute;left:0;top:0;margin:-2px 0 0 -40px;width:34px;height:0;z-index:5;
     display:none;border-top:3px dotted #283873;}
   .phone.mode-origin:not(.geo-on):not(.dragging) .redash{display:block;}
+  /* ═══════════ PC 전용 개발 가이드 콘솔 (프로토타입 영역 밖, 모바일/좁은 폭 숨김) ═══════════ */
+  .devconsole{display:none;}
+  @media (min-width:1000px) and (min-height:860px){
+    .stage{gap:28px;}
+    .devconsole{display:flex;flex-direction:column;flex:0 0 auto;
+      width:544px;height:820px;border-radius:16px;overflow:hidden;text-align:left;
+      background:#0d1117;color:#c9d1d9;border:1px solid #222b36;box-shadow:0 24px 60px rgba(10,15,30,.28);
+      font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;}
+  }
+  .dc-head{display:flex;align-items:center;gap:8px;padding:13px 16px;background:#161b22;border-bottom:1px solid #222b36;flex:0 0 auto;}
+  .dc-lights{display:flex;gap:7px;margin-right:6px;}
+  .dc-lights i{width:11px;height:11px;border-radius:50%;display:block;}
+  .dc-lights i:nth-child(1){background:#ff5f57;} .dc-lights i:nth-child(2){background:#febc2e;} .dc-lights i:nth-child(3){background:#28c840;}
+  .dc-title{font-size:13px;font-weight:700;color:#e6edf3;}
+  .dc-badge{margin-left:auto;font-size:11px;font-weight:700;color:#7d8590;border:1px solid #30363d;border-radius:20px;padding:2px 9px;}
+  .dc-body{flex:1 1 auto;overflow-y:auto;padding:18px 18px 40px;}
+  .dc-body::-webkit-scrollbar{width:10px;} .dc-body::-webkit-scrollbar-thumb{background:#30363d;border-radius:6px;border:2px solid #0d1117;}
+  .guide{margin-bottom:26px;}
+  .guide-title{font-size:16px;font-weight:800;color:#f0f6fc;margin:0 0 6px;line-height:1.4;}
+  .guide-title .gnum{display:inline-block;min-width:22px;height:22px;line-height:22px;text-align:center;font-size:12px;
+    background:#1f6feb;color:#fff;border-radius:6px;margin-right:8px;vertical-align:2px;}
+  .guide-sum{font-size:13px;color:#adbac7;line-height:1.6;margin:0 0 14px;}
+  .guide-sec{margin:0 0 12px;}
+  .guide-sec h4{font-size:12.5px;font-weight:700;color:#79c0ff;margin:0 0 5px;letter-spacing:.2px;}
+  .guide-sec p{font-size:12.5px;color:#adbac7;line-height:1.65;margin:0;}
+  .guide-sec code.inl{background:#1f2937;color:#e6edf3;padding:1px 5px;border-radius:4px;font-family:"SF Mono",ui-monospace,Menlo,monospace;font-size:11.5px;}
+  .codewrap{position:relative;margin:8px 0 14px;border:1px solid #222b36;border-radius:10px;overflow:hidden;background:#010409;}
+  .code-bar{display:flex;align-items:center;padding:7px 12px;background:#12171f;border-bottom:1px solid #1c2530;}
+  .code-lang{font-size:11px;font-weight:700;color:#8b949e;text-transform:uppercase;letter-spacing:.5px;}
+  .code-label{font-size:11.5px;color:#c9d1d9;margin-left:8px;}
+  .code-copy{margin-left:auto;font:inherit;font-size:11px;font-weight:700;color:#adbac7;background:#21262d;border:1px solid #30363d;
+    border-radius:6px;padding:3px 10px;cursor:pointer;transition:background .15s,color .15s;}
+  .code-copy:hover{background:#30363d;color:#fff;} .code-copy.done{color:#3fb950;border-color:#238636;}
+  pre.code{margin:0;padding:13px 14px;overflow-x:auto;font-family:"SF Mono",ui-monospace,Menlo,Consolas,monospace;
+    font-size:12px;line-height:1.65;color:#c9d1d9;tab-size:2;}
+  pre.code::-webkit-scrollbar{height:9px;} pre.code::-webkit-scrollbar-thumb{background:#30363d;border-radius:6px;}
+  .t-com{color:#8b949e;font-style:italic;} .t-str{color:#a5d6ff;} .t-kw{color:#ff7b72;} .t-num{color:#79c0ff;} .t-fn{color:#d2a8ff;}
+  /* 라이브 데모 (독립 실행 — 실제 프로토타입과 무관) */
+  .demo{border:1px solid #222b36;border-radius:10px;overflow:hidden;margin:8px 0 6px;background:#0b1017;}
+  .demo-bar{display:flex;align-items:center;gap:8px;padding:7px 12px;background:#12171f;border-bottom:1px solid #1c2530;}
+  .demo-bar b{font-size:11.5px;color:#e6edf3;font-weight:700;} .demo-bar span{font-size:11px;color:#7d8590;}
+  .demo-map{position:relative;height:230px;overflow:hidden;background:
+    linear-gradient(#0f1620,#0f1620) padding-box,repeating-linear-gradient(0deg,#141c27 0 1px,transparent 1px 26px),
+    repeating-linear-gradient(90deg,#141c27 0 1px,transparent 1px 26px);background-color:#0f1620;cursor:grab;touch-action:none;}
+  .demo-map:active{cursor:grabbing;}
+  .demo-world{position:absolute;inset:0;will-change:transform;}
+  .demo-mark{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:#fff;
+    border:2px solid #0086ea;box-shadow:0 2px 6px rgba(0,0,0,.5);
+    transition:width .16s ease,height .16s ease,margin .16s ease,box-shadow .16s ease;}
+  .demo-mark::after{content:"";position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;border-radius:50%;background:#0086ea;}
+  .demo-mark.near{width:28px;height:28px;margin:-14px 0 0 -14px;box-shadow:0 4px 14px rgba(0,148,249,.6);}
+  .demo-reticle{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;
+    border:2px dashed #f0803c;pointer-events:none;}
+  .demo-reticle::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:#f0803c;}
+  .demo-hint{padding:8px 12px;font-size:11px;color:#7d8590;border-top:1px solid #1c2530;background:#0b1017;}
 </style>
 </head>
 <body>
@@ -314,6 +369,16 @@
 
       </div>
     </div>
+
+    <!-- ═══ PC 전용 개발 가이드 콘솔 (프로토타입 밖) ═══ -->
+    <aside class="devconsole" id="devconsole" aria-label="개발 가이드">
+      <header class="dc-head">
+        <span class="dc-lights"><i></i><i></i><i></i></span>
+        <span class="dc-title">개발 가이드 · 목적지 랜드마크</span>
+        <span class="dc-badge">PC only</span>
+      </header>
+      <div class="dc-body" id="dcBody"></div>
+    </aside>
   </div>
 
 <script>
@@ -620,6 +685,142 @@
   var ctaS=document.getElementById('cta'), ctaW=document.getElementById('ctaW');
   if(ctaS) ctaS.addEventListener('click', function(){ ctaClick(this); });
   if(ctaW) ctaW.addEventListener('click', function(){ ctaClick(this); });
+})();
+</script>
+
+<!-- ═══ 개발 가이드 콘솔 (PC 전용, 프로토타입 로직과 독립) ═══ -->
+<script>
+(function(){
+  var body = document.getElementById('dcBody');
+  if(!body) return;
+
+  // ── 가이드 데이터 (확장형: 여기 push 하면 콘솔에 카드 추가) ──
+  var GUIDES = [{
+    title: '지오펜스 내 최근접 마커 확대 애니메이션',
+    summary: '지오펜스 안에서 지도를 드래그하는 동안, 화면 중앙(리티클)에 <b>가장 가까운 지정 마커</b>가 20px&nbsp;→&nbsp;28px로 부드럽게 커져 "여기서 스냅됨"을 예고합니다. 손을 떼면 원래 크기로 복귀합니다.',
+    sections: [
+      { h: '핵심 원리', p: 'JS는 <code class="inl">.near</code> 클래스만 토글하고 <b>크기 보간은 CSS transition</b>이 담당합니다. requestAnimationFrame 루프가 없어 코드가 단순하고, 프레임은 브라우저가 보장합니다.' },
+      { h: '중심 고정 트릭', p: '마커는 <code class="inl">top/left</code> + <b>음수 margin(크기의 절반)</b>으로 배치됩니다. 확대 시 margin도 <code class="inl">-10 → -14</code>로 함께 갱신 → 사방으로 균등하게 커져 마커가 <b>자기 좌표점 위에 그대로</b> 붙어 있습니다.' },
+      { h: '최근접 판정', p: '이동마다 <code class="inl">nearestOf()</code>가 각 마커 화면좌표와 중앙 앵커의 <b>제곱거리</b>를 비교합니다. 대소 비교엔 sqrt가 불필요하므로 생략해 가볍습니다.' },
+      { h: '지도 확대 대응(선택)', p: '핀치로 지도를 확대해도 마커 크기가 흔들리지 않도록, 마커에 <code class="inl">transform:scale(var(--inv))</code>(지도 배율의 역수)를 곱해 화면상 크기를 일정하게 유지합니다.' }
+    ],
+    code: [
+      { lang: 'css', label: '마커 확대 트랜지션', src:
+".nmark{                       /* 지정 마커: 기본 20px */\n"+
+"  width:20px; height:20px;\n"+
+"  margin:-10px 0 0 -10px;     /* 음수 margin = 크기/2 → 중심을 자기 좌표에 고정 */\n"+
+"  border:2px solid #0086ea; border-radius:50%; background:#fff;\n"+
+"  /* 크기·margin 트랜지션 → 클래스 토글만으로 부드럽게 확대/축소 */\n"+
+"  transition:width .16s ease, height .16s ease, margin .16s ease, box-shadow .16s ease;\n"+
+"}\n"+
+".nmark.near{                  /* 최근접 마커 = 확대(28px) */\n"+
+"  width:28px; height:28px;\n"+
+"  margin:-14px 0 0 -14px;     /* margin도 14로 갱신 → 커져도 중심 그대로 */\n"+
+"  box-shadow:0 4px 12px rgba(0,148,249,.4);\n"+
+"}" },
+      { lang: 'js', label: '최근접 계산 + 클래스 토글', src:
+"// (1) 화면 중앙(리티클)에 가장 가까운 지정 마커의 인덱스\n"+
+"function nearestOf(list){\n"+
+"  var best = 0, bd = Infinity;\n"+
+"  for (var i = 0; i < list.length; i++){\n"+
+"    var sx = list[i].wx * scale + tx;   // 월드 좌표 → 화면 좌표\n"+
+"    var sy = list[i].wy * scale + ty;\n"+
+"    var d  = (sx-ANCHOR.x)*(sx-ANCHOR.x) + (sy-ANCHOR.y)*(sy-ANCHOR.y);\n"+
+"    if (d < bd){ bd = d; best = i; }    // 제곱거리 최소 = 최근접\n"+
+"  }\n"+
+"  return best;\n"+
+"}\n\n"+
+"// (2) 그 마커에만 .near 부여, 나머지는 해제 → 크기 보간은 CSS\n"+
+"function markInsideNear(idx){\n"+
+"  nmarks.forEach(function(el, i){ el.classList.toggle('near', i === idx); });\n"+
+"}\n\n"+
+"// (3) 드래그(패닝) 중 매 이동마다 호출 — 지오펜스 안일 때만 확대\n"+
+"function liveMark(){\n"+
+"  var inGeofence = phone.classList.contains('geo-on');\n"+
+"  markInsideNear(inGeofence ? nearestOf(INSIDE) : -1);\n"+
+"}\n"+
+"screen.addEventListener('pointermove', function(e){\n"+
+"  /* ...지도 translate 갱신... */\n"+
+"  liveMark();\n"+
+"});\n\n"+
+"// (4) 손을 떼면 확대 해제 → 같은 transition으로 원래 20px 복귀\n"+
+"function onUp(){ markInsideNear(-1); doSnap(); }" }
+    ],
+    demo: 'markerNear'
+  }];
+
+  // ── 경량 신택스 하이라이터 (외부 라이브러리 없음) ──
+  function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function hl(code){
+    return esc(code).replace(
+      /(\/\/[^\n]*|\/\*[\s\S]*?\*\/)|('(?:[^'\\]|\\.)*'|"(?:[^"\\]|\\.)*"|`(?:[^`\\]|\\.)*`)|\b(function|return|var|let|const|if|else|for|while|new|typeof|true|false|null|this|Infinity)\b|(\b\d+(?:\.\d+)?(?:px|s|ms)?\b)/g,
+      function(m,c,s,kw,n){
+        if(c) return '<span class="t-com">'+c+'</span>';
+        if(s) return '<span class="t-str">'+s+'</span>';
+        if(kw) return '<span class="t-kw">'+kw+'</span>';
+        if(n) return '<span class="t-num">'+n+'</span>';
+        return m;
+      });
+  }
+  function codeBlock(cb){
+    return '<div class="codewrap"><div class="code-bar">'
+      + '<span class="code-lang">'+cb.lang+'</span>'
+      + '<span class="code-label">'+esc(cb.label||'')+'</span>'
+      + '<button class="code-copy" type="button">복사</button></div>'
+      + '<pre class="code"><code>'+hl(cb.src)+'</code></pre></div>';
+  }
+
+  // ── 라이브 데모: 최근접 마커 확대 (독립 실행) ──
+  function buildDemo(id){
+    var wrap = document.createElement('div'); wrap.className='demo';
+    wrap.innerHTML = '<div class="demo-bar"><b>라이브 데모</b><span>지도를 드래그해 보세요</span></div>'
+      + '<div class="demo-map"><div class="demo-world"></div><div class="demo-reticle"></div></div>'
+      + '<div class="demo-hint">중앙(주황 리티클)에 가장 가까운 마커가 20 → 28px로 커집니다. 손을 떼도 그 상태 유지, 다시 드래그하면 갱신.</div>';
+    if(id==='markerNear') mountMarkerNear(wrap);
+    return wrap;
+  }
+  function mountMarkerNear(wrap){
+    var map = wrap.querySelector('.demo-map'), world = wrap.querySelector('.demo-world');
+    var pts = [{x:110,y:60},{x:250,y:150},{x:360,y:80},{x:180,y:200},{x:320,y:210}];
+    var marks = pts.map(function(p){
+      var m=document.createElement('div'); m.className='demo-mark';
+      m.style.left=p.x+'px'; m.style.top=p.y+'px'; world.appendChild(m); return m;
+    });
+    var tx=-40, ty=-30, drag=false, sx=0, sy=0, stx=0, sty=0;
+    function apply(){ world.style.transform='translate('+tx+'px,'+ty+'px)'; }
+    function nearest(){
+      var cx=map.clientWidth/2, cy=map.clientHeight/2, best=0, bd=Infinity;
+      pts.forEach(function(p,i){ var dx=p.x+tx-cx, dy=p.y+ty-cy, d=dx*dx+dy*dy; if(d<bd){bd=d;best=i;} });
+      return best;
+    }
+    function upd(){ var n=nearest(); marks.forEach(function(m,i){ m.classList.toggle('near', i===n); }); }
+    map.addEventListener('pointerdown', function(e){ drag=true; sx=e.clientX; sy=e.clientY; stx=tx; sty=ty; try{map.setPointerCapture(e.pointerId);}catch(_){} });
+    map.addEventListener('pointermove', function(e){ if(!drag)return; tx=stx+(e.clientX-sx); ty=sty+(e.clientY-sy); apply(); upd(); });
+    map.addEventListener('pointerup', function(){ drag=false; });
+    map.addEventListener('pointercancel', function(){ drag=false; });
+    apply(); upd();
+  }
+
+  // ── 렌더 ──
+  GUIDES.forEach(function(g, gi){
+    var el = document.createElement('section'); el.className='guide';
+    var html = '<h3 class="guide-title"><span class="gnum">'+(gi+1)+'</span>'+esc(g.title)+'</h3>'
+      + '<p class="guide-sum">'+g.summary+'</p>';
+    (g.sections||[]).forEach(function(s){ html += '<div class="guide-sec"><h4>'+esc(s.h)+'</h4><p>'+s.p+'</p></div>'; });
+    (g.code||[]).forEach(function(cb){ html += codeBlock(cb); });
+    el.innerHTML = html;
+    if(g.demo) el.appendChild(buildDemo(g.demo));
+    body.appendChild(el);
+  });
+
+  // ── 복사 버튼 ──
+  body.addEventListener('click', function(e){
+    var b = e.target.closest('.code-copy'); if(!b) return;
+    var src = b.closest('.codewrap').querySelector('code').textContent;
+    if(navigator.clipboard) navigator.clipboard.writeText(src);
+    b.textContent='복사됨 ✓'; b.classList.add('done');
+    setTimeout(function(){ b.textContent='복사'; b.classList.remove('done'); }, 1400);
+  });
 })();
 </script>
 </body>
