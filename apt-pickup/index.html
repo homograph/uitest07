@@ -469,6 +469,9 @@
                   <div class="sublab"><b>호수 라인</b><span class="opt">선택</span>
                     <span class="why" id="lineWhy">한 동에 출입구가 여러 개일 때</span></div>
                   <div class="lines" id="lines"></div>
+                  <input class="etcin gatein" id="lineInput" type="text" maxlength="10" hidden
+                         placeholder="예: 3호 라인, 1번 현관" />
+                  <p class="srcnote" id="lineNote">이 동은 계단식 2라인 — 공동현관에 적힌 대로예요</p>
                 </div>
               </div>
             </div>
@@ -599,9 +602,10 @@
   const $ = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
 
-  const SAVED = { lvl:'under', floor:2, dong:'101', line:1 };
+  const SAVED = { lvl:'under', floor:2, dong:'101', line:'1호 라인' };
   const DONGS = ['101','102','103','104','105','106','107','108'];
   const GATES = ['정문','후문'];
+  const LINES = [1,2];   // 동 데이터에서 온 라인 수 — 계단식 2라인 가정. 복도식·타워형은 달라짐
 
   const S = {
     sc:'live',
@@ -623,7 +627,7 @@
 
   /* ── text helpers ── */
   function levelText(p){ return p.lvl==='under' ? '지하 '+p.floor+'층' : '지상'; }
-  function placeText(p){ return p.dong+'동'+(p.line?' '+p.line+'호 라인':''); }
+  function placeText(p){ return p.dong+'동'+(p.line?' '+p.line:''); }
   function slotText(p){ return p.lvl==='gate' ? p.gate : levelText(p)+' · '+placeText(p); }
   function sentenceText(p){
     let s;
@@ -645,7 +649,7 @@
     S.saved = (sc==='repeat') ? Object.assign({},SAVED) : null;
     S.sentence = null;
     S.slot = null;
-    S.input = 'chip'; S.kpVal=''; S.sheet=false; S.gateMode='chip'; S.reply=null;
+    S.input = 'chip'; S.kpVal=''; S.sheet=false; S.gateMode='chip'; S.lineMode='chip'; S.reply=null;
     $$('.tab').forEach(t=>t.classList.toggle('on', t.dataset.sc===sc));
     $('#scdesc').innerHTML = SCDESC[sc];
     $('#scChat').classList.toggle('on', sc!=='reserve');
@@ -723,7 +727,7 @@
     });
   });
   function openSheet(){
-    S.sheet=true; S.input='chip'; S.kpVal=''; S._lineShown=false; S._dongShown=false; S._etcShown=false; S.gateMode='chip';
+    S.sheet=true; S.input='chip'; S.kpVal=''; S._lineShown=false; S._dongShown=false; S._etcShown=false; S.gateMode='chip'; S.lineMode='chip';
     $('#sheetCta').textContent = S.sc==='reserve' ? '이 위치로 저장' : '이대로 보내기';
     $('#sheetSub').textContent = S.sc==='reserve' ? '예약이 배차되면 기사님께 함께 전달돼요' : '기사님께 그대로 전달돼요';
     renderSheet();
@@ -765,10 +769,15 @@
     S._lineShown = lineOn;
     $('#lineWrap').classList.toggle('on', lineOn);
     $('#lineWhy').textContent = d.lvl==='under' ? '지하는 라인마다 엘리베이터가 달라요' : '한 동에 출입구가 여러 개일 때';
-    $$('#lines .lchip').forEach(b=>{
-      const v = b.dataset.line==='' ? null : +b.dataset.line;
-      b.classList.toggle('on', v===d.line && (v!==null || d.lineTouched));
-    });
+    const lFree = S.lineMode==='free';
+    $$('#lines .lchip[data-line]').forEach(b=>b.classList.toggle('on', !lFree && b.dataset.line===d.line));
+    $('#lineFree').classList.toggle('on', lFree);
+    const li = $('#lineInput');
+    li.hidden = !(lineOn && lFree);
+    if(!lFree) li.value = '';
+    $('#lineNote').textContent = lFree
+      ? '동마다 라인 수가 달라요 — 현관에 적힌 대로 적어주세요'
+      : '이 동은 계단식 2라인 — 공동현관에 적힌 대로예요';
 
     const etcOn = isGate ? !!d.gate : !!d.dong;
     if(etcOn && !S._etcShown) scrollSheetDown();
@@ -885,7 +894,7 @@
     const dg = $('#donggrid');
     DONGS.forEach(d=>{
       const b=document.createElement('button'); b.className='dchip'; b.dataset.d=d; b.textContent=d;
-      b.addEventListener('click',()=>{ if(S.draft.dong!==d){ S.draft.line=null; S.draft.lineTouched=false; } S.draft.dong=d; renderSheet(); });
+      b.addEventListener('click',()=>{ if(S.draft.dong!==d){ S.draft.line=null; S.lineMode='chip'; } S.draft.dong=d; renderSheet(); });
       dg.appendChild(b);
     });
     const more=document.createElement('button'); more.className='dchip more'; more.textContent='직접 입력';
@@ -903,15 +912,15 @@
     gw.appendChild(gf);
 
     const lw = $('#lines');
-    [1,2,3,4].forEach(n=>{
-      const b=document.createElement('button'); b.className='lchip'; b.dataset.line=n; b.textContent=n+'호';
-      b.addEventListener('click',()=>{ S.draft.line = (S.draft.line===n?null:n); S.draft.lineTouched=true; renderSheet(); });
+    LINES.forEach(n=>{
+      const label = n+'호 라인';
+      const b=document.createElement('button'); b.className='lchip'; b.dataset.line=label; b.textContent=label;
+      b.addEventListener('click',()=>{ S.lineMode='chip'; S.draft.line = (S.draft.line===label?null:label); renderSheet(); });
       lw.appendChild(b);
     });
-    const nb=document.createElement('button'); nb.className='lchip none'; nb.dataset.line='';
-    nb.textContent='몰라요';
-    nb.addEventListener('click',()=>{ S.draft.line=null; S.draft.lineTouched=true; renderSheet(); });
-    lw.appendChild(nb);
+    const lf=document.createElement('button'); lf.className='lchip none'; lf.id='lineFree'; lf.textContent='직접 입력';
+    lf.addEventListener('click',()=>{ S.lineMode='free'; S.draft.line=null; renderSheet(); setTimeout(()=>$('#lineInput').focus(),80); });
+    lw.appendChild(lf);
 
     const kp = $('#kpad');
     ['1','2','3','4','5','6','7','8','9','지움','0','완료'].forEach(k=>{
@@ -932,10 +941,11 @@
   $$('.lvl').forEach(b=>b.addEventListener('click',()=>{
     S.draft.lvl=b.dataset.lvl;
     if(S.draft.lvl!=='under') S.draft.floor=null;
-    if(S.draft.lvl==='gate'){ S.draft.dong=null; S.draft.line=null; S.draft.lineTouched=false; }
+    if(S.draft.lvl==='gate'){ S.draft.dong=null; S.draft.line=null; S.lineMode='chip'; }
     else S.draft.gate=null;
     renderSheet();
   }));
+  $('#lineInput').addEventListener('input', e=>{ S.draft.line = e.target.value.trim() || null; renderSheet(); });
   $('#gateInput').addEventListener('input', e=>{ S.draft.gate = e.target.value.trim() || null; renderSheet(); });
   $('#etcInput').addEventListener('input', e=>{ S.draft.etc = e.target.value; renderSheet(); });
   $('#kpback').addEventListener('click',()=>{ S.input='chip'; S.draft.dong=null; S.kpVal=''; renderSheet(); });
