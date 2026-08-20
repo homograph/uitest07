@@ -231,6 +231,11 @@
   .mlhint{font-size:11px; color:var(--muted); margin:4px 0 0}
   .mlflash{position:absolute; right:8px; bottom:100%; transform:translateY(6px); opacity:0; pointer-events:none; font-size:11px; font-weight:700; color:#fff; background:#1a9e5f; padding:4px 10px; border-radius:20px; transition:opacity .15s, transform .15s}
   .mlflash.show{opacity:1; transform:translateY(-2px)}
+  .mltest{display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin:12px 0 0}
+  .mltest-btn{font-family:inherit; font-size:12px; font-weight:700; color:var(--navy); background:#fff; border:1px solid #cfd3dc; border-radius:8px; padding:8px 12px; cursor:pointer}
+  .mltest-btn:hover{border-color:var(--navy)}
+  .mltest-btn:active{transform:translateY(1px)}
+  .mltest-note{font-size:11px; color:var(--muted)}
   /* 복사 가능한 코드 카드 (JS가 pre를 감쌈) */
   .code{margin:10px 0 16px; border:1px solid #1e2740; border-radius:10px; overflow:hidden; background:#0f1626}
   .code-hd{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:7px 10px 7px 14px; background:#141d33; border-bottom:1px solid #1e2740}
@@ -734,6 +739,7 @@ Button(
         <tr><td><b>A. 멀티라인</b></td><td>줄바꿈 삽입 · maxHeight 캡 + 내부 스크롤</td><td>주소·상세 요청 등 줄 구분이 의미 있을 때</td></tr>
         <tr><td><b>B. 소프트</b></td><td>제출/키보드 내림 · 줄바꿈은 <b>자동 wrap만</b></td><td>짧은 한 문단 요청. 높이 과다 <b>원천 차단</b></td></tr>
       </table>
+      <p>B는 <b>2겹으로</b> 개행을 보장합니다 — <b>층1</b> 리턴키를 Done으로(줄바꿈 키 자체가 안 뜸) · <b>층2</b> 붙여넣기·하드웨어 키보드·음성으로 들어온 개행을 <b>입력 시점에 제거</b>. 층1만으론 붙여넣기를 못 막아, 층2 필터가 실제 강제를 담당합니다.</p>
 
       <div class="mldemo-wrap">
         <p class="dreq-livelabel">⌨️ 직접 <b>Enter</b>를 눌러 비교해 보세요 <span class="dreq-livehint">— A는 줄바꿈으로 높이가 늘고(6줄에서 캡), B는 Enter가 막혀 높이가 안 늘어납니다</span></p>
@@ -745,11 +751,15 @@ Button(
             <p class="mlhint">Enter → 줄바꿈 · 6줄 초과분은 내부 스크롤(높이 캡)</p>
           </div>
           <div class="mlcol">
-            <p class="mlcap">B. 소프트 (Enter = 제출)</p>
+            <p class="mlcap">B. 소프트 (Enter = 제출 + 개행 필터)</p>
             <textarea class="mlta" id="mlB" maxlength="100" placeholder="여기서 Enter를 눌러보세요">조용히 가주세요.</textarea>
             <div class="mlcnt"><b id="mlBN">0</b>/100 <span class="mlmeta" id="mlBLines">· 1줄</span></div>
-            <p class="mlhint">Enter → 제출(줄바꿈 안 됨) · 높이는 wrap으로만 늘어남</p>
+            <p class="mlhint">Enter → 제출(줄바꿈 안 됨) · 붙여넣기 개행도 <b>자동 제거</b> · 높이는 wrap으로만</p>
           </div>
+        </div>
+        <div class="mltest">
+          <button type="button" class="mltest-btn" id="mlPaste">📋 개행 3줄 텍스트 “붙여넣기” 테스트</button>
+          <span class="mltest-note">같은 텍스트가 A엔 3줄로, B엔 개행이 제거돼 1줄로 들어갑니다</span>
         </div>
         <span class="mlflash" id="mlFlash">제출됨 ✓</span>
       </div>
@@ -761,21 +771,26 @@ func normalize(_ s: String) -&gt; String {
      .replacingOccurrences(of: #"\n{3,}"#, with: "\n\n", options: .regularExpression)
 }
 
-// B. 소프트 멀티라인 — Enter를 제출로(줄바꿈 소비 안 함)
+// B. 소프트 멀티라인 — 2겹으로 개행 차단
 TextField("", text: $text, axis: .vertical)
     .lineLimit(1...6)                 // ① 최대 6줄에서 캡
-    .submitLabel(.done)
-    .onSubmit { commit() }            // Enter → 제출</code></pre>
+    .submitLabel(.done)               // 층1: 리턴키 → Done
+    .onSubmit { commit() }
+    .onChange(of: text) { _, new in   // 층2: 붙여넣기·하드웨어 Enter로 들어온 개행 제거
+        if new.contains("\n") { text = new.replacingOccurrences(of: "\n", with: " ") }
+    }
+// 더 확실히: UIKit이면 textView(_:shouldChangeTextIn:replacementText:)에서 "\n" → return false</code></pre>
       <div class="plat aos">Android · Compose</div>
 <pre><code>// ④ 커밋 시 과잉 공백 정리
 fun normalize(s: String) =
     s.trim().replace(Regex("\\n{3,}"), "\n\n")
 
-// B. 소프트 멀티라인 — Enter를 제출로
+// B. 소프트 멀티라인 — 2겹으로 개행 차단
 BasicTextField(
     value = text,
-    onValueChange = { if (it.count { c -&gt; c == '\n' } == 0) text = it }, // 개행 차단
-    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+    onValueChange = { text = it.replace("\n", " ") }, // 층2: 개행만 제거(붙여넣기 포함, 나머지 유지)
+    singleLine = false, maxLines = 6,
+    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done), // 층1: 리턴키 → Done
     keyboardActions = KeyboardActions(onDone = { commit() }),
     modifier = Modifier.heightIn(min = 48.dp, max = maxH),  // ① 캡
 )
@@ -1357,11 +1372,13 @@ Box(Modifier.fillMaxWidth()) {
   // 개발 가이드 §텍스트 필드 — 멀티라인/개행 Enter A/B 라이브 데모
   (function(){
     var flash=document.getElementById('mlFlash'), flashT=null, LIMIT=100;
+    var ctl={};
     function setup(id,nId,linesId,blockEnter){
       var t=document.getElementById(id); if(!t)return;
       var nEl=document.getElementById(nId), linesEl=document.getElementById(linesId);
       var cntBox=nEl.parentNode, composing=false;
       function clamp(){ if(t.value.length>LIMIT) t.value=t.value.slice(0,LIMIT); }
+      function strip(){ if(blockEnter && t.value.indexOf('\n')>=0) t.value=t.value.replace(/\n/g,' '); } // 층2: 개행 제거
       function grow(){ t.style.height='auto'; t.style.height=Math.min(Math.max(t.scrollHeight,48),132)+'px'; }
       function render(){
         grow();
@@ -1369,21 +1386,29 @@ Box(Modifier.fillMaxWidth()) {
         nEl.textContent=n; if(linesEl)linesEl.textContent='· '+lines+'줄';
         cntBox.classList.toggle('max',n>=LIMIT);
       }
+      function flashSubmit(){ if(flash){ flash.classList.add('show'); clearTimeout(flashT); flashT=setTimeout(function(){flash.classList.remove('show');},900); } }
       if(blockEnter){
         t.addEventListener('keydown',function(e){
           if(e.key==='Enter' && !e.isComposing && !composing){
-            e.preventDefault();               // B: Enter로 줄바꿈 안 됨 → 제출로 처리
-            if(flash){ flash.classList.add('show'); clearTimeout(flashT); flashT=setTimeout(function(){flash.classList.remove('show');},900); }
+            e.preventDefault(); flashSubmit();   // 층1: Enter로 줄바꿈 안 됨 → 제출
           }
         });
       }
       t.addEventListener('compositionstart',function(){composing=true;});
-      t.addEventListener('compositionend',function(){composing=false; clamp(); render();});
-      t.addEventListener('input',function(){ if(!composing) clamp(); render(); });
+      t.addEventListener('compositionend',function(){composing=false; strip(); clamp(); render();});
+      t.addEventListener('input',function(){ if(!composing){ strip(); clamp(); } render(); });
+      // 데모용: 값 주입(붙여넣기 시뮬레이션) — 실제 paste도 위 input 핸들러가 동일 처리
+      ctl[id]=function(v){ t.value=v; strip(); clamp(); render(); if(blockEnter) flashSubmit(); };
       render();
     }
     setup('mlA','mlAN','mlALines',false); // A: Enter 줄바꿈 허용 + 높이 캡
-    setup('mlB','mlBN','mlBLines',true);  // B: Enter 제출(줄바꿈 차단)
+    setup('mlB','mlBN','mlBLines',true);  // B: Enter 제출 + 개행 필터(2겹)
+    var pasteBtn=document.getElementById('mlPaste');
+    if(pasteBtn) pasteBtn.addEventListener('click',function(){
+      var sample='조용히 가주세요\n짐이 많아 트렁크 넉넉히\n감사합니다';
+      if(ctl.mlA) ctl.mlA(sample);   // A: 개행 유지 → 3줄
+      if(ctl.mlB) ctl.mlB(sample);   // B: 개행 제거 → 1줄
+    });
   })();
   // 키보드 위로 버튼 올리기 — 실기기에서 입력 포커스 시 버튼이 키보드 위에 붙음(내리면 하단)
   var foot=document.querySelector('.foot');
