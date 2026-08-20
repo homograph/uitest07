@@ -182,12 +182,12 @@
   .step.act .steplab b,.step.ok .steplab b{color:var(--gray-950);}
 
   .lvls{display:flex;gap:10px;}
-  .lvl{flex:1 1 0;border:1.5px solid var(--gray-80);background:#fff;border-radius:12px;padding:15px 12px;
+  .lvl{flex:1 1 0;min-width:0;border:1.5px solid var(--gray-80);background:#fff;border-radius:12px;padding:14px 6px;
     cursor:pointer;font:inherit;text-align:center;transition:.15s;}
   .lvl:hover{border-color:var(--gray-300);}
-  .lvl .ic{font-size:24px;line-height:30px;display:block;}
-  .lvl b{display:block;font-size:15px;font-weight:600;margin-top:5px;letter-spacing:-.2px;}
-  .lvl small{display:block;font-size:11.5px;color:var(--gray-500);margin-top:1px;}
+  .lvl .ic{font-size:22px;line-height:28px;display:block;}
+  .lvl b{display:block;font-size:14px;font-weight:600;margin-top:4px;letter-spacing:-.3px;white-space:nowrap;}
+  .lvl small{display:block;font-size:11px;color:var(--gray-500);margin-top:1px;white-space:nowrap;}
   .lvl.on{border-color:var(--blue-500);background:var(--blue-30);}
   .lvl.on b{color:var(--blue-600);}
 
@@ -220,6 +220,19 @@
   .lchip.on{border-color:var(--blue-500);background:var(--blue-500);color:#fff;}
   .lchip.none{font-size:12.5px;font-weight:500;color:var(--gray-500);}
   .lchip.none.on{background:var(--gray-700);border-color:var(--gray-700);color:#fff;}
+
+  .gates{display:flex;gap:7px;margin-top:11px;}
+  .gchip{flex:1 1 0;border:1.5px solid var(--gray-80);background:#fff;border-radius:9px;padding:12px 0;
+    font:inherit;font-size:14px;font-weight:600;color:var(--gray-700);cursor:pointer;transition:.14s;}
+  .gchip:hover{border-color:var(--gray-300);}
+  .gchip.on{border-color:var(--blue-500);background:var(--blue-500);color:#fff;}
+
+  .etcin{width:100%;border:1.5px solid var(--gray-80);border-radius:10px;padding:12px 13px;
+    font:inherit;font-size:14.5px;color:var(--gray-950);background:#fff;outline:none;transition:.14s;}
+  .etcin::placeholder{color:var(--gray-300);}
+  .etcin:focus{border-color:var(--blue-500);background:var(--blue-30);}
+  .etccount{margin-top:7px;text-align:right;font-size:11px;color:var(--gray-400);}
+  .slot .tx .etc{display:block;font-size:12.5px;line-height:18px;color:var(--gray-700);margin-top:1px;}
 
   .kp{margin-top:2px;}
   .kpview{display:flex;align-items:center;justify-content:center;gap:2px;border:1.5px solid var(--blue-500);
@@ -422,11 +435,16 @@
             <div class="step act" id="step1">
               <div class="steplab"><span class="n">1</span><b>어디서 타세요?</b></div>
               <div class="lvls">
-                <button class="lvl" data-lvl="ground"><span class="ic">🚶</span><b>지상</b><small>단지 입구·동 앞</small></button>
-                <button class="lvl" data-lvl="under"><span class="ic">🅿️</span><b>지하주차장</b><small>층까지 선택</small></button>
+                <button class="lvl" data-lvl="ground"><span class="ic">🚶</span><b>지상</b><small>동 앞</small></button>
+                <button class="lvl" data-lvl="under"><span class="ic">🅿️</span><b>지하주차장</b><small>층 선택</small></button>
+                <button class="lvl" data-lvl="gate"><span class="ic">🚪</span><b>단지 출입구</b><small>정문·후문</small></button>
               </div>
               <div class="reveal" id="floorWrap">
                 <div class="floors" id="floors"></div>
+              </div>
+              <div class="reveal" id="gateWrap">
+                <div class="gates" id="gates"></div>
+                <p class="srcnote">동까지 안 정해도 돼요 — 기사님이 출입구에서 기다립니다</p>
               </div>
             </div>
 
@@ -448,6 +466,14 @@
                   <div class="lines" id="lines"></div>
                 </div>
               </div>
+            </div>
+
+            <div class="reveal sub" id="etcWrap">
+              <div class="sublab"><b>그 외 안내</b><span class="opt">선택</span>
+                <span class="why">게이트 번호 · 상가 앞 같은 상세</span></div>
+              <input class="etcin" id="etcInput" type="text" maxlength="20"
+                     placeholder="예: 3번 게이트 앞, 상가 옆" />
+              <div class="etccount"><span id="etcCount">0</span>/20</div>
             </div>
           </div>
           <div class="sfoot">
@@ -545,6 +571,13 @@
       <p>출발지 주소 바로 아래 <b>고정 슬롯</b>에 남기면 오버레이가 사라져도 정보는 남는다. 예약에서 온 값과 실시간에서 온 값이 <b>같은 슬롯</b>에 들어가 드라이버는 한 번만 배운다.</p>
       <p class="src">PRD② 논의 요청 사항에 대한 제안</p>
     </div>
+    <div class="note">
+      <h3><i>5</i>출입구까지 담아야 46%가 다 들어온다</h3>
+      <p>픽업위치 언급은 <b>넓게 46.0% / 좁게(주차장·지상·지하) 37.5%</b>. 그 차이 약 <b>8.5%p가 “정문·출입구”</b> 어휘 — 지상/지하 이분법으로는 못 담는다.</p>
+      <p>대단지는 출입구가 3~5개고, 동을 아는 거주자도 <b>진입 지연을 피하려고</b> 정문을 부른다. 출입구를 고르면 동 선택은 건너뛴다.</p>
+      <p>게이트 번호·상가 앞 같은 나머지는 <b>“그 외 안내” 한 줄</b>로 받는다. 자유 텍스트를 없애는 게 아니라 <b>이 필드 안에 가두는 것</b>이 핵심 — 요청사항으로 다시 새지 않게.</p>
+      <p class="src">PRD① 데이터 근거 / 미커버 패턴: 차량 진입 통제, 시간대별 게이트 개폐</p>
+    </div>
   </div>
 </div>
 
@@ -555,10 +588,11 @@
 
   const SAVED = { lvl:'under', floor:2, dong:'101', line:1 };
   const DONGS = ['101','102','103','104','105','106','107','108'];
+  const GATES = ['정문','후문','동문','서문'];
 
   const S = {
     sc:'live',
-    draft:{lvl:null,floor:null,dong:null,line:null},
+    draft:{lvl:null,floor:null,dong:null,line:null,gate:null,etc:''},
     saved:null,
     sentence:null,
     input:'chip',
@@ -577,17 +611,24 @@
   /* ── text helpers ── */
   function levelText(p){ return p.lvl==='under' ? '지하 '+p.floor+'층' : '지상'; }
   function placeText(p){ return p.dong+'동'+(p.line?' '+p.line+'호 라인':''); }
-  function slotText(p){ return levelText(p)+' · '+placeText(p); }
+  function slotText(p){ return p.lvl==='gate' ? p.gate : levelText(p)+' · '+placeText(p); }
   function sentenceText(p){
-    return levelText(p)+' · '+placeText(p)+(p.lvl==='under'&&p.line ? '에서 탈게요' : ' 앞에서 탈게요');
+    let s;
+    if(p.lvl==='gate') s = p.gate+'에서 탈게요';
+    else s = levelText(p)+' · '+placeText(p)+(p.lvl==='under'&&p.line ? '에서 탈게요' : ' 앞에서 탈게요');
+    return s + (p.etc ? ' ('+p.etc+')' : '');
   }
-  function draftReady(){ const d=S.draft; return !!(d.lvl && d.dong && (d.lvl!=='under' || d.floor)); }
+  function draftReady(){
+    const d=S.draft;
+    if(d.lvl==='gate') return !!d.gate;
+    return !!(d.lvl && d.dong && (d.lvl!=='under' || d.floor));
+  }
 
   /* ── scenario ── */
   function setScenario(sc){
     clearInterval(S.timer);
     S.sc = sc;
-    S.draft = {lvl:null,floor:null,dong:null,line:null};
+    S.draft = {lvl:null,floor:null,dong:null,line:null,gate:null,etc:''};
     S.saved = (sc==='repeat') ? Object.assign({},SAVED) : null;
     S.sentence = null;
     S.slot = null;
@@ -637,7 +678,7 @@
       const c = document.createElement('button');
       c.className='chip pick';
       c.textContent='🅿️ 지상/지하에서 탑승할게요';
-      c.addEventListener('click', ()=>{ S.draft={lvl:null,floor:null,dong:null,line:null}; openSheet(); });
+      c.addEventListener('click', ()=>{ S.draft={lvl:null,floor:null,dong:null,line:null,gate:null,etc:''}; openSheet(); });
       ps.appendChild(c);
     }
     ['조금만 기다려주세요','금방 나갈게요','감사합니다'].forEach(t=>{
@@ -651,7 +692,8 @@
     $('#pickEmpty').hidden = has;
     $('#pickDone').hidden = !has;
     $('#pickCard').classList.toggle('done', has);
-    if(has) $('#pickVal').textContent = slotText(S.draft.lvl?S.draft:S.saved);
+    if(has){ const p = S.draft.lvl?S.draft:S.saved;
+      $('#pickVal').textContent = slotText(p) + (p.etc ? ' · '+p.etc : ''); }
     $('#resSubmit').textContent = S.slot ? '예약 요청 완료' : '예약 요청하기';
     $('#resSubmit').disabled = !!S.slot;
   }
@@ -670,7 +712,7 @@
     });
   });
   function openSheet(){
-    S.sheet=true; S.input='chip'; S.kpVal=''; S._lineShown=false; S._dongShown=false;
+    S.sheet=true; S.input='chip'; S.kpVal=''; S._lineShown=false; S._dongShown=false; S._etcShown=false;
     $('#sheetCta').textContent = S.sc==='reserve' ? '이 위치로 저장' : '이대로 보내기';
     $('#sheetSub').textContent = S.sc==='reserve' ? '예약이 배차되면 기사님께 함께 전달돼요' : '기사님께 그대로 전달돼요';
     renderSheet();
@@ -682,19 +724,24 @@
     const d = S.draft;
     $$('.lvl').forEach(b=>b.classList.toggle('on', b.dataset.lvl===d.lvl));
     $('#floorWrap').classList.toggle('on', d.lvl==='under');
+    $('#gateWrap').classList.toggle('on', d.lvl==='gate');
+    $$('#gates .gchip').forEach(b=>b.classList.toggle('on', b.dataset.gate===d.gate));
     $$('#floors .fchip').forEach(b=>b.classList.toggle('on', +b.dataset.f===d.floor));
 
-    const s1done = !!(d.lvl && (d.lvl!=='under' || d.floor));
+    const isGate = d.lvl==='gate';
+    const s1done = isGate ? !!d.gate : !!(d.lvl && (d.lvl!=='under' || d.floor));
     $('#step1').classList.toggle('ok', s1done);
+    $('#step2').hidden = isGate;
     $('#step2').classList.toggle('act', s1done);
-    if(s1done && !S._dongShown) scrollSheetDown();
-    S._dongShown = s1done;
-    $('#dongWrap').classList.toggle('on', s1done);
+    const dongOn = s1done && !isGate;
+    if(dongOn && !S._dongShown) scrollSheetDown();
+    S._dongShown = dongOn;
+    $('#dongWrap').classList.toggle('on', dongOn);
 
     $('#dongChipBox').hidden = S.input!=='chip';
     $('#keypadBox').hidden  = S.input!=='keypad';
     $$('#donggrid .dchip[data-d]').forEach(b=>b.classList.toggle('on', b.dataset.d===d.dong));
-    const lineOn = !!d.dong;
+    const lineOn = !!d.dong && !isGate;
     if(lineOn && !S._lineShown) scrollSheetDown();
     S._lineShown = lineOn;
     $('#lineWrap').classList.toggle('on', lineOn);
@@ -703,6 +750,14 @@
       const v = b.dataset.line==='' ? null : +b.dataset.line;
       b.classList.toggle('on', v===d.line && (v!==null || d.lineTouched));
     });
+
+    const etcOn = isGate ? !!d.gate : !!d.dong;
+    if(etcOn && !S._etcShown) scrollSheetDown();
+    S._etcShown = etcOn;
+    $('#etcWrap').classList.toggle('on', etcOn);
+    const ei = $('#etcInput');
+    if(ei.value !== d.etc) ei.value = d.etc;
+    $('#etcCount').textContent = d.etc.length;
 
     const kv = $('#kpview');
     kv.innerHTML = S.kpVal ? (S.kpVal+'<span class="u">동</span>') : '<span class="ph">동 번호 입력</span>';
@@ -731,7 +786,9 @@
     S.slot = Object.assign({}, p, {ack:S.slot&&S.slot.ack});
     const el = $('#dSlot');
     el.className = 'slot full flash';
-    el.innerHTML = '<span class="p">🅿️</span><div class="tx"><b>'+slotText(p)+'</b><small>'+note+'</small></div>';
+    el.innerHTML = '<span class="p">🅿️</span><div class="tx"><b>'+slotText(p)+'</b>'
+      + (p.etc ? '<span class="etc">'+p.etc+'</span>' : '')
+      + '<small>'+note+'</small></div>';
     $('#dTgt').style.left='130px'; $('#dTgt').style.top='60px';
     setTimeout(()=>el.classList.remove('flash'),1600);
   }
@@ -794,6 +851,13 @@
     more.addEventListener('click',()=>{ S.input='keypad'; S.kpVal=''; S.draft.dong=null; renderSheet(); });
     dg.appendChild(more);
 
+    const gw = $('#gates');
+    GATES.forEach(g=>{
+      const b=document.createElement('button'); b.className='gchip'; b.dataset.gate=g; b.textContent=g;
+      b.addEventListener('click',()=>{ S.draft.gate=g; renderSheet(); });
+      gw.appendChild(b);
+    });
+
     const lw = $('#lines');
     [1,2,3,4].forEach(n=>{
       const b=document.createElement('button'); b.className='lchip'; b.dataset.line=n; b.textContent=n+'호';
@@ -824,8 +888,11 @@
   $$('.lvl').forEach(b=>b.addEventListener('click',()=>{
     S.draft.lvl=b.dataset.lvl;
     if(S.draft.lvl!=='under') S.draft.floor=null;
+    if(S.draft.lvl==='gate'){ S.draft.dong=null; S.draft.line=null; S.draft.lineTouched=false; }
+    else S.draft.gate=null;
     renderSheet();
   }));
+  $('#etcInput').addEventListener('input', e=>{ S.draft.etc = e.target.value; renderSheet(); });
   $('#kpback').addEventListener('click',()=>{ S.input='chip'; S.draft.dong=null; S.kpVal=''; renderSheet(); });
   $('#scrim').addEventListener('click', closeSheet);
   $('#sheetCta').addEventListener('click',()=>{
@@ -833,7 +900,7 @@
     if(S.sc==='reserve'){ S.sentence = sentenceText(S.draft); saveReservation(); }
     else sendPickup(S.draft);
   });
-  $('#openFromRes').addEventListener('click',()=>{ S.draft={lvl:null,floor:null,dong:null,line:null}; openSheet(); });
+  $('#openFromRes').addEventListener('click',()=>{ S.draft={lvl:null,floor:null,dong:null,line:null,gate:null,etc:''}; openSheet(); });
   $('#editFromRes').addEventListener('click', openSheet);
   $('#resSubmit').addEventListener('click',()=>{
     if(!S.sentence) return;
