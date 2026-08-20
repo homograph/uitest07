@@ -226,6 +226,9 @@
     font:inherit;font-size:14px;font-weight:600;color:var(--gray-700);cursor:pointer;transition:.14s;}
   .gchip:hover{border-color:var(--gray-300);}
   .gchip.on{border-color:var(--blue-500);background:var(--blue-500);color:#fff;}
+  .gchip.free{flex:1.3 1 0;font-size:13px;font-weight:500;color:var(--gray-600);}
+  .gchip.free.on{color:#fff;font-weight:600;}
+  .gatein{margin-top:9px;}
 
   .etcin{width:100%;border:1.5px solid var(--gray-80);border-radius:10px;padding:12px 13px;
     font:inherit;font-size:14.5px;color:var(--gray-950);background:#fff;outline:none;transition:.14s;}
@@ -444,7 +447,9 @@
               </div>
               <div class="reveal" id="gateWrap">
                 <div class="gates" id="gates"></div>
-                <p class="srcnote">동까지 안 정해도 돼요 — 기사님이 출입구에서 기다립니다</p>
+                <input class="etcin gatein" id="gateInput" type="text" maxlength="12" hidden
+                       placeholder="예: 1번 출입구, 학교 쪽 문" />
+                <p class="srcnote" id="gateNote">동까지 안 정해도 돼요 — 기사님이 출입구에서 기다립니다</p>
               </div>
             </div>
 
@@ -578,6 +583,14 @@
       <p>게이트 번호·상가 앞 같은 나머지는 <b>“그 외 안내” 한 줄</b>로 받는다. 자유 텍스트를 없애는 게 아니라 <b>이 필드 안에 가두는 것</b>이 핵심 — 요청사항으로 다시 새지 않게.</p>
       <p class="src">PRD① 데이터 근거 / 미커버 패턴: 차량 진입 통제, 시간대별 게이트 개폐</p>
     </div>
+    <div class="note">
+      <h3><i>6</i>지하는 “지정”이 아니라 “부탁”이다</h3>
+      <p>단지는 사유지라 기사에게 진입 의무가 없다. 기사들이 꺼리는 이유가 분명하다 — 주차 차량·구조물에 가린 <b>사고 위험</b>, 보험료, GPS 미수신, 회전율 대비 <b>요금은 100~200원 차이</b>.</p>
+      <p>그래서 유저가 지금 <b>전화로 부탁</b>하는 것이다. UI가 “고르면 끝”처럼 보이면 안 된다.</p>
+      <p>지하 요청일 때만 드라이버 응답을 <b>“지하로 갈게요 / 지상에서 뵐게요”</b>로 바꿔 <b>협상을 UI 안에</b> 넣었다. 거절하면 픽업 지점이 지상으로 조정돼 슬롯에 남는다.</p>
+      <p>출입구 이름도 단지마다 달라 <b>정문·후문 + 직접 입력</b>으로만 둔다. 방위문(동문·서문)은 안 쓰는 단지가 많다.</p>
+      <p class="src">데스크 리서치 2026-08-20: 택시 커뮤니티 사례, 대리기사 실전 가이드, 카카오T 추천 승차위치</p>
+    </div>
   </div>
 </div>
 
@@ -588,7 +601,7 @@
 
   const SAVED = { lvl:'under', floor:2, dong:'101', line:1 };
   const DONGS = ['101','102','103','104','105','106','107','108'];
-  const GATES = ['정문','후문','동문','서문'];
+  const GATES = ['정문','후문'];
 
   const S = {
     sc:'live',
@@ -632,7 +645,7 @@
     S.saved = (sc==='repeat') ? Object.assign({},SAVED) : null;
     S.sentence = null;
     S.slot = null;
-    S.input = 'chip'; S.kpVal=''; S.sheet=false;
+    S.input = 'chip'; S.kpVal=''; S.sheet=false; S.gateMode='chip'; S.reply=null;
     $$('.tab').forEach(t=>t.classList.toggle('on', t.dataset.sc===sc));
     $('#scdesc').innerHTML = SCDESC[sc];
     $('#scChat').classList.toggle('on', sc!=='reserve');
@@ -655,9 +668,7 @@
     if(S.sentence){
       add('bub me pickup', '<span class="tag">🅿️ 픽업 위치</span>'+S.sentence);
     }
-    if(S.slot && S.slot.ack){
-      add('bub them', '확인했어요. 그쪽으로 갈게요.');
-    }
+    if(S.reply){ add('bub them', S.reply); }
     body.scrollTop = body.scrollHeight;
 
     // presets
@@ -712,7 +723,7 @@
     });
   });
   function openSheet(){
-    S.sheet=true; S.input='chip'; S.kpVal=''; S._lineShown=false; S._dongShown=false; S._etcShown=false;
+    S.sheet=true; S.input='chip'; S.kpVal=''; S._lineShown=false; S._dongShown=false; S._etcShown=false; S.gateMode='chip';
     $('#sheetCta').textContent = S.sc==='reserve' ? '이 위치로 저장' : '이대로 보내기';
     $('#sheetSub').textContent = S.sc==='reserve' ? '예약이 배차되면 기사님께 함께 전달돼요' : '기사님께 그대로 전달돼요';
     renderSheet();
@@ -725,7 +736,15 @@
     $$('.lvl').forEach(b=>b.classList.toggle('on', b.dataset.lvl===d.lvl));
     $('#floorWrap').classList.toggle('on', d.lvl==='under');
     $('#gateWrap').classList.toggle('on', d.lvl==='gate');
-    $$('#gates .gchip').forEach(b=>b.classList.toggle('on', b.dataset.gate===d.gate));
+    const gFree = S.gateMode==='free';
+    $$('#gates .gchip[data-gate]').forEach(b=>b.classList.toggle('on', !gFree && b.dataset.gate===d.gate));
+    $('#gateFree').classList.toggle('on', gFree);
+    const gi = $('#gateInput');
+    gi.hidden = !(d.lvl==='gate' && gFree);
+    if(!gFree) gi.value = '';
+    $('#gateNote').textContent = gFree
+      ? '단지마다 출입구 이름이 달라요 — 부르는 대로 적어주세요'
+      : '동까지 안 정해도 돼요 — 기사님이 출입구에서 기다립니다';
     $$('#floors .fchip').forEach(b=>b.classList.toggle('on', +b.dataset.f===d.floor));
 
     const isGate = d.lvl==='gate';
@@ -770,6 +789,7 @@
 
   /* ── send / save ── */
   function sendPickup(p){
+    S.reply = null;
     S.draft = Object.assign({},p);
     S.sentence = sentenceText(p);
     closeSheet();
@@ -798,6 +818,9 @@
   }
 
   function showOverlay(p){
+    const isUnder = p.lvl==='under';
+    $('#ovOk').textContent   = isUnder ? '지하로 갈게요' : '확인했어요';
+    $('#ovCall').textContent = isUnder ? '지상에서 뵐게요' : '전화할게요';
     $('#ovMsg').textContent = sentenceText(p);
     $('#dOverlay').classList.add('on');
     $('#skipBtn').hidden = false;
@@ -812,15 +835,33 @@
       if(sec<=0) endOverlay(p,false);
     },1000);
   }
-  function endOverlay(p, acked){
+  // mode: 'ack'(수락) | 'ground'(지하 거절 → 지상 역제안) | 'none'(무응답·전화)
+  function endOverlay(p, mode){
     clearInterval(S.timer);
     $('#dOverlay').classList.remove('on');
     $('#skipBtn').hidden = true;
-    if(acked){ S.slot = Object.assign({},p,{ack:true}); }
-    fillSlot(p, acked ? '라이더 전달 · 확인함' : '라이더 전달 · 오버레이는 사라져도 여기 남아요');
-    if(acked) renderChat();
-    toast(acked ? '확인 응답을 보냈어요. 픽업 정보는 운행 화면에 계속 남아요.'
-                : '오버레이는 사라졌지만 픽업 정보는 운행 화면에 남아 있어요.');
+    const isUnder = p.lvl==='under';
+    let shown = p, note, msg;
+
+    if(mode==='ground'){
+      shown = Object.assign({},p,{lvl:'ground',floor:null});
+      S.slot = Object.assign({},shown,{ack:true});
+      note = '지하 요청 → 기사 응답: 지상에서';
+      S.reply = '지하는 어려워서 ' + placeText(p) + ' 앞 지상에서 뵐게요.';
+      msg = '지상에서 만나기로 했어요. 조정된 위치가 운행 화면에 남아요.';
+    } else if(mode==='ack'){
+      S.slot = Object.assign({},p,{ack:true});
+      note = isUnder ? '라이더 전달 · 지하 진입 수락' : '라이더 전달 · 확인함';
+      S.reply = isUnder ? '지하로 갈게요. ' + levelText(p) + '에서 뵐게요.' : '확인했어요. 그쪽으로 갈게요.';
+      msg = '응답을 보냈어요. 픽업 정보는 운행 화면에 계속 남아요.';
+    } else {
+      S.slot = Object.assign({},p);
+      note = '라이더 전달 · 오버레이는 사라져도 여기 남아요';
+      msg = '오버레이는 사라졌지만 픽업 정보는 운행 화면에 남아 있어요.';
+    }
+    fillSlot(shown, note);
+    renderChat();
+    toast(msg);
   }
   function toast(msg){
     const t=$('#dToast'); t.textContent=msg; t.classList.add('on');
@@ -854,9 +895,12 @@
     const gw = $('#gates');
     GATES.forEach(g=>{
       const b=document.createElement('button'); b.className='gchip'; b.dataset.gate=g; b.textContent=g;
-      b.addEventListener('click',()=>{ S.draft.gate=g; renderSheet(); });
+      b.addEventListener('click',()=>{ S.gateMode='chip'; S.draft.gate=g; renderSheet(); });
       gw.appendChild(b);
     });
+    const gf=document.createElement('button'); gf.className='gchip free'; gf.id='gateFree'; gf.textContent='직접 입력';
+    gf.addEventListener('click',()=>{ S.gateMode='free'; S.draft.gate=null; renderSheet(); setTimeout(()=>$('#gateInput').focus(),80); });
+    gw.appendChild(gf);
 
     const lw = $('#lines');
     [1,2,3,4].forEach(n=>{
@@ -892,6 +936,7 @@
     else S.draft.gate=null;
     renderSheet();
   }));
+  $('#gateInput').addEventListener('input', e=>{ S.draft.gate = e.target.value.trim() || null; renderSheet(); });
   $('#etcInput').addEventListener('input', e=>{ S.draft.etc = e.target.value; renderSheet(); });
   $('#kpback').addEventListener('click',()=>{ S.input='chip'; S.draft.dong=null; S.kpVal=''; renderSheet(); });
   $('#scrim').addEventListener('click', closeSheet);
@@ -908,9 +953,9 @@
     toast('예약이 요청됐어요. 픽업 정보는 배차되는 기사님께 자동으로 전달돼요.');
     renderRes();
   });
-  $('#ovOk').addEventListener('click',()=>endOverlay(S.draft,true));
-  $('#ovCall').addEventListener('click',()=>endOverlay(S.draft,false));
-  $('#skipBtn').addEventListener('click',()=>endOverlay(S.draft,false));
+  $('#ovOk').addEventListener('click',()=>endOverlay(S.draft,'ack'));
+  $('#ovCall').addEventListener('click',()=>endOverlay(S.draft, S.draft.lvl==='under' ? 'ground' : 'none'));
+  $('#skipBtn').addEventListener('click',()=>endOverlay(S.draft,'none'));
   $$('.tab').forEach(t=>t.addEventListener('click',()=>setScenario(t.dataset.sc)));
   $('#reset').addEventListener('click',()=>setScenario(S.sc));
 
