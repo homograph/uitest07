@@ -478,7 +478,7 @@
 
             <div class="reveal sub" id="etcWrap">
               <div class="sublab"><b>그 외 안내</b><span class="opt">선택</span>
-                <span class="why">게이트 번호 · 상가 앞 같은 상세</span></div>
+                <span class="why" id="etcWhy">게이트 번호 · 상가 앞 같은 상세</span></div>
               <input class="etcin" id="etcInput" type="text" maxlength="20"
                      placeholder="예: 3번 게이트 앞, 상가 옆" />
               <div class="etccount"><span id="etcCount">0</span>/20</div>
@@ -783,6 +783,13 @@
     if(etcOn && !S._etcShown) scrollSheetDown();
     S._etcShown = etcOn;
     $('#etcWrap').classList.toggle('on', etcOn);
+    const ETC = {
+      under: {why:'기둥 번호 · 엘리베이터 위치',  ph:'예: B2 기둥 A-12, 엘리베이터 옆'},
+      gate:  {why:'출입구 안에서 어디쯤',        ph:'예: 경비실 옆, 문주 앞'},
+      ground:{why:'동 앞에서 어디쯤',            ph:'예: 상가 앞, 놀이터 쪽'}
+    }[d.lvl] || {why:'게이트 번호 · 상가 앞 같은 상세', ph:'예: 3번 게이트 앞, 상가 옆'};
+    $('#etcWhy').textContent = ETC.why;
+    $('#etcInput').placeholder = ETC.ph;
     const ei = $('#etcInput');
     if(ei.value !== d.etc) ei.value = d.etc;
     $('#etcCount').textContent = d.etc.length;
