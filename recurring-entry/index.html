@@ -350,6 +350,7 @@ const VARIANTS = [
 
 const DEFAULTS = {variant:'asis', recur:1, drafts:1, coupon:1, mode:'device'};
 let S = Object.assign({}, DEFAULTS);
+let wasWide = null;
 
 /* ── helpers ────────────────────────────────────────────────── */
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
@@ -527,9 +528,15 @@ function tabItem(kind, label, on){
 /* ── render ─────────────────────────────────────────────────── */
 const stage = document.getElementById('stage');
 
+function isWide(){ return (document.documentElement.clientWidth || window.innerWidth) >= 1120; }
+
 function render(){
   stage.innerHTML = '';
-  VARIANTS.forEach(v => {
+  wasWide = isWide();
+  // 좁은 화면에선 고른 안 하나만 그린다. display:none 인 열은 rect 가 0이라
+  // 측정값이 0px 로 남아버리기 때문.
+  const shown = wasWide ? VARIANTS : VARIANTS.filter(v => v.id === S.variant);
+  shown.forEach(v => {
     const col = el(`<div class="col${v.id === S.variant ? ' sel' : ''}" data-v="${v.id}"></div>`);
     col.innerHTML = `
       <div class="cap">
@@ -559,7 +566,7 @@ function scale(){
 
 function layout(){
   const vw = document.documentElement.clientWidth || window.innerWidth;
-  const wide = vw >= 1120;
+  const wide = isWide();
   document.body.classList.toggle('wide', wide);
   const cols = wide ? VARIANTS.length : 1;
   const gap = 24, pad = wide ? 32 : 24;
@@ -635,7 +642,9 @@ function wireTaps(){
 
 /* ── controls ───────────────────────────────────────────────── */
 let rt;
-const relayout = () => { clearTimeout(rt); rt = setTimeout(() => { layout(); measure(); }, 120); };
+const relayout = () => { clearTimeout(rt); rt = setTimeout(() => {
+  if (isWide() !== wasWide) render(); else { layout(); measure(); }
+}, 120); };
 window.addEventListener('resize', relayout);
 window.addEventListener('orientationchange', relayout);
 if (window.ResizeObserver) new ResizeObserver(relayout).observe(document.documentElement);
