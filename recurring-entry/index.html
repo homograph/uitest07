@@ -45,6 +45,17 @@
     cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px 2px;}
   .varchips{display:none;}
   body:not(.wide) .varchips{display:flex;}
+  .condbar{display:none;align-items:center;gap:8px;width:100%;}
+  body:not(.wide) .condbar{display:flex;}
+  .condbtn{flex:1 1 auto;display:flex;align-items:center;gap:8px;min-width:0;
+    border:1px solid var(--gray-100);background:#fff;border-radius:9999px;
+    padding:7px 14px;font:inherit;font-size:12px;color:var(--gray-700);cursor:pointer;text-align:left;}
+  .condbtn .ttl{font-weight:700;color:var(--gray-500);flex:0 0 auto;}
+  .condbtn .sum{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+    font-variant-numeric:tabular-nums;}
+  .condbtn .car{flex:0 0 auto;color:var(--gray-300);transition:.18s;}
+  body.condopen .condbtn .car{transform:rotate(180deg);}
+  body:not(.wide).condshut .ctlrow.cond{display:none;}
 
   /* ───────── stage ───────── */
   .stage{display:flex;gap:24px;align-items:flex-start;justify-content:center;
@@ -260,7 +271,13 @@
       <div class="ctlname">비교안</div>
       <div class="seg" id="segVar"></div>
     </div>
-    <div class="ctlrow">
+    <div class="ctlrow condbar">
+      <button class="condbtn" id="condToggle" aria-expanded="false">
+        <span class="ttl">조건</span><span class="sum" id="condSummary"></span>
+        <svg class="car" width="12" height="12" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+    <div class="ctlrow cond">
       <div class="ctlname">정기 노출<br><span style="font-weight:400">리모트 컨피그</span></div>
       <div class="seg" id="segRecur">
         <button data-v="1">ON</button><button data-v="0">OFF</button>
@@ -270,7 +287,7 @@
         <button data-v="0">0건</button><button data-v="1">1건</button><button data-v="2">2건</button>
       </div>
     </div>
-    <div class="ctlrow">
+    <div class="ctlrow cond">
       <div class="ctlname">쿠폰 배너</div>
       <div class="seg" id="segCoupon"><button data-v="1">있음</button><button data-v="0">없음</button></div>
       <div class="ctlname" style="margin-left:8px">보기</div>
@@ -617,10 +634,23 @@ function wireTaps(){
 }
 
 /* ── controls ───────────────────────────────────────────────── */
+let rt;
+const relayout = () => { clearTimeout(rt); rt = setTimeout(() => { layout(); measure(); }, 120); };
+window.addEventListener('resize', relayout);
+window.addEventListener('orientationchange', relayout);
+if (window.ResizeObserver) new ResizeObserver(relayout).observe(document.documentElement);
+
 const segVar = document.getElementById('segVar');
 segVar.innerHTML = VARIANTS.map(v => `<button data-v="${v.id}">${v.short}</button>`).join('');
 
 function syncSegs(){
+  const sum = document.getElementById('condSummary');
+  if (sum) sum.textContent = [
+    S.recur ? '정기 ON' : '정기 OFF',
+    '작성 중 ' + S.drafts + '건',
+    S.coupon ? '쿠폰 있음' : '쿠폰 없음',
+    S.mode === 'device' ? '실기기' : '전체 길이'
+  ].join(' · ');
   const set = (id, val) => document.querySelectorAll(`#${id} button`).forEach(b =>
     b.classList.toggle('on', b.dataset.v === String(val)));
   set('segVar', S.variant); set('segRecur', S.recur);
@@ -639,15 +669,16 @@ bind('segRecur', 'recur', Number);
 bind('segDraft', 'drafts', Number);
 bind('segCoupon', 'coupon', Number);
 bind('segMode', 'mode');
+document.body.classList.add('condshut');
+document.getElementById('condToggle').addEventListener('click', () => {
+  const shut = document.body.classList.toggle('condshut');
+  document.body.classList.toggle('condopen', !shut);
+  document.getElementById('condToggle').setAttribute('aria-expanded', String(!shut));
+  relayout();
+});
 document.getElementById('reset').addEventListener('click', () => {
   S = Object.assign({}, DEFAULTS); syncSegs(); render();
 });
-
-let rt;
-const relayout = () => { clearTimeout(rt); rt = setTimeout(() => { layout(); measure(); }, 120); };
-window.addEventListener('resize', relayout);
-window.addEventListener('orientationchange', relayout);
-if (window.ResizeObserver) new ResizeObserver(relayout).observe(document.documentElement);
 
 syncSegs();
 render();
