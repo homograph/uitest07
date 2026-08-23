@@ -263,6 +263,25 @@ body:not(.wide) .stage{justify-content:flex-start;}
 .mcard .thumb{width:75px;height:50px;display:flex;align-items:center;justify-content:flex-end;}
 .mcard .thumb img{max-width:100%;max-height:100%;display:block;}
 .mcard .thumb.cal{width:auto;} .mcard .thumb.cal img{width:46px;height:46px;}
+/* D안: 방법 카드를 화면의 주인공으로 */
+.hero.lean{padding:28px 24px 18px;gap:8px;align-items:flex-start;
+  background:linear-gradient(180deg,#e8f4fe 0%,#f6fbfe 60%,#ffffff 100%);}
+.dgrid{display:flex;flex-wrap:wrap;gap:10px;padding:0 24px;}
+.dcard{width:calc(50% - 5px);min-height:138px;border-radius:8px;position:relative;cursor:pointer;
+  background:linear-gradient(135deg,#f1f9fe 0%,#f7fbfe 45%,#ffffff 100%);
+  padding:14px 12px 14px 16px;display:flex;flex-direction:column;justify-content:space-between;gap:8px;}
+.dcard .txt{display:flex;flex-direction:column;gap:6px;}
+.dcard .mt{font-size:14px;line-height:20px;font-weight:700;color:#262a38;}
+.dcard .md{font-size:12px;line-height:17px;font-weight:400;color:#4b5064;word-break:keep-all;}
+.dcard .thumb{height:50px;display:flex;align-items:flex-end;justify-content:flex-end;}
+.dcard .thumb img{max-height:50px;max-width:78px;display:block;}
+.dcard .thumb.cal img{width:48px;height:48px;filter:drop-shadow(0 5px 9px rgba(41,63,113,.20));}
+/* 정기 노출 OFF 로 세 장이 될 때. 2×2 에 구멍을 내지 않고 마지막을 가로로 편다 */
+.dcard.wide{width:100%;min-height:0;flex-direction:row;align-items:center;gap:14px;padding:14px 16px;}
+.dcard.wide .txt{flex:1 1 auto;min-width:0;}
+.dcard.wide .thumb{flex:0 0 auto;height:46px;}
+.dcard.wide .thumb img{max-height:46px;max-width:70px;}
+.dcard.wide .thumb.cal img{width:42px;height:42px;filter:drop-shadow(0 5px 9px rgba(41,63,113,.20));}
 .mgrid{display:flex;flex-wrap:wrap;gap:10px;padding:0 24px;}
 .mgrid .gcard{width:calc(50% - 5px);min-height:86px;border-radius:8px;
   background:linear-gradient(135deg,#f1f9fe 0%,#f7fbfe 45%,#ffffff 100%);
@@ -399,6 +418,11 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       <h2>읽는 법</h2>
       <p>판정선은 <b>콘텐츠 상단부터 595px</b>입니다. 기기 높이 800에서 상태바 32, 하단 시트 110, 탭바 63을 뺀 값이고,
         시트에 가려지는 영역은 실제로 보이지 않으므로 제외했습니다.</p>
+      <p><b>as-is, A, B 는 Figma 를 그대로 옮긴 것</b>이고 <b>C, D 는 새로 그린 제안</b>입니다.
+        A와 B의 거친 부분(플레이스홀더 카피, 임시 아이콘)은 원안의 참조값을 지키려고 손대지 않았습니다.</p>
+      <p>D안은 하단 고정 CTA 를 뺐습니다. ‘예약 시작하기’와 방법 카드는 같은 일을 하는데
+        그 버튼이 화면 하단 173px 을 계속 차지합니다. 빼면 첫 화면이 <b>595px 에서 705px 로</b> 늘어납니다.
+        대신 아래로 스크롤한 사용자가 바로 누를 버튼이 없어집니다.</p>
       <p><b>‘작성 중’ 건수가 최대 변수입니다.</b> 다시 예약하기 섹션이 정기 카드를 그대로 아래로 밀어냅니다.
         0건과 2건을 번갈아 눌러 보면 각 배치가 조건 변화를 얼마나 견디는지 드러납니다.</p>
       <p>범위는 <b>홈 화면까지</b>입니다. 정기 카드를 누르면 하이라이트와 토스트만 뜨고,
@@ -416,6 +440,9 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
         <div><dt>B안 쿠폰 배너</dt><dd>Figma 탐색안에는 없지만, 네 배치를 같은 콘텐츠로 비교하려고 넣었습니다.</dd></div>
         <div><dt>A안 라벨과 헤더</dt><dd>‘다시 예약하기’가 12sp로 잡혀 있어(as-is 16sp, B안 15sp) 15sp로 통일했습니다.
           A안에는 ‘예약 방법’ 섹션 헤더가 <em>아예 없는데</em>, 탐색안 그대로 두었습니다. 의도인지 확인이 필요합니다.</dd></div>
+        <div><dt>D안</dt><dd>네 배치가 각자 하나씩 잃고 있어서 새로 그렸습니다. A는 썸네일, B는 설명 문구와 히어로,
+          C는 맞춤 예약의 자리를 잃습니다. D는 히어로 일러스트를 버리는 대신 <em>썸네일과 설명을 모두 지킨 카드 넷</em>을
+          맨 위에 놓습니다. 브랜드감은 3D 썸네일 네 개가 대신 집니다. 정기가 꺼지면 마지막 카드를 가로로 펴서 빈 칸을 없앱니다.</dd></div>
         <div><dt>C안</dt><dd>캐러셀 폭으로는 네 번째 카드가 어떤 조건에서도 첫 화면에 못 들어옵니다.
           그래서 카드를 더하는 대신 <em>정기를 맨 앞으로 올리고</em> 섹션을 위로 옮겼습니다. 맞춤 예약이 밀려나는 값을 치릅니다.</dd></div>
       </dl>
@@ -452,8 +479,15 @@ const VARIANTS = [
   {id:'icon', tag:'B', short:'B 아이콘', name:'원형 아이콘 4개 숏컷',
    desc:'Figma 10375:112685. 가장 컴팩트하고 맨 위에 놓입니다. 대신 히어로 일러스트와 카드별 설명 문구가 사라집니다.'},
   {id:'promo', tag:'C', short:'C 승격', name:'캐러셀 유지 + 정기 순서 승격',
-   desc:'캐러셀 폭으로는 네 번째가 어떤 조건에서도 안 보입니다. 정기를 맨 앞으로 올리고 섹션을 위로 옮겼습니다.'}
+   desc:'캐러셀 폭으로는 네 번째가 어떤 조건에서도 안 보입니다. 정기를 맨 앞으로 올리고 섹션을 위로 옮겼습니다.'},
+  {id:'cards', tag:'D', short:'D 방법우선', name:'방법 카드를 화면의 주인공으로',
+   desc:'새로 그린 제안. 히어로 일러스트와 하단 고정 CTA를 걷어내고, 썸네일을 지킨 카드 넷을 맨 위에 놓았습니다.'}
 ];
+
+/* 하단 고정 CTA 가 없는 배치. 방법 카드와 의도가 겹치는 버튼이라 뺐고,
+   그만큼 첫 화면이 595px 에서 705px 로 늘어난다. */
+const SHEETLESS = new Set(['cards']);
+function foldFor(vid){ return H - STATUS - TAB - (SHEETLESS.has(vid) ? 0 : SHEET); }
 
 const DEFAULTS = {variant:'asis', recur:1, drafts:1, coupon:1, mode:'device'};
 let S = Object.assign({}, DEFAULTS);
@@ -540,6 +574,25 @@ function fMethodsCarousel(order){
           <div class="mrow">${cards}</div></section>`;
 }
 
+function fHeroLean(){
+  return `<section class="hero lean"><div class="tt"><h1>타다 예약</h1>
+    <p>중요한 일정이 어긋나지 않도록<br>타다와 이동을 약속해 보세요.</p></div></section>`;
+}
+
+function fMethodsGridThumb(){
+  const list = methodList();
+  const cards = list.map((m, i) => {
+    // 세 장이면 마지막을 가로로 펴서 빈 칸을 없앤다
+    const wide = list.length === 3 && i === 2;
+    return `<div class="dcard${wide ? ' wide' : ''}" data-m="${m.id}">
+      ${m.recur ? '<div class="newbdg">NEW</div>' : ''}
+      <div class="txt"><div class="mt">${esc(m.t)}</div><div class="md">${esc(m.d)}</div></div>
+      <div class="thumb${m.cal ? ' cal' : ''}"><img src="${m.img}" alt=""></div>
+    </div>`;
+  }).join('');
+  return `<section style="padding-top:2px"><div class="dgrid">${cards}</div></section>`;
+}
+
 function fMethodsGrid(){
   const list = methodList();
   let cards = list.map(m => `
@@ -593,6 +646,9 @@ function buildApp(v){
          + fReReserveCompact(true) + fTesti();
   if (v === 'icon')
     return fHero('compact') + fMethodsIcons() + fReReserveCompact(true) + fTesti() + fFaq();
+  if (v === 'cards')
+    return fHeroLean() + fMethodsGridThumb() + `<div style="height:8px;background:#fff"></div>`
+         + fReReserveCompact(true) + fTesti();
   if (v === 'promo')
     return fHero() + `<div style="height:20px;background:#fff"></div>`
          + fMethodsCarousel([M_RECUR, M_NORMAL, M_TIME, M_CUSTOM])
@@ -611,9 +667,10 @@ function chrome(){
     </span></div>`;
 }
 
-function addon(){
-  return `<div class="addon">
-    <div class="ctasheet"><div class="ctabtn">예약 시작하기</div></div>
+function addon(vid){
+  const sheet = SHEETLESS.has(vid) ? ''
+    : `<div class="ctasheet"><div class="ctabtn">예약 시작하기</div></div>`;
+  return `<div class="addon">${sheet}
     <div class="tabbar"><img src="${A.tabbar}" alt="홈, 예약, 이용내역, 혜택, 메뉴 탭바"></div>
   </div>`;
 }
@@ -644,14 +701,15 @@ function measureAll(){
     const app = p.firstElementChild;
     const card = app.querySelector('[data-m="recur"]');
     const total = Math.round(app.offsetHeight);
-    if (!card){ out[v.id] = {present:false, total}; return; }
+    if (!card){ out[v.id] = {present:false, total, fold:foldFor(v.id)}; return; }
     const a = app.getBoundingClientRect(), r = card.getBoundingClientRect();
     const top = Math.round(r.top - a.top);
     const bottom = Math.round(r.bottom - a.top);
+    const fold = foldFor(v.id);
     out[v.id] = {
-      present: true, top, bottom, total,
-      state: bottom <= FOLD ? 'ok' : (top < FOLD ? 'part' : 'no'),
-      need: Math.max(0, bottom - FOLD)
+      present: true, top, bottom, total, fold,
+      state: bottom <= fold ? 'ok' : (top < fold ? 'part' : 'no'),
+      need: Math.max(0, bottom - fold)
     };
   });
   p.innerHTML = '';
@@ -665,7 +723,8 @@ const VERDICT_SHORT = {ok:'보임', part:'일부만', no:'안 보임'};
 /* ── verdict chart (표 겸용) ────────────────────────────────── */
 function renderChart(data){
   const pct = px => Math.max(0, Math.min(100, px / DOMAIN * 100));
-  document.getElementById('vt').style.setProperty('--foldx', pct(FOLD).toFixed(2) + '%');
+  const fx = px => pct(px).toFixed(2) + '%';
+  document.getElementById('vt').style.setProperty('--foldx', fx(FOLD));   // thead 라벨 기준
 
   document.getElementById('vtb').innerHTML = VARIANTS.map(v => {
     const d = data[v.id];
@@ -691,9 +750,13 @@ function renderChart(data){
   }).join('');
 
   const anyPresent = VARIANTS.some(v => data[v.id].present);
+  const odd = VARIANTS.filter(v => data[v.id].fold !== FOLD).map(v => v.short);
+  const note = odd.length
+    ? ` 점선은 595px 하나로 뒀습니다. ${odd.join(', ')}는 하단 고정 CTA 가 없어 실제 컷라인이 ` +
+      `${foldFor('cards')}px 로 더 뒤지만, 어느 기준으로 재도 판정은 같습니다.` : '';
   document.getElementById('vfoot').textContent = anyPresent
-    ? `가로축은 페이지 맨 위에서 ${DOMAIN}px 구간입니다. 막대 길이는 정기 카드의 높이라 배치마다 다릅니다.`
-    : '리모트 컨피그가 꺼져 있어 네 배치 모두 정기 카드가 없습니다. A안은 2×2 그리드의 마지막 칸이 비고, 나머지는 카드가 하나 줄어듭니다.';
+    ? `가로축은 페이지 맨 위에서 ${DOMAIN}px 구간입니다. 막대 길이는 정기 카드의 높이라 배치마다 다릅니다.${note}`
+    : `리모트 컨피그가 꺼져 있어 정기 카드가 없습니다. A안은 2×2 의 마지막 칸이 비고, D안은 마지막 카드를 가로로 펴서 메웁니다.${note}`;
 }
 
 /* ── stage ──────────────────────────────────────────────────── */
@@ -703,8 +766,9 @@ function isWide(){ return (document.documentElement.clientWidth || window.innerW
 function readout(d){
   if (!d.present) return `<span class="m"></span><span class="v">정기 미노출</span>` +
                          `<span class="d">리모트 컨피그 OFF</span>`;
-  const tail = d.need ? `상단 ${d.top}px / 전부 보려면 ${d.need}px 스크롤`
-                      : `상단 ${d.top}px / 스크롤 없이 보임`;
+  const cut = d.fold !== FOLD ? ` / 컷라인 ${d.fold}px` : '';
+  const tail = (d.need ? `상단 ${d.top}px / 전부 보려면 ${d.need}px 스크롤`
+                       : `상단 ${d.top}px / 스크롤 없이 보임`) + cut;
   // 마크 색은 비교표의 막대와 같은 부호를 쓴다
   return `<span class="m s-${d.state}"></span><span class="v">${VERDICT[d.state]}</span>` +
          `<span class="d">${tail}</span>`;
@@ -728,8 +792,8 @@ function render(){
         <div class="phone">
           ${chrome()}
           <div class="scroller"><div class="app">${buildApp(v.id)}</div></div>
-          ${S.mode === 'device' ? addon() : ''}
-          ${S.mode === 'full' ? `<div class="fold" style="top:${STATUS + FOLD}px"><b>첫 화면 끝</b></div>` : ''}
+          ${S.mode === 'device' ? addon(v.id) : ''}
+          ${S.mode === 'full' ? `<div class="fold" style="top:${STATUS + foldFor(v.id)}px"><b>첫 화면 끝</b></div>` : ''}
           <div class="toast" role="status">정기 예약 진입점. 여기서 설명 시트가 열립니다 (이 프로토 범위 밖)</div>
         </div>
       </div>
