@@ -325,7 +325,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
   .facts .n{font-size:21px;line-height:27px;}
   .facts .l{font-size:11px;line-height:16px;}
   .verdict{padding:15px 14px 6px;}
-  col.c-name{width:74px;} col.c-num{width:56px;} col.c-verd{width:64px;}
+  col.c-name{width:72px;} col.c-num{width:52px;} col.c-verd{width:52px;}
   table.vt tbody th{font-size:11.5px;}
   td.num{font-size:12px;} td.verd{font-size:11.5px;}
 }
@@ -659,6 +659,8 @@ function measureAll(){
 }
 
 const VERDICT = {ok:'첫 화면에 보임', part:'일부만 보임', no:'첫 화면에 안 보임'};
+// 비교표의 판정 칸은 좁다. 표 제목이 이미 '첫 화면'을 말하므로 짧게 쓴다.
+const VERDICT_SHORT = {ok:'보임', part:'일부만', no:'안 보임'};
 
 /* ── verdict chart (표 겸용) ────────────────────────────────── */
 function renderChart(data){
@@ -684,7 +686,7 @@ function renderChart(data){
                 style="left:${pct(d.top).toFixed(2)}%;width:${w.toFixed(2)}%"></span>
         </td>
         <td class="num">${d.top}<small>px</small></td>
-        <td class="verd">${VERDICT[d.state]}</td>
+        <td class="verd">${VERDICT_SHORT[d.state]}</td>
       </tr>`;
   }).join('');
 
