@@ -62,7 +62,7 @@ body{background:var(--plane);color:var(--ink);font-family:var(--chrome);
   -webkit-font-smoothing:antialiased;}
 :where(button,a,[tabindex]):focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:var(--r-mark);}
 
-.page{max-width:1560px;margin:0 auto;padding:28px 20px 80px;}
+.page{max-width:1800px;margin:0 auto;padding:28px 20px 80px;}
 
 /* ── 1. masthead ───────────────────────────────────────────── */
 .mast{display:grid;gap:14px;}
@@ -104,7 +104,9 @@ body{background:var(--plane);color:var(--ink);font-family:var(--chrome);
 .reset:hover{color:var(--ink);}
 .varchips{display:none;}
 .condbar{display:none;width:100%;}
-body:not(.wide) .varchips{display:flex;}
+body:not(.wide) .varchips{display:flex;flex-wrap:nowrap;}
+body:not(.wide) .varchips .seg{overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;}
+body:not(.wide) .varchips .seg::-webkit-scrollbar{display:none;}
 body:not(.wide) .condbar{display:flex;}
 
 .condbtn{flex:1 1 auto;display:flex;align-items:center;gap:9px;min-width:0;
@@ -538,8 +540,9 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
           안쪽 하이라이트와 오프셋·블러 그림자를 주고, 누르면 눌리게 했습니다. NEW 뱃지는 솔리드에서 옅은 틴트로 낮췄습니다.
           ‘작성 중’은 주소 두 줄 나열에서 출발과 도착을 점선으로 잇는 경로 한 덩어리로 바꿨고, 목적지를 굵게 잡았습니다.
           한글은 낱말 가운데를 끊지 않습니다.</dd></div>
-        <div><dt>A안에서 바꾼 것</dt><dd>원안엔 <em>‘예약 방법’ 섹션 헤더가 없어</em> 카드 넷이 정체 없이 떴습니다. 헤더를 넣었고,
-          그 대가로 정기 카드가 390px 에서 427px 로 내려갔습니다. 세 장일 때 남던 빈 칸은 마지막 카드를 가로로 펴서 메웁니다.
+        <div><dt>A안에서 바꾼 것</dt><dd>원안엔 <em>‘예약 방법’ 섹션 헤더가 없어</em> 카드 넷이 정체 없이 떴습니다.
+          헤더를 넣은 것이 A, 원안대로 뺀 것이 A′ 입니다. 헤더 한 줄이 <em>37px</em> (390 → 427) 이니 나란히 놓고 판단하세요.
+          세 장일 때 남던 빈 칸은 둘 다 마지막 카드를 가로로 펴서 메웁니다.
           ‘다시 예약하기’ 라벨은 12sp 로 잡혀 있어(as-is 16sp, B안 15sp) 15sp 로 통일했습니다.</dd></div>
         <div><dt>B안에서 바꾼 것</dt><dd>Figma 탐색안엔 후기 프로필 아바타가 임시로 꽂혀 있었습니다. 서비스 썸네일로 바꾸면서
           원형 디스크도 <em>둥근 타일로 바꿨습니다</em> — 3D 렌더가 가로형이라 원 안에서 잘리거나 너무 작아집니다.</dd></div>
@@ -581,7 +584,9 @@ const VARIANTS = [
   {id:'asis', tag:'기준', short:'as-is+', name:'as-is + 정기 카드만 추가',
    desc:'PRD to-be 문구 그대로, 캐러셀에 네 번째 카드를 더했습니다. 나머지 셋을 견줄 기준선입니다.'},
   {id:'grid', tag:'A', short:'A 그리드', name:'방법 카드 2×2 그리드',
-   desc:'Figma 10375:111747. 카드를 그리드로 바꿔 상단으로. 네 개가 한눈에 들어오지만 썸네일을 잃습니다.'},
+   desc:'Figma 10375:111747. 카드를 그리드로 바꿔 상단으로. 원안에 없던 ‘예약 방법’ 헤더를 넣었습니다.'},
+  {id:'grid0', tag:'A′', short:'A′ 헤더없음', name:'A 그리드, 헤더 없이',
+   desc:'Figma 원안 그대로 섹션 헤더가 없습니다. 헤더 한 줄이 37px 값을 하는지 A와 나란히 보세요.'},
   {id:'icon', tag:'B', short:'B 아이콘', name:'아이콘 숏컷 4개',
    desc:'Figma 10375:112685. 가장 컴팩트하고 맨 위에 놓입니다. 대신 히어로 일러스트와 카드별 설명 문구가 사라집니다.'},
   {id:'promo', tag:'C', short:'C 승격', name:'캐러셀 유지 + 정기 순서 승격',
@@ -723,7 +728,7 @@ function fMethodsGridThumb(){
   return `<section style="padding-top:2px"><div class="dgrid">${cards}</div></section>`;
 }
 
-function fMethodsGrid(){
+function fMethodsGrid(showHead){
   const list = methodList();
   const cards = list.map((m, i) => {
     const wide = list.length === 3 && i === 2;   // 세 장이면 마지막을 펴서 구멍을 없앤다
@@ -732,8 +737,9 @@ function fMethodsGrid(){
       <div class="mt">${esc(m.t)}</div><div class="md">${esc(m.d)}</div>
     </div>`;
   }).join('');
-  // Figma 탐색안엔 섹션 헤더가 없어 카드 넷이 정체 없이 뜬다. 무엇의 목록인지 밝힌다.
-  return `<section class="methods"><div class="mhead"><div class="sec-title">예약 방법</div></div>
+  // Figma 탐색안엔 섹션 헤더가 없어 카드 넷이 정체 없이 뜬다. A 는 넣고, A′ 는 원안대로 뺀다.
+  const head = showHead ? `<div class="mhead"><div class="sec-title">예약 방법</div></div>` : '';
+  return `<section class="methods"${showHead ? '' : ' style="padding:0"'}>${head}
           <div class="mgrid">${cards}</div></section>`;
 }
 
@@ -774,8 +780,9 @@ function fFaq(){
 function buildApp(v){
   if (v === 'asis')
     return fHero() + fCoupon() + fReReserveLarge() + fMethodsCarousel() + fTesti();
-  if (v === 'grid')
-    return fHero('tight') + `<div style="height:14px;background:#fff"></div>` + fMethodsGrid()
+  if (v === 'grid' || v === 'grid0')
+    return fHero('tight') + `<div style="height:14px;background:#fff"></div>`
+         + fMethodsGrid(v === 'grid')
          + fReReserveCompact(true) + fTesti();
   if (v === 'icon')
     return fHero('compact') + fMethodsIcons() + fReReserveCompact(true) + fTesti() + fFaq();
@@ -945,7 +952,7 @@ function layout(){
   document.body.classList.toggle('wide', wide);
   const cols = wide ? VARIANTS.length : 1;
   const gap = 22, pad = wide ? 40 : 28;
-  const avail = Math.min(vw, 1560) - pad - gap * (cols - 1);
+  const avail = Math.min(vw, 1800) - pad - gap * (cols - 1);
   const k = Math.max(0.4, Math.min(1, avail / (W * cols)));
   document.documentElement.style.setProperty('--k', k.toFixed(4));
 
