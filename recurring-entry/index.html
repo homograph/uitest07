@@ -1014,6 +1014,8 @@ function syncSegs(){
   });
   set('segVar', S.variant); set('segRecur', S.recur);
   set('segDraft', S.drafts); set('segCoupon', S.coupon); set('segMode', S.mode);
+  const on = document.querySelector('#segVar button.on');
+  if (on && on.scrollIntoView) on.scrollIntoView({block:'nearest', inline:'nearest'});
 }
 
 function bind(id, key, cast){
