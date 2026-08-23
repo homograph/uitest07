@@ -256,7 +256,9 @@ body:not(.wide) .stage{justify-content:flex-start;}
 .picker .r span{font-size:13px;line-height:19px;color:#262a38;white-space:nowrap;}
 .methods{display:flex;flex-direction:column;gap:14px;padding:0;}
 .methods .mhead{padding:0 24px;}
-.mrow{display:flex;gap:10px;padding:0 0 0 24px;overflow-x:auto;scrollbar-width:none;}
+.mrow{display:flex;gap:10px;padding:0 0 0 24px;overflow-x:auto;scrollbar-width:none;
+  scroll-snap-type:x proximity;}
+.app:not(.v-asis) .mcard{scroll-snap-align:start;}
 .mrow::-webkit-scrollbar{display:none;}
 .mcard{flex:0 0 auto;width:160px;height:152px;border-radius:8px;position:relative;
   background:linear-gradient(135deg,#f1f9fe 0%,#f7fbfe 45%,#ffffff 100%);
@@ -268,6 +270,50 @@ body:not(.wide) .stage{justify-content:flex-start;}
 .mcard .thumb{width:75px;height:50px;display:flex;align-items:center;justify-content:flex-end;}
 .mcard .thumb img{max-width:100%;max-height:100%;display:block;}
 .mcard .thumb.cal{width:auto;} .mcard .thumb.cal img{width:46px;height:46px;}
+/* ══════════════════════════════════════════════════════════════
+   다듬은 변형 공통 레이어 (A·B·C·D). as-is 는 현행 기준선이므로
+   .v-asis 를 제외해 원본 그대로 둔다.
+   방법 카드는 콘텐츠 상자가 아니라 '누르는 것'이다. 재질과 눌림으로
+   그렇게 읽히게 하고, 한글은 낱말 가운데를 끊지 않는다.
+   ══════════════════════════════════════════════════════════════ */
+.app:not(.v-asis) .mcard,
+.app:not(.v-asis) .gcard{
+  border-radius:10px;
+  background:linear-gradient(158deg,#eef7fe 0%,#f6fbfe 52%,#ffffff 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 1px 2px rgba(25,37,77,.05),
+             0 10px 20px -12px rgba(25,37,77,.20);
+  transition:transform .12s cubic-bezier(.2,.8,.3,1), box-shadow .12s ease;
+  -webkit-user-select:none;user-select:none;}
+.app:not(.v-asis) .mcard:active,
+.app:not(.v-asis) .gcard:active{transform:scale(.982);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 1px 1px rgba(25,37,77,.06);}
+.app:not(.v-asis) .mt{letter-spacing:-.2px;}
+.app:not(.v-asis) .md{word-break:keep-all;}
+.app:not(.v-asis) .newbdg{background:rgba(50,162,250,.12);color:#0b74c4;
+  box-shadow:inset 0 0 0 1px rgba(50,162,250,.32);}
+.app:not(.v-asis) .picker,
+.app:not(.v-asis) .shortcut,
+.app:not(.v-asis) .q{transition:transform .12s cubic-bezier(.2,.8,.3,1), border-color .12s ease;
+  -webkit-user-select:none;user-select:none;}
+.app:not(.v-asis) .picker:active,
+.app:not(.v-asis) .shortcut:active,
+.app:not(.v-asis) .q:active{transform:scale(.99);}
+
+/* 작성 중: 주소 두 줄 나열 대신 출발과 도착을 잇는 경로 한 덩어리로.
+   앱이 이미 쓰는 마커에 연결선만 더한다. */
+.app:not(.v-asis) .addrs,
+.app:not(.v-asis) .picker .rows{position:relative;}
+.app:not(.v-asis) .addrs{row-gap:12px;}
+.app:not(.v-asis) .picker .rows{row-gap:11px;}
+.app:not(.v-asis) .addrs::before{content:"";position:absolute;left:3.5px;
+  top:11px;bottom:11px;width:0;border-left:2px dotted #c2c8d3;}
+.app:not(.v-asis) .picker .rows::before{content:"";position:absolute;left:3px;
+  top:11px;bottom:11px;width:0;border-left:2px dotted #c2c8d3;}
+.app:not(.v-asis) .addr svg,
+.app:not(.v-asis) .picker .r i{position:relative;z-index:1;background:#fff;}
+.app:not(.v-asis) .addrs .addr:last-child span,
+.app:not(.v-asis) .picker .r:last-child span{font-weight:700;}
+
 /* ══════════════════════════════════════════════════════════════
    D안. 예약 탭을 누른 사람은 이미 설득이 끝났다. 이 화면의 일은
    설명이 아니라 분기이므로, 방법 넷이 화면을 연다.
@@ -332,14 +378,21 @@ body:not(.wide) .stage{justify-content:flex-start;}
   cursor:pointer;position:relative;transition:box-shadow .16s;}
 .mgrid .gcard .mt{font-size:14px;line-height:20px;font-weight:500;color:#262a38;}
 .mgrid .gcard .md{font-size:12px;line-height:17px;font-weight:400;color:#4b5064;}
-.mgrid .ghost{width:calc(50% - 5px);min-height:86px;border-radius:8px;border:1px dashed #d5d7dc;
-  display:flex;align-items:center;justify-content:center;font-size:11px;color:#9da0ae;text-align:center;padding:8px;}
+.mgrid .gcard.wide{width:100%;min-height:0;padding:14px 16px;}
+.mgrid .gcard.wide .md{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .irow{display:flex;gap:8px;padding:16px 20px;align-items:flex-start;}
 .irow .ic{flex:1 1 0;display:flex;flex-direction:column;align-items:center;gap:12px;cursor:pointer;position:relative;}
-.irow .ic .circ{width:56px;height:56px;border-radius:50%;background:#e2f2fe;
-  display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.irow .ic .circ img{width:46px;height:34px;object-fit:contain;}
-.irow .ic .circ.cal img{width:32px;height:32px;}
+.irow .ic .circ{width:58px;height:58px;border-radius:18px;
+  background:linear-gradient(158deg,#e6f4fe 0%,#f2f9fe 55%,#ffffff 100%);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 1px 2px rgba(25,37,77,.05),
+             0 8px 16px -10px rgba(25,37,77,.22);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .12s cubic-bezier(.2,.8,.3,1), box-shadow .12s ease;}
+.irow .ic .circ img{width:44px;height:31px;object-fit:contain;}
+.irow .ic .circ.cal img{width:29px;height:29px;filter:drop-shadow(0 3px 6px rgba(41,63,113,.22));}
+.irow .ic:active .circ{transform:scale(.94);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9), 0 1px 1px rgba(25,37,77,.06);}
+.irow .ic span{letter-spacing:-.2px;}
 .irow .ic span{font-size:13px;line-height:19px;color:#4b5064;text-align:center;}
 .newbdg{position:absolute;top:8px;right:8px;background:#32a2fa;color:#fff;
   font-size:9.5px;line-height:16px;font-weight:700;letter-spacing:.4px;padding:0 6px;border-radius:8px;z-index:2;}
@@ -463,8 +516,8 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       <h2>읽는 법</h2>
       <p>판정선은 <b>콘텐츠 상단부터 595px</b>입니다. 기기 높이 800에서 상태바 32, 하단 시트 110, 탭바 63을 뺀 값이고,
         시트에 가려지는 영역은 실제로 보이지 않으므로 제외했습니다.</p>
-      <p><b>as-is, A, B 는 Figma 를 그대로 옮긴 것</b>이고 <b>C, D 는 새로 그린 제안</b>입니다.
-        A와 B의 거친 부분(플레이스홀더 카피, 임시 아이콘)은 원안의 참조값을 지키려고 손대지 않았습니다.</p>
+      <p><b>as-is 만 현행 그대로입니다.</b> A와 B는 Figma 탐색안의 구조를 지키되 마감을 다듬었고,
+        C와 D는 새로 그린 제안입니다. 원안과의 차이는 오른쪽에 적어 뒀습니다.</p>
       <p>D안은 하단 고정 CTA 를 뺐습니다. ‘예약 시작하기’와 방법 카드는 같은 일을 하는데
         그 버튼이 화면 하단 173px 을 계속 차지합니다. 빼면 첫 화면이 <b>595px 에서 705px 로</b> 늘어납니다.
         대신 아래로 스크롤한 사용자가 바로 누를 버튼이 없어집니다.</p>
@@ -481,10 +534,16 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
           PRD의 씬 데이터(평일 오전 6시에서 9시, 출퇴근과 등교)를 근거로 <em>“매주 같은 시간에 반복 예약해요”로 바꿔 넣었습니다.</em></dd></div>
         <div><dt>정기 썸네일</dt><dd>기존 ‘정기예약 유도 배너’의 <code>illust_calendar</code>를 가져왔습니다.
           다른 카드는 3D 렌더 썸네일이라 <em>톤이 맞지 않습니다.</em> 핸드오프 전에 같은 스타일이 필요합니다.</dd></div>
-        <div><dt>B안 아이콘</dt><dd>Figma 탐색안에 후기 프로필 아바타가 임시로 꽂혀 있어, 서비스 썸네일을 원형에 넣어 대체했습니다.</dd></div>
+        <div><dt>네 안 공통으로 다듬은 것</dt><dd>방법 카드가 콘텐츠 상자가 아니라 <em>누르는 것</em>으로 읽히도록
+          안쪽 하이라이트와 오프셋·블러 그림자를 주고, 누르면 눌리게 했습니다. NEW 뱃지는 솔리드에서 옅은 틴트로 낮췄습니다.
+          ‘작성 중’은 주소 두 줄 나열에서 출발과 도착을 점선으로 잇는 경로 한 덩어리로 바꿨고, 목적지를 굵게 잡았습니다.
+          한글은 낱말 가운데를 끊지 않습니다.</dd></div>
+        <div><dt>A안에서 바꾼 것</dt><dd>원안엔 <em>‘예약 방법’ 섹션 헤더가 없어</em> 카드 넷이 정체 없이 떴습니다. 헤더를 넣었고,
+          그 대가로 정기 카드가 390px 에서 427px 로 내려갔습니다. 세 장일 때 남던 빈 칸은 마지막 카드를 가로로 펴서 메웁니다.
+          ‘다시 예약하기’ 라벨은 12sp 로 잡혀 있어(as-is 16sp, B안 15sp) 15sp 로 통일했습니다.</dd></div>
+        <div><dt>B안에서 바꾼 것</dt><dd>Figma 탐색안엔 후기 프로필 아바타가 임시로 꽂혀 있었습니다. 서비스 썸네일로 바꾸면서
+          원형 디스크도 <em>둥근 타일로 바꿨습니다</em> — 3D 렌더가 가로형이라 원 안에서 잘리거나 너무 작아집니다.</dd></div>
         <div><dt>B안 쿠폰 배너</dt><dd>Figma 탐색안에는 없지만, 네 배치를 같은 콘텐츠로 비교하려고 넣었습니다.</dd></div>
-        <div><dt>A안 라벨과 헤더</dt><dd>‘다시 예약하기’가 12sp로 잡혀 있어(as-is 16sp, B안 15sp) 15sp로 통일했습니다.
-          A안에는 ‘예약 방법’ 섹션 헤더가 <em>아예 없는데</em>, 탐색안 그대로 두었습니다. 의도인지 확인이 필요합니다.</dd></div>
         <div><dt>D안</dt><dd>네 배치가 각자 하나씩 잃고 있어서 새로 그렸습니다. A는 썸네일, B는 설명 문구와 히어로,
           C는 맞춤 예약의 자리를 잃습니다. D는 히어로 일러스트를 버리는 대신 <em>썸네일과 설명을 모두 지킨 카드 넷</em>을
           맨 위에 놓습니다. 브랜드감은 3D 썸네일 네 개가 대신 집니다. 정기가 꺼지면 마지막 카드를 가로로 펴서 빈 칸을 없앱니다.</dd></div>
@@ -666,13 +725,16 @@ function fMethodsGridThumb(){
 
 function fMethodsGrid(){
   const list = methodList();
-  let cards = list.map(m => `
-    <div class="gcard" data-m="${m.id}">
+  const cards = list.map((m, i) => {
+    const wide = list.length === 3 && i === 2;   // 세 장이면 마지막을 펴서 구멍을 없앤다
+    return `<div class="gcard${wide ? ' wide' : ''}" data-m="${m.id}">
       ${m.recur ? '<div class="newbdg">NEW</div>' : ''}
       <div class="mt">${esc(m.t)}</div><div class="md">${esc(m.d)}</div>
-    </div>`).join('');
-  if (list.length === 3) cards += `<div class="ghost">빈 칸 (3개일 때 처리 필요)</div>`;
-  return `<section class="methods" style="padding:0"><div class="mgrid">${cards}</div></section>`;
+    </div>`;
+  }).join('');
+  // Figma 탐색안엔 섹션 헤더가 없어 카드 넷이 정체 없이 뜬다. 무엇의 목록인지 밝힌다.
+  return `<section class="methods"><div class="mhead"><div class="sec-title">예약 방법</div></div>
+          <div class="mgrid">${cards}</div></section>`;
 }
 
 function fMethodsIcons(){
@@ -770,7 +832,7 @@ function measureAll(){
   const p = ensureProbe();
   const out = {};
   VARIANTS.forEach(v => {
-    p.innerHTML = `<div class="app">${buildApp(v.id)}</div>`;
+    p.innerHTML = `<div class="app v-${v.id}">${buildApp(v.id)}</div>`;
     const app = p.firstElementChild;
     const card = app.querySelector('[data-m="recur"]');
     const total = Math.round(app.offsetHeight);
@@ -864,7 +926,7 @@ function render(){
       <div class="phonewrap">
         <div class="phone">
           ${chrome()}
-          <div class="scroller"><div class="app">${buildApp(v.id)}</div></div>
+          <div class="scroller"><div class="app v-${v.id}">${buildApp(v.id)}</div></div>
           ${S.mode === 'device' ? addon(v.id) : ''}
           ${S.mode === 'full' ? `<div class="fold" style="top:${STATUS + foldFor(v.id)}px"><b>첫 화면 끝</b></div>` : ''}
           <div class="toast" role="status">정기 예약 진입점. 여기서 설명 시트가 열립니다 (이 프로토 범위 밖)</div>
