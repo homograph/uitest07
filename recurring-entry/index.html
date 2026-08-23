@@ -536,12 +536,17 @@ function render(){
   measure();
 }
 
+function scale(){
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--k')) || 1;
+}
+
 function layout(){
-  const wide = window.innerWidth >= 1120;
+  const vw = document.documentElement.clientWidth || window.innerWidth;
+  const wide = vw >= 1120;
   document.body.classList.toggle('wide', wide);
   const cols = wide ? VARIANTS.length : 1;
   const gap = 24, pad = wide ? 32 : 24;
-  const avail = Math.min(window.innerWidth, 1640) - pad - gap * (cols - 1);
+  const avail = Math.min(vw, 1640) - pad - gap * (cols - 1);
   const k = Math.max(0.4, Math.min(1, avail / (W * cols)));
   document.documentElement.style.setProperty('--k', k.toFixed(4));
 
@@ -578,10 +583,11 @@ function measure(){
       sub.innerHTML = `전체 페이지 <b>${total}px</b>`;
       return;
     }
+    const k = scale();                       // .phone 이 transform:scale 되어 있어 rect 값이 축소돼 있다
     const appTop = app.getBoundingClientRect().top;
     const r = card.getBoundingClientRect();
-    const top = Math.round(r.top - appTop);
-    const bottom = Math.round(r.bottom - appTop);
+    const top = Math.round((r.top - appTop) / k);
+    const bottom = Math.round((r.bottom - appTop) / k);
 
     let state, need = 0;
     if (bottom <= FOLD) state = 'ok';
@@ -638,7 +644,10 @@ document.getElementById('reset').addEventListener('click', () => {
 });
 
 let rt;
-window.addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { layout(); measure(); }, 120); });
+const relayout = () => { clearTimeout(rt); rt = setTimeout(() => { layout(); measure(); }, 120); };
+window.addEventListener('resize', relayout);
+window.addEventListener('orientationchange', relayout);
+if (window.ResizeObserver) new ResizeObserver(relayout).observe(document.documentElement);
 
 syncSegs();
 render();
