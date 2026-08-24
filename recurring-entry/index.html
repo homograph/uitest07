@@ -333,8 +333,8 @@ body:not(.wide) .stage{justify-content:flex-start;}
 .picker .r span{font-size:13px;line-height:19px;color:#262a38;white-space:nowrap;}
 .methods{display:flex;flex-direction:column;gap:14px;padding:0;}
 .methods .mhead{padding:0 24px;}
-.mrow{display:flex;gap:10px;padding:0 0 0 24px;overflow-x:auto;scrollbar-width:none;
-  scroll-snap-type:x proximity;}
+.mrow{display:flex;gap:10px;padding:4px 0 20px 24px;margin:-4px 0 -20px 0;
+  overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;}
 .app:not(.v-asis) .mcard{scroll-snap-align:start;}
 .mrow::-webkit-scrollbar{display:none;}
 .mcard{flex:0 0 auto;width:160px;height:152px;border-radius:8px;position:relative;
@@ -453,7 +453,8 @@ body:not(.wide) .stage{justify-content:flex-start;}
 
 .fg-sch{padding:20px 24px;display:flex;flex-direction:column;gap:12px;}
 .fg-sch .lab{font-size:16px;line-height:23px;font-weight:700;color:#262a38;letter-spacing:-.2px;}
-.fg-pickrow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -24px;padding:0 24px;}
+.fg-pickrow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
+  margin:-12px -24px -24px;padding:12px 24px 24px;}
 .fg-pickrow::-webkit-scrollbar{display:none;}
 .fg-pick{flex:0 0 auto;background:#ffffff;border:1px solid #e6e9ef;border-radius:8px;
   box-shadow:0 6px 16px rgba(25,37,77,.05);
