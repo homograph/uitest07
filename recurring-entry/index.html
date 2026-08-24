@@ -162,7 +162,8 @@ body.mock .rail::before{content:"";display:block;width:36px;height:4px;border-ra
   background:var(--line);margin:0 auto 12px;}
 .pfoot{display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line-soft);
   gap:8px;align-items:center;}
-body.mock .pfoot{display:flex;}
+body:not(.wide) .pfoot{display:flex;}
+body:not(.mock) #pClose{display:none;}
 .pfoot button{flex:1 1 auto;border:1px solid var(--line);background:var(--surface);
   border-radius:var(--r-pill);padding:10px 12px;font:inherit;font-size:12.5px;font-weight:600;
   color:var(--ink-2);cursor:pointer;}
@@ -1576,7 +1577,9 @@ document.getElementById('fab').addEventListener('click', () => panel(true));
 document.getElementById('pscrim').addEventListener('click', () => panel(false));
 document.getElementById('pClose').addEventListener('click', () => panel(false));
 document.getElementById('pFull').addEventListener('click', () => {
-  consoleFull = true; panel(false); layout(); layoutBranch();
+  consoleFull = !consoleFull;
+  document.getElementById('pFull').textContent = consoleFull ? '목업만 보기' : '비교표와 주석 보기';
+  panel(false); layout(); layoutBranch();
   window.scrollTo(0, 0);
 });
 document.getElementById('reset').addEventListener('click', () => {
@@ -1585,6 +1588,7 @@ document.getElementById('reset').addEventListener('click', () => {
 
 syncSegs();
 render();
+setTimeout(relayout, 300);
 </script>
 </body>
 </html>
