@@ -1489,7 +1489,9 @@ function layout(){
   const wide = isWide();
   document.body.classList.toggle('wide', wide);
   // 좁은 화면 기본값은 목업 모드. 폰만 화면에 맞춰 채우고 콘솔은 설정 뒤로.
-  const mock = !wide && !consoleFull;
+  // 목업 모드는 실제 모바일 폭에서만. 좁은 데스크톱 창(700~1120)은
+  // 한 열짜리 콘솔로 두는 게 낫다 (짧은 뷰포트에서 화면 맞춤을 하면 폰이 작아진다).
+  const mock = !wide && vw < 700 && !consoleFull;
   document.body.classList.toggle('mock', mock);
   if (!mock) document.body.classList.remove('panelopen');
 
