@@ -503,7 +503,7 @@
   }
   function reticleInsideGeo(){ return pointInPoly(reticleWorld(), GEO); }
   // 장소 마커의 '보이지 않는' 스냅 반경(월드 단위) — 지오펜스에서 살짝만 넘게. 유저에겐 안 보임.
-  var SNAP_RADIUS_W = 60;
+  var SNAP_RADIUS_W = 120;   // 프로토타입 수치 — 넓힘(지오펜스에서 더 관대하게 스냅)
   function nearestInsideWorldDist(){
     var rw=reticleWorld(), best=Infinity;
     for(var i=0;i<INSIDE.length;i++){ var dx=INSIDE[i].wx-rw.x, dy=INSIDE[i].wy-rw.y, d=Math.sqrt(dx*dx+dy*dy); if(d<best) best=d; }
