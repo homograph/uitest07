@@ -879,6 +879,103 @@
       }}
     ],
     demo: 'markerNear'
+  }, {
+    title: '지오펜스 밖 관대한 스냅 — 마커의 보이지 않는 반경',
+    summary: '지정 마커마다 <b>보이지 않는 스냅 반경</b>을 둬서, 지오펜스 밖이라도 <b>반경 안</b>에 놓으면 지오펜스가 유지되고 최근접 지정지로 스냅됩니다. 반경 밖으로 나가면 확대가 풀려 1x로 축소되고, 그대로 놓으면 지오펜스가 해제됩니다.',
+    sections: [
+      { h: '유효 스냅 존 = 지오펜스 ∪ 마커 반경', p: '핀 위치가 <b>지오펜스 안</b>이거나, 밖이라도 <b>최근접 마커 반경 이내</b>면 “존 안”으로 봅니다. 유저의 사소한 오조작을 가까운 지정지로 흡수하는 장치입니다.' },
+      { h: '반경은 비표시 · 지리 거리 기준', p: '반경은 <b>화면에 그리지 않습니다</b>. 거리는 화면 px가 아니라 <b>지리 거리(m)</b>로 재세요 — 줌을 바꿔도 실제 반경(존 크기)이 일정해집니다. (웹 프로토는 지도이미지 월드 단위를 사용)' },
+      { h: 'release(idle) 판정', p: '손을 떼면 <b>존 안 → 최근접 지정지로 스냅 + 지오펜스 유지</b>, <b>존 밖 → 지오펜스 해제</b>(자유 지정).' },
+      { h: '패닝 중 확대 게이트', p: '드래그 중에도 매 프레임 존을 판정해 존 안일 때만 최근접 마커를 확대합니다. 존 밖으로 나가면 확대 대상을 없애(-1) 커졌던 마커가 1x로 <b>부드럽게 축소</b>됩니다. (guide ①의 확대 로직과 결합)' },
+      { h: '반경 값(튜닝)', p: '지오펜스에서 <b>살짝만</b> 넘도록 잡습니다(너무 크면 멀리서도 빨려들어감). 프로토타입 기준값이며 실측하며 조정하세요.' }
+    ],
+    code: [
+      { label: '① 유효 스냅 존 판정 (지오펜스 ∪ 반경)', variants: {
+        ios: { lang: 'swift', src:
+"let SNAP_RADIUS_M: Double = 25   // 마커 스냅 반경(m) — 비표시. 지오펜스에서 살짝만.\n"+
+"\n"+
+"// 화면 중앙 리티클의 지도 좌표\n"+
+"func reticleLatLng(_ mapView: NMFMapView) -> NMGLatLng {\n"+
+"    let c = reticle.superview!.convert(reticle.center, to: mapView)\n"+
+"    return mapView.projection.latlng(from: c)      // 화면 좌표 → 지도 좌표\n"+
+"}\n"+
+"// 존 = 지오펜스 내부 OR 최근접 마커 반경 이내 (거리는 미터 → 줌 무관)\n"+
+"func inSnapZone(_ mapView: NMFMapView) -> Bool {\n"+
+"    let here = reticleLatLng(mapView)\n"+
+"    if pointInPolygon(here, geofence) { return true }\n"+
+"    return coords.contains { $0.distance(to: here) <= SNAP_RADIUS_M }  // NMGLatLng.distance = m\n"+
+"}" },
+        android: { lang: 'kotlin', src:
+"private val SNAP_RADIUS_M = 25.0   // 마커 스냅 반경(m) — 비표시\n"+
+"\n"+
+"// 화면 중앙 리티클의 지도 좌표\n"+
+"fun reticleLatLng(): LatLng {\n"+
+"    val cx = mapView.width / 2f; val cy = mapView.height / 2f\n"+
+"    return naverMap.projection.fromScreenLocation(PointF(cx, cy))  // 화면 → 지도\n"+
+"}\n"+
+"// 존 = 지오펜스 내부 OR 최근접 마커 반경 이내 (미터 → 줌 무관)\n"+
+"fun inSnapZone(): Boolean {\n"+
+"    val here = reticleLatLng()\n"+
+"    if (pointInPolygon(here, geofence)) return true\n"+
+"    return coords.any { it.distanceTo(here) <= SNAP_RADIUS_M }  // LatLng.distanceTo = m\n"+
+"}" },
+        web: { lang: 'js', src:
+"// 웹 프로토타입 — 지도이미지 '월드' 단위 반경\n"+
+"var SNAP_RADIUS_W = 120;   // 지오펜스 폭(~135)에서 살짝 넘는 정도\n"+
+"function nearestInsideWorldDist(){\n"+
+"  var rw = reticleWorld(), best = Infinity;\n"+
+"  for (var i = 0; i < INSIDE.length; i++){\n"+
+"    var dx = INSIDE[i].wx - rw.x, dy = INSIDE[i].wy - rw.y;\n"+
+"    if (Math.sqrt(dx*dx + dy*dy) < best) best = Math.sqrt(dx*dx + dy*dy);\n"+
+"  }\n"+
+"  return best;\n"+
+"}\n"+
+"// 존 = 지오펜스 내부 OR 최근접 마커 반경 이내\n"+
+"function reticleInSnapZone(){\n"+
+"  return reticleInsideGeo() || nearestInsideWorldDist() <= SNAP_RADIUS_W;\n"+
+"}" }
+      }},
+      { label: '② release / 패닝에 적용', variants: {
+        ios: { lang: 'swift', src:
+"// release(카메라 idle): 존 안 → 스냅(+지오펜스 유지), 밖 → 해제\n"+
+"func mapViewCameraIdle(_ mapView: NMFMapView) {\n"+
+"    if inSnapZone(mapView) { snap(to: nearestCoord(mapView)) }\n"+
+"    else { releaseLandmark() }                     // 지오펜스 해제·자유 지정\n"+
+"}\n"+
+"// 패닝 중: 존 안일 때만 확대. 밖이면 -1 → 커졌던 마커 1x로 축소\n"+
+"func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {\n"+
+"    reproject(mapView)\n"+
+"    guard reason == NMFMapChangedByGesture else { return }\n"+
+"    highlightNearest(inSnapZone(mapView) ? nearestIndex(mapView) : -1)  // -1 = 전부 1x\n"+
+"}" },
+        android: { lang: 'kotlin', src:
+"// idle: 존 안 → 스냅(+지오펜스 유지), 밖 → 해제\n"+
+"naverMap.addOnCameraIdleListener {\n"+
+"    if (snapping) return@addOnCameraIdleListener\n"+
+"    if (inSnapZone()) { snapping = true; snapTo(nearestCoord()) { snapping = false } }\n"+
+"    else releaseLandmark()\n"+
+"}\n"+
+"// 패닝 중: 존 안일 때만 확대. 밖이면 -1 → 커졌던 마커 1x로 축소\n"+
+"naverMap.addOnCameraChangeListener { reason, _ ->\n"+
+"    reproject()\n"+
+"    if (reason != CameraUpdate.REASON_GESTURE) return@addOnCameraChangeListener\n"+
+"    highlightNearest(if (inSnapZone()) nearestIndex() else -1)  // -1 = 전부 1x\n"+
+"}" },
+        web: { lang: 'js', src:
+"// release: 존 안 → 스냅(+지오펜스 유지), 밖 → 해제\n"+
+"function doSnap(){\n"+
+"  var inZone = reticleInSnapZone();\n"+
+"  phone.classList.toggle('geo-on', inZone);\n"+
+"  if (inZone) snapToNearestInside();   // 최근접 지정지로 스냅\n"+
+"  else releaseToFree();                // 지오펜스 해제·자유 지정\n"+
+"}\n"+
+"// 패닝 중: 존 안일 때만 확대 (밖이면 -1 → CSS transition으로 1x 축소)\n"+
+"function liveMark(){\n"+
+"  var shown = phone.classList.contains('geo-on');\n"+
+"  markInsideNear((shown && reticleInSnapZone()) ? nearestOf(INSIDE) : -1);\n"+
+"}" }
+      }}
+    ]
   }];
 
   // ── 경량 신택스 하이라이터 (외부 라이브러리 없음) ──
