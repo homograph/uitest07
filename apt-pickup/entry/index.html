@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>타다 · 아파트 픽업 위치 지정 프로토타입</title>
+<title>타다 픽업 위치, 진입점 비교</title>
 <style>
   :root{
     color-scheme: light;
@@ -145,6 +145,7 @@
     font:inherit;font-size:14.5px;font-weight:600;color:var(--blue-600);cursor:pointer;}
   .pickempty .go:hover{background:var(--blue-50);}
   .pickdone{display:flex;align-items:center;gap:10px;margin-top:8px;}
+  .pickdone[hidden]{display:none;}
   .pickdone .val{flex:1 1 auto;display:flex;align-items:center;gap:8px;background:var(--gray-30);
     border-radius:9px;padding:12px 13px;font-size:14.5px;font-weight:600;letter-spacing:-.2px;}
   .pickdone .val .p{font-size:14px;}
@@ -346,90 +347,261 @@
   .note b{color:var(--gray-900);font-weight:600;}
   .note .src{font-size:11px;color:var(--gray-400);margin-top:9px;padding-top:9px;border-top:1px dashed var(--gray-80);}
   @media (max-width:820px){ .stage{gap:24px;} .phone{width:340px;height:720px;} }
+
+  /* ═════════ 비교 하네스 (폰 프레임 바깥) ═════════ */
+  :root{ --ink:#19254d; --ink-2:#4b5064; --ink-3:#868b9c; --line:#dfe3ea; --paper:#ffffff;
+         --good:#0ca30c; --warn:#fab219; --crit:#d03b3b; }
+  body.harness{background:#eef1f5;}
+  .hd{max-width:1100px;margin:0 auto;padding:30px 20px 4px;}
+  .hd h1{margin:0 0 8px;font-size:22px;line-height:30px;font-weight:700;color:var(--ink);letter-spacing:-.3px;}
+  .hd .lede{margin:0;font-size:14px;line-height:22px;color:var(--ink-2);max-width:760px;}
+  .valbar{margin:16px 0 0;padding:13px 16px;border:1px solid var(--line);border-left:3px solid var(--ink);
+    background:var(--paper);border-radius:8px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+  .valbar .k{font-size:12px;font-weight:700;color:var(--ink-3);letter-spacing:.3px;}
+  .valbar .v{font-size:15px;font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;}
+  .valbar .v.none{font-weight:400;color:var(--ink-3);}
+  .valbar .src{font-size:12px;color:var(--ink-3);margin-left:auto;}
+  .valbar .clr{border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 11px;
+    font:inherit;font-size:12.5px;color:var(--ink-2);cursor:pointer;}
+
+  .cols{max-width:1100px;margin:0 auto;padding:22px 20px 0;display:flex;gap:20px;flex-wrap:wrap;}
+  .col{flex:1 1 320px;min-width:300px;max-width:344px;}
+  .colhd{display:flex;align-items:center;gap:8px;margin-bottom:11px;}
+  .colhd .idx{width:22px;height:22px;border-radius:6px;background:var(--ink);color:#fff;font-size:12px;
+    font-weight:700;display:grid;place-items:center;flex:0 0 auto;}
+  .colhd b{font-size:14.5px;color:var(--ink);letter-spacing:-.2px;}
+  .colhd em{font-style:normal;font-size:11.5px;color:var(--ink-3);margin-left:auto;}
+  .cols .phone{width:340px;height:700px;border-radius:34px;}
+  .colnote{margin:11px 2px 0;font-size:12.5px;line-height:19px;color:var(--ink-2);}
+  .colnote b{color:var(--ink);font-weight:600;}
+
+  .drv{max-width:1100px;margin:28px auto 0;padding:0 20px;}
+  .drvcard{border:1px solid var(--line);background:var(--paper);border-radius:12px;padding:16px 18px;}
+  .drvcard h2{margin:0 0 11px;font-size:14px;font-weight:700;color:var(--ink);}
+  .drvslot{border:1.5px solid var(--line);border-radius:10px;padding:13px 14px;display:flex;
+    align-items:center;gap:11px;background:#f7f8fa;}
+  .drvslot.on{border-color:var(--ink);background:#fff;}
+  .drvslot .p{font-size:16px;}
+  .drvslot .tx b{display:block;font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.2px;}
+  .drvslot .tx small{display:block;font-size:11.5px;color:var(--ink-3);margin-top:1px;}
+  .drvwhen{margin:11px 0 0;font-size:12.5px;line-height:20px;color:var(--ink-2);}
+
+  table.cmp{max-width:1100px;margin:28px auto 0;border-collapse:collapse;width:calc(100% - 40px);
+    background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:12.5px;}
+  table.cmp caption{caption-side:top;text-align:left;padding:0 0 10px 2px;font-size:14px;font-weight:700;color:var(--ink);}
+  table.cmp th,table.cmp td{border-bottom:1px solid var(--line);padding:11px 13px;text-align:left;vertical-align:top;
+    line-height:19px;color:var(--ink-2);}
+  table.cmp thead th{background:#f7f8fa;color:var(--ink);font-size:12.5px;font-weight:700;}
+  table.cmp tbody th{font-weight:600;color:var(--ink);width:132px;}
+  table.cmp tr:last-child th,table.cmp tr:last-child td{border-bottom:none;}
+  .mk{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:6px;vertical-align:1px;}
+  .mk.good{background:var(--good);} .mk.warn{background:var(--warn);} .mk.crit{background:var(--crit);}
+
+  .reco{max-width:1100px;margin:26px auto 60px;padding:0 20px;}
+  .reco .box{border:1px solid var(--line);border-left:3px solid var(--ink);background:var(--paper);
+    border-radius:8px;padding:16px 18px;}
+  .reco h2{margin:0 0 8px;font-size:14px;font-weight:700;color:var(--ink);}
+  .reco p{margin:0 0 8px;font-size:13px;line-height:21px;color:var(--ink-2);}
+  .reco p:last-child{margin-bottom:0;}
+  .reco b{color:var(--ink);font-weight:600;}
+
+  /* 폰 안쪽 보조 */
+  .savehint{margin-top:9px;font-size:11.5px;line-height:17px;color:var(--gray-500);}
+  .callmap{flex:1 1 auto;position:relative;background:var(--map-bg);overflow:hidden;}
+  .callmap .blk{position:absolute;background:var(--map-block);border-radius:4px;}
+  .callmap .rd{position:absolute;background:var(--map-road);}
+  .callpin{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:16px;height:16px;
+    border-radius:50%;background:var(--navy);border:3px solid #fff;box-shadow:0 2px 8px rgba(25,37,77,.4);}
+  .callcard{flex:0 0 auto;background:#fff;border-radius:16px 16px 0 0;margin-top:-16px;position:relative;z-index:3;
+    padding:14px 16px 18px;box-shadow:0 -6px 20px rgba(20,30,55,.10);}
+  .carrow{display:flex;align-items:center;gap:11px;border:1px solid var(--gray-80);border-radius:11px;
+    padding:12px 13px;margin-bottom:10px;}
+  .carrow .em{font-size:19px;}
+  .carrow .tx{flex:1 1 auto;}
+  .carrow .tx b{display:block;font-size:14.5px;font-weight:600;letter-spacing:-.2px;}
+  .carrow .tx small{display:block;font-size:12px;color:var(--gray-500);}
+  .carrow .fee{font-size:14.5px;font-weight:700;letter-spacing:-.2px;}
+  .lbl{display:flex;align-items:center;gap:6px;margin:2px 0 7px;}
+  .lbl b{font-size:13.5px;font-weight:600;letter-spacing:-.2px;}
 </style>
 </head>
-<body>
-<div class="page">
 
-  <div class="head">
-    <h1>아파트 픽업 위치 지정 — 통합 프로토타입</h1>
-    <p>PRD ① <b>아파트 단지 픽업 예약 더 편하게 하기</b> (예약·ID 8781) + PRD ② <b>라이더가 지하주차장 정보 채팅으로 전송하기</b> (실시간·TADA-9539)</p>
-    <div class="prob">
-      <b>공통 문제</b> — 아파트에서 출발할 때 유저는 “어디로 오세요”(동 · 지상/지하 몇 층)를 구조화된 방법으로 전달할 수단이 없다.
-      그래서 <b>예약은 자유 텍스트</b>에, <b>실시간은 전화</b>에 떠넘기고 — 매번 반복한다.
+<body class="harness">
+
+<header class="hd">
+  <h1>픽업 위치를 어디서 받을까</h1>
+  <p class="lede">값은 하나입니다. 그 하나를 세 진입점이 각각 어떻게 받는지 나란히 놓았습니다.
+     어느 폰에서 넣어도 나머지 둘과 드라이버 슬롯이 같이 바뀝니다.</p>
+  <div class="valbar">
+    <span class="k">지금 값</span>
+    <span class="v none" id="valTx">아직 지정되지 않았습니다</span>
+    <span class="src" id="valSrc"></span>
+    <button class="clr" id="valClr">값 비우기</button>
+  </div>
+</header>
+
+<div class="cols">
+
+  <!-- ① 주소 저장 -->
+  <section class="col">
+    <div class="colhd"><span class="idx">1</span><b>주소를 저장할 때</b><em>배민, 도어대시</em></div>
+    <div class="phone" id="ph1">
+      <div class="screen on">
+        <div class="statusbar"><div class="time">9:41</div>
+          <div class="sysico"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></div></div>
+        <div class="appbar"><div class="back"><i></i></div><div class="ttl"><b>장소 편집</b></div></div>
+        <div class="rbody">
+          <div class="card">
+            <div class="rrow"><div class="mk"><i></i></div>
+              <div class="tx"><b>우리 집</b><small>래미안 원베일리, 서초구 신반포로 275</small></div></div>
+          </div>
+          <div class="card pickcard" id="c1card">
+            <div class="sechead"><b>픽업 위치</b><span class="badge">아파트 단지</span></div>
+            <div class="pickempty" id="c1empty">
+              <p>한 번 저장하면 이 주소로 부를 때마다 자동으로 적용돼요.</p>
+              <button class="go" data-open="1">픽업 위치 지정하기</button>
+            </div>
+            <div class="pickdone" id="c1done" hidden>
+              <div class="val"><span class="p">🅿️</span><span id="c1val"></span></div>
+              <button class="ch" data-open="1">변경</button>
+            </div>
+            <p class="savehint">주소에 붙는 값이라 호출할 때 다시 묻지 않습니다.</p>
+          </div>
+        </div>
+        <div class="rcta"><button class="btn">저장</button></div>
+      </div>
     </div>
-  </div>
+    <p class="colnote"><b>집 주소의 속성</b>으로 한 번 저장합니다. 반복 이용이 40퍼센트인 아파트에 맞는 자리입니다.</p>
+  </section>
 
-  <div class="tabs">
-    <button class="tab on" data-sc="live">실시간 · 첫 이용</button>
-    <button class="tab" data-sc="repeat">실시간 · 재방문</button>
-    <button class="tab" data-sc="reserve">예약 생성</button>
-    <span class="spacer"></span>
-    <button class="reset" id="reset">처음부터 다시</button>
-  </div>
-  <p class="scdesc" id="scdesc"></p>
-
-  <div class="stage">
-    <!-- ══════════ RIDER ══════════ -->
-    <div class="col">
-      <div class="caplabel"><span class="dot"></span><span>라이더 앱</span><em>· 유저</em></div>
-      <div class="phone" id="riderPhone">
-
-        <!-- chat screen -->
-        <div class="screen on" id="scChat">
-          <div class="statusbar"><div class="time">9:41</div>
-            <div class="sysico"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></div></div>
-          <div class="appbar">
-            <div class="back"><i></i></div>
-            <div class="ttl"><b>드라이버와 채팅</b><small id="chatSub">타다 넥스트 · 12가 3456 · 3분 뒤 도착</small></div>
-            <div class="avatar">🚗</div>
-          </div>
-          <div class="chatbody" id="chatBody"></div>
-          <div class="presetzone">
-            <div class="presetlabel" id="presetLabel">지난번에 보낸 픽업 위치예요 — <b>한 번만 누르면 전송</b></div>
-            <div class="presets" id="presets"></div>
-            <div class="fakeinput">메시지 입력</div>
-          </div>
+  <!-- ② 호출 요청 -->
+  <section class="col">
+    <div class="colhd"><span class="idx">2</span><b>호출을 요청할 때</b><em>Uber, Grab</em></div>
+    <div class="phone" id="ph2">
+      <div class="screen on">
+        <div class="statusbar"><div class="time">9:41</div>
+          <div class="sysico"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></div></div>
+        <div class="callmap">
+          <div class="blk" style="left:24px;top:40px;width:80px;height:60px;"></div>
+          <div class="blk" style="left:120px;top:40px;width:70px;height:60px;"></div>
+          <div class="blk" style="left:206px;top:40px;width:80px;height:60px;"></div>
+          <div class="blk" style="left:24px;top:150px;width:80px;height:70px;"></div>
+          <div class="blk" style="left:206px;top:150px;width:80px;height:70px;"></div>
+          <div class="rd" style="left:0;top:112px;right:0;height:22px;"></div>
+          <div class="rd" style="left:150px;top:0;width:18px;bottom:0;"></div>
+          <div class="callpin"></div>
         </div>
-
-        <!-- reservation screen -->
-        <div class="screen" id="scRes">
-          <div class="statusbar"><div class="time">9:41</div>
-            <div class="sysico"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></div></div>
-          <div class="appbar">
-            <div class="back"><i></i></div>
-            <div class="ttl"><b>예약하기</b></div>
+        <div class="callcard">
+          <div class="carrow">
+            <span class="em">🚐</span>
+            <div class="tx"><b>타다 넥스트</b><small>3분 뒤 도착 예정</small></div>
+            <span class="fee">12,900원</span>
           </div>
-          <div class="rbody">
-            <div class="card route">
-              <div class="rrow"><div class="mk"><i></i></div>
-                <div class="tx"><b>래미안 원베일리</b><small>서초구 반포동 · 아파트</small></div></div>
-              <div class="rrow to"><div class="mk"><i></i></div>
-                <div class="tx"><b>인천공항 제2여객터미널</b><small>출국장 3층</small></div></div>
-              <div class="rsep"></div>
-              <div class="when">🗓 <span>8월 21일(금) 오전 5:30</span> <em>· 타다 넥스트</em></div>
-            </div>
-
-            <div class="card pickcard" id="pickCard">
-              <div class="sechead"><b>픽업 위치</b><span class="badge">아파트 단지</span></div>
-              <div class="pickempty" id="pickEmpty">
-                <p>동과 지상/지하만 알려주면 기사님이 헤매지 않고 바로 찾아가요.</p>
-                <button class="go" id="openFromRes">픽업 위치 지정하기</button>
-              </div>
-              <div class="pickdone" id="pickDone" hidden>
-                <div class="val"><span class="p">🅿️</span><span id="pickVal"></span></div>
-                <button class="ch" id="editFromRes">변경</button>
-              </div>
-            </div>
-
-            <div class="card">
-              <div class="sechead"><b>요청사항</b><span class="req">선택</span></div>
-              <div class="memo"><b>픽업 위치 외에 전달할 내용이 있다면 알려주세요</b></div>
-              <div class="hintline"><i>💡</i><span>픽업 위치는 위 항목에서 지정해요. 요청사항에 다시 적지 않아도 돼요.</span></div>
-            </div>
+          <div class="lbl"><b>픽업 위치</b><span class="badge">아파트 단지</span></div>
+          <div class="pickempty" id="c2empty">
+            <p style="margin:0 0 9px">동과 지상 지하를 알려주면 기사님이 헤매지 않아요.</p>
+            <button class="go" data-open="2">픽업 위치 지정하기</button>
           </div>
-          <div class="rcta"><button class="btn" id="resSubmit">예약 요청하기</button></div>
+          <div class="pickdone" id="c2done" hidden style="margin-top:0">
+            <div class="val"><span class="p">🅿️</span><span id="c2val"></span></div>
+            <button class="ch" data-open="2">변경</button>
+          </div>
+          <button class="btn" style="margin-top:12px">호출하기</button>
         </div>
+      </div>
+    </div>
+    <p class="colnote">Uber가 <b>Any pickup notes</b>를 두는 자리입니다. 이번 운행에만 붙습니다.</p>
+  </section>
+
+  <!-- ③ 매칭 후 채팅 -->
+  <section class="col">
+    <div class="colhd"><span class="idx">3</span><b>매칭된 뒤 채팅에서</b><em>PRD 2안</em></div>
+    <div class="phone" id="ph3">
+      <div class="screen on">
+        <div class="statusbar"><div class="time">9:41</div>
+          <div class="sysico"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></div></div>
+        <div class="appbar">
+          <div class="back"><i></i></div>
+          <div class="ttl"><b>드라이버와 채팅</b><small>타다 넥스트, 3분 뒤 도착</small></div>
+          <div class="avatar">🚗</div>
+        </div>
+        <div class="chatbody" id="c3chat"></div>
+        <div class="presetzone">
+          <div class="presets" id="c3presets"></div>
+          <div class="fakeinput">메시지 입력</div>
+        </div>
+      </div>
+    </div>
+    <p class="colnote">기사가 이미 오는 중입니다. <b>최초 입력보다 변경에 맞는</b> 자리입니다.</p>
+  </section>
+</div>
+
+<div class="drv">
+  <div class="drvcard">
+    <h2>드라이버 앱, 운행 정보 슬롯</h2>
+    <div class="drvslot" id="dslot">
+      <span class="p">🅿️</span>
+      <div class="tx"><b id="dslotTx">픽업 상세 위치 미전달</b><small id="dslotSub">라이더가 아직 지정하지 않았습니다</small></div>
+    </div>
+    <p class="drvwhen">기사에게 닿는 시점이 진입점마다 다릅니다.
+      <b>1번</b>은 저장해 두었다가 배차와 동시에, <b>2번</b>은 호출과 동시에,
+      <b>3번</b>은 라이더가 채팅을 보낸 뒤입니다. 3번만 기사가 이미 이동 중입니다.</p>
+  </div>
+</div>
+
+<table class="cmp">
+  <caption>진입점 비교</caption>
+  <thead>
+    <tr><th scope="col">기준</th><th scope="col">1. 주소 저장</th><th scope="col">2. 호출 요청</th><th scope="col">3. 매칭 후 채팅</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row">언제 묻나</th>
+      <td>주소를 처음 등록할 때 한 번</td>
+      <td>호출을 누르기 직전마다</td>
+      <td>배차된 뒤, 기사가 오는 중</td></tr>
+    <tr><th scope="row">신규 유저 구제<br><small>현재 13퍼센트</small></th>
+      <td><span class="mk good"></span>집을 등록하는 흐름이라 자연스럽게 걸린다</td>
+      <td><span class="mk good"></span>호출 화면에서 매번 보이니 놓치기 어렵다</td>
+      <td><span class="mk warn"></span>처음 부르는 사람은 채팅을 열지 않는다</td></tr>
+    <tr><th scope="row">반복 이용<br><small>40퍼센트가 2회 이상</small></th>
+      <td><span class="mk good"></span>한 번 저장하면 다시 묻지 않는다</td>
+      <td><span class="mk warn"></span>기본값이 있어도 매번 확인 대상이다</td>
+      <td><span class="mk warn"></span>프리셋 1탭이어도 매 운행 반복된다</td></tr>
+    <tr><th scope="row">기사 도달 시점</th>
+      <td><span class="mk good"></span>배차와 동시</td>
+      <td><span class="mk good"></span>배차와 동시</td>
+      <td><span class="mk crit"></span>이미 이동 중이라 경로를 되돌려야 할 수 있다</td></tr>
+    <tr><th scope="row">현장 변경</th>
+      <td><span class="mk crit"></span>설정에 묻혀 있어 그 자리에서 못 바꾼다</td>
+      <td><span class="mk warn"></span>호출 뒤에는 손댈 수 없다</td>
+      <td><span class="mk good"></span>바로 바꾸고 기사가 응답까지 한다</td></tr>
+    <tr><th scope="row">실패 모드</th>
+      <td>이사하거나 다른 집에서 부르면 틀린 값이 그대로 간다</td>
+      <td>급할 때 건너뛰고 호출한다</td>
+      <td>기사가 오버레이를 놓치면 전화로 되돌아간다</td></tr>
+    <tr><th scope="row">PRD 매핑</th>
+      <td>둘 다 아님, 장소 도메인으로 범위가 넓어진다</td>
+      <td>PRD 1의 예약 생성과 같은 자리</td>
+      <td>PRD 2가 지목한 자리</td></tr>
+    <tr><th scope="row">실제 사례</th>
+      <td>배민 상세주소, 도어대시 dropoff instructions</td>
+      <td>Uber Pickup Notes, Grab Entrances</td>
+      <td>Uber 채팅은 있으나 최초 입력은 아니다</td></tr>
+  </tbody>
+</table>
+
+<div class="reco">
+  <div class="box">
+    <h2>읽는 법</h2>
+    <p>세 진입점은 <b>경쟁 관계가 아닙니다.</b> 표를 보면 1번과 3번이 서로의 빈칸을 채웁니다.
+       1번은 반복과 도달 시점에서 강하고 현장 변경에서 약합니다. 3번은 정확히 그 반대입니다.</p>
+    <p>그래서 실제 후보는 <b>1번 더하기 3번</b>입니다. 집 주소에 한 번 저장해 두고, 채팅은 그날 사정이 다를 때
+       바꾸는 통로로 씁니다. 2번은 그 사이에서 <b>확인만</b> 시켜주면 충분합니다.</p>
+    <p>결정해야 할 것은 하나입니다. <b>최초 입력을 어디서 받을 것인가.</b>
+       여기서 1번을 고르면 장소 도메인까지 범위가 넓어지고, 3번을 고르면 PRD 2 범위에 머무는 대신
+       반복 이용 40퍼센트를 계속 반복하게 둡니다.</p>
+  </div>
+</div>
 
         <!-- shared sheet -->
         <div class="scrim" id="scrim"></div>
@@ -496,139 +668,20 @@
           </div>
         </div>
 
-      </div>
-    </div>
-
-    <!-- ══════════ DRIVER ══════════ -->
-    <div class="col">
-      <div class="caplabel"><span class="dot d"></span><span>드라이버 앱</span><em>· 기사님</em></div>
-      <div class="phone" id="driverPhone">
-        <div class="screen on">
-          <div class="statusbar"><div class="time">9:41</div>
-            <div class="sysico"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></div></div>
-          <div class="dtop">
-            <div class="st"><span class="pulse"></span><b id="dState">픽업지로 이동 중</b><span class="eta" id="dEta">3분 · 1.2km</span></div>
-          </div>
-          <div class="dmap">
-            <div class="grn" style="left:14px;top:22px;width:78px;height:72px;"></div>
-            <div class="blk" style="left:106px;top:20px;width:62px;height:74px;">101동</div>
-            <div class="blk" style="left:178px;top:20px;width:62px;height:74px;">102동</div>
-            <div class="blk" style="left:292px;top:20px;width:62px;height:74px;">103동</div>
-            <div class="blk" style="left:14px;top:132px;width:78px;height:74px;">106동</div>
-            <div class="blk" style="left:106px;top:132px;width:62px;height:74px;">104동</div>
-            <div class="blk" style="left:178px;top:132px;width:62px;height:74px;">105동</div>
-            <div class="blk" style="left:292px;top:132px;width:62px;height:74px;">109동</div>
-            <div class="grn" style="left:14px;top:244px;width:78px;height:66px;"></div>
-            <div class="blk" style="left:106px;top:240px;width:62px;height:72px;">107동</div>
-            <div class="blk" style="left:178px;top:240px;width:62px;height:72px;">108동</div>
-            <div class="blk" style="left:14px;top:344px;width:88px;height:56px;">상가</div>
-            <div class="blk" style="left:112px;top:344px;width:128px;height:56px;">단지 정문</div>
-            <div class="rd" style="left:0;top:104px;right:0;height:20px;"></div>
-            <div class="rd" style="left:0;top:216px;right:0;height:16px;"></div>
-            <div class="rd" style="left:0;top:322px;right:0;height:16px;"></div>
-            <div class="rd" style="left:268px;top:0;width:16px;bottom:0;"></div>
-            <div class="route" style="left:150px;top:110px;width:130px;height:6px;"></div>
-            <div class="route" style="left:274px;top:110px;width:6px;height:242px;"></div>
-            <div class="car" style="left:264px;top:340px;">🚙</div>
-            <div class="tgt" id="dTgt" style="left:130px;top:96px;"></div>
-          </div>
-          <div class="dcard">
-            <div class="dlab">출발지</div>
-            <div class="daddr">래미안 원베일리</div>
-            <div class="dsub">서초구 신반포로 275</div>
-
-            <div class="slot empty" id="dSlot">픽업 상세 위치 미전달</div>
-
-            <div class="ddiv"></div>
-            <div class="drow"><span class="k">목적지</span><span>인천공항 제2여객터미널</span></div>
-            <button class="dbtn">픽업지 도착</button>
-          </div>
-
-          <div class="dov" id="dOverlay">
-            <div class="ohead"><b>라이더 메시지</b>
-              <span class="ring" id="ovRing"><span id="ovSec">15</span></span></div>
-            <div class="omsg" id="ovMsg"></div>
-            <div class="oacts">
-              <button class="pri" id="ovOk">확인했어요</button>
-              <button id="ovCall">전화할게요</button>
-            </div>
-          </div>
-          <div class="toast" id="dToast"></div>
-        </div>
-      </div>
-      <div class="skip"><button id="skipBtn" hidden>15초 기다리지 않고 넘기기 →</button></div>
-    </div>
-  </div>
-
-  <div class="notes">
-    <div class="note">
-      <h3><i>1</i>하나의 시트, 두 개의 입구</h3>
-      <p>두 PRD가 다른 건 <b>시점</b>이지 <b>물건</b>이 아니다. 예약 생성 시점과 실시간 매칭 후 시점이 <b>같은 시트</b>를 띄우고 <b>같은 값</b>을 만든다.</p>
-      <p><code>{지상|지하, 층, 동}</code> → “지하 2층 · 101동 앞에서 탈게요”</p>
-      <p class="src">PRD① 요구사항 / PRD② 예상 솔루션 1~2단계</p>
-    </div>
-    <div class="note">
-      <h3><i>2</i>칩이 먼저, 입력은 폴백</h3>
-      <p>빈 입력 필드는 “뭘 적어야 하지”를 못 푼다 — 지금 요청사항 필드가 실패하는 방식 그대로다. 답을 <b>보여줘야</b> 한다.</p>
-      <p>단지 데이터가 있으면 동 칩, 없으면 같은 자리에 숫자 키패드. <b>커버리지 0%든 100%든 같은 UI</b>라 출시가 데이터 진척도와 분리된다.</p>
-      <p class="src">신규 유저 픽업위치 언급률 13.0% vs 기존 47.5% (PRD①)</p>
-    </div>
-    <div class="note">
-      <h3><i>3</i>두 번째부터는 확인만</h3>
-      <p>아파트는 대부분 집이다. 아파트 출발 실시간 유저의 <b>40%가 2회 이상</b>, 그중 <b>28.8%가 5회 이상</b>. 매번 같은 안내를 반복 중.</p>
-      <p>같은 주소 재방문이면 프리셋이 완성된 채로 뜨고 <b>1탭 전송</b>. 예약에서도 미리 채워져 등장한다.</p>
-      <p class="src">아파트 출발 실시간 유저 5,985/16,657명 (PRD②)</p>
-    </div>
-    <div class="note">
-      <h3><i>4</i>휘발 문제 — 채팅이 아니라 운행 정보로</h3>
-      <p>픽업 위치는 “메시지”가 아니라 <b>이 운행의 속성</b>이다. 채팅에 쌓으면 시간순으로 밀려나고 운전 중 스크롤을 시켜야 한다.</p>
-      <p>출발지 주소 바로 아래 <b>고정 슬롯</b>에 남기면 오버레이가 사라져도 정보는 남는다. 예약에서 온 값과 실시간에서 온 값이 <b>같은 슬롯</b>에 들어가 드라이버는 한 번만 배운다.</p>
-      <p class="src">PRD② 논의 요청 사항에 대한 제안</p>
-    </div>
-    <div class="note">
-      <h3><i>5</i>출입구는 “선택지”가 아니라 “기본값 변경”</h3>
-      <p>도로명주소는 <b>단지가 여러 동이어도 출입구 기준 주소 하나만</b> 준다. 즉 아무것도 안 고르면 출발 좌표는 이미 정문이다. <b>정문을 고르는 건 아무것도 안 한 것과 같다.</b></p>
-      <p>의미가 생기는 건 “정문 말고 후문”뿐이다. 그래서 1단계 형제(지상·지하)로 두지 않고 <b>텍스트 링크로 내렸다</b> — 정문은 지상이라 지상과 배타적일 수 없다.</p>
-      <p>후문은 입주민 전용·보행자 전용인 단지가 있어 데이터 없이 칩으로 주면 오히려 사고가 난다. 그래서 <b>정문·후문 + 직접 입력</b>만.</p>
-      <p class="src">확인 필요: PRD① 46.0% vs 37.5% 차이엔 “N동”이 포함돼 있어 출입구 어휘분을 분리할 수 없음 → 요청사항 원문 쿼리로 빈도 확인</p>
-    </div>
-    <div class="note">
-      <h3><i>6</i>지하는 “지정”이 아니라 “부탁”이다</h3>
-      <p>단지는 사유지라 기사에게 진입 의무가 없다. 기사들이 꺼리는 이유가 분명하다 — 주차 차량·구조물에 가린 <b>사고 위험</b>, 보험료, GPS 미수신, 회전율 대비 <b>요금은 100~200원 차이</b>.</p>
-      <p>그래서 유저가 지금 <b>전화로 부탁</b>하는 것이다. UI가 “고르면 끝”처럼 보이면 안 된다.</p>
-      <p>지하 요청일 때만 드라이버 응답을 <b>“지하로 갈게요 / 지상에서 뵐게요”</b>로 바꿔 <b>협상을 UI 안에</b> 넣었다. 거절하면 픽업 지점이 지상으로 조정돼 슬롯에 남는다.</p>
-      <p>출입구 이름도 단지마다 달라 <b>정문·후문 + 직접 입력</b>으로만 둔다. 방위문(동문·서문)은 안 쓰는 단지가 많다.</p>
-      <p class="src">데스크 리서치 2026-08-20: 택시 커뮤니티 사례, 대리기사 실전 가이드, 카카오T 추천 승차위치</p>
-    </div>
-  </div>
-</div>
-
 <script>
 (function(){
-  const $ = s => document.querySelector(s);
+  const $  = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
 
-  const SAVED = { lvl:'under', floor:2, dong:'101', line:'1호 라인' };
   const DONGS = ['101','102','103','104','105','106','107','108'];
   const GATES = ['정문','후문'];
-  const LINES = [1,2];   // 동 데이터에서 온 라인 수 — 계단식 2라인 가정. 복도식·타워형은 달라짐
+  const LINES = [1,2];
 
   const S = {
-    sc:'live',
     draft:{lvl:null,floor:null,dong:null,line:null,gate:null,etc:''},
-    saved:null,
-    sentence:null,
-    input:'chip',
-    kpVal:'',
-    sheet:false,
-    slot:null,
-    timer:null
-  };
-
-  const SCDESC = {
-    live:'집(아파트)에서 <b>처음</b> 실시간을 부른 유저. 지금은 이 상황에서 픽업 위치를 알릴 방법이 전화밖에 없다 — 아파트 출발 실시간 라이더 발신 <b>21.76%</b> (비아파트 10.98%).',
-    repeat:'같은 집에서 <b>또</b> 부른 유저. 저장된 픽업 위치가 프리셋에 완성된 채로 떠서 <b>1탭</b>이면 끝난다.',
-    reserve:'공항 가는 <b>예약</b>을 만드는 중. 픽업 위치가 요청사항에서 <b>분리된 독립 항목</b>으로 올라온다 — 공항行 예약의 <b>57.1%</b>가 아파트 출발.'
+    input:'chip', kpVal:'', gateMode:'chip', lineMode:'chip',
+    sheet:false, host:null,
+    pickup:null, source:null, sc:'entry'
   };
 
   /* ── text helpers ── */
@@ -647,78 +700,6 @@
     return !!(d.lvl && d.dong && (d.lvl!=='under' || d.floor));
   }
 
-  /* ── scenario ── */
-  function setScenario(sc){
-    clearInterval(S.timer);
-    S.sc = sc;
-    S.draft = {lvl:null,floor:null,dong:null,line:null,gate:null,etc:''};
-    S.saved = (sc==='repeat') ? Object.assign({},SAVED) : null;
-    S.sentence = null;
-    S.slot = null;
-    S.input = 'chip'; S.kpVal=''; S.sheet=false; S.gateMode='chip'; S.lineMode='chip'; S.reply=null;
-    $$('.tab').forEach(t=>t.classList.toggle('on', t.dataset.sc===sc));
-    $('#scdesc').innerHTML = SCDESC[sc];
-    $('#scChat').classList.toggle('on', sc!=='reserve');
-    $('#scRes').classList.toggle('on', sc==='reserve');
-    $('#dState').textContent = sc==='reserve' ? '예약 배차됨' : '픽업지로 이동 중';
-    $('#dEta').textContent  = sc==='reserve' ? '8월 21일 05:30' : '3분 · 1.2km';
-    $('#dOverlay').classList.remove('on');
-    $('#dToast').classList.remove('on');
-    $('#skipBtn').hidden = true;
-    renderAll();
-  }
-
-  /* ── rider: chat ── */
-  function renderChat(){
-    const body = $('#chatBody');
-    body.innerHTML = '';
-    const add = (cls, html) => { const d=document.createElement('div'); d.className=cls; d.innerHTML=html; body.appendChild(d); };
-    add('sysmsg', S.sc==='repeat' ? '드라이버가 배차됐어요 · 오늘 3번째 이용' : '드라이버가 배차됐어요');
-    add('bub them', '안녕하세요, 3분 뒤 도착 예정입니다.');
-    if(S.sentence){
-      add('bub me pickup', '<span class="tag">🅿️ 픽업 위치</span>'+S.sentence);
-    }
-    if(S.reply){ add('bub them', S.reply); }
-    body.scrollTop = body.scrollHeight;
-
-    // presets
-    const ps = $('#presets'); ps.innerHTML='';
-    const lab = $('#presetLabel');
-    lab.classList.toggle('on', !!(S.saved && !S.sentence));
-
-    if(S.sentence){
-      // already sent → normal presets only
-    } else if(S.saved){
-      const c = document.createElement('div');
-      c.className='chip saved';
-      c.innerHTML = '<span class="main">🅿️ '+sentenceText(S.saved)+'</span><span class="edit">변경</span>';
-      c.querySelector('.main').addEventListener('click', ()=>{ sendPickup(Object.assign({},S.saved)); });
-      c.querySelector('.edit').addEventListener('click', ()=>{ S.draft=Object.assign({},S.saved); openSheet(); });
-      ps.appendChild(c);
-    } else {
-      const c = document.createElement('button');
-      c.className='chip pick';
-      c.textContent='🅿️ 지상/지하에서 탑승할게요';
-      c.addEventListener('click', ()=>{ S.draft={lvl:null,floor:null,dong:null,line:null,gate:null,etc:''}; openSheet(); });
-      ps.appendChild(c);
-    }
-    ['조금만 기다려주세요','금방 나갈게요','감사합니다'].forEach(t=>{
-      const b=document.createElement('button'); b.className='chip'; b.textContent=t; ps.appendChild(b);
-    });
-  }
-
-  /* ── rider: reservation ── */
-  function renderRes(){
-    const has = !!S.sentence;
-    $('#pickEmpty').hidden = has;
-    $('#pickDone').hidden = !has;
-    $('#pickCard').classList.toggle('done', has);
-    if(has){ const p = S.draft.lvl?S.draft:S.saved;
-      $('#pickVal').textContent = slotText(p) + (p.etc ? ' · '+p.etc : ''); }
-    $('#resSubmit').textContent = S.slot ? '예약 요청 완료' : '예약 요청하기';
-    $('#resSubmit').disabled = !!S.slot;
-  }
-
   /* ── sheet ── */
   function scrollSheetDown(){
     const sb = $('.sbody');
@@ -732,7 +713,7 @@
       const sb=$('.sbody'); sb.scrollTop = sb.scrollHeight;
     });
   });
-  function openSheet(){
+  function openSheet_unused(){
     S.sheet=true; S.input='chip'; S.kpVal=''; S._lineShown=false; S._dongShown=false; S._etcShown=false; S.gateMode='chip'; S.lineMode='chip';
     $('#sheetCta').textContent = S.sc==='reserve' ? '이 위치로 저장' : '이대로 보내기';
     $('#sheetSub').textContent = S.sc==='reserve' ? '예약이 배차되면 기사님께 함께 전달돼요' : '기사님께 그대로 전달돼요';
@@ -812,91 +793,78 @@
     $('#sheetCta').disabled = !ready;
   }
 
-  /* ── send / save ── */
-  function sendPickup(p){
-    S.reply = null;
-    S.draft = Object.assign({},p);
-    S.sentence = sentenceText(p);
+  /* ── 확정 값 반영 ── */
+  const SRCNAME = {1:'주소 저장에서 지정', 2:'호출 요청에서 지정', 3:'채팅에서 전송'};
+
+  function commit(){
+    S.pickup = Object.assign({}, S.draft);
     closeSheet();
     renderAll();
-    if(S.sc!=='reserve') setTimeout(()=>showOverlay(p), 750);
-  }
-  function saveReservation(){
-    // 예약: 저장만. 드라이버 전달은 '예약 요청하기' 시점.
-    closeSheet(); renderAll();
-  }
-
-  /* ── driver ── */
-  function fillSlot(p, note){
-    S.slot = Object.assign({}, p, {ack:S.slot&&S.slot.ack});
-    const el = $('#dSlot');
-    el.className = 'slot full flash';
-    el.innerHTML = '<span class="p">🅿️</span><div class="tx"><b>'+slotText(p)+'</b>'
-      + (p.etc ? '<span class="etc">'+p.etc+'</span>' : '')
-      + '<small>'+note+'</small></div>';
-    $('#dTgt').style.left='130px'; $('#dTgt').style.top='60px';
-    setTimeout(()=>el.classList.remove('flash'),1600);
-  }
-  function clearSlot(){
-    const el=$('#dSlot'); el.className='slot empty'; el.textContent='픽업 상세 위치 미전달';
-    $('#dTgt').style.left='130px'; $('#dTgt').style.top='100px';
-  }
-
-  function showOverlay(p){
-    const isUnder = p.lvl==='under';
-    $('#ovOk').textContent   = isUnder ? '지하로 갈게요' : '확인했어요';
-    $('#ovCall').textContent = isUnder ? '지상에서 뵐게요' : '전화할게요';
-    $('#ovMsg').textContent = sentenceText(p);
-    $('#dOverlay').classList.add('on');
-    $('#skipBtn').hidden = false;
-    let sec = 15;
-    $('#ovSec').textContent = sec;
-    $('#ovRing').style.setProperty('--pct','100%');
-    clearInterval(S.timer);
-    S.timer = setInterval(()=>{
-      sec--;
-      $('#ovSec').textContent = Math.max(sec,0);
-      $('#ovRing').style.setProperty('--pct',(sec/15*100)+'%');
-      if(sec<=0) endOverlay(p,false);
-    },1000);
-  }
-  // mode: 'ack'(수락) | 'ground'(지하 거절 → 지상 역제안) | 'none'(무응답·전화)
-  function endOverlay(p, mode){
-    clearInterval(S.timer);
-    $('#dOverlay').classList.remove('on');
-    $('#skipBtn').hidden = true;
-    const isUnder = p.lvl==='under';
-    let shown = p, note, msg;
-
-    if(mode==='ground'){
-      shown = Object.assign({},p,{lvl:'ground',floor:null});
-      S.slot = Object.assign({},shown,{ack:true});
-      note = '지하 요청 → 기사 응답: 지상에서';
-      S.reply = '지하는 어려워서 ' + placeText(p) + ' 앞 지상에서 뵐게요.';
-      msg = '지상에서 만나기로 했어요. 조정된 위치가 운행 화면에 남아요.';
-    } else if(mode==='ack'){
-      S.slot = Object.assign({},p,{ack:true});
-      note = isUnder ? '라이더 전달 · 지하 진입 수락' : '라이더 전달 · 확인함';
-      S.reply = isUnder ? '지하로 갈게요. ' + levelText(p) + '에서 뵐게요.' : '확인했어요. 그쪽으로 갈게요.';
-      msg = '응답을 보냈어요. 픽업 정보는 운행 화면에 계속 남아요.';
-    } else {
-      S.slot = Object.assign({},p);
-      note = '라이더 전달 · 오버레이는 사라져도 여기 남아요';
-      msg = '오버레이는 사라졌지만 픽업 정보는 운행 화면에 남아 있어요.';
-    }
-    fillSlot(shown, note);
-    renderChat();
-    toast(msg);
-  }
-  function toast(msg){
-    const t=$('#dToast'); t.textContent=msg; t.classList.add('on');
-    setTimeout(()=>t.classList.remove('on'),3600);
   }
 
   function renderAll(){
-    if(S.sc==='reserve') renderRes(); else renderChat();
-    if(!S.slot) clearSlot();
+    const p = S.pickup;
+    const has = !!p;
+    const txt = has ? slotText(p) + (p.etc ? ', ' + p.etc : '') : '';
+
+    $('#valTx').textContent = has ? txt : '아직 지정되지 않았습니다';
+    $('#valTx').classList.toggle('none', !has);
+    $('#valSrc').textContent = has ? SRCNAME[S.source] : '';
+
+    // 1, 2번 열
+    [1,2].forEach(n=>{
+      $('#c'+n+'empty').hidden = has;
+      $('#c'+n+'done').hidden  = !has;
+      if(has) $('#c'+n+'val').textContent = txt;
+    });
+    const card = $('#c1card'); if(card) card.classList.toggle('done', has);
+
+    // 3번 채팅
+    const chat = $('#c3chat'); chat.innerHTML = '';
+    const add = (cls, html) => { const d=document.createElement('div'); d.className=cls; d.innerHTML=html; chat.appendChild(d); };
+    add('sysmsg', '드라이버가 배차됐어요');
+    add('bub them', '안녕하세요, 3분 뒤 도착 예정입니다.');
+    if(has && S.source==='3') add('bub me pickup', '<span class="tag">🅿️ 픽업 위치</span>'+sentenceText(p));
+    else if(has) add('sysmsg', '저장된 픽업 위치가 기사님께 전달됐어요');
+    chat.scrollTop = chat.scrollHeight;
+
+    const ps = $('#c3presets'); ps.innerHTML='';
+    if(!(has && S.source==='3')){
+      const c=document.createElement('button');
+      c.className='chip pick';
+      c.textContent = has ? '🅿️ 픽업 위치 바꿀게요' : '🅿️ 지상 지하에서 탑승할게요';
+      c.addEventListener('click',()=>{ S.draft = has ? Object.assign({},p) : blank(); openIn(3); });
+      ps.appendChild(c);
+    }
+    ['조금만 기다려주세요','금방 나갈게요'].forEach(t=>{
+      const b=document.createElement('button'); b.className='chip'; b.textContent=t; ps.appendChild(b);
+    });
+
+    // 드라이버 슬롯
+    $('#dslot').classList.toggle('on', has);
+    $('#dslotTx').textContent  = has ? slotText(p) : '픽업 상세 위치 미전달';
+    $('#dslotSub').textContent = has
+      ? (S.source==='3' ? '라이더가 매칭 후 전송, 이동 중 수신' : '배차와 동시에 수신')
+      : '라이더가 아직 지정하지 않았습니다';
+
     renderSheet();
+  }
+
+  function blank(){ return {lvl:null,floor:null,dong:null,line:null,gate:null,etc:''}; }
+
+  /* ── 시트를 클릭한 폰 안으로 옮겨서 연다 ── */
+  function openIn(n){
+    const phone = $('#ph'+n);
+    phone.appendChild($('#scrim'));
+    phone.appendChild($('#sheet'));
+    S.host = String(n);
+    $('#sheetSub').textContent = n==='1'||n===1 ? '저장하면 호출할 때마다 자동으로 적용돼요'
+                              : (n===2 ? '이번 호출에 기사님께 전달돼요' : '기사님께 바로 전송돼요');
+    $('#sheetCta').textContent = n===3 ? '이대로 보내기' : '이 위치로 저장';
+    S.input='chip'; S.kpVal=''; S.gateMode='chip'; S.lineMode='chip';
+    S._lineShown=false; S._dongShown=false; S._etcShown=false;
+    S.sheet=true; renderSheet();
+    $('#scrim').classList.add('on'); $('#sheet').classList.add('on');
   }
 
   /* ── build static chips ── */
@@ -974,24 +942,17 @@
   $('#scrim').addEventListener('click', closeSheet);
   $('#sheetCta').addEventListener('click',()=>{
     if(!draftReady()) return;
-    if(S.sc==='reserve'){ S.sentence = sentenceText(S.draft); saveReservation(); }
-    else sendPickup(S.draft);
+    S.source = S.host;
+    commit();
   });
-  $('#openFromRes').addEventListener('click',()=>{ S.draft={lvl:null,floor:null,dong:null,line:null,gate:null,etc:''}; openSheet(); });
-  $('#editFromRes').addEventListener('click', openSheet);
-  $('#resSubmit').addEventListener('click',()=>{
-    if(!S.sentence) return;
-    fillSlot(S.draft, '예약에서 미리 전달 · 배차 시 함께 도착');
-    toast('예약이 요청됐어요. 픽업 정보는 배차되는 기사님께 자동으로 전달돼요.');
-    renderRes();
-  });
-  $('#ovOk').addEventListener('click',()=>endOverlay(S.draft,'ack'));
-  $('#ovCall').addEventListener('click',()=>endOverlay(S.draft, S.draft.lvl==='under' ? 'ground' : 'none'));
-  $('#skipBtn').addEventListener('click',()=>endOverlay(S.draft,'none'));
-  $$('.tab').forEach(t=>t.addEventListener('click',()=>setScenario(t.dataset.sc)));
-  $('#reset').addEventListener('click',()=>setScenario(S.sc));
+  $$('[data-open]').forEach(b=>b.addEventListener('click',()=>{
+    const n = +b.dataset.open;
+    S.draft = S.pickup ? Object.assign({},S.pickup) : blank();
+    openIn(n);
+  }));
+  $('#valClr').addEventListener('click',()=>{ S.pickup=null; S.source=null; S.draft=blank(); renderAll(); });
 
-  setScenario('live');
+  renderAll();
 })();
 </script>
 </body>
