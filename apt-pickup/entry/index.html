@@ -207,6 +207,19 @@
   .dchip:hover{border-color:var(--gray-300);}
   .dchip.on{border-color:var(--blue-500);background:var(--blue-500);color:#fff;}
   .dchip.more{font-size:13px;font-weight:500;color:var(--gray-600);grid-column:span 2;}
+  .dsearch{position:relative;margin-bottom:10px;}
+  .dq{width:100%;border:1.5px solid var(--gray-80);border-radius:10px;padding:12px 13px 12px 36px;
+    font:inherit;font-size:14.5px;color:var(--gray-950);background:#fff;outline:none;transition:.14s;}
+  .dq::placeholder{color:var(--gray-300);}
+  .dq:focus{border-color:var(--blue-500);background:var(--blue-30);}
+  .dsearch .ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.45;pointer-events:none;}
+  .donggrid{max-height:212px;overflow-y:auto;scrollbar-width:none;}
+  .donggrid::-webkit-scrollbar{width:0;}
+  .dchip.use{width:100%;margin-top:8px;border-style:dashed;border-color:var(--blue-500);color:var(--blue-600);
+    font-size:13.5px;font-weight:600;background:#fff;border-width:1.5px;border-radius:10px;padding:13px 0;
+    font-family:inherit;cursor:pointer;}
+  .dchip.use[hidden]{display:none;}
+  .dempty{grid-column:1 / -1;padding:14px 0;text-align:center;font-size:12.5px;color:var(--gray-400);}
   .srcnote{margin-top:9px;font-size:11.5px;line-height:17px;color:var(--gray-400);}
 
   .sub{margin-top:16px;padding-top:15px;border-top:1px dashed var(--gray-80);}
@@ -244,17 +257,6 @@
   .slot .tx .etc{display:block;font-size:12.5px;line-height:18px;color:var(--gray-700);margin-top:1px;}
 
   .kp{margin-top:2px;}
-  .kpview{display:flex;align-items:center;justify-content:center;gap:2px;border:1.5px solid var(--blue-500);
-    border-radius:10px;padding:14px;font-size:22px;font-weight:700;letter-spacing:-.4px;background:var(--blue-30);}
-  .kpview .ph{color:var(--gray-300);font-weight:500;}
-  .kpview .u{font-size:16px;font-weight:600;color:var(--gray-700);margin-left:2px;}
-  .kpad{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px;}
-  .kpad button{border:1px solid var(--gray-80);background:#fff;border-radius:9px;padding:13px 0;
-    font:inherit;font-size:18px;font-weight:600;cursor:pointer;}
-  .kpad button:hover{background:var(--gray-30);}
-  .kpad button.fn{font-size:13.5px;font-weight:500;color:var(--gray-600);}
-  .kpback{margin-top:9px;border:none;background:none;font:inherit;font-size:13px;color:var(--gray-500);
-    text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px 0;}
 
   .sfoot{flex:0 0 auto;padding:12px 20px 20px;border-top:1px solid var(--gray-30);background:#fff;}
   .preview{display:flex;align-items:center;gap:9px;background:var(--gray-30);border-radius:10px;
@@ -364,6 +366,10 @@
   .valbar .clr{border:1px solid var(--line);background:#fff;border-radius:7px;padding:6px 11px;
     font:inherit;font-size:12.5px;color:var(--ink-2);cursor:pointer;}
 
+  .valbar .dataset{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-3);margin-left:auto;}
+  .valbar .dataset select{font:inherit;font-size:12px;padding:6px 9px;border:1px solid var(--line);
+    border-radius:7px;background:#fff;color:var(--ink-2);}
+  .valbar .src{margin-left:0;}
   .cols{max-width:1100px;margin:0 auto;padding:22px 20px 0;display:flex;gap:20px;flex-wrap:wrap;}
   .col{flex:1 1 320px;min-width:300px;max-width:344px;}
   .colhd{display:flex;align-items:center;gap:8px;margin-bottom:11px;}
@@ -436,6 +442,7 @@
     <span class="k">지금 값</span>
     <span class="v none" id="valTx">아직 지정되지 않았습니다</span>
     <span class="src" id="valSrc"></span>
+    <div class="dataset"><span>단지 데이터</span><select id="cxSel"><option value="big">래미안 원베일리 (숫자 36개)</option><option value="hangul">신반포 빌라트 (가 나 다 라)</option><option value="four">다산 자이 2단지 (2001~2021)</option><option value="none">등록 정보 없음</option></select></div>
     <button class="clr" id="valClr">값 비우기</button>
   </div>
 </header>
@@ -634,15 +641,13 @@
             <div class="step" id="step2">
               <div class="steplab"><span class="n">2</span><b>어느 동 앞에서 타세요?</b></div>
               <div class="reveal" id="dongWrap">
-                <div id="dongChipBox">
-                  <div class="donggrid" id="donggrid"></div>
-                  <p class="srcnote" id="srcnote">래미안 원베일리 · 등록된 동 정보로 표시하고 있어요</p>
+                <div class="dsearch">
+                  <span class="ic">🔍</span>
+                  <input class="dq" id="dongQ" type="text" maxlength="6" placeholder="동 번호 검색 (예: 101, 가)" />
                 </div>
-                <div class="kp" id="keypadBox" hidden>
-                  <div class="kpview" id="kpview"><span class="ph">동 번호 입력</span></div>
-                  <div class="kpad" id="kpad"></div>
-                  <button class="kpback" id="kpback">목록에서 고르기</button>
-                </div>
+                <div class="donggrid" id="donggrid"></div>
+                <button class="dchip use" id="dongUse" hidden></button>
+                <p class="srcnote" id="srcnote"></p>
                 <div class="reveal sub" id="lineWrap">
                   <div class="sublab"><b>호수 라인</b><span class="opt">선택</span>
                     <span class="why" id="lineWhy">한 동에 출입구가 여러 개일 때</span></div>
@@ -673,13 +678,21 @@
   const $  = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
 
-  const DONGS = ['101','102','103','104','105','106','107','108'];
+  const COMPLEXES = {
+    big:    {name:'래미안 원베일리', dongs:(function(){const a=[];for(let b=1;b<=24;b++)a.push(String(100+b));for(let b=1;b<=12;b++)a.push(String(200+b));return a;})()},
+    hangul: {name:'신반포 빌라트',   dongs:['가','나','다','라']},
+    four:   {name:'다산 자이 2단지', dongs:['2001','2002','2011','2019','2020','2021']},
+    none:   {name:'등록 정보 없는 단지', dongs:[]}
+  };
+  let CX = 'big';
+  const cx = () => COMPLEXES[CX];
+  const firstDong = () => (cx().dongs[0] || '101');
   const GATES = ['정문','후문'];
   const LINES = [1,2];
 
   const S = {
     draft:{lvl:null,floor:null,dong:null,line:null,gate:null,etc:''},
-    input:'chip', kpVal:'', gateMode:'chip', lineMode:'chip',
+    dq:'', gateMode:'chip', lineMode:'chip',
     sheet:false, host:null,
     pickup:null, source:null, sc:'entry'
   };
@@ -700,6 +713,40 @@
     return !!(d.lvl && d.dong && (d.lvl!=='under' || d.floor));
   }
 
+  /* ── 동 목록: 검색 + 필터. 목록에 없으면 입력값을 그대로 쓴다 ── */
+  function renderDongs(){
+    const q = (S.dq || '').trim();
+    const all = cx().dongs;
+    const hit = q ? all.filter(d => d.indexOf(q) > -1) : all;
+    const g = $('#donggrid');
+    g.innerHTML = '';
+    hit.forEach(d=>{
+      const b=document.createElement('button');
+      b.className='dchip'+(d===S.draft.dong?' on':'');
+      b.dataset.d=d; b.textContent=d+'동';
+      b.addEventListener('click',()=>{
+        if(S.draft.dong!==d){ S.draft.line=null; S.lineMode='chip'; }
+        S.draft.dong=d; renderSheet();
+      });
+      g.appendChild(b);
+    });
+    if(!hit.length){
+      const e=document.createElement('div'); e.className='dempty';
+      e.textContent = all.length ? '검색 결과가 없어요' : '등록된 동 정보가 없어요';
+      g.appendChild(e);
+    }
+    const use = $('#dongUse');
+    const exact = all.indexOf(q) > -1;
+    use.hidden = !(q && !exact && !hit.length);
+    if(!use.hidden) use.textContent = '"'+q+'동" 그대로 쓰기';
+
+    const n = all.length;
+    $('#srcnote').textContent = n
+      ? (q ? cx().name+', '+hit.length+'개 표시 중 (전체 '+n+'개)'
+           : cx().name+', 등록된 동 '+n+'개')
+      : '등록된 동 정보가 없어요. 검색창에 직접 적어주세요';
+  }
+
   /* ── sheet ── */
   function scrollSheetDown(){
     const sb = $('.sbody');
@@ -714,7 +761,7 @@
     });
   });
   function openSheet_unused(){
-    S.sheet=true; S.input='chip'; S.kpVal=''; S._lineShown=false; S._dongShown=false; S._etcShown=false; S.gateMode='chip'; S.lineMode='chip';
+    S.sheet=true; S.dq=''; S._lineShown=false; S._dongShown=false; S._etcShown=false; S.gateMode='chip'; S.lineMode='chip';
     $('#sheetCta').textContent = S.sc==='reserve' ? '이 위치로 저장' : '이대로 보내기';
     $('#sheetSub').textContent = S.sc==='reserve' ? '예약이 배차되면 기사님께 함께 전달돼요' : '기사님께 그대로 전달돼요';
     renderSheet();
@@ -751,9 +798,7 @@
     S._dongShown = dongOn;
     $('#dongWrap').classList.toggle('on', dongOn);
 
-    $('#dongChipBox').hidden = S.input!=='chip';
-    $('#keypadBox').hidden  = S.input!=='keypad';
-    $$('#donggrid .dchip[data-d]').forEach(b=>b.classList.toggle('on', b.dataset.d===d.dong));
+    renderDongs();
     const lineOn = !!d.dong && !isGate;
     if(lineOn && !S._lineShown) scrollSheetDown();
     S._lineShown = lineOn;
@@ -762,6 +807,7 @@
     const lFree = S.lineMode==='free';
     $$('#lines .lchip[data-line]').forEach(b=>b.classList.toggle('on', !lFree && b.dataset.line===d.line));
     $('#lineFree').classList.toggle('on', lFree);
+    if($('#dongQ').value !== S.dq) $('#dongQ').value = S.dq;
     const li = $('#lineInput');
     li.hidden = !(lineOn && lFree);
     if(!lFree) li.value = '';
@@ -784,8 +830,6 @@
     if(ei.value !== d.etc) ei.value = d.etc;
     $('#etcCount').textContent = d.etc.length;
 
-    const kv = $('#kpview');
-    kv.innerHTML = S.kpVal ? (S.kpVal+'<span class="u">동</span>') : '<span class="ph">동 번호 입력</span>';
 
     const ready = draftReady();
     $('#preview').classList.toggle('ready', ready);
@@ -861,7 +905,7 @@
     $('#sheetSub').textContent = n==='1'||n===1 ? '저장하면 호출할 때마다 자동으로 적용돼요'
                               : (n===2 ? '이번 호출에 기사님께 전달돼요' : '기사님께 바로 전송돼요');
     $('#sheetCta').textContent = n===3 ? '이대로 보내기' : '이 위치로 저장';
-    S.input='chip'; S.kpVal=''; S.gateMode='chip'; S.lineMode='chip';
+    S.dq=''; S.gateMode='chip'; S.lineMode='chip';
     S._lineShown=false; S._dongShown=false; S._etcShown=false;
     S.sheet=true; renderSheet();
     $('#scrim').classList.add('on'); $('#sheet').classList.add('on');
@@ -875,15 +919,6 @@
       b.addEventListener('click',()=>{ S.draft.floor=f; renderSheet(); });
       fw.appendChild(b);
     });
-    const dg = $('#donggrid');
-    DONGS.forEach(d=>{
-      const b=document.createElement('button'); b.className='dchip'; b.dataset.d=d; b.textContent=d;
-      b.addEventListener('click',()=>{ if(S.draft.dong!==d){ S.draft.line=null; S.lineMode='chip'; } S.draft.dong=d; renderSheet(); });
-      dg.appendChild(b);
-    });
-    const more=document.createElement('button'); more.className='dchip more'; more.textContent='직접 입력';
-    more.addEventListener('click',()=>{ S.input='keypad'; S.kpVal=''; S.draft.dong=null; renderSheet(); });
-    dg.appendChild(more);
 
     const gw = $('#gates');
     GATES.forEach(g=>{
@@ -906,19 +941,6 @@
     lf.addEventListener('click',()=>{ S.lineMode='free'; S.draft.line=null; renderSheet(); setTimeout(()=>$('#lineInput').focus(),80); });
     lw.appendChild(lf);
 
-    const kp = $('#kpad');
-    ['1','2','3','4','5','6','7','8','9','지움','0','완료'].forEach(k=>{
-      const b=document.createElement('button');
-      b.textContent=k;
-      if(k==='지움'||k==='완료') b.className='fn';
-      b.addEventListener('click',()=>{
-        if(k==='지움'){ S.kpVal=S.kpVal.slice(0,-1); S.draft.dong = S.kpVal||null; }
-        else if(k==='완료'){ S.draft.dong = S.kpVal||null; }
-        else { if(S.kpVal.length<4){ S.kpVal+=k; S.draft.dong=S.kpVal; } }
-        renderSheet();
-      });
-      kp.appendChild(b);
-    });
   })();
 
   /* ── events ── */
@@ -932,13 +954,18 @@
   $('#gateLink').addEventListener('click',()=>{
     const d=S.draft;
     if(d.lvl==='gate'){ d.lvl=null; d.gate=null; S.gateMode='chip'; }
-    else { d.lvl='gate'; d.dong=null; d.line=null; d.floor=null; S.lineMode='chip'; S.input='chip'; S.kpVal=''; }
+    else { d.lvl='gate'; d.dong=null; d.line=null; d.floor=null; S.lineMode='chip'; S.dq=''; }
     renderSheet();
   });
+  $('#dongQ').addEventListener('input', e=>{ S.dq = e.target.value; renderSheet(); });
+  $('#dongUse').addEventListener('click',()=>{ const q=(S.dq||'').trim(); if(!q) return;
+    if(S.draft.dong!==q){ S.draft.line=null; S.lineMode='chip'; }
+    S.draft.dong=q; renderSheet(); });
+  $('#cxSel').addEventListener('change', e=>{ CX = e.target.value; S.dq=''; $('#dongQ').value='';
+    S.draft.dong=null; S.draft.line=null; onComplexChange(); });
   $('#lineInput').addEventListener('input', e=>{ S.draft.line = e.target.value.trim() || null; renderSheet(); });
   $('#gateInput').addEventListener('input', e=>{ S.draft.gate = e.target.value.trim() || null; renderSheet(); });
   $('#etcInput').addEventListener('input', e=>{ S.draft.etc = e.target.value; renderSheet(); });
-  $('#kpback').addEventListener('click',()=>{ S.input='chip'; S.draft.dong=null; S.kpVal=''; renderSheet(); });
   $('#scrim').addEventListener('click', closeSheet);
   $('#sheetCta').addEventListener('click',()=>{
     if(!draftReady()) return;
@@ -951,6 +978,8 @@
     openIn(n);
   }));
   $('#valClr').addEventListener('click',()=>{ S.pickup=null; S.source=null; S.draft=blank(); renderAll(); });
+
+  function onComplexChange(){ S.pickup=null; S.source=null; S.draft=blank(); renderAll(); }
 
   renderAll();
 })();
