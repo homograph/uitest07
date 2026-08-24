@@ -408,16 +408,16 @@ body:not(.wide) .stage{justify-content:flex-start;}
 .lineup .hd{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
 .lineup .hd .t{flex:1 1 auto;font-size:16px;line-height:23px;font-weight:700;color:#19254d;}
 .lineup .hd .c{font-size:12.5px;line-height:18px;color:#73788b;}
-.cars{display:flex;gap:12px;justify-content:center;}
-.car{position:relative;width:88px;height:88px;border-radius:50%;background:#f5f6f7;
+.vehs{display:flex;gap:12px;justify-content:center;}
+.veh{position:relative;width:88px;height:88px;border-radius:50%;background:#f5f6f7;
   display:flex;align-items:center;justify-content:center;}
-.car img{width:64px;height:44px;object-fit:contain;}
-.car.sel{background:#f1f9fe;box-shadow:inset 0 0 0 2px #32a2fa;}
-.car.sel::after{content:"";position:absolute;top:-2px;right:-2px;width:26px;height:26px;border-radius:50%;
+.veh img{width:64px;height:44px;object-fit:contain;}
+.veh.sel{background:#f1f9fe;box-shadow:inset 0 0 0 2px #32a2fa;}
+.veh.sel::after{content:"";position:absolute;top:-2px;right:-2px;width:26px;height:26px;border-radius:50%;
   background:#32a2fa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 14 14' fill='none'%3E%3Cpath d='M3 7.3l2.6 2.6L11 4.5' stroke='%23fff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat;
   box-shadow:0 0 0 2px #fff;}
-.car.dis{opacity:.42;}
-.car.dis img{filter:grayscale(1);}
+.veh.dis{opacity:.42;}
+.veh.dis img{filter:grayscale(1);}
 .carname{margin-top:18px;text-align:center;}
 .carname .n{font-size:20px;line-height:29px;font-weight:700;color:#171a24;letter-spacing:-.3px;}
 .carname .sub{margin-top:8px;font-size:13px;line-height:19px;color:#73788b;}
@@ -593,6 +593,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
   .facts .n{font-size:21px;line-height:27px;}
   .facts .l{font-size:11px;line-height:16px;}
   .verdict{padding:15px 14px 6px;}
+  .branch{padding:16px 13px 18px;}
   col.c-name{width:72px;} col.c-num{width:52px;} col.c-verd{width:52px;}
   table.vt tbody th{font-size:11.5px;}
   td.num{font-size:12px;} td.verd{font-size:11.5px;}
@@ -994,10 +995,10 @@ function fStepCar(){
   return `<div class="appbar"><div class="bk">${icBack()}</div><div class="ti">정기 예약하기</div></div>
     <div class="lineup">
       <div class="hd"><div class="t">차량 선택</div><div class="c">예약 가능 조건</div></div>
-      <div class="cars">
-        <div class="car sel"><img src="${A.carNext}" alt=""></div>
-        <div class="car"><img src="${A.carPlus}" alt=""></div>
-        <div class="car dis"><img src="${A.carVan}" alt=""></div>
+      <div class="vehs">
+        <div class="veh sel"><img src="${A.carNext}" alt=""></div>
+        <div class="veh"><img src="${A.carPlus}" alt=""></div>
+        <div class="veh dis"><img src="${A.carVan}" alt=""></div>
       </div>
       <div class="carname"><div class="n">넓고 쾌적한 넥스트</div>
         <div class="sub">최대 5인 탑승 · 스타리아 · 카니발 · 시에나 등</div></div>
