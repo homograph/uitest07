@@ -502,6 +502,15 @@
     return inside;
   }
   function reticleInsideGeo(){ return pointInPoly(reticleWorld(), GEO); }
+  // 장소 마커의 '보이지 않는' 스냅 반경(월드 단위) — 지오펜스에서 살짝만 넘게. 유저에겐 안 보임.
+  var SNAP_RADIUS_W = 60;
+  function nearestInsideWorldDist(){
+    var rw=reticleWorld(), best=Infinity;
+    for(var i=0;i<INSIDE.length;i++){ var dx=INSIDE[i].wx-rw.x, dy=INSIDE[i].wy-rw.y, d=Math.sqrt(dx*dx+dy*dy); if(d<best) best=d; }
+    return best;
+  }
+  // 유효 스냅 존 = 지오펜스 ∪ (지오펜스 밖이라도 최근접 마커 반경 안)
+  function reticleInSnapZone(){ return reticleInsideGeo() || nearestInsideWorldDist() <= SNAP_RADIUS_W; }
   function nearestOf(list){
     var best=0,bd=Infinity;
     for(var i=0;i<list.length;i++){
@@ -571,16 +580,17 @@
 
   // ── decide mode + snap on gesture end ──
   function doSnap(){
-    phone.classList.toggle('geo-on', reticleInsideGeo());
+    var inZone = reticleInSnapZone();                 // 지오펜스 ∪ 마커 반경
+    phone.classList.toggle('geo-on', inZone);
     markInsideNear(-1);                               // 놓으면 확대 해제(선택으로 전환)
-    if(reticleInsideGeo()){                           // 지오펜스 안 → 휠 피커(지정 하차지)
+    if(inZone){                                       // 존 안(지오펜스 밖이라도 반경 안) → 최근접 지정지로 스냅
       setMode('wheel');
       syncAnchor();                                   // 휠 시트 높이로 앵커·플로팅버튼 갱신
       var t=nearestOf(INSIDE);
       scrollWheelTo(t, false);
       snapTo(INSIDE[t].wx, INSIDE[t].wy);
       curX=INSIDE[t].wx; curY=INSIDE[t].wy;
-    } else {                                          // 지오펜스 밖 → 자유 목적지 지정
+    } else {                                          // 존 밖(지오펜스+반경 모두 밖) → 지오펜스 해제·자유 지정
       setMode('single');
       markInsideSel(-1);
       var rw=reticleWorld(); curX=rw.x; curY=rw.y;    // 놓은 지점(구 앵커 기준) 먼저 확보
@@ -600,7 +610,8 @@
     // 밖에서 안으로 끌어오는 중엔 계속 숨겨지다가 손 떼는 순간(안) 나타난다.
     var shown=phone.classList.contains('geo-on');
     markInsideSel(-1);                                // 패닝 중엔 선택(navy) 없음
-    markInsideNear(shown ? nearestOf(INSIDE) : -1);   // 지오펜스 보일 때만 최근접 마커 확대
+    // 스냅 존(지오펜스 ∪ 마커 반경) 안일 때만 최근접 확대. 존 밖으로 나가면 확대 해제→1x 축소.
+    markInsideNear((shown && reticleInSnapZone()) ? nearestOf(INSIDE) : -1);
   }
 
   // ── responsive layout ──
