@@ -454,7 +454,7 @@ body:not(.wide) .stage{justify-content:flex-start;}
 .fg-pickrow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -24px;padding:0 24px;}
 .fg-pickrow::-webkit-scrollbar{display:none;}
 .fg-pick{flex:0 0 auto;background:#f9f9f9;border:1px solid #efeff1;border-radius:8px;
-  padding:16px 20px;display:flex;flex-direction:column;gap:12px;min-width:224px;cursor:pointer;
+  padding:16px 20px;display:flex;flex-direction:column;gap:12px;min-width:238px;cursor:pointer;
   transition:transform .12s cubic-bezier(.2,.8,.3,1);}
 .fg-pick:active{transform:scale(.99);}
 .fg-pick .lb{font-size:13px;line-height:19px;font-weight:700;color:#32a2fa;}
@@ -841,6 +841,9 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       <dl class="assume">
         <div><dt>정기 카드 카피</dt><dd>Figma 탐색안에는 맞춤 예약에서 복사된 “일반 예약, 시간 예약 모두 가능해요”가 그대로 들어가 있습니다.
           PRD의 씬 데이터(평일 오전 6시에서 9시, 출퇴근과 등교)를 근거로 <em>“매주 같은 시간에 반복 예약해요”로 바꿔 넣었습니다.</em></dd></div>
+        <div><dt>‘작성 중’과 ‘이전 예약’</dt><dd>다시 예약하기 행에는 두 종류가 섞입니다. 만들다 만 <b>작성 중</b>(0~2건, 토글)과
+          지난 <b>이전 예약</b>(항상 있음)입니다. 전에는 한 카운터로 묶어 놔서 <em>1건이면 카드가 하나만 나왔습니다.</em>
+          지금은 작성 중 뒤에 이전 예약 두 건이 항상 붙습니다. 이전 예약 건수는 임의로 둘로 잡았습니다.</dd></div>
         <div><dt>정기 썸네일 (해결)</dt><dd>여러 차례 플래그했던 항목입니다. <b>2026-08-24 Figma 에서 정기·맞춤 전용
           썸네일이 새로 생겼습니다.</b> 임시로 쓰던 평면 벡터 <code>illust_calendar</code>를 걷어내고 원본 에셋으로 바꿨습니다.
           as-is 는 정기 카드가 없어 영향이 없습니다.</dd></div>
@@ -995,6 +998,13 @@ function fCoupon(pad){
 const ADDRS = [
   ['아크로포레스트 101동', '왕십리로 83-21'],
   ['서울숲트리마제 101동', '인천공항 제2터미널']
+];
+/* 다시 예약하기 행에는 두 종류가 섞인다.
+   '작성 중' = 만들다 만 예약(0~2건, 토글이 조절). '이전 예약' = 지난 예약(항상 있음).
+   전에는 한 카운터로 묶어 놔서 1건이면 카드가 하나만 나왔다. */
+const PREV = [
+  ['왕십리로 83-21', '아크로포레스트 101동'],
+  ['서울숲트리마제 101동', '김포공항 국내선']
 ];
 
 function fReReserveLarge(){
@@ -1182,12 +1192,15 @@ function fFigmaHome(){
       <img src="${m.img}" alt=""><span>${esc(m.t)}</span>
     </div>`).join('');
 
-  const picks = !S.drafts ? '' : `<section class="fg-sch"><div class="lab">다시 예약하기</div>
-    <div class="fg-pickrow">${ADDRS.slice(0, S.drafts).map(([f, t], i) => `
-      <div class="fg-pick"><div class="lb">${i ? '이전 예약' : '작성 중'}</div><div class="rows">
+  const pick = (lb, f, t) => `
+      <div class="fg-pick"><div class="lb">${lb}</div><div class="rows">
         <div class="r"><i></i><span>${esc(f)}</span></div>
         <div class="r"><i class="d"></i><span>${esc(t)}</span></div>
-      </div></div>`).join('')}</div></section>`;
+      </div></div>`;
+  const cards = ADDRS.slice(0, S.drafts).map(([f, t]) => pick('작성 중', f, t))
+    .concat(PREV.map(([f, t]) => pick('이전 예약', f, t))).join('');
+  const picks = `<section class="fg-sch"><div class="lab">다시 예약하기</div>
+    <div class="fg-pickrow">${cards}</div></section>`;
 
   const coupon = !S.coupon ? '<div style="height:20px;background:#fff"></div>' :
     `<section class="fg-coupon"><div class="card">
