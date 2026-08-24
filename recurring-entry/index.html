@@ -374,6 +374,10 @@ body:not(.wide) .stage{justify-content:flex-start;}
    분기 이후. 진입점을 앞에 두는 이유가 여기 있다.
    정기라고 선언한 순간부터 못 고르는 것을 미리 막고 이유를 말한다.
    ══════════════════════════════════════════════════════════════ */
+.stepcta{position:absolute;left:0;right:0;bottom:0;padding:16px 20px 22px;background:#fff;
+  box-shadow:0 -8px 20px -14px rgba(16,20,34,.34);}
+.stepcta .b{display:flex;align-items:center;justify-content:center;height:50px;border-radius:8px;
+  background:#19254d;color:#fff;font-size:16px;line-height:23px;font-weight:700;}
 .appbar{height:52px;display:flex;align-items:center;gap:10px;padding:0 16px 0 12px;background:#fff;
   border-bottom:1px solid #f1f2f4;}
 .appbar .bk{width:32px;height:32px;display:flex;align-items:center;justify-content:center;}
@@ -987,7 +991,8 @@ function fStepTime(){
     <div class="why"><div class="mk">!</div><div>
       <b>지금은 12:45 이에요</b>
       <span>정기 예약은 첫 픽업까지 두 시간이 남아야 해서, 14:45 이전 시각은 고를 수 없어요.</span>
-    </div></div>`;
+    </div></div>
+    <div class="stepcta"><div class="b">다음</div></div>`;
 }
 
 /* 분기 이후 2: 차량 선택. 프리미엄밴을 아예 못 고르게 하고 이유를 붙인다. */
@@ -1006,7 +1011,8 @@ function fStepCar(){
     <div class="why"><div class="mk">!</div><div>
       <b>프리미엄밴은 고를 수 없어요</b>
       <span>정기 예약은 프리미엄밴을 지원하지 않아요. 단건 예약으로는 부를 수 있어요.</span>
-    </div></div>`;
+    </div></div>
+    <div class="stepcta"><div class="b">다음</div></div>`;
 }
 
 function fMethodsGridThumb(){
