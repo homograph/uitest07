@@ -117,38 +117,36 @@
     background:#fff;border:1px solid var(--blue-100);border-radius:4px;padding:1px 5px;}
   .was[hidden]{display:none;}
 
-  .fstep{width:100%;margin-bottom:22px;}
+  .fstep{width:100%;margin-bottom:26px;}
   .flab{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-  .flab .n{width:19px;height:19px;border-radius:10px;background:var(--navy-800);color:#fff;
-    font-size:11.5px;font-weight:700;display:grid;place-items:center;flex:0 0 auto;}
-  .flab b{font-size:15px;font-weight:600;letter-spacing:-.2px;color:var(--gray-900);}
-  .flab .opt2{font-size:11px;font-weight:600;color:var(--gray-400);background:var(--gray-30);
-    padding:2px 6px;border-radius:5px;}
-  .lvls2{display:flex;gap:8px;}
-  .lvl2{flex:1 1 0;border:1.5px solid var(--gray-80);background:#fff;border-radius:8px;padding:13px 0;
-    font:inherit;font-size:14.5px;font-weight:600;color:var(--gray-800);cursor:pointer;}
-  .lvl2.on{border-color:var(--blue-600);background:var(--blue-050);color:var(--blue-600);}
-  .lvls2[hidden]{display:none;}
-  .chips{display:flex;gap:7px;flex-wrap:wrap;}
-  .chip2{border:1.5px solid var(--gray-80);background:#fff;border-radius:8px;padding:10px 14px;
-    font:inherit;font-size:14px;font-weight:600;color:var(--gray-700);cursor:pointer;}
-  .chip2.on{border-color:var(--blue-600);background:var(--blue-600);color:#fff;}
-  .chip2.free{font-weight:500;font-size:13px;color:var(--gray-600);}
-  .chip2.free.on{color:#fff;}
+  .flab .n{width:20px;height:20px;border-radius:10px;background:var(--navy-600);color:#fff;
+    font-size:12px;font-weight:700;display:grid;place-items:center;flex:0 0 auto;}
+  .flab b{font-size:16px;font-weight:700;letter-spacing:-.2px;color:#000;}
+  .flab .opt2{font-size:14px;color:var(--gray-500);}
+
+  .seg{display:flex;background:var(--gray-e6);border-radius:6px;padding:4px;gap:0;}
+  .segb{flex:1 1 0;border:none;background:none;border-radius:4px;padding:12px 0;font:inherit;
+    font-size:15px;font-weight:500;color:var(--gray-500);cursor:pointer;}
+  .segb.on{background:#fff;color:var(--navy-800);font-weight:700;}
+
+  .chips{display:flex;gap:6px;flex-wrap:wrap;}
+  .chip2{border:1px solid var(--gray-80);background:#fff;border-radius:9999px;padding:10px 16px;
+    font:inherit;font-size:15px;font-weight:400;color:var(--gray-800);cursor:pointer;}
+  .chip2.on{border-color:var(--navy-marker,#31487d);background:#31487d;color:#fff;font-weight:500;}
   .reveal2{overflow:hidden;max-height:0;opacity:0;transition:max-height .26s,opacity .2s,margin .26s;}
-  .reveal2.on{max-height:260px;opacity:1;margin-top:10px;}
-  .switch2{display:block;margin-top:12px;border:none;background:none;padding:4px 0;font:inherit;
-    font-size:13px;color:var(--gray-600);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
+  .reveal2.on{max-height:200px;opacity:1;margin-top:10px;}
+
   .row2{display:flex;gap:8px;}
-  .tin{width:100%;border:1.5px solid var(--gray-80);border-radius:8px;padding:12px 13px;font:inherit;
-    font-size:15px;color:var(--gray-950);background:#fff;outline:none;}
-  .tin::placeholder{color:var(--gray-300);font-size:14px;}
-  .tin:focus{border-color:var(--blue-600);background:var(--blue-050);}
-  .tin.sm{flex:0 0 132px;}
-  .tin[hidden]{display:none;}
-  .row2 .tin:first-child{flex:1 1 auto;min-width:0;}
-  .fnote{margin:8px 0 0;font-size:11.5px;line-height:17px;color:var(--gray-500);word-break:keep-all;}
-  .cnt{margin-top:6px;text-align:right;font-size:11px;color:var(--gray-400);}
+  .tinwrap{position:relative;flex:1 1 auto;min-width:0;}
+  .tinwrap.sm{flex:0 0 116px;}
+  .tin{width:100%;border:none;border-radius:8px;background:var(--gray-30);padding:15px 58px 15px 16px;
+    font:inherit;font-size:15px;color:var(--gray-950);outline:none;}
+  .tin::placeholder{color:var(--gray-500);}
+  .tin:focus{box-shadow:inset 0 0 0 1.5px var(--navy-800);}
+  .tcnt{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--gray-500);}
+  .tcnt b{font-weight:700;}
+  .fnote{margin:8px 0 0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
+  .fnote b{color:var(--gray-700);font-weight:600;}
 
   .ph-foot{flex:0 0 auto;border-top:1px solid var(--gray-30);background:#fff;padding:12px 20px 18px;}
   .prev2{display:flex;align-items:flex-start;gap:8px;background:var(--gray-30);border-radius:8px;
@@ -454,40 +452,36 @@
         <div class="ph-body">
           <p class="phhint" id="ph-hint"></p>
 
-          <div class="fstep" id="fs1">
+          <div class="fstep">
             <div class="flab"><span class="n">1</span><b>어디서 타세요?</b></div>
-            <div class="lvls2" id="lvls2">
-              <button type="button" class="lvl2" data-lvl="ground">지상</button>
-              <button type="button" class="lvl2" data-lvl="under">지하주차장</button>
+            <div class="seg" id="seg">
+              <button type="button" class="segb" data-lvl="ground">지상</button>
+              <button type="button" class="segb" data-lvl="under">지하 주차장</button>
             </div>
             <div class="reveal2" id="fw-floor"><div class="chips" id="floors2"></div></div>
-            <button type="button" class="switch2" id="gateLink2">동 앞 말고 단지 출입구에서 탈래요</button>
-            <div class="reveal2" id="fw-gate">
-              <div class="chips" id="gates2"></div>
-              <input class="tin" id="in-gate" maxlength="12" hidden placeholder="예: 1번 출입구, 학교 쪽 문" />
-              <p class="fnote">단지마다 출입구 이름이 달라요. 부르는 대로 적어주세요.</p>
-            </div>
           </div>
 
-          <div class="fstep" id="fs2">
+          <div class="fstep">
             <div class="flab"><span class="n">2</span><b>어느 동이세요?</b></div>
             <div class="row2">
-              <input class="tin" id="in-dong" maxlength="6" placeholder="예: 101, 가동" />
-              <input class="tin sm" id="in-line" maxlength="10" placeholder="라인 예: 1-2" />
+              <div class="tinwrap"><input class="tin" id="in-dong" maxlength="5" placeholder="예: 가동, 101, 1901" />
+                <span class="tcnt"><b id="c-dong">0</b>/5</span></div>
+              <div class="tinwrap sm"><input class="tin" id="in-line" maxlength="6" placeholder="예: 1-2" />
+                <span class="tcnt"><b id="c-line">0</b>/6</span></div>
             </div>
-            <p class="fnote">라인은 공동현관에 붙어 있는 그대로 적으면 됩니다. 계단식은 보통 한 현관이
-              두 라인을 함께 씁니다.</p>
+            <p class="fnote">오른쪽은 <b>호수 라인</b>입니다. 선택이고, 공동현관에 붙어 있는 그대로 적으면 됩니다.
+              계단식은 보통 한 현관이 두 라인을 함께 씁니다.</p>
           </div>
 
-          <div class="fstep" id="fs3">
+          <div class="fstep">
             <div class="flab"><span class="n">3</span><b>그 외 안내</b><span class="opt2">선택</span></div>
-            <input class="tin" id="in-etc" maxlength="20" placeholder="예: 3번 게이트 앞" />
-            <div class="cnt"><span id="cnt-etc">0</span>/20</div>
+            <div class="tinwrap"><input class="tin" id="in-etc" maxlength="30" placeholder="예: 엘리베이터 앞, B구역" />
+              <span class="tcnt"><b id="c-etc">0</b>/30</span></div>
           </div>
         </div>
         <div class="ph-foot">
           <div class="prev2" id="prev2"><svg class="ic" width="18" height="18" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.105 54.3744V40.6244H17.355V54.3744H11.105ZM23.5094 54.3744V23.6869C21.1694 24.3952 19.5227 25.6691 18.5694 27.5087C17.6156 29.3487 17.0666 31.4771 16.9225 33.8937H13.1725C13.3166 28.945 14.8831 25.0635 17.8719 22.2494C20.8606 19.4352 24.9031 18.0281 29.9994 18.0281C34.2623 18.0281 37.4914 17.1573 39.6869 15.4156C41.8823 13.6735 43.0281 10.6983 43.1244 6.48998H46.8744C46.8264 10.0925 45.9691 13.1573 44.3025 15.6844C42.6354 18.2119 40.031 19.9033 36.4894 20.7587V54.3744H32.74V39.5187H27.2587V54.3744H23.5094ZM29.9994 14.7106C28.7206 14.7106 27.6316 14.2612 26.7325 13.3625C25.8333 12.4633 25.3837 11.3744 25.3837 10.0956C25.3837 8.81685 25.8333 7.7279 26.7325 6.82873C27.6316 5.92956 28.7206 5.47998 29.9994 5.47998C31.2781 5.47998 32.3671 5.92956 33.2662 6.82873C34.1654 7.7279 34.615 8.81685 34.615 10.0956C34.615 11.3744 34.1654 12.4633 33.2662 13.3625C32.3671 14.2612 31.2781 14.7106 29.9994 14.7106Z" fill="#868B9C"/></svg><span id="prev2-tx">고르면 기사님께 갈 문장이 여기 만들어져요</span></div>
-          <label class="savechk"><input type="checkbox" id="chk-save" /><span id="chk-save-tx">이 주소는 항상 이렇게 보내기</span></label>
+          <label class="savechk"><input type="checkbox" id="chk-save" /><span>이 주소에서 항상 이렇게 보내기</span></label>
           <button class="cta" id="ph-submit" disabled>이대로 보내기</button>
         </div>
       </div>
@@ -590,46 +584,40 @@
   const $$ = s => Array.from(document.querySelectorAll(s));
   const el = id => document.getElementById(id);
 
-  const FLOORS = ['B1','B2','B3','B4','B5'];
-  const GATES  = ['정문','후문'];
-  const PH     = '자세한 픽업 위치를 입력해주세요';
+  const FLOORS = [1,2,3,4,5,6,7];
+  const PH = '자세한 픽업 위치를 입력해주세요';
   const SENT_AT = '12:46';
   /* 저장은 사람이 아니라 출발지 주소에 붙는다 */
-  const SAVED_FOR_ADDRESS = { lvl:'under', floor:'B4', dong:'1901', line:'', etc:'3번 게이트' };
+  const SAVED_FOR_ADDRESS = { lvl:'under', floor:4, dong:'1901', line:'', etc:'엘리베이터 앞' };
 
   const S = {
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     sending:false, sent:false, opened:null,
-    saved:null,                    // 이 주소에 저장된 값
-    d:{lvl:null,floor:null,dong:'',line:'',gate:null,etc:''},  // 입력 화면 작업본
-    gateMode:'chip'
+    saved:null, current:null,
+    d:{lvl:null,floor:null,dong:'',line:'',etc:''}
   };
 
-  /* ── 문장 조립 ── */
+  /* ── 문장 ── */
   function lineText(v){
-    v = (v||'').trim();
-    if(!v) return '';
-    return /라인|현관|호/.test(v) ? v : v + '라인';
+    v=(v||'').trim(); if(!v) return '';
+    return /라인|현관|호/.test(v) ? v : v+'라인';
   }
   function core(d){
-    if(d.lvl==='gate') return d.gate || '';
-    const lv = d.lvl==='under' ? '지하 '+String(d.floor||'').replace('B','')+'층' : '지상';
-    return lv + ' · ' + d.dong + '동' + (d.line ? ' ' + lineText(d.line) : '');
+    const lv = d.lvl==='under' ? '지하 '+d.floor+'층' : '지상';
+    return lv + ' · ' + d.dong.trim() + '동' + (d.line ? ' ' + lineText(d.line) : '');
   }
   function sentence(d){
     if(!d) return '';
-    let t = d.lvl==='gate' ? (d.gate+'에서 탈게요') : (core(d) + ' 앞에서 탈게요');
-    return t + (d.etc ? ' ('+d.etc+')' : '');
+    return core(d) + ' 앞에서 탈게요' + (d.etc.trim() ? ' ('+d.etc.trim()+')' : '');
   }
   function ready(d){
-    if(d.lvl==='gate') return !!d.gate;
-    if(d.lvl==='under') return !!(d.floor && d.dong.trim());
-    if(d.lvl==='ground') return !!d.dong.trim();
-    return false;
+    if(!d.dong.trim()) return false;
+    if(d.lvl==='under') return !!d.floor;
+    return d.lvl==='ground';
   }
   function reached(){
-    if(!S.value || !S.confirmed) return false;      /* 유저가 확정하기 전엔 기사에게 가지 않는다 */
+    if(!S.value || !S.confirmed) return false;
     return S.origin==='start' ? true : S.sent;
   }
 
@@ -652,9 +640,9 @@
     paintField('pk-voy-tx','pk-voy-tx-was');
 
     const st = el('pk-voy-st'), sr = el('pk-voy-sr');
-    if(!has || !S.confirmed){ st.hidden = true; sr.textContent=''; }
+    if(!has || !S.confirmed){ st.hidden=true; sr.textContent=''; }
     else if(S.sending){ st.hidden=false; st.textContent='···'; sr.textContent='기사님에게 보내는 중'; }
-    else {              st.hidden=false; st.textContent='✓';   sr.textContent='기사님에게 전달됨'; }
+    else { st.hidden=false; st.textContent='✓'; sr.textContent='기사님에게 전달됨'; }
 
     const got = reached();
     $('#dtalk').classList.toggle('empty', !got);
@@ -684,25 +672,16 @@
 
   /* ── 입력 화면 ── */
   function renderForm(){
-    const d = S.d, isGate = d.lvl==='gate';
-    $$('.lvl2').forEach(b=>b.classList.toggle('on', b.dataset.lvl===d.lvl));
-    el('lvls2').hidden = isGate;
-    el('gateLink2').textContent = isGate ? '← 동 앞에서 탈래요' : '동 앞 말고 단지 출입구에서 탈래요';
+    const d = S.d;
+    $$('.segb').forEach(b=>b.classList.toggle('on', b.dataset.lvl===d.lvl));
     el('fw-floor').classList.toggle('on', d.lvl==='under');
-    el('fw-gate').classList.toggle('on', isGate);
-    $$('#floors2 .chip2').forEach(b=>b.classList.toggle('on', b.dataset.f===d.floor));
-    const gFree = S.gateMode==='free';
-    $$('#gates2 .chip2[data-g]').forEach(b=>b.classList.toggle('on', !gFree && b.dataset.g===d.gate));
-    el('g-free').classList.toggle('on', gFree);
-    el('in-gate').hidden = !(isGate && gFree);
+    $$('#floors2 .chip2').forEach(b=>b.classList.toggle('on', +b.dataset.f===d.floor));
 
-    el('fs2').hidden = isGate;
-    if(el('in-dong').value !== d.dong) el('in-dong').value = d.dong;
-    if(el('in-line').value !== d.line) el('in-line').value = d.line;
-    if(el('in-etc').value  !== d.etc)  el('in-etc').value  = d.etc;
-    el('cnt-etc').textContent = d.etc.length;
-    el('in-etc').placeholder = d.lvl==='under' ? '예: 엘리베이터 앞, B구역'
-                             : isGate ? '예: 경비실 옆, 정문 앞 큰길' : '예: 상가 앞, 놀이터 쪽';
+    [['in-dong','dong','c-dong'],['in-line','line','c-line'],['in-etc','etc','c-etc']].forEach(([i,k,c])=>{
+      if(el(i).value !== d[k]) el(i).value = d[k];
+      el(c).textContent = d[k].length;
+    });
+    el('in-etc').placeholder = d.lvl==='ground' ? '예: 상가 앞, 놀이터 쪽' : '예: 엘리베이터 앞, B구역';
 
     const ok = ready(d);
     el('prev2').classList.toggle('ready', ok);
@@ -714,22 +693,18 @@
 
   function openForm(where){
     S.opened = where;
-    /* 이미 값이 있으면 그 값을 그대로 불러와 고치게 한다 */
-    S.d = S.current ? Object.assign({}, S.current)
-                    : {lvl:null,floor:null,dong:'',line:'',gate:null,etc:''};
-    S.gateMode = 'chip';
+    S.d = S.current ? Object.assign({}, S.current) : {lvl:null,floor:null,dong:'',line:'',etc:''};
     el('ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
     el('ph-hint').innerHTML = (where==='start')
-      ? '여기서 넣으면 <b>배차되면 기사님께 함께</b> 전달돼요.'
-      : '<b>지금 이동 중인 기사님에게</b> 바로 전달돼요. 도착이 가까우면 경로가 바뀔 수 있어요.';
+      ? '배차되면 기사님께 함께 전달됩니다.'
+      : '<b>지금 이동 중인 기사님에게</b> 바로 전달됩니다. 도착이 가까우면 경로가 바뀔 수 있어요.';
     renderForm();
     $('#phscr').classList.add('on');
   }
 
   function submitForm(){
     if(!ready(S.d)) return;
-    const changedOnVoyage = (S.opened === 'voyage');
-    S.edited  = changedOnVoyage && !!S.value;
+    S.edited  = (S.opened==='voyage') && !!S.value;
     S.current = Object.assign({}, S.d);
     S.value   = sentence(S.d);
     S.fromSaved = false;
@@ -747,20 +722,17 @@
   }
 
   function toast(msg){
-    const t = $('#rtoast'); t.textContent = msg; t.classList.add('on');
-    clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('on'), 3200);
+    const t=$('#rtoast'); t.textContent=msg; t.classList.add('on');
+    clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('on'),3200);
   }
 
-  /* ── 모드 ── */
   function setMode(m){
-    S.mode = m; S.screen='start';
+    S.mode=m; S.screen='start';
     S.sending=false; S.sent=false; S.edited=false; S.opened=null;
     if(m==='repeat'){
-      S.saved   = Object.assign({}, SAVED_FOR_ADDRESS);
-      S.current = Object.assign({}, SAVED_FOR_ADDRESS);
-      S.value   = sentence(SAVED_FOR_ADDRESS);
-      S.origin  = 'start';
-      S.fromSaved = true; S.always = false; S.confirmed = false;
+      S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
+      S.value=sentence(SAVED_FOR_ADDRESS); S.origin='start';
+      S.fromSaved=true; S.always=false; S.confirmed=false;
     } else {
       S.saved=null; S.current=null; S.value=null; S.origin=null;
       S.fromSaved=false; S.always=false; S.confirmed=false;
@@ -769,50 +741,29 @@
     render();
   }
 
-  /* ── 칩 생성 ── */
   (function build(){
     const fw = el('floors2');
     FLOORS.forEach(f=>{
-      const b=document.createElement('button'); b.type='button'; b.className='chip2'; b.dataset.f=f; b.textContent=f;
-      b.addEventListener('click',()=>{ S.d.floor = (S.d.floor===f?null:f); renderForm(); });
+      const b=document.createElement('button'); b.type='button'; b.className='chip2'; b.dataset.f=f;
+      b.textContent='지하 '+f+'층';
+      b.addEventListener('click',()=>{ S.d.floor=(S.d.floor===f?null:f); renderForm(); });
       fw.appendChild(b);
     });
-    const gw = el('gates2');
-    GATES.forEach(g=>{
-      const b=document.createElement('button'); b.type='button'; b.className='chip2'; b.dataset.g=g; b.textContent=g;
-      b.addEventListener('click',()=>{ S.gateMode='chip'; S.d.gate=g; renderForm(); });
-      gw.appendChild(b);
-    });
-    const gf=document.createElement('button'); gf.type='button'; gf.className='chip2 free'; gf.id='g-free';
-    gf.textContent='직접 입력';
-    gf.addEventListener('click',()=>{ S.gateMode='free'; S.d.gate=null; renderForm(); setTimeout(()=>el('in-gate').focus(),60); });
-    gw.appendChild(gf);
   })();
 
-  /* ── 이벤트 ── */
-  $$('.lvl2').forEach(b=>b.addEventListener('click',()=>{
-    S.d.lvl = b.dataset.lvl;
+  $$('.segb').forEach(b=>b.addEventListener('click',()=>{
+    S.d.lvl=b.dataset.lvl;
     if(S.d.lvl!=='under') S.d.floor=null;
-    S.d.gate=null;
     renderForm();
   }));
-  el('gateLink2').addEventListener('click',()=>{
-    if(S.d.lvl==='gate'){ S.d.lvl=null; S.d.gate=null; S.gateMode='chip'; }
-    else { S.d.lvl='gate'; S.d.floor=null; S.d.dong=''; S.d.line=''; }
-    renderForm();
-  });
-  el('in-gate').addEventListener('input', e=>{ S.d.gate = e.target.value.trim() || null; renderForm(); });
-  el('in-dong').addEventListener('input', e=>{ S.d.dong = e.target.value.replace(/동\s*$/,''); renderForm(); });
-  el('in-line').addEventListener('input', e=>{ S.d.line = e.target.value.trim(); renderForm(); });
-  el('in-etc').addEventListener('input',  e=>{ S.d.etc  = e.target.value; renderForm(); });
+  el('in-dong').addEventListener('input', e=>{ S.d.dong=e.target.value.replace(/동\s*$/,''); renderForm(); });
+  el('in-line').addEventListener('input', e=>{ S.d.line=e.target.value; renderForm(); });
+  el('in-etc').addEventListener('input',  e=>{ S.d.etc =e.target.value; renderForm(); });
   el('chk-save').addEventListener('change', renderForm);
   el('ph-submit').addEventListener('click', submitForm);
   $('#phclose').addEventListener('click',()=>$('#phscr').classList.remove('on'));
   $$('[data-open]').forEach(n=>n.addEventListener('click',()=>openForm(n.dataset.open)));
-  $('#cta-start').addEventListener('click',()=>{
-    if(S.value) S.confirmed = true;      /* 여기서 비로소 기사에게 간다 */
-    S.screen='voyage'; render();
-  });
+  $('#cta-start').addEventListener('click',()=>{ if(S.value) S.confirmed=true; S.screen='voyage'; render(); });
   $$('.tab').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
   $('#rst').addEventListener('click',()=>setMode(S.mode));
 
