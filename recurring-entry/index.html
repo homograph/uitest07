@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>정기예약 진입점 · 예약 홈 배치 비교</title>
+<title>정기예약 진입점 · 예약 홈 프로토타입</title>
 <meta name="color-scheme" content="light dark" />
 <style>
 /* ═══════════════════════════════════════════════════════════════
@@ -212,11 +212,7 @@ body:not(.wide) .stage{justify-content:flex-start;}
 .col{flex:0 0 auto;--vw:360px;--vh:800px;width:calc(var(--vw) * var(--k));}
 
 .cap{margin:0 0 10px;}
-.cap .k{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;
-  padding:0 5px;border-radius:var(--r-mark);background:var(--accent);color:var(--accent-ink);
-  font-family:var(--mono);font-size:11px;font-weight:600;vertical-align:1px;}
-.cap .k.base{background:transparent;color:var(--ink-3);border:1px solid var(--line);}
-.cap h3{display:inline;margin:0 0 0 7px;font-size:13.5px;line-height:20px;font-weight:700;color:var(--ink);}
+.cap h3{margin:0;font-size:13.5px;line-height:20px;font-weight:700;color:var(--ink);}
 .cap p{margin:6px 0 0;font-size:11.5px;line-height:17px;color:var(--ink-3);word-break:keep-all;}
 .cap p.ref{margin-top:7px;color:var(--ink-2);font-weight:600;}
 .cap p.ref::before{content:"참고 ";color:var(--ink-3);font-weight:400;}
@@ -741,7 +737,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
     </div>
     <p class="lede">정기예약은 아무 예약에나 붙일 수 없습니다. 첫 픽업이 두 시간은 남아야 하고, 프리미엄밴으로는 못 부릅니다.
       지금은 이 조건을 <b>마지막 미리보기에서 배너가 뜨느냐 안 뜨느냐로만</b> 알 수 있어서, 조건에 걸린 사람은 이유도 모른 채 기능을 못 봅니다.
-      <b>앞에서 정기라고 선언하면 그때부터 갈라서 안내할 수 있습니다.</b> 그 진입점을 어디에 둘지 비교합니다.</p>
+      <b>앞에서 정기라고 선언하면 그때부터 갈라서 안내할 수 있습니다.</b> 이 화면이 그 진입점이고, 상태를 바꿔가며 확인할 수 있습니다.</p>
     <div class="facts">
       <div><span class="n">6.9%</span><span class="l">정기 배너를 클릭한 582명 중 1시간 안에 정기예약을 만든 비율 (40명)</span></div>
       <div><span class="n">2시간</span><span class="l">첫 픽업까지 남아야 하는 시간. 미만이면 정기로 만들 수 없습니다</span></div>
@@ -750,10 +746,6 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
   </header>
 
   <div class="rail">
-    <div class="rline varchips">
-      <div class="rname">비교안</div>
-      <div class="seg" id="segVar"></div>
-    </div>
     <div class="rline condbar">
       <button class="condbtn" id="condToggle" aria-expanded="false" aria-controls="condRows">
         <span class="ttl">조건</span><span class="sum" id="condSummary"></span>
@@ -765,6 +757,8 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       <div class="seg" id="segRecur"><button data-v="1">ON</button><button data-v="0">OFF</button></div>
       <div class="rname" style="min-width:52px">작성 중</div>
       <div class="seg" id="segDraft"><button data-v="0">0건</button><button data-v="1">1건</button><button data-v="2">2건</button></div>
+      <div class="rname" style="min-width:52px">이전 예약</div>
+      <div class="seg" id="segPrev"><button data-v="0">0건</button><button data-v="1">1건</button><button data-v="2">2건</button></div>
     </div>
     <div class="rline cond">
       <div class="rname">쿠폰 배너</div>
@@ -775,25 +769,8 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
     </div>
     <div class="pfoot">
       <button id="pClose">닫기</button>
-      <button id="pFull">비교표와 주석 보기</button>
+      <button id="pFull">설명과 주석 보기</button>
     </div>
-  </div>
-
-  <div class="verdict">
-    <h2>정기 카드는 페이지 어디에 놓이나</h2>
-    <p id="vsub">막대는 정기 카드가 차지하는 세로 구간입니다. 점선을 넘어가면 하단 ‘예약 시작하기’ 시트에 가려 첫 화면에서 보이지 않습니다.</p>
-    <table class="vt" id="vt">
-      <caption>배치별 정기 카드의 세로 위치와 첫 화면 노출 판정</caption>
-      <colgroup><col class="c-name"><col><col class="c-num"><col class="c-verd"></colgroup>
-      <thead><tr>
-        <th scope="col">배치</th>
-        <td class="plot"><span class="foldlabel">첫 화면 끝 595px</span></td>
-        <th scope="col" class="n">상단</th>
-        <th scope="col" class="v">판정</th>
-      </tr></thead>
-      <tbody id="vtb"></tbody>
-    </table>
-    <p class="vfoot" id="vfoot"></p>
   </div>
 
   <div class="stage" id="stage"></div>
@@ -802,79 +779,37 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
     <h2>정기라고 선언하면 그때부터 갈라집니다</h2>
     <p>진입점을 앞에 두는 이유입니다. 지금은 마지막 미리보기에서 배너가 뜨느냐 안 뜨느냐로만 조건을 알 수 있어서,
       걸린 사람은 이유도 모른 채 기능을 못 봅니다. 앞에서 갈라두면 <b>못 고르게 막고 그 자리에서 이유를 말할 수 있습니다.</b>
-      아래 세 화면은 배치안과 무관하게 같습니다.</p>
+      아래 세 화면이 그 흐름입니다.</p>
     <div class="bstage" id="bstage"></div>
   </div>
 
   <div class="notes">
-    <section class="flow refs">
-      <h2>레퍼런스에서 확인한 것</h2>
-      <p><b>Uber 는 이 문제를 측정했습니다.</b> 검색창 안 예약 아이콘을 알아보기 쉽게 바꾼 것은 <b>+4%</b>,
-        목적지를 입력한 뒤 호출 버튼 옆에 예약 진입점을 붙인 것은 <b>+30%</b> 였습니다.
-        사람들은 어디로 갈지 말한 <em>뒤에야</em> “그럼 미리 잡아둘까”를 생각합니다.</p>
-      <p>다만 Uber 예약 승차의 <b>42.2%</b> 가 5분에서 1시간 뒤 탑승입니다. Uber 의 ‘예약’은 근거리 미래이고,
-        타다 정기는 몇 주짜리 반복입니다. <b>결정의 성격이 달라서</b> 수치를 그대로 옮길 수는 없습니다.</p>
-      <p>Uber 홈은 <b>“Where to?”</b> 로 시작하고 서비스 카탈로그는 별도 Services 탭으로 뺐습니다.
-        Kakao T 도 2025년 10월 개편에서 상황별 탭 카탈로그, 이용 빈도로 자동 배치되는 마이 카탈로그,
-        맥락 기반 맞춤 추천 카드로 갔습니다.</p>
-      <p>Uber 홈처럼 목적지를 먼저 묻는 안도 만들어 봤지만 <b>걷어냈습니다.</b> 타다는 목적지가 다음 화면이라
-        구조가 맞지 않습니다. 레퍼런스를 형태만 베끼면 이렇게 됩니다. 3D 렌더 썸네일을 큰 카드에 얹는 방식도
-        레퍼런스에 없습니다. 카탈로그는 작은 타일로 갑니다. 그 기준에서는 B와 F가 가장 가깝습니다.</p>
-      <p class="verdict"><b>그래서 이 티켓에 대해.</b> Uber 의 수치는 <em>발견</em>에 대한 것이고,
-        이 진입점의 이유는 <em>분기</em>입니다. 정기라고 미리 선언해야 조건을 검사하고 막고 이유를 말할 수 있습니다.
-        그러니 배치 비교는 “어디에 두면 잘 보이나”가 아니라 <b>“어디에 두어야 사람들이 조건을 만나기 전에 정기를 고르나”</b>로
-        읽어야 합니다. 발견 자체를 올리는 큰 지렛대는 여전히 <em>미리보기 배너를 고치는 쪽</em>이고, 둘은 별개 과제입니다.</p>
-      <p class="src">출처
-        <a href="https://wantinghuang.com/work/uber-scheduled-rides/" target="_blank" rel="noopener">Uber Scheduled Rides 사례연구</a>,
-        <a href="https://www.uber.com/us/en/newsroom/were-redesigning-the-uber-app-just-for-you/" target="_blank" rel="noopener">Uber 앱 리디자인</a>,
-        <a href="https://help.uber.com/en/riders/article/what-is-uber-reserve?nodeId=ce72b9b3-e24c-453d-b770-ef0ac13cba1a" target="_blank" rel="noopener">Uber Reserve</a>,
-        <a href="https://www.digitaltoday.co.kr/news/articleView.html?idxno=600623" target="_blank" rel="noopener">카카오T 홈 개편</a></p>
-    </section>
     <section class="flow">
       <h2>읽는 법</h2>
-      <p>판정선은 <b>콘텐츠 상단부터 595px</b>입니다. 기기 높이 800에서 상태바 32, 하단 시트 110, 탭바 63을 뺀 값이고,
+      <p>판정선은 <b>콘텐츠 상단부터 647px</b>입니다. 기기 높이 852에서 상태바 32, 하단 시트 112, 탭바 61을 뺀 값이고,
         시트에 가려지는 영역은 실제로 보이지 않으므로 제외했습니다.</p>
-      <p><b>신 Figma안은 2026-08-24 Figma(10405:113543)를 실측해 그대로 옮긴 것</b>이고, as-is 는 현행 그대로입니다.
-        A와 B는 이전 탐색안의 구조를 지키되 마감을 다듬었고, C·D·F 는 새로 그린 제안입니다.
-        원안과의 차이는 오른쪽에 적어 뒀습니다.</p>
-      <p>D안은 하단 고정 CTA 를 뺐습니다. ‘예약 시작하기’와 방법 카드는 같은 일을 하는데
-        그 버튼이 화면 하단 173px 을 계속 차지합니다. 빼면 첫 화면이 <b>595px 에서 705px 로</b> 늘어납니다.
-        대신 아래로 스크롤한 사용자가 바로 누를 버튼이 없어집니다.</p>
-      <p><b>‘작성 중’ 건수가 최대 변수입니다.</b> 다시 예약하기 섹션이 정기 카드를 그대로 아래로 밀어냅니다.
-        0건과 2건을 번갈아 눌러 보면 각 배치가 조건 변화를 얼마나 견디는지 드러납니다.</p>
-      <p>범위는 <b>홈 화면까지</b>입니다. 정기 카드를 누르면 하이라이트와 토스트만 뜨고,
-        그 뒤 설명 시트에서 정기 미리보기까지는 담지 않았습니다.</p>
+      <p>이 화면은 <b>2026-08-24 Figma(10411:115941 / 115942)를 실측해 그대로 옮긴 것</b>입니다.
+        아래 세 조건을 바꿔가며 실제 정책상 세 가지 상태를 재현할 수 있습니다:
+        <b>이전 예약 없음</b>(10419:118615), <b>이전 예약 없음 · 쿠폰 있음</b>(10419:118121),
+        <b>이전 예약 있음 · 쿠폰 있음</b>(10411:115942).</p>
+      <p><b>‘작성 중’과 ‘이전 예약’ 둘 다 0건이면 ‘다시 예약하기’ 제목과 카드 행 자체가 사라집니다.</b>
+        쿠폰은 그 유무와 무관하게 독립적으로 뜨거나 사라집니다. 0/0으로 내려 보면 이 화면이 통째로 비는 것도 확인할 수 있습니다.</p>
+      <p>범위는 <b>홈 화면까지</b>입니다. 정기 카드를 누르면 설명 시트가 열리고, 그 뒤 첫 픽업 시간과 차량 선택 화면은
+        아래 ‘분기 이후’ 섹션에 따로 있습니다.</p>
       <p>프레임 안쪽은 라이트 모드 앱의 사진이라, 페이지를 다크 모드로 봐도 뒤집지 않습니다.</p>
     </section>
     <section>
       <h2>이 프로토에서 임의로 정한 것</h2>
       <dl class="assume">
-        <div><dt>정기 카드 카피</dt><dd>Figma 탐색안에는 맞춤 예약에서 복사된 “일반 예약, 시간 예약 모두 가능해요”가 그대로 들어가 있습니다.
-          PRD의 씬 데이터(평일 오전 6시에서 9시, 출퇴근과 등교)를 근거로 <em>“매주 같은 시간에 반복 예약해요”로 바꿔 넣었습니다.</em></dd></div>
-        <div><dt>‘작성 중’과 ‘이전 예약’</dt><dd>다시 예약하기 행에는 두 종류가 섞입니다. 만들다 만 <b>작성 중</b>(0~2건, 토글)과
-          지난 <b>이전 예약</b>(항상 있음)입니다. 전에는 한 카운터로 묶어 놔서 <em>1건이면 카드가 하나만 나왔습니다.</em>
-          지금은 작성 중 뒤에 이전 예약 두 건이 항상 붙습니다. 이전 예약 건수는 임의로 둘로 잡았습니다.</dd></div>
-        <div><dt>정기 썸네일 (해결)</dt><dd>여러 차례 플래그했던 항목입니다. <b>2026-08-24 Figma 에서 정기·맞춤 전용
-          썸네일이 새로 생겼습니다.</b> 임시로 쓰던 평면 벡터 <code>illust_calendar</code>를 걷어내고 원본 에셋으로 바꿨습니다.
-          as-is 는 정기 카드가 없어 영향이 없습니다.</dd></div>
-        <div><dt>네 안 공통으로 다듬은 것</dt><dd>방법 카드가 콘텐츠 상자가 아니라 <em>누르는 것</em>으로 읽히도록
-          안쪽 하이라이트와 오프셋·블러 그림자를 주고, 누르면 눌리게 했습니다. NEW 뱃지는 솔리드에서 옅은 틴트로 낮췄습니다.
-          ‘작성 중’은 주소 두 줄 나열에서 출발과 도착을 점선으로 잇는 경로 한 덩어리로 바꿨고, 목적지를 굵게 잡았습니다.
-          한글은 낱말 가운데를 끊지 않습니다.</dd></div>
-        <div><dt>A안에서 바꾼 것</dt><dd>원안엔 <em>‘예약 방법’ 섹션 헤더가 없어</em> 카드 넷이 정체 없이 떴습니다.
-          헤더를 넣은 것이 A, 원안대로 뺀 것이 A′ 입니다. 헤더 한 줄이 <em>37px</em> (390 → 427) 이니 나란히 놓고 판단하세요.
-          세 장일 때 남던 빈 칸은 둘 다 마지막 카드를 가로로 펴서 메웁니다.
-          ‘다시 예약하기’ 라벨은 12sp 로 잡혀 있어(as-is 16sp, B안 15sp) 15sp 로 통일했습니다.</dd></div>
-        <div><dt>B안에서 바꾼 것</dt><dd>Figma 탐색안엔 후기 프로필 아바타가 임시로 꽂혀 있었습니다. 서비스 썸네일로 바꾸면서
-          원형 디스크도 <em>둥근 타일로 바꿨습니다</em>. 3D 렌더가 가로형이라 원 안에서 잘리거나 너무 작아집니다.</dd></div>
-        <div><dt>B안 쿠폰 배너</dt><dd>Figma 탐색안에는 없지만, 네 배치를 같은 콘텐츠로 비교하려고 넣었습니다.</dd></div>
-        <div><dt>D안</dt><dd>네 배치가 각자 하나씩 잃고 있어서 새로 그렸습니다. A는 썸네일, B는 설명 문구와 히어로,
-          C는 맞춤 예약의 자리를 잃습니다. D는 히어로 일러스트를 버리는 대신 <em>썸네일과 설명을 모두 지킨 카드 넷</em>을
-          맨 위에 놓습니다. 브랜드감은 3D 썸네일 네 개가 대신 집니다. 정기가 꺼지면 마지막 카드를 가로로 펴서 빈 칸을 없앱니다.</dd></div>
+        <div><dt>정기 카드 카피</dt><dd>Figma 탐색안에는 맞춤 예약에서 복사된 “일반 예약, 시간 예약 모두 가능해요”가 그대로 들어가 있었습니다.
+          PRD의 씬 데이터(평일 오전 6시에서 9시, 출퇴근과 등교)를 근거로 <em>정기 예약 설명 시트의 문구를 “매주 같은 시간에 반복되는
+          이동을 한 번에 잡아둡니다”로 썼습니다.</em></dd></div>
+        <div><dt>‘작성 중’과 ‘이전 예약’은 다른 것</dt><dd>다시 예약하기 행에는 두 종류가 섞입니다. 만들다 만 <b>작성 중</b>과
+          지난 <b>이전 예약</b>입니다. 둘을 한 카운터로 묶으면 실제로는 카드가 여러 장 나와야 할 상황에서 한 장만 나오는 버그가 됩니다.
+          이번에 둘을 분리하고, Figma가 실제로 보여준 세 가지 조합(둘 다 없음 / 이전만 없음+쿠폰 있음 / 둘 다 있음)을
+          위 토글로 재현할 수 있게 했습니다.</dd></div>
         <div><dt>‘다시 예약하기’ 라벨</dt><dd>작성 중이던 예약을 이어서 하는 블록인데 라벨은 ‘다시 예약하기’입니다.
           하는 일과 말이 어긋나 보이지만 제품 용어라 <em>바꾸지 않고 그대로 뒀습니다.</em> 별도로 볼 만한 건입니다.</dd></div>
-        <div><dt>C안</dt><dd>캐러셀 폭으로는 네 번째 카드가 어떤 조건에서도 첫 화면에 못 들어옵니다.
-          그래서 카드를 더하는 대신 <em>정기를 맨 앞으로 올리고</em> 섹션을 위로 옮겼습니다. 맞춤 예약이 밀려나는 값을 치릅니다.</dd></div>
       </dl>
     </section>
   </div>
@@ -918,52 +853,18 @@ const SHEET = DEV._def.sheet, TAB = DEV._def.tab;
 const FOLD = H - STATUS - SHEET - TAB;          // 595. 기본 규격의 시트 윗선
 
 /* ── data ───────────────────────────────────────────────────── */
-const RECUR_COPY = '매주 같은 시간에 반복 예약해요';
-const M_NORMAL = {id:'normal', t:'일반 예약', d:'원하는 시간에 불러서 이동해요',      img:A.thNormal};
-const M_TIME   = {id:'time',   t:'시간 예약', d:'필요한 시간만큼 빌려요',            img:A.thTime};
-const M_CUSTOM = {id:'custom', t:'맞춤 예약', d:'일반 예약, 시간 예약 모두 가능해요', img:A.thCustom};
-// 2026-08-24 Figma 에서 맞춤/정기 전용 썸네일이 새로 생겼다
-const M_CUSTOM2 = {id:'custom', t:'맞춤 예약', d:'일반 예약, 시간 예약 모두 가능해요', img:A.thCustom2};
-const M_RECUR2  = {id:'recur',  t:'정기 예약', d:RECUR_COPY, img:A.thRecur, tall:true, recur:true};
-// 2026-08-24 Figma 에서 정기 전용 썸네일이 생겼다. 임시로 쓰던 illust_calendar 를 걷어낸다.
-const M_RECUR  = {id:'recur',  t:'정기 예약', d:RECUR_COPY, img:A.thRecur, recur:true};
-
 const VARIANTS = [
-  {id:'asis', tag:'기준', short:'as-is+', name:'as-is + 정기 카드만 추가',
-   ref:'레퍼런스 없음. PRD 문구 그대로',
-   desc:'PRD to-be 문구 그대로, 캐러셀에 네 번째 카드를 더했습니다. 나머지 셋을 견줄 기준선입니다.'},
-  {id:'figma', tag:'NEW', short:'신 Figma안', name:'Figma 3차 수정 (393×852)',
+  {id:'figma', tag:'', short:'신 Figma안', name:'정기예약 진입점 (Figma 4차 수정)',
    ref:'Figma 10411:115941 / 115942. 값 전부 실측',
-   desc:'3차 수정. 프레임이 393×852 로 커지고, 작성 중 카드가 회색에 파란 라벨, 후기가 회색 배경의 알약 카드가 됐습니다. FAQ 도 붙었습니다.'},
-  {id:'grid', tag:'A', short:'A 그리드', name:'방법 카드 2×2 그리드',
-   ref:'Kakao T 마이 카탈로그와 같은 계열',
-   desc:'Figma 10375:111747. 카드를 그리드로 바꿔 상단으로. 원안에 없던 ‘예약 방법’ 헤더를 넣었습니다.'},
-  {id:'grid0', tag:'A′', short:'A′ 헤더없음', name:'A 그리드, 헤더 없이',
-   ref:'A 와 동일 계열',
-   desc:'Figma 원안 그대로 섹션 헤더가 없습니다. 헤더 한 줄이 37px 값을 하는지 A와 나란히 보세요.'},
-  {id:'icon', tag:'B', short:'B 아이콘', name:'아이콘 숏컷 4개',
-   ref:'Uber Services · Kakao T 마이 카탈로그와 가장 가까움',
-   desc:'Figma 10375:112685. 가장 컴팩트하고 맨 위에 놓입니다. 대신 히어로 일러스트와 카드별 설명 문구가 사라집니다.'},
-  {id:'promo', tag:'C', short:'C 승격', name:'캐러셀 유지 + 정기 순서 승격',
-   ref:'레퍼런스 없음. 캐러셀은 카탈로그에 쓰이지 않는 형태',
-   desc:'캐러셀 폭으로는 네 번째가 어떤 조건에서도 안 보입니다. 정기를 맨 앞으로 올리고 섹션을 위로 옮겼습니다.'},
-  {id:'cards', tag:'D', short:'D 방법우선', name:'방법 카드를 화면의 주인공으로',
-   ref:'방법 우선 배치. 주요 이동 앱에는 없는 형태',
-   desc:'새로 그린 제안. 히어로 일러스트와 하단 고정 CTA를 걷어내고, 썸네일을 지킨 카드 넷을 맨 위에 놓았습니다.'},
-  {id:'mine', tag:'F', short:'F 개인화', name:'쓰던 순서대로, 맥락 카드로',
-   ref:'Kakao T 2025.10 개편',
-   desc:'이용 빈도로 방법을 자동 배치하고, 맥락 추천 카드가 정기를 먼저 말을 겁니다.'}
+   desc:'프레임 393×852. 방법 아이콘 행에 정기예약이 NEW 뱃지와 함께 붙고, 다시 예약하기·쿠폰·후기·FAQ 순으로 이어집니다.'}
 ];
 
-/* 하단 고정 CTA 가 없는 배치. 방법 카드와 의도가 겹치는 버튼이라 뺐고,
-   그만큼 첫 화면이 595px 에서 705px 로 늘어난다. */
-const SHEETLESS = new Set(['cards', 'mine']);
 function foldFor(vid){
   const d = dev(vid);
-  return d.h - d.status - d.tab - (SHEETLESS.has(vid) ? 0 : d.sheet);
+  return d.h - d.status - d.tab - d.sheet;
 }
 
-const DEFAULTS = {variant:'asis', recur:1, drafts:1, coupon:1, mode:'device'};
+const DEFAULTS = {variant:'figma', recur:1, drafts:1, prevCount:2, coupon:1, mode:'device'};
 let S = Object.assign({}, DEFAULTS);
 let wasWide = null;
 let consoleFull = false;   // 모바일에서 콘솔 전체를 펼쳤는지
@@ -972,41 +873,7 @@ let consoleFull = false;   // 모바일에서 콘솔 전체를 펼쳤는지
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
 const el = (h) => { const d = document.createElement('div'); d.innerHTML = h.trim(); return d.firstElementChild; };
 
-function methodList(order){
-  const base = order || [M_NORMAL, M_TIME, M_CUSTOM, M_RECUR];
-  return S.recur ? base : base.filter(m => !m.recur);
-}
-
 /* ── fragments ──────────────────────────────────────────────── */
-function fHero(kind){
-  const cls = kind === 'compact' ? 'hero compact' : (kind === 'tight' ? 'hero tight' : 'hero');
-  const img = kind === 'compact' ? '' :
-    `<div class="heroimg${kind==='tight'?'':''}"><img src="${A.hero}" alt=""></div>`;
-  const inner = `<div class="tt"><h1>타다 예약</h1><p>중요한 일정이 어긋나지 않도록<br>타다와 이동을 약속해 보세요.</p></div>`;
-  if (kind === 'tight')
-    return `<section class="${cls}">${inner}` +
-           `<div class="heroimg pull"><img src="${A.hero}" alt=""></div></section>`;
-  return `<section class="${cls}">${inner}${img}</section>`;
-}
-
-function fCouponCard(){
-  if (!S.coupon) return '';
-  return `<div class="card p1620"><div class="grow">
-    <div class="t13b">지금 쓸 수 있는 쿠폰이 있어요</div><div class="t12">26.3.20 만료 예정</div></div>
-    <div class="btn-weak">보기</div></div>`;
-}
-
-function fCoupon(pad){
-  if (!S.coupon) return '';
-  const p = pad === 'tight' ? 'p1620' : 'p20';
-  const ts = pad === 'tight'
-    ? `<div class="t13b">지금 쓸 수 있는 쿠폰이 있어요</div>`
-    : `<div class="t14b">지금 쓸 수 있는 쿠폰이 있어요</div>`;
-  const card = `<div class="card ${p}"><div class="grow">${ts}<div class="t12">26.3.20 만료 예정</div></div>
-                <div class="btn-weak">보기</div></div>`;
-  return pad === 'tight' ? card : `<section class="blk">${card}</section>`;
-}
-
 const ADDRS = [
   ['아크로포레스트 101동', '왕십리로 83-21'],
   ['서울숲트리마제 101동', '인천공항 제2터미널']
@@ -1018,112 +885,6 @@ const PREV = [
   ['왕십리로 83-21', '아크로포레스트 101동'],
   ['서울숲트리마제 101동', '김포공항 국내선']
 ];
-
-function fReReserveLarge(){
-  if (!S.drafts) return '';
-  const cards = ADDRS.slice(0, S.drafts).map(([a,b]) => `
-    <div class="shortcut">
-      <div class="grow">
-        <div class="t14b">작성 중</div>
-        <div class="addrs">
-          <div class="addr">${icStart()}<span>${esc(a)}</span></div>
-          <div class="addr">${icDest()}<span>${esc(b)}</span></div>
-        </div>
-      </div>
-      <div class="btn-weak">계속</div>
-    </div>`).join('');
-  return `<section class="rr"><div class="sec-title">다시 예약하기</div>
-          <div class="rrlist">${cards}</div></section>`;
-}
-
-function fReReserveCompact(withCoupon){
-  const coupon = withCoupon ? fCoupon('tight') : '';
-  if (!S.drafts) return coupon ? `<section class="schd">${coupon}</section>` : '';
-  const cards = ADDRS.slice(0, S.drafts).map(([a,b]) => `
-    <div class="picker"><div class="lb">작성 중</div>
-      <div class="rows">
-        <div class="r"><i></i><span>${esc(a)}</span></div>
-        <div class="r"><i class="d"></i><span>${esc(b)}</span></div>
-      </div></div>`).join('');
-  return `<section class="schd"><div class="sec-title sm">다시 예약하기</div>
-          <div class="pickrow">${cards}</div>${coupon}</section>`;
-}
-
-function icStart(){ return `<svg width="9" height="9" viewBox="0 0 18 18" fill="none"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 4.5V13.5H13.5V4.5H4.5ZM0 0H18V18H0V0Z" fill="#32A2FA"/></svg>`; }
-function icDest(){ return `<svg width="9" height="9" viewBox="0 0 18 18" fill="none"><rect width="18" height="18" fill="#31487D"/></svg>`; }
-
-function fMethodsCarousel(order){
-  const cards = methodList(order).map(m => `
-    <div class="mcard" data-m="${m.id}">
-      ${m.recur ? '<div class="newbdg">NEW</div>' : ''}
-      <div class="txt"><div class="mt">${esc(m.t)}</div><div class="md">${esc(m.d)}</div></div>
-      <div class="thumb${m.cal ? ' cal' : ''}"><img src="${m.img}" alt=""></div>
-    </div>`).join('');
-  return `<section class="methods"><div class="mhead"><div class="sec-title">예약 방법</div></div>
-          <div class="mrow">${cards}</div></section>`;
-}
-
-function fHeroLean(){
-  return `<section class="hero lean"><div class="tt"><h1>타다 예약</h1>
-    <p>중요한 일정이 어긋나지 않도록<br>타다와 이동을 약속해 보세요.</p></div></section>`;
-}
-
-function fResumeD(){
-  if (!S.drafts) return '';               // 이어서 할 게 없으면 섹션 자체가 없다 (실제 앱 동작)
-  const cards = ADDRS.slice(0, S.drafts).map(([from, to]) => `
-    <div class="rcard">
-      <div class="body">
-        <span class="cap">작성 중</span>
-        <div class="route">
-          <i>${icStart()}</i><span>${esc(from)}</span>
-          <i>${icDest()}</i><span class="to">${esc(to)}</span>
-        </div>
-      </div>
-      <div class="go">계속</div>
-    </div>`).join('');
-  return `<section class="resume"><div class="lab">다시 예약하기</div>
-          <div class="rlist">${cards}</div></section>`;
-}
-
-/* 방법을 얇은 타일 행으로. E·F 공용. */
-function fTiles(order){
-  return `<div class="tiles">${methodList(order).map(m => `
-    <div class="t" data-m="${m.id}">
-      ${m.recur ? '<div class="newbdg">NEW</div>' : ''}
-      <div class="box${m.cal ? ' cal' : ''}"><img src="${m.img}" alt=""></div>
-      <span>${esc(m.t.replace(' ', ''))}</span>
-    </div>`).join('')}</div>`;
-}
-
-/* E. 목적지를 먼저 묻는다. */
-function fDestField(){
-  return `<section class="dest">
-    <div class="destfield">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-        <circle cx="9" cy="9" r="6.2" stroke="#19254d" stroke-width="1.9"/>
-        <path d="M13.6 13.6L17.5 17.5" stroke="#19254d" stroke-width="1.9" stroke-linecap="round"/>
-      </svg>
-      <span>어디로 가세요?</span>
-    </div>
-    <div class="places">
-      <div class="chipp"><b>집</b> 아크로포레스트 101동</div>
-      <div class="chipp"><b>회사</b> 왕십리로 83-21</div>
-      <div class="chipp">인천공항 제2터미널</div>
-    </div>
-  </section>`;
-}
-
-/* F. 맥락 추천 카드. 카드가 먼저 말을 건다. */
-function fNudge(){
-  if (!S.recur) return '';
-  return `<section style="padding:20px 0 0"><div class="nudge" data-m="recur">
-    <div class="txt">
-      <div class="h">평일 아침마다 같은 길을 가시네요</div>
-      <div class="s">왕십리로 83-21, 최근 3주 동안 아홉 번. 정기 예약으로 한 번에 잡아둘 수 있어요.</div>
-    </div>
-    <img src="${A.thRecur}" alt="">
-  </div></section>`;
-}
 
 /* 정기 카드를 누르면 뜨는 설명 시트. PRD 패턴은 카드 → 설명 시트 → 액션 → 진입이고,
    못 고르는 조건을 말해주는 자리가 바로 여기다. */
@@ -1210,13 +971,16 @@ function fFigmaHome(){
         <div class="r"><i></i><span>${esc(f)}</span></div>
         <div class="r"><i class="d"></i><span>${esc(t)}</span></div>
       </div></div>`;
+  // 작성 중(토글 0~2) + 이전 예약(토글 0~2) 둘 다 없으면 '다시 예약하기' 제목과 행 자체가
+  // 사라진다(Figma 10419:118615 실측). 카드가 하나라도 있을 때만 섹션을 그린다.
   const cards = ADDRS.slice(0, S.drafts).map(([f, t]) => pick('작성 중', f, t))
-    .concat(PREV.map(([f, t]) => pick('이전 예약', f, t))).join('');
-  const picks = `<section class="fg-sch"><div class="lab">다시 예약하기</div>
+    .concat(PREV.slice(0, S.prevCount).map(([f, t]) => pick('이전 예약', f, t))).join('');
+  const picks = !cards ? '' : `<section class="fg-sch"><div class="lab">다시 예약하기</div>
     <div class="fg-pickrow">${cards}</div></section>`;
 
-  const coupon = !S.coupon ? '<div style="height:20px;background:#fff"></div>' :
-    `<section class="fg-coupon"><div class="card">
+  // 쿠폰은 '다시 예약하기' 유무와 무관하게 독립적으로 뜬다(Figma 10419:118121 실측:
+  // 카드는 없고 쿠폰만 있을 때도 쿠폰 행은 그대로 보인다).
+  const coupon = !S.coupon ? '' : `<section class="fg-coupon"><div class="card">
       <img class="ic" src="${A.icCoupon}" alt="">
       <div class="t">지금 쓸 수 있는 쿠폰이 있어요</div>
       <div class="b">보기</div></div></section>`;
@@ -1262,45 +1026,6 @@ function fFaq3(){
     </div></section>`;
 }
 
-function fMethodsGridThumb(){
-  const list = methodList();
-  const cards = list.map((m, i) => {
-    // 세 장이면 마지막을 가로로 펴서 빈 칸을 없앤다
-    const wide = list.length === 3 && i === 2;
-    return `<div class="dcard${wide ? ' wide' : ''}" data-m="${m.id}">
-      ${m.recur ? '<div class="newbdg">NEW</div>' : ''}
-      <div class="txt"><div class="mt">${esc(m.t)}</div><div class="md">${esc(m.d)}</div></div>
-      <div class="thumb${m.cal ? ' cal' : ''}"><img src="${m.img}" alt=""></div>
-    </div>`;
-  }).join('');
-  return `<section style="padding-top:2px"><div class="dgrid">${cards}</div></section>`;
-}
-
-function fMethodsGrid(showHead){
-  const list = methodList();
-  const cards = list.map((m, i) => {
-    const wide = list.length === 3 && i === 2;   // 세 장이면 마지막을 펴서 구멍을 없앤다
-    return `<div class="gcard${wide ? ' wide' : ''}" data-m="${m.id}">
-      ${m.recur ? '<div class="newbdg">NEW</div>' : ''}
-      <div class="mt">${esc(m.t)}</div><div class="md">${esc(m.d)}</div>
-    </div>`;
-  }).join('');
-  // Figma 탐색안엔 섹션 헤더가 없어 카드 넷이 정체 없이 뜬다. A 는 넣고, A′ 는 원안대로 뺀다.
-  const head = showHead ? `<div class="mhead"><div class="sec-title">예약 방법</div></div>` : '';
-  return `<section class="methods"${showHead ? '' : ' style="padding:0"'}>${head}
-          <div class="mgrid">${cards}</div></section>`;
-}
-
-function fMethodsIcons(){
-  const cards = methodList().map(m => `
-    <div class="ic" data-m="${m.id}">
-      ${m.recur ? '<div class="newbdg">NEW</div>' : ''}
-      <div class="circ${m.cal ? ' cal' : ''}"><img src="${m.img}" alt=""></div>
-      <span>${esc(m.t.replace(' ', ''))}</span>
-    </div>`).join('');
-  return `<section><div class="irow">${cards}</div></section>`;
-}
-
 const AV = ["<svg width=\"144\" height=\"144\" viewBox=\"0 0 144 144\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <g clip-path=\"url(#clip0_0_45)\"> <mask id=\"mask0_0_45\" style=\"mask-type:luminance\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"144\" height=\"144\"> <path d=\"M72 144C111.764 144 144 111.764 144 72C144 32.2355 111.764 0 72 0C32.2355 0 0 32.2355 0 72C0 111.764 32.2355 144 72 144Z\" fill=\"white\"/> </mask> <g mask=\"url(#mask0_0_45)\"> <path d=\"M72 144C111.764 144 144 111.764 144 72C144 32.2355 111.764 0 72 0C32.2355 0 0 32.2355 0 72C0 111.764 32.2355 144 72 144Z\" fill=\"#BEDDF9\"/> <path d=\"M70.6424 23.7823C76.1774 24.0073 80.8799 24.8323 84.8774 25.9123C96.5924 29.0773 105.585 38.4823 108.352 50.2948L108.982 52.9798C109.725 56.1598 109.612 59.4598 108.757 62.6098C108.135 64.8898 108.067 67.2223 109.342 69.2473L115.912 79.7323C116.917 81.2923 116.625 83.0473 114.907 83.7598L110.482 86.2123C109.807 86.4898 109.372 87.1423 109.372 87.8698V97.6798C109.372 101.76 105.78 104.91 101.73 104.362L92.2274 103.087C87.5399 102.457 83.3699 106.102 83.3699 110.835L83.3249 127.807L51.2774 126.225L52.4924 102.3C52.4924 97.2823 50.4149 92.4598 46.6874 89.0998C41.0999 84.0598 36.3824 76.7623 34.6274 66.4498C30.2549 40.7248 43.5224 22.6648 70.6424 23.7673V23.7823Z\" fill=\"#FFE7DC\"/> <path d=\"M49.5449 119.947L88.4324 123.42C87.3374 128.22 87.9074 133.252 90.0524 137.685C96.8699 151.762 111.75 183.997 111.75 197.04H12.0674L16.3649 172.23C16.3649 172.23 20.7149 154.74 27.1574 141.487C30.5174 134.572 36.5474 129.435 43.7324 127.147C46.9274 126.127 49.1924 123.277 49.5449 119.947Z\" fill=\"#F0F6FF\"/> <path d=\"M67.9049 108.93C70.2149 99.0072 69.6449 88.7097 66.8174 78.9222C66.6374 78.2922 66.5324 77.6172 66.5324 76.9272V73.5597C66.5324 69.6072 69.7349 66.3972 73.6949 66.3972C76.4774 66.3972 81.0374 66.1347 84.5249 64.4997C91.0424 61.4397 102.097 57.3972 104.572 40.9047C104.572 40.9047 106.417 37.2897 101.745 32.6172C97.0724 27.9447 68.5049 13.5297 44.6549 27.5472C28.6724 38.3622 27.9374 56.3097 27.9374 56.3097L11.8124 157.155C9.26242 172.942 8.19742 185.437 12.0674 197.047L28.6574 142.012C32.3624 132.907 42.7574 127.057 51.0374 126.952C59.2049 126.502 64.8899 121.845 66.5699 114.622L67.8974 108.93H67.9049Z\" fill=\"#293F71\"/> <path d=\"M63.7502 77.617C63.7502 80.9472 66.4483 83.647 69.7765 83.647C73.1047 83.647 75.8027 80.9472 75.8027 77.617V69.667C75.8027 66.3367 73.1047 63.637 69.7765 63.637C66.4483 63.637 63.7502 66.3367 63.7502 69.667V77.617Z\" fill=\"#FFE7DC\"/> </g> </g> <defs> <clipPath id=\"clip0_0_45\"> <rect width=\"48\" height=\"48\" fill=\"white\" transform=\"scale(3)\"/> </clipPath> </defs> </svg>", "<svg width=\"144\" height=\"144\" viewBox=\"0 0 144 144\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <g clip-path=\"url(#clip0_0_58)\"> <mask id=\"mask0_0_58\" style=\"mask-type:luminance\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"144\" height=\"144\"> <path d=\"M72 144C32.2355 144 0 111.764 0 72C0 32.2355 32.2355 0 72 0C111.765 0 144 32.2355 144 72C144 111.764 111.765 144 72 144Z\" fill=\"white\"/> </mask> <g mask=\"url(#mask0_0_58)\"> <path d=\"M72 144C32.2355 144 0 111.764 0 72C0 32.2355 32.2355 0 72 0C111.765 0 144 32.2355 144 72C144 111.764 111.765 144 72 144Z\" fill=\"#BACFE2\"/> <path d=\"M70.7099 22.7853C65.1599 23.0103 60.9599 22.9653 56.9549 24.0528C46.8524 26.7828 38.2424 31.5228 34.4099 40.0878C33.5024 42.1128 32.9324 44.2803 32.6474 46.4778L31.5224 55.1928C31.1549 56.7753 31.2899 58.4253 31.8749 59.9403C32.9699 62.7828 33.5474 64.0428 31.9274 66.6228L24.5024 80.3853C23.4974 81.9528 23.7899 83.7153 25.5074 84.4278L30.7424 85.4478C31.4174 85.7253 31.8524 86.3853 31.8524 87.1128V96.9603C31.8524 101.055 35.4599 104.213 39.5174 103.665L49.0574 103.433C54.1124 103.388 55.2974 105.165 55.4999 109.718L56.1974 131.123L50.0774 140.258L94.5149 121.68L92.4374 101.595C92.4374 96.5628 95.7749 92.7303 98.2649 88.3503C104.137 77.9928 105.457 73.7028 107.22 63.3528C111.607 37.5378 97.9499 21.6828 70.7324 22.7928L70.7099 22.7853Z\" fill=\"#FFE7DC\"/> <path d=\"M34.9648 38.9253C41.5198 37.8378 47.9398 41.5278 50.2723 47.7528C51.7423 51.6753 54.3448 58.4103 56.6548 61.0653C59.6398 64.5003 63.0598 63.8478 66.2623 65.0253C69.2473 66.1203 71.2273 68.9778 71.2573 72.1653L71.2948 75.4503C71.2948 77.9328 70.7548 79.7853 69.5173 81.1203C68.4823 82.2303 68.3023 83.8878 69.0973 85.1778L71.2198 88.6128C76.4623 97.1103 83.9098 104.018 92.7748 108.615L96.2473 95.9253C98.0848 91.3278 102.727 84.2853 105.022 79.9053C107.685 74.8353 114.93 64.7178 113.145 50.8053C109.41 21.7428 93.1423 18.9228 73.8748 18.1353C62.7298 17.6778 47.0548 20.7303 37.9723 25.6053C33.1348 28.2003 31.7248 34.4928 34.9648 38.9328V38.9253Z\" fill=\"#293F71\"/> <path d=\"M95.4524 118.553L93.5324 112.312L55.6949 115.777L54.7799 124.207C54.4049 127.665 53.4899 131.048 52.0648 134.22C46.1098 147.54 39.4349 162.457 36.8699 176.317L33.2173 196.088H127.912L125.505 182.88C121.935 163.312 113.572 144.968 101.19 129.473C98.6024 126.233 96.6674 122.513 95.4524 118.553Z\" fill=\"#DBECFA\"/> <path d=\"M67.0799 82.853H64.8374C62.116 82.853 59.9099 80.6469 59.9099 77.9255V67.703C59.9099 64.9816 62.116 62.7755 64.8374 62.7755H67.0799C69.8013 62.7755 72.0074 64.9816 72.0074 67.703V77.9255C72.0074 80.6469 69.8013 82.853 67.0799 82.853Z\" fill=\"#FFE7DC\"/> </g> </g> <defs> <clipPath id=\"clip0_0_58\"> <rect width=\"48\" height=\"48\" fill=\"white\" transform=\"scale(3)\"/> </clipPath> </defs> </svg>", "<svg width=\"144\" height=\"144\" viewBox=\"0 0 144 144\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <g clip-path=\"url(#clip0_0_70)\"> <mask id=\"mask0_0_70\" style=\"mask-type:luminance\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"144\" height=\"144\"> <path d=\"M72 144C111.764 144 144 111.764 144 72C144 32.2355 111.764 0 72 0C32.2355 0 0 32.2355 0 72C0 111.764 32.2355 144 72 144Z\" fill=\"white\"/> </mask> <g mask=\"url(#mask0_0_70)\"> <path d=\"M72 144C111.764 144 144 111.764 144 72C144 32.2355 111.764 0 72 0C32.2355 0 0 32.2355 0 72C0 111.764 32.2355 144 72 144Z\" fill=\"#CDDDEE\"/> <path d=\"M73.335 23.8423C78.87 24.0673 83.5725 24.8923 87.5775 25.9723C99.36 29.1448 108.413 38.5873 111.203 50.4673L111.833 53.1673C112.583 56.3548 112.463 59.6773 111.608 62.8423C111.54 63.0973 111.473 63.3823 111.42 63.6823C110.723 67.4473 111.758 71.3248 114.165 74.3023L118.793 80.0323C119.798 81.5998 119.505 83.3623 117.788 84.0748L113.348 86.5348C112.673 86.8123 112.238 87.4723 112.238 88.1998V98.0473C112.238 102.142 108.63 105.307 104.565 104.76L95.025 103.477C90.315 102.847 86.5575 104.64 85.17 110.422L81 125.205C79.9875 128.775 80.5125 132.607 82.4325 135.787L84.315 138.9L37.7925 130.267L43.71 124.582C45.1125 123.24 46.2 121.605 46.905 119.797L51.495 108.067C55.38 102.322 54.6675 94.5523 49.6425 89.7673C49.53 89.6623 49.41 89.5498 49.2975 89.4448C43.6875 84.3823 38.9475 77.0548 37.1925 66.7048C32.7975 40.8748 46.125 22.7398 73.3575 23.8498L73.335 23.8423Z\" fill=\"#FFE7DC\"/> <path d=\"M34.4628 39.6602C29.9703 48.9077 29.0403 56.9702 26.2803 71.2427C25.1628 77.0252 22.2678 83.3327 20.1153 86.1977C15.1728 92.7752 11.9028 99.0752 17.1153 106.815C24.2478 117.405 46.7028 116.955 46.7028 116.955C46.7028 116.955 79.2003 119.325 72.8478 100.178C69.9603 91.4852 65.6178 85.1477 77.7228 62.8952C80.7378 57.3527 96.2853 45.0077 103.523 39.8027C105.645 38.2802 106.17 35.3477 104.723 33.1727C101.048 27.6752 91.8228 19.4702 70.5828 19.9127C43.6803 20.4677 34.4628 39.6602 34.4628 39.6602Z\" fill=\"#293F71\"/> <path d=\"M70.7324 83.8726H72.6074C75.4323 83.8726 77.7224 81.5825 77.7224 78.7576V68.8951C77.7224 66.0701 75.4323 63.7801 72.6074 63.7801H70.7324C67.9075 63.7801 65.6174 66.0701 65.6174 68.8951V78.7576C65.6174 81.5825 67.9075 83.8726 70.7324 83.8726Z\" fill=\"#FFE7DC\"/> <path d=\"M43.6278 124.635L30.2028 137.52C29.9853 137.73 29.7678 137.94 29.5503 138.15C19.8453 147.705 13.3428 160.035 10.7103 173.4L7.23779 191.002L106.088 190.92C97.9953 157.815 81.3903 133.725 81.3903 133.725C81.3903 133.725 75.3828 138.375 43.6278 124.627V124.635Z\" fill=\"#8CC9FC\"/> </g> </g> <defs> <clipPath id=\"clip0_0_70\"> <rect width=\"48\" height=\"48\" fill=\"white\" transform=\"scale(3)\"/> </clipPath> </defs> </svg>", "<svg width=\"144\" height=\"144\" viewBox=\"0 0 144 144\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\"> <g clip-path=\"url(#clip0_0_83)\"> <mask id=\"mask0_0_83\" style=\"mask-type:luminance\" maskUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"144\" height=\"144\"> <path d=\"M72 144C111.764 144 144 111.764 144 72C144 32.2355 111.764 0 72 0C32.2355 0 0 32.2355 0 72C0 111.764 32.2355 144 72 144Z\" fill=\"white\"/> </mask> <g mask=\"url(#mask0_0_83)\"> <path d=\"M72 144C111.764 144 144 111.764 144 72C144 32.2355 111.764 0 72 0C32.2355 0 0 32.2355 0 72C0 111.764 32.2355 144 72 144Z\" fill=\"#BEDDF9\"/> <path d=\"M71.5652 19.8525C65.7677 20.085 60.8477 20.955 56.6627 22.0875C44.4002 25.4025 34.9801 35.25 32.0776 47.6175L30.6601 53.6775C30.2701 55.3275 30.4201 57.045 31.0276 58.6275C32.1751 61.59 32.7676 62.91 31.0801 65.6025L23.3326 79.9575C22.2826 81.5925 22.5901 83.43 24.3826 84.1725L29.8426 85.2375C30.5476 85.53 31.0051 86.2125 31.0051 86.9775V97.2525C31.0051 101.527 34.7701 104.82 39.0076 104.25L48.9602 104.01C54.2402 103.965 55.4702 105.817 55.6802 110.572L56.1601 131.13L91.8452 127.155L90.5702 102.097C90.5702 96.84 92.7452 91.7925 96.6452 88.275C102.495 82.995 107.438 75.36 109.275 64.56C113.858 37.62 99.9602 18.705 71.5577 19.86L71.5652 19.8525Z\" fill=\"#FFE7DC\"/> <path d=\"M93.1725 117.735L52.2 124.2C53.4225 131.625 45.525 142.312 42.525 153.937C35.61 180.765 33.5925 201.3 33.5925 201.3H132.945L125.82 164.475C122.37 152.115 117.03 141.082 107.048 133.027C104.078 130.635 99.135 127.222 97.05 126.142C93.405 124.252 93.1725 117.742 93.1725 117.742V117.735Z\" fill=\"white\"/> <path d=\"M35.5503 38.6472C35.5503 38.6472 38.3703 39.9147 47.3928 39.8697C52.5153 39.8472 57.0453 43.1397 58.6503 47.9997C58.6728 48.0672 58.6953 48.1272 58.7178 48.1947C59.7228 51.2097 61.2903 53.9997 63.3378 56.4297L67.3803 61.2297C69.0528 63.2172 71.5128 64.3572 74.1078 64.3572C78.1428 64.3572 81.4203 67.6272 81.4203 71.6697V75.4947C81.4203 77.3922 80.6103 79.0947 79.3128 80.2872C77.4153 82.0347 77.2428 84.9822 78.8253 87.0147L90.5853 102.097C90.5853 102.097 99.9153 88.4322 107.415 78.5172C114.923 68.6022 115.92 47.2047 110.145 36.5622C104.168 25.5447 93.9453 16.9947 74.4453 17.5422C53.5128 18.1272 40.1253 27.8247 35.5503 38.6472Z\" fill=\"#293F71\"/> <path d=\"M78.4428 63.1047H77.2803C74.1157 63.1047 71.5503 65.6701 71.5503 68.8347V78.3297C71.5503 81.4943 74.1157 84.0597 77.2803 84.0597H78.4428C81.6074 84.0597 84.1728 81.4943 84.1728 78.3297V68.8347C84.1728 65.6701 81.6074 63.1047 78.4428 63.1047Z\" fill=\"#FFE7DC\"/> </g> </g> <defs> <clipPath id=\"clip0_0_83\"> <rect width=\"48\" height=\"48\" fill=\"white\" transform=\"scale(3)\"/> </clipPath> </defs> </svg>"];
 
 const TESTI = [
@@ -1310,52 +1035,9 @@ const TESTI = [
   ['<b>결혼식</b> 당일 어디서든 이동할 때가 되면 타다가 대기하고 있어서 정말 편했어요.', 'a4', 'right']
 ];
 
-function fTesti(){
-  const list = TESTI.map(([t, av, side], i) => {
-    const a = `<div class="av">${AV[i]}</div>`, p = `<p>“${t}”</p>`;
-    return `<div class="tcard">${side === 'left' ? a + p : p + a}</div>`;
-  }).join('');
-  return `<section class="testi"><h3>예약,<br>이렇게 사용할 수 있어요!</h3>
-          <div class="tlist">${list}</div></section>`;
-}
-
-function fFaq(){
-  const qs = ['Q. 많은 인원도 예약 가능한가요?', 'Q. 다른 사람을 위해 예약할 수 있나요?', 'Q. 어떤 짐을 얼마나 실을 수 있나요?']
-    .map(q => `<div class="q"><span>${esc(q)}</span>
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6l4 4 4-4" stroke="#9DA0AE" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`).join('');
-  return `<section class="faq"><h3>자주 묻는 질문</h3><div class="qs">${qs}</div></section>`;
-}
-
 /* ── variant composition ────────────────────────────────────── */
 function buildApp(v){
-  if (v === 'asis')
-    return fHero() + fCoupon() + fReReserveLarge() + fMethodsCarousel() + fTesti();
-  if (v === 'figma') return fFigmaHome();
-  if (v === 'grid' || v === 'grid0')
-    return fHero('tight') + `<div style="height:14px;background:#fff"></div>`
-         + fMethodsGrid(v === 'grid')
-         + fReReserveCompact(true) + fTesti();
-  if (v === 'icon')
-    return fHero('compact') + fMethodsIcons() + fReReserveCompact(true) + fTesti() + fFaq();
-  if (v === 'cards')
-    return fHeroLean() + fMethodsGridThumb() + fResumeD()
-         + (S.coupon ? `<section class="blk" style="padding:22px 24px 34px">${fCouponCard()}</section>`
-                     : `<div style="height:34px;background:#fff"></div>`)
-         + fTesti();
-  if (v === 'mine')
-    return fHeroLean() + fNudge()
-         + `<section class="freq"><div class="lab">자주 쓰는 방법</div>`
-         + fTiles([M_NORMAL, M_RECUR, M_TIME, M_CUSTOM]) + `</section>`
-         + fResumeD()
-         + (S.coupon ? `<section class="blk" style="padding:22px 24px 34px">${fCouponCard()}</section>`
-                     : `<div style="height:34px;background:#fff"></div>`)
-         + fTesti();
-  if (v === 'promo')
-    return fHero() + `<div style="height:20px;background:#fff"></div>`
-         + fMethodsCarousel([M_RECUR, M_NORMAL, M_TIME, M_CUSTOM])
-         + `<div style="height:8px;background:#fff"></div>`
-         + fCoupon() + fReReserveLarge() + fTesti();
-  return '';
+  return fFigmaHome();
 }
 
 /* ── device chrome ──────────────────────────────────────────── */
@@ -1368,20 +1050,16 @@ function chrome(){
     </span></div>`;
 }
 
-function addon(vid){
-  const sheet = SHEETLESS.has(vid) ? ''
-    : `<div class="ctasheet"><div class="ctabtn">예약 시작하기</div></div>`;
-  return `<div class="addon">${sheet}
+function addon(){
+  return `<div class="addon"><div class="ctasheet"><div class="ctabtn">예약 시작하기</div></div>
     <div class="tabbar"><img src="${A.tabbar}" alt="홈, 예약, 이용내역, 혜택, 메뉴 탭바"></div>
   </div>`;
 }
 
 
-/* ── measurement ────────────────────────────────────────────────
-   네 배치를 모두 재야 비교표가 성립하는데, 좁은 화면에선 한 배치만
-   그린다. 그래서 화면 밖 프로브에 각 배치를 순서대로 붙여서 잰다.
-   프로브에는 transform:scale 이 없으므로 rect 값이 그대로 CSS px 이다. */
-const DOMAIN = 900;                       // 비교표 가로축 (px)
+/* ── measurement ──────────────────────────────────────────────
+   화면 밖 프로브에 그려서 잰다. 프로브에는 transform:scale 이 없으므로
+   rect 값이 그대로 CSS px 이다. */
 let probe = null;
 
 function ensureProbe(){
@@ -1419,47 +1097,6 @@ function measureAll(){
 }
 
 const VERDICT = {ok:'첫 화면에 보임', part:'일부만 보임', no:'첫 화면에 안 보임'};
-// 비교표의 판정 칸은 좁다. 표 제목이 이미 '첫 화면'을 말하므로 짧게 쓴다.
-const VERDICT_SHORT = {ok:'보임', part:'일부만', no:'안 보임'};
-
-/* ── verdict chart (표 겸용) ────────────────────────────────── */
-function renderChart(data){
-  const pct = px => Math.max(0, Math.min(100, px / DOMAIN * 100));
-  const fx = px => pct(px).toFixed(2) + '%';
-  document.getElementById('vt').style.setProperty('--foldx', fx(FOLD));   // thead 라벨 기준
-
-  document.getElementById('vtb').innerHTML = VARIANTS.map(v => {
-    const d = data[v.id];
-    if (!d.present) return `
-      <tr class="off" data-v="${v.id}">
-        <th scope="row">${v.short}</th>
-        <td class="plot"></td>
-        <td class="num">-</td>
-        <td class="verd">미노출</td>
-      </tr>`;
-    const w = Math.max(pct(d.bottom) - pct(d.top), 1.2);
-    return `
-      <tr class="${d.state === 'no' ? 'hit' : ''}" data-v="${v.id}">
-        <th scope="row">${v.short}</th>
-        <td class="plot">
-          <span class="lead" style="width:${pct(d.top).toFixed(2)}%"></span>
-          <span class="seg-mark s-${d.state}"
-                style="left:${pct(d.top).toFixed(2)}%;width:${w.toFixed(2)}%"></span>
-        </td>
-        <td class="num">${d.top}<small>px</small></td>
-        <td class="verd">${VERDICT_SHORT[d.state]}</td>
-      </tr>`;
-  }).join('');
-
-  const anyPresent = VARIANTS.some(v => data[v.id].present);
-  const odd = VARIANTS.filter(v => data[v.id].fold !== FOLD).map(v => v.short);
-  const note = odd.length
-    ? ` 점선은 595px 하나로 뒀습니다. ${odd.join(', ')}는 하단 고정 CTA 가 없어 실제 컷라인이 ` +
-      `${foldFor('cards')}px 로 더 뒤지만, 어느 기준으로 재도 판정은 같습니다.` : '';
-  document.getElementById('vfoot').textContent = anyPresent
-    ? `가로축은 페이지 맨 위에서 ${DOMAIN}px 구간입니다. 막대 길이는 정기 카드의 높이라 배치마다 다릅니다.${note}`
-    : `리모트 컨피그가 꺼져 있어 정기 카드가 없습니다. A안은 2×2 의 마지막 칸이 비고, D안은 마지막 카드를 가로로 펴서 메웁니다.${note}`;
-}
 
 /* ── stage ──────────────────────────────────────────────────── */
 const stage = document.getElementById('stage');
@@ -1478,7 +1115,6 @@ function readout(d){
 
 function render(){
   const data = measureAll();
-  renderChart(data);
 
   stage.innerHTML = '';
   wasWide = isWide();
@@ -1488,7 +1124,7 @@ function render(){
     const col = el(`<div class="col" data-v="${v.id}" style="--vw:${d.w}px;--vh:${d.h}px"></div>`);
     col.innerHTML = `
       <div class="cap">
-        <span class="k${v.id === 'asis' ? ' base' : ''}">${v.tag}</span><h3>${v.name}</h3>
+        <h3>${v.name}</h3>
         ${v.ref ? `<p class="ref">${v.ref}</p>` : ''}
         <p>${v.desc}</p>
       </div>
@@ -1496,7 +1132,7 @@ function render(){
         <div class="phone">
           ${chrome()}
           <div class="scroller"><div class="app v-${v.id}">${buildApp(v.id)}</div></div>
-          ${S.mode === 'device' ? addon(v.id) : ''}
+          ${S.mode === 'device' ? addon() : ''}
           ${S.mode === 'full' ? `<div class="fold" style="top:${d.status + foldFor(v.id)}px"><b>첫 화면 끝</b></div>` : ''}
           ${fSheet()}
         </div>
@@ -1571,7 +1207,7 @@ function wireTaps(){
   });
 }
 
-/* ── 분기 이후 세 화면. 배치안과 무관하게 같으므로 한 번만 그린다. ── */
+/* ── 분기 이후 세 화면. 홈 화면 상태와 무관하게 항상 같은 흐름이라 한 번만 그린다. ── */
 const BRANCH = [
   {t:'1. 설명 시트', d:'카드를 누르면 뜹니다. 못 고르는 조건을 여기서 먼저 말합니다.', build:() => 'sheet'},
   {t:'2. 첫 픽업 시간', d:'지금부터 2시간 안쪽 시각은 아예 못 고릅니다.', build:fStepTime},
@@ -1583,7 +1219,7 @@ function renderBranch(){
   host.innerHTML = BRANCH.map(b => {
     const isSheet = b.build() === 'sheet';
     const body = isSheet
-      ? `<div class="app v-cards">${fHeroLean()}${fMethodsGridThumb()}</div>`
+      ? `<div class="app">${fFigmaHome()}</div>`
       : `<div class="app">${b.build()}</div>`;
     return `<div class="bcol">
       <p class="bcap"><b>${b.t}</b>${b.d}</p>
@@ -1621,13 +1257,11 @@ window.addEventListener('resize', relayout);
 window.addEventListener('orientationchange', relayout);
 if (window.ResizeObserver) new ResizeObserver(relayout).observe(document.documentElement);
 
-document.getElementById('segVar').innerHTML =
-  VARIANTS.map(v => `<button data-v="${v.id}">${v.short}</button>`).join('');
-
 function syncSegs(){
   document.getElementById('condSummary').textContent = [
     S.recur ? '정기 ON' : '정기 OFF',
     '작성 중 ' + S.drafts + '건',
+    '이전 예약 ' + S.prevCount + '건',
     S.coupon ? '쿠폰 있음' : '쿠폰 없음',
     S.mode === 'device' ? '실기기' : '전체 길이'
   ].join(' / ');
@@ -1636,10 +1270,8 @@ function syncSegs(){
     b.classList.toggle('on', on);
     b.setAttribute('aria-pressed', String(on));
   });
-  set('segVar', S.variant); set('segRecur', S.recur);
-  set('segDraft', S.drafts); set('segCoupon', S.coupon); set('segMode', S.mode);
-  const on = document.querySelector('#segVar button.on');
-  if (on && on.scrollIntoView) on.scrollIntoView({block:'nearest', inline:'nearest'});
+  set('segRecur', S.recur); set('segDraft', S.drafts); set('segPrev', S.prevCount);
+  set('segCoupon', S.coupon); set('segMode', S.mode);
 }
 
 function bind(id, key, cast){
@@ -1647,12 +1279,11 @@ function bind(id, key, cast){
     const b = e.target.closest('button'); if (!b) return;
     S[key] = cast ? cast(b.dataset.v) : b.dataset.v;
     syncSegs(); render();
-    if (key === 'variant' && document.body.classList.contains('mock')) panel(false);
   });
 }
-bind('segVar', 'variant');
 bind('segRecur', 'recur', Number);
 bind('segDraft', 'drafts', Number);
+bind('segPrev', 'prevCount', Number);
 bind('segCoupon', 'coupon', Number);
 bind('segMode', 'mode');
 
@@ -1672,7 +1303,7 @@ document.getElementById('pscrim').addEventListener('click', () => panel(false));
 document.getElementById('pClose').addEventListener('click', () => panel(false));
 document.getElementById('pFull').addEventListener('click', () => {
   consoleFull = !consoleFull;
-  document.getElementById('pFull').textContent = consoleFull ? '목업만 보기' : '비교표와 주석 보기';
+  document.getElementById('pFull').textContent = consoleFull ? '목업만 보기' : '설명과 주석 보기';
   panel(false); layout(); layoutBranch();
   window.scrollTo(0, 0);
 });
