@@ -109,12 +109,12 @@
   .pkbox .fill{font-size:14px;line-height:20px;color:#000;flex:1 1 auto;word-break:keep-all;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   .pkbox .ico{font-size:14px;flex:0 0 auto;}
-  .pkbox[hidden],.confirm[hidden],.skipnote[hidden],.pksub[hidden]{display:none;}
-  .pksub{margin:6px 2px 0;font-size:11.5px;line-height:17px;color:var(--gray-500);
-    display:flex;align-items:flex-start;gap:4px;word-break:keep-all;
-    transition:opacity .4s;}
-  .pksub .ck{flex:0 0 auto;}
-  .pksub.fade{opacity:0;}
+  .pkbox[hidden],.confirm[hidden],.skipnote[hidden]{display:none;}
+  .pkbox .st{margin-left:auto;flex:0 0 auto;align-self:flex-start;font-size:12px;line-height:20px;
+    color:var(--gray-500);}
+  .pkbox .st[hidden]{display:none;}
+  .sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
+    clip:rect(0 0 0 0);white-space:nowrap;border:0;}
   .confirm{display:flex;align-items:flex-start;gap:8px;background:var(--gray-30);border-radius:4px;
     padding:12px 12px 12px 14px;}
   .confirm .ck{flex:0 0 auto;font-size:13px;color:#0ca30c;line-height:20px;}
@@ -136,6 +136,9 @@
   .ph-body .qbox{width:100%;border:1.5px dashed var(--gray-100);border-radius:10px;padding:22px 20px;}
   .ph-body .qbox b{display:block;font-size:16px;font-weight:700;color:var(--gray-900);margin-bottom:8px;}
   .ph-body .qbox span{display:block;font-size:13px;line-height:20px;color:var(--gray-500);word-break:keep-all;}
+  .phhint{margin:0;width:100%;font-size:13px;line-height:20px;color:var(--gray-700);
+    word-break:keep-all;display:flex;gap:6px;align-items:flex-start;}
+  .phhint i{font-style:normal;flex:0 0 auto;}
   .ph-body .qbox .q{display:block;margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-30);
     font-size:13.5px;line-height:21px;color:var(--gray-900);font-weight:600;}
   .ctaw{padding:10px;}
@@ -323,7 +326,7 @@
                       aria-label="자세한 픽업 위치 입력하기">
                 <span class="ph" id="pk-start-tx">자세한 픽업 위치를 입력해주세요</span>
               </button>
-              <p class="pksub" id="pksub-start" hidden></p>
+
             </div>
           </div>
           <div class="ctaw"><button class="cta" id="cta-start">출발지 설정 완료</button></div>
@@ -366,8 +369,10 @@
             <button type="button" class="pkbox" data-open="voyage" id="pk-voy"
                     aria-label="자세한 픽업 위치 입력하기">
               <span class="ph" id="pk-voy-tx">자세한 픽업 위치를 입력해주세요</span>
+              <span class="st" id="pk-voy-st" hidden aria-hidden="true"></span>
+              <span class="sr" id="pk-voy-sr"></span>
             </button>
-            <p class="pksub" id="pksub-voy" hidden></p>
+
           </div>
           <div class="vdiv"></div>
           <div class="vdrv">
@@ -397,6 +402,7 @@
             <span>Figma에서도 빈 프레임으로 남아 있는 자리입니다.</span>
             <span class="q">정할 것 하나. 자유 텍스트 한 줄인가, 구조화된 선택(동 / 지상·지하 / 층)인가?</span>
           </div>
+          <p class="phhint" id="ph-hint"></p>
           <div class="samples" id="samples"></div>
           <p class="tmpnote">위 셋은 결과만 보기 위한 임시 값입니다. 화면 설계가 아닙니다.</p>
         </div>
@@ -468,8 +474,9 @@
     <p>출발지 설정에서 넣으면 운행 화면에는 <b>채워진 필드</b>가 뜹니다. 건너뛰면 운행 화면에 <b>입력 전 필드</b>가 뜹니다.
        같은 컴포넌트의 두 상태이지 두 개의 안이 아닙니다.</p>
     <p>운행 화면에서는 <b>바꿀 수도</b> 있습니다. 그때는 기사가 이미 이동 중이라 값이 도중에 갱신됩니다.</p>
-    <p>전달 확인은 <b>그 순간에만</b> 뜨고 물러납니다. 바뀌지 않는 상태는 상태가 아니라 소음이라, 안정 상태에는
-       Figma 원본처럼 <b>값 한 줄만</b> 남습니다. 도착 시각과 기사 정보가 먼저 읽혀야 합니다.</p>
+    <p>설명과 상태를 필드 밑에 쌓지 않았습니다. <b>무슨 일이 벌어질지</b>는 입력 화면이 말하고(진입점에 따라 문구가
+       다릅니다), <b>전달됐다</b>는 사실은 박스 안 작은 아이콘이 답니다. 전달되는 순간만 토스트가 알립니다.</p>
+    <p>그래서 운행 화면의 픽업 블록은 <b>Figma 원본처럼 한 줄</b>로 돌아갑니다. 도착 시각과 기사 정보가 먼저 읽혀야 합니다.</p>
     <p class="src">Figma: 출발지 검색에서 상세 위치 입력 / Matched 화면에서 상세 위치 입력</p>
   </div>
   <div class="note">
@@ -517,7 +524,7 @@
     return S.origin==='start' ? true : S.sent;
   }
 
-  function setField(boxId, txId, subId){
+  function setField(boxId, txId){
     const has = !!S.value;
     el(txId).textContent = has ? S.value : PH;
     el(txId).className   = has ? 'fill' : 'ph';
@@ -530,24 +537,15 @@
 
     const has = !!S.value;
 
-    /* ── 출발지 화면: 항상 입력 가능 ── */
-    setField('pk-start','pk-start-tx','pksub-start');
-    el('pksub-start').hidden = !has;
-    if(has) el('pksub-start').innerHTML = '배차되면 기사님께 함께 전달돼요';
+    /* ── 출발지 화면: 항상 입력 가능. 아직 보낸 게 없으니 상태 표시도 없다 ── */
+    setField('pk-start','pk-start-tx');
 
-    /* ── 운행 화면: 값이 있으면 채워진 채로, 없으면 입력 전으로. 둘 다 누를 수 있음 ── */
-    setField('pk-voy','pk-voy-tx','pksub-voy');
-    /* 상태 줄은 '지금 벌어지는 일'일 때만. 다 끝난 뒤에는 값만 남긴다.
-       바뀌지 않는 상태는 상태가 아니라 소음이다. */
-    const sub = el('pksub-voy');
-    const showSub = has && (S.sending || S.justSent);
-    sub.hidden = !showSub;
-    sub.classList.toggle('fade', has && S.justSent === 'fading');
-    if(showSub){
-      if(S.sending)        sub.innerHTML = '<span class="ck">…</span>기사님에게 보내는 중이에요';
-      else if(S.edited)    sub.innerHTML = '<span class="ck">✓</span>바뀐 위치를 전달했어요 · ' + SENT_AT;
-      else                 sub.innerHTML = '<span class="ck">✓</span>기사님에게 전달했어요 · ' + SENT_AT;
-    }
+    /* ── 운행 화면: 상태는 박스 안 아이콘 하나로. 전달 사실은 토스트가 알린다 ── */
+    setField('pk-voy','pk-voy-tx');
+    const st = el('pk-voy-st'), sr = el('pk-voy-sr');
+    if(!has){        st.hidden = true;  sr.textContent = ''; }
+    else if(S.sending){ st.hidden = false; st.textContent = '···'; sr.textContent = '기사님에게 보내는 중'; }
+    else {              st.hidden = false; st.textContent = '✓';   sr.textContent = '기사님에게 전달됨'; }
 
     /* ── 드라이버 말풍선 ── */
     const got = reached();
@@ -591,13 +589,10 @@
     /* 운행 화면에서 넣거나 바꾸면 기사는 달리는 중이라 도중에 받는다 */
     S.sending=true; S.sent=false; S.justSent=false; render();
     setTimeout(()=>{
-      S.sending=false; S.sent=true; S.justSent=true; render();
+      S.sending=false; S.sent=true; render();
+      /* 전달 사실은 그 순간의 일이다. 토스트가 알리고, 박스에는 조용한 체크만 남는다 */
       toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
                      : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
-      /* 전달 확인은 그 순간의 일이다. 4초 뒤 물러나고 값만 남는다 */
-      setTimeout(()=>{ S.justSent='fading'; render();
-        setTimeout(()=>{ S.justSent=false; render(); }, 400);
-      }, 4000);
     }, 2000);
   }
 
@@ -622,6 +617,9 @@
   $$('[data-open]').forEach(node=>node.addEventListener('click',()=>{
     S.opened = node.dataset.open;
     $('#ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
+    $('#ph-hint').innerHTML = (S.opened === 'start')
+      ? '<i>🚕</i>여기서 넣으면 <b>배차되면 기사님께 함께</b> 전달돼요.'
+      : '<i>🚕</i><b>지금 이동 중인 기사님에게</b> 바로 전달돼요. 도착이 가까우면 경로가 바뀔 수 있어요.';
     $('#phscr').classList.add('on');
   }));
   $('#phclose').addEventListener('click',()=>$('#phscr').classList.remove('on'));
