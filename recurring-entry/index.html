@@ -128,14 +128,19 @@ body:not(.wide).condshut .rline.cond{display:none;}
    visualViewport로 채움)를 기준으로 좌표를 잡아야 화면 밖으로 안 새어나간다. */
 :root{--vv-left:0px; --vv-top:0px; --vv-w:100vw; --vv-h:100vh;}
 
-body.mock{overflow:hidden;}
+/* 실제 웹페이지처럼 브라우저 가로세로 어떤 비율이든 여백 없이 꽉 채운다.
+   폰 사진처럼 축소해서 가운데 두는 대신, 폭만 실제 화면에 맞추고 세로는
+   콘텐츠 길이만큼 자연스럽게 늘어나 페이지 자체가 스크롤된다(베젤 없음). */
+body.mock{overflow-x:hidden;}
 body.mock .page{padding:0;max-width:none;}
 body.mock .page > *:not(.stage):not(.rail){display:none;}
-body.mock .stage{position:fixed;left:var(--vv-left);top:var(--vv-top);
-  width:var(--vv-w);height:var(--vv-h);margin:0;max-width:none;padding:0;
-  display:flex;align-items:center;justify-content:center;}
-body.mock .col{width:auto;}
+body.mock .stage{position:static;width:100%;margin:0;max-width:none;padding:0;
+  display:block;}
+body.mock .col{width:auto;display:block;}
 body.mock .cap, body.mock .readout{display:none;}
+body.mock .phonewrap{width:100% !important;}
+body.mock .phone{border-radius:0;border:none;box-shadow:none;}
+body.mock .addon{position:fixed;left:var(--vv-left);width:var(--vv-w);bottom:auto;}
 
 .fab{display:none;position:fixed;right:calc(10px + env(safe-area-inset-right));
   bottom:calc(10px + env(safe-area-inset-bottom));z-index:60;
@@ -254,6 +259,11 @@ body:not(.wide) .stage{justify-content:flex-start;}
   scrollbar-width:none;-ms-overflow-style:none;}
 .scroller::-webkit-scrollbar{display:none;}
 .addon{position:absolute;left:0;right:0;bottom:0;z-index:8;pointer-events:none;}
+/* addon은 .phone의 transform:scale 밖(phonewrap 자식)에 둬야 목업 모드에서
+   position:fixed가 진짜 뷰포트 기준으로 먹는다(transform은 fixed 자손의 컨테이닝
+   블록을 자기 자신으로 바꿔버림). 대신 데스크톱 비교 화면에서 폰 하단 둥근 모서리를
+   잃지 않도록 여기서 따로 잘라준다. */
+body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r-device);}
 .ctasheet{padding:40px 20px 20px;
   background:linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.92) 38%, #fff 62%);}
 .ctabtn{display:flex;align-items:center;justify-content:center;height:50px;border-radius:4px;
@@ -1146,10 +1156,10 @@ function render(){
         <div class="phone">
           ${chrome()}
           <div class="scroller"><div class="app v-${v.id}">${buildApp(v.id)}</div></div>
-          ${S.mode === 'device' ? addon() : ''}
           ${S.mode === 'full' ? `<div class="fold" style="top:${d.status + foldFor(v.id)}px"><b>첫 화면 끝</b></div>` : ''}
           ${fSheet()}
         </div>
+        ${S.mode === 'device' ? addon() : ''}
       </div>
       <div class="readout">${readout(data[v.id])}</div>`;
     stage.appendChild(col);
@@ -1199,9 +1209,10 @@ function layout(){
 
   let k;
   if (mock) {
-    // 화면 맞춤: 가로세로 둘 다 들어가는 배율
+    // 실제 웹페이지처럼 가로 폭에만 맞춘다. 세로는 콘텐츠 길이만큼 자연스럽게
+    // 늘어나 페이지가 스크롤되므로 세로 비율은 맞출 대상이 아니다(여백 없음).
     const d = dev(S.variant);
-    k = Math.min((vw - 16) / d.w, (vh - 16) / d.h);
+    k = vw / d.w;
   } else {
     const cols = wide ? Math.min(4, VARIANTS.length) : 1;   // 한 줄에 넷까지, 나머지는 아랫줄로
     const gap = 22, pad = wide ? 40 : 28;
@@ -1209,7 +1220,9 @@ function layout(){
     const avail = Math.min(vw, 1800) - pad - gap * (cols - 1);
     k = avail / (widest * cols);
   }
-  k = Math.max(0.4, Math.min(1, k));
+  // 목업 모드는 가로 폭을 실제 화면에 꽉 채우는 배율이라 1을 넘어도(화면이 기기
+  // 기준 폭보다 넓어도) 그대로 써야 여백이 안 생긴다. 비교 화면은 기존처럼 100%를 상한으로 둔다.
+  k = mock ? Math.max(0.4, k) : Math.max(0.4, Math.min(1, k));
   document.documentElement.style.setProperty('--k', k.toFixed(4));
 
   stage.querySelectorAll('.col').forEach(col => {
@@ -1217,8 +1230,13 @@ function layout(){
     const phone = col.querySelector('.phone');
     const scroller = col.querySelector('.scroller');
     const app = col.querySelector('.app');
+    const addonEl = col.querySelector('.addon');
     scroller.style.marginTop = d.status + 'px';
-    if (S.mode === 'device'){
+    if (mock){
+      // 실제 폰처럼 세로는 콘텐츠 길이만큼, 내부 스크롤 없이 페이지 자체가 스크롤된다.
+      scroller.style.height = 'auto';
+      phone.style.height = (d.status + app.offsetHeight) + 'px';
+    } else if (S.mode === 'device'){
       phone.style.height = d.h + 'px';
       scroller.style.height = (d.h - d.status) + 'px';
     } else {
@@ -1226,6 +1244,12 @@ function layout(){
       phone.style.height = (d.status + app.offsetHeight) + 'px';
     }
     col.querySelector('.phonewrap').style.height = (phone.offsetHeight * k) + 'px';
+    if (mock && addonEl){
+      // .phone의 transform:scale 밖(phonewrap 형제)에 있으므로 실제 뷰포트 기준으로
+      // position:fixed가 그대로 먹는다. 실제 화면 하단에 픽셀로 고정.
+      const top = (real ? real.top : 0) + vh - addonEl.offsetHeight;
+      addonEl.style.top = top + 'px';
+    }
   });
 }
 
