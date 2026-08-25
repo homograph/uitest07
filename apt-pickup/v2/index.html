@@ -144,7 +144,7 @@
     font-size:15px;color:var(--gray-950);background:#fff;outline:none;}
   .tin::placeholder{color:var(--gray-300);font-size:14px;}
   .tin:focus{border-color:var(--blue-600);background:var(--blue-050);}
-  .tin.sm{flex:0 0 118px;}
+  .tin.sm{flex:0 0 132px;}
   .tin[hidden]{display:none;}
   .row2 .tin:first-child{flex:1 1 auto;min-width:0;}
   .fnote{margin:8px 0 0;font-size:11.5px;line-height:17px;color:var(--gray-500);word-break:keep-all;}
@@ -472,10 +472,11 @@
           <div class="fstep" id="fs2">
             <div class="flab"><span class="n">2</span><b>어느 동이세요?</b></div>
             <div class="row2">
-              <input class="tin" id="in-dong" maxlength="6" placeholder="예: 101, 가동, 1901" />
-              <input class="tin sm" id="in-line" maxlength="8" placeholder="라인 (선택)" />
+              <input class="tin" id="in-dong" maxlength="6" placeholder="예: 101, 가동" />
+              <input class="tin sm" id="in-line" maxlength="10" placeholder="라인 예: 1-2" />
             </div>
-            <p class="fnote">단지마다 표기가 달라요. 공동현관에 적힌 대로 적어주세요.</p>
+            <p class="fnote">라인은 공동현관에 붙어 있는 그대로 적으면 됩니다. 계단식은 보통 한 현관이
+              두 라인을 함께 씁니다.</p>
           </div>
 
           <div class="fstep" id="fs3">
@@ -606,10 +607,15 @@
   };
 
   /* ── 문장 조립 ── */
+  function lineText(v){
+    v = (v||'').trim();
+    if(!v) return '';
+    return /라인|현관|호/.test(v) ? v : v + '라인';
+  }
   function core(d){
     if(d.lvl==='gate') return d.gate || '';
     const lv = d.lvl==='under' ? '지하 '+String(d.floor||'').replace('B','')+'층' : '지상';
-    return lv + ' · ' + d.dong + '동' + (d.line ? ' ' + d.line : '');
+    return lv + ' · ' + d.dong + '동' + (d.line ? ' ' + lineText(d.line) : '');
   }
   function sentence(d){
     if(!d) return '';
@@ -695,8 +701,8 @@
     if(el('in-line').value !== d.line) el('in-line').value = d.line;
     if(el('in-etc').value  !== d.etc)  el('in-etc').value  = d.etc;
     el('cnt-etc').textContent = d.etc.length;
-    el('in-etc').placeholder = d.lvl==='under' ? '예: 3번 게이트 앞, 엘리베이터 옆'
-                             : isGate ? '예: 경비실 옆, 문주 앞' : '예: 상가 앞, 놀이터 쪽';
+    el('in-etc').placeholder = d.lvl==='under' ? '예: 엘리베이터 앞, B구역'
+                             : isGate ? '예: 경비실 옆, 정문 앞 큰길' : '예: 상가 앞, 놀이터 쪽';
 
     const ok = ready(d);
     el('prev2').classList.toggle('ready', ok);
