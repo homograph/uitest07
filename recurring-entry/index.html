@@ -122,15 +122,23 @@ body:not(.wide).condshut .rline.cond{display:none;}
    모바일 목업 모드. 좁은 화면에서는 폰 목업만 화면에 꽉 채우고,
    나머지 콘솔(머리말·비교표·분기·주석)은 플로팅 설정 뒤로 접는다.
    ══════════════════════════════════════════════════════════════ */
+/* 실기기(특히 iOS Safari)는 주소창이 뜬 상태에서 document.documentElement의
+   높이가 '주소창이 접혔을 때' 기준 큰 값으로 잡히고, position:fixed 요소는
+   그 큰 뷰포트 기준으로 배치된다. 그래서 --vv-* (실제 보이는 영역, JS가
+   visualViewport로 채움)를 기준으로 좌표를 잡아야 화면 밖으로 안 새어나간다. */
+:root{--vv-left:0px; --vv-top:0px; --vv-w:100vw; --vv-h:100vh;}
+
 body.mock{overflow:hidden;}
 body.mock .page{padding:0;max-width:none;}
 body.mock .page > *:not(.stage):not(.rail){display:none;}
-body.mock .stage{position:fixed;inset:0;margin:0;max-width:none;padding:0;
+body.mock .stage{position:fixed;left:var(--vv-left);top:var(--vv-top);
+  width:var(--vv-w);height:var(--vv-h);margin:0;max-width:none;padding:0;
   display:flex;align-items:center;justify-content:center;}
 body.mock .col{width:auto;}
 body.mock .cap, body.mock .readout{display:none;}
 
-.fab{display:none;position:fixed;right:10px;bottom:10px;z-index:60;
+.fab{display:none;position:fixed;right:calc(10px + env(safe-area-inset-right));
+  bottom:calc(10px + env(safe-area-inset-bottom));z-index:60;
   align-items:center;gap:5px;border:0;cursor:pointer;font:inherit;
   background:color-mix(in srgb, var(--accent) 92%, transparent);
   color:var(--accent-ink);border-radius:var(--r-pill);
@@ -138,13 +146,18 @@ body.mock .cap, body.mock .readout{display:none;}
   box-shadow:0 3px 10px -3px rgba(16,20,34,.55);
   transition:transform .14s cubic-bezier(.2,.8,.3,1), opacity .2s;}
 .fab:active{transform:scale(.95);}
-body.mock .fab{display:inline-flex;}
+body.mock .fab{display:inline-flex;right:auto;bottom:auto;
+  padding:5px 9px;font-size:10px;gap:4px;}
+  /* left/top 실제 좌표는 layout()이 JS에서 fab.offsetWidth/Height를 재서 픽셀로 박아준다.
+     transform:calc(var()+100%) 조합은 transform 전환과 얽혀 재계산이 안 될 때가 있어 피한다. */
 body.mock.panelopen .fab{opacity:0;pointer-events:none;}
 .fab .dot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5;}
+body.mock .fab .dot{width:4px;height:4px;}
 
 .pscrim{display:none;position:fixed;inset:0;z-index:58;background:rgba(10,13,20,.42);
   opacity:0;transition:opacity .26s cubic-bezier(.16,1,.3,1);}
-body.mock .pscrim{display:block;}
+body.mock .pscrim{display:block;left:var(--vv-left);top:var(--vv-top);
+  right:auto;bottom:auto;width:var(--vv-w);height:var(--vv-h);}
 body.mock.panelopen .pscrim{opacity:1;}
 body.mock:not(.panelopen) .pscrim{pointer-events:none;}
 
@@ -1146,9 +1159,22 @@ function render(){
   renderBranch();
 }
 
+function syncViewportVars(){
+  const vv = window.visualViewport;
+  const root = document.documentElement.style;
+  if (vv){
+    root.setProperty('--vv-left', vv.offsetLeft + 'px');
+    root.setProperty('--vv-top', vv.offsetTop + 'px');
+    root.setProperty('--vv-w', vv.width + 'px');
+    root.setProperty('--vv-h', vv.height + 'px');
+  }
+  return vv ? {w: vv.width, h: vv.height, left: vv.offsetLeft, top: vv.offsetTop} : null;
+}
+
 function layout(){
-  const vw = document.documentElement.clientWidth || window.innerWidth;
-  const vh = document.documentElement.clientHeight || window.innerHeight;
+  const real = syncViewportVars();
+  const vw = real ? real.w : (document.documentElement.clientWidth || window.innerWidth);
+  const vh = real ? real.h : (document.documentElement.clientHeight || window.innerHeight);
   const wide = isWide();
   document.body.classList.toggle('wide', wide);
   // 좁은 화면 기본값은 목업 모드. 폰만 화면에 맞춰 채우고 콘솔은 설정 뒤로.
@@ -1157,6 +1183,15 @@ function layout(){
   const mock = !wide && vw < 700 && !consoleFull;
   document.body.classList.toggle('mock', mock);
   if (!mock) document.body.classList.remove('panelopen');
+
+  if (mock){
+    // 실제 보이는 영역(--vv-*)의 우하단에서 10px 안쪽에 fab을 둔다. iOS Safari에서
+    // 주소창이 떠서 vh가 문서 기준 값보다 작을 때도 실제 화면 안에 남도록 픽셀로 직접 계산.
+    const left = real ? real.left : 0, top = real ? real.top : 0;
+    const fabEl = document.getElementById('fab');
+    fabEl.style.left = (left + vw - fabEl.offsetWidth - 10) + 'px';
+    fabEl.style.top = (top + vh - fabEl.offsetHeight - 10) + 'px';
+  }
 
   let k;
   if (mock) {
@@ -1257,6 +1292,10 @@ const relayout = () => { clearTimeout(rt); rt = setTimeout(() => {
 window.addEventListener('resize', relayout);
 window.addEventListener('orientationchange', relayout);
 if (window.ResizeObserver) new ResizeObserver(relayout).observe(document.documentElement);
+if (window.visualViewport){
+  window.visualViewport.addEventListener('resize', relayout);
+  window.visualViewport.addEventListener('scroll', relayout);
+}
 
 function syncSegs(){
   document.getElementById('condSummary').textContent = [
