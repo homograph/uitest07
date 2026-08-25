@@ -20,6 +20,7 @@
     --dur:.3s;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  [hidden]{display:none !important;}
   html,body{margin:0;padding:0;}
   body{font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
     background:#eef1f5;color:var(--gray-950);-webkit-font-smoothing:antialiased;}
@@ -117,36 +118,53 @@
     background:#fff;border:1px solid var(--blue-100);border-radius:4px;padding:1px 5px;}
   .was[hidden]{display:none;}
 
-  .fstep{width:100%;margin-bottom:26px;}
-  .flab{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
-  .flab .n{width:20px;height:20px;border-radius:10px;background:var(--navy-600);color:#fff;
-    font-size:12px;font-weight:700;display:grid;place-items:center;flex:0 0 auto;}
-  .flab b{font-size:16px;font-weight:700;letter-spacing:-.2px;color:#000;}
-  .flab .opt2{font-size:14px;color:var(--gray-500);}
+  /* 토스식: 답한 것은 위로 쌓이고, 지금 묻는 것만 아래에서 크게 */
+  .ph-body{display:flex;flex-direction:column;}
+  .phhint{margin:0 0 auto;width:100%;font-size:13px;line-height:20px;color:var(--gray-500);word-break:keep-all;}
+  .phhint b{color:var(--gray-700);font-weight:600;}
 
-  .seg{display:flex;background:var(--gray-e6);border-radius:6px;padding:4px;gap:0;}
-  .segb{flex:1 1 0;border:none;background:none;border-radius:4px;padding:12px 0;font:inherit;
+  .answers{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:auto;margin-bottom:18px;}
+  .ansrow{display:flex;align-items:center;gap:10px;background:var(--gray-30);border:none;
+    border-radius:10px;padding:12px 14px;width:100%;font:inherit;text-align:left;cursor:pointer;
+    animation:ansIn .22s ease;}
+  .ansrow .k{font-size:12.5px;color:var(--gray-500);flex:0 0 auto;}
+  .ansrow .v{font-size:14.5px;font-weight:600;color:var(--gray-950);flex:1 1 auto;min-width:0;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .ansrow .e{font-size:13px;color:var(--navy-800);flex:0 0 auto;text-decoration:underline;
+    text-underline-offset:2px;}
+  @keyframes ansIn{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+
+  .ask{width:100%;animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
+  @keyframes askIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+  .asklab{margin:0 0 14px;font-size:19px;line-height:27px;font-weight:700;letter-spacing:-.3px;
+    color:#000;word-break:keep-all;}
+  .asklab em{font-style:normal;font-size:14px;font-weight:400;color:var(--gray-500);margin-left:6px;}
+
+  .seg{display:flex;background:var(--gray-e6);border-radius:6px;padding:4px;}
+  .segb{flex:1 1 0;border:none;background:none;border-radius:4px;padding:13px 0;font:inherit;
     font-size:15px;font-weight:500;color:var(--gray-500);cursor:pointer;}
   .segb.on{background:#fff;color:var(--navy-800);font-weight:700;}
 
   .chips{display:flex;gap:6px;flex-wrap:wrap;}
-  .chip2{border:1px solid var(--gray-80);background:#fff;border-radius:9999px;padding:10px 16px;
-    font:inherit;font-size:15px;font-weight:400;color:var(--gray-800);cursor:pointer;}
-  .chip2.on{border-color:var(--navy-marker,#31487d);background:#31487d;color:#fff;font-weight:500;}
-  .reveal2{overflow:hidden;max-height:0;opacity:0;transition:max-height .26s,opacity .2s,margin .26s;}
-  .reveal2.on{max-height:200px;opacity:1;margin-top:10px;}
+  .chip2{border:1px solid var(--gray-80);background:#fff;border-radius:9999px;padding:11px 16px;
+    font:inherit;font-size:15px;color:var(--gray-800);cursor:pointer;}
+  .chip2.on{border-color:#31487d;background:#31487d;color:#fff;font-weight:500;}
 
-  .row2{display:flex;gap:8px;}
-  .tinwrap{position:relative;flex:1 1 auto;min-width:0;}
-  .tinwrap.sm{flex:0 0 116px;}
-  .tin{width:100%;border:none;border-radius:8px;background:var(--gray-30);padding:15px 58px 15px 16px;
-    font:inherit;font-size:15px;color:var(--gray-950);outline:none;}
+  .tinwrap{position:relative;width:100%;}
+  .tin{width:100%;border:none;border-radius:8px;background:var(--gray-30);padding:16px 58px 16px 16px;
+    font:inherit;font-size:16px;color:var(--gray-950);outline:none;}
   .tin::placeholder{color:var(--gray-500);}
   .tin:focus{box-shadow:inset 0 0 0 1.5px var(--navy-800);}
   .tcnt{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--gray-500);}
   .tcnt b{font-weight:700;}
-  .fnote{margin:8px 0 0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
-  .fnote b{color:var(--gray-700);font-weight:600;}
+  .askhelp{margin:9px 0 0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
+  .askhelp b{color:var(--gray-700);font-weight:600;}
+
+  .footrow{display:flex;gap:8px;align-items:center;}
+  .skipb{flex:0 0 auto;border:1px solid var(--gray-80);background:#fff;border-radius:8px;
+    padding:15px 16px;font:inherit;font-size:15px;color:var(--gray-700);cursor:pointer;}
+  .skipb[hidden]{display:none;}
+  .footrow .cta{flex:1 1 auto;}
 
   .ph-foot{flex:0 0 auto;border-top:1px solid var(--gray-30);background:#fff;padding:12px 20px 18px;}
   .prev2{display:flex;align-items:flex-start;gap:8px;background:var(--gray-30);border-radius:8px;
@@ -444,45 +462,27 @@
         </div>
       </div>
 
-      <!-- 상세 위치 입력 화면 -->
+      <!-- 상세 위치 입력 화면 (토스식 점진 입력) -->
       <div class="ph-scr" id="phscr">
         <div class="sb light"><span>12:45</span>
           <span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
         <div class="ph-bar"><button id="phclose">←</button><b id="ph-title">상세 위치 입력</b></div>
         <div class="ph-body">
           <p class="phhint" id="ph-hint"></p>
-
-          <div class="fstep">
-            <div class="flab"><span class="n">1</span><b>어디서 타세요?</b></div>
-            <div class="seg" id="seg">
-              <button type="button" class="segb" data-lvl="ground">지상</button>
-              <button type="button" class="segb" data-lvl="under">지하 주차장</button>
-            </div>
-            <div class="reveal2" id="fw-floor"><div class="chips" id="floors2"></div></div>
-          </div>
-
-          <div class="fstep">
-            <div class="flab"><span class="n">2</span><b>어느 동이세요?</b></div>
-            <div class="row2">
-              <div class="tinwrap"><input class="tin" id="in-dong" maxlength="5" placeholder="예: 가동, 101, 1901" />
-                <span class="tcnt"><b id="c-dong">0</b>/5</span></div>
-              <div class="tinwrap sm"><input class="tin" id="in-line" maxlength="6" placeholder="예: 1-2" />
-                <span class="tcnt"><b id="c-line">0</b>/6</span></div>
-            </div>
-            <p class="fnote">오른쪽은 <b>호수 라인</b>입니다. 선택이고, 공동현관에 붙어 있는 그대로 적으면 됩니다.
-              계단식은 보통 한 현관이 두 라인을 함께 씁니다.</p>
-          </div>
-
-          <div class="fstep">
-            <div class="flab"><span class="n">3</span><b>그 외 안내</b><span class="opt2">선택</span></div>
-            <div class="tinwrap"><input class="tin" id="in-etc" maxlength="30" placeholder="예: 엘리베이터 앞, B구역" />
-              <span class="tcnt"><b id="c-etc">0</b>/30</span></div>
+          <div class="answers" id="answers"></div>
+          <div class="ask" id="ask">
+            <p class="asklab" id="ask-lab"></p>
+            <div class="askctl" id="ask-ctl"></div>
           </div>
         </div>
         <div class="ph-foot">
           <div class="prev2" id="prev2"><svg class="ic" width="18" height="18" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.105 54.3744V40.6244H17.355V54.3744H11.105ZM23.5094 54.3744V23.6869C21.1694 24.3952 19.5227 25.6691 18.5694 27.5087C17.6156 29.3487 17.0666 31.4771 16.9225 33.8937H13.1725C13.3166 28.945 14.8831 25.0635 17.8719 22.2494C20.8606 19.4352 24.9031 18.0281 29.9994 18.0281C34.2623 18.0281 37.4914 17.1573 39.6869 15.4156C41.8823 13.6735 43.0281 10.6983 43.1244 6.48998H46.8744C46.8264 10.0925 45.9691 13.1573 44.3025 15.6844C42.6354 18.2119 40.031 19.9033 36.4894 20.7587V54.3744H32.74V39.5187H27.2587V54.3744H23.5094ZM29.9994 14.7106C28.7206 14.7106 27.6316 14.2612 26.7325 13.3625C25.8333 12.4633 25.3837 11.3744 25.3837 10.0956C25.3837 8.81685 25.8333 7.7279 26.7325 6.82873C27.6316 5.92956 28.7206 5.47998 29.9994 5.47998C31.2781 5.47998 32.3671 5.92956 33.2662 6.82873C34.1654 7.7279 34.615 8.81685 34.615 10.0956C34.615 11.3744 34.1654 12.4633 33.2662 13.3625C32.3671 14.2612 31.2781 14.7106 29.9994 14.7106Z" fill="#868B9C"/></svg><span id="prev2-tx">고르면 기사님께 갈 문장이 여기 만들어져요</span></div>
-          <label class="savechk"><input type="checkbox" id="chk-save" /><span>이 주소에서 항상 이렇게 보내기</span></label>
-          <button class="cta" id="ph-submit" disabled>이대로 보내기</button>
+          <label class="savechk" id="savewrap" hidden><input type="checkbox" id="chk-save" />
+            <span>이 주소에서 항상 이렇게 보내기</span></label>
+          <div class="footrow">
+            <button class="skipb" id="ph-skip" hidden>건너뛰기</button>
+            <button class="cta" id="ph-next" disabled>다음</button>
+          </div>
         </div>
       </div>
     </div>
@@ -584,69 +584,202 @@
   const $$ = s => Array.from(document.querySelectorAll(s));
   const el = id => document.getElementById(id);
 
-  const FLOORS = [1,2,3,4,5,6,7];
-  const PH = '자세한 픽업 위치를 입력해주세요';
-  const SENT_AT = '12:46';
-  /* 저장은 사람이 아니라 출발지 주소에 붙는다 */
-  const SAVED_FOR_ADDRESS = { lvl:'under', floor:4, dong:'1901', line:'', etc:'엘리베이터 앞' };
+  const FLOORS=[1,2,3,4,5,6,7];
+  const PH='자세한 픽업 위치를 입력해주세요';
+  const SENT_AT='12:46';
+  const SAVED_FOR_ADDRESS={lvl:'under',floor:4,dong:'1901',line:'',etc:'엘리베이터 앞'};
 
-  const S = {
+  const S={
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     sending:false, sent:false, opened:null,
     saved:null, current:null,
-    d:{lvl:null,floor:null,dong:'',line:'',etc:''}
+    d:{lvl:null,floor:null,dong:'',line:'',etc:''},
+    step:null, skipped:{}
   };
 
   /* ── 문장 ── */
-  function lineText(v){
-    v=(v||'').trim(); if(!v) return '';
-    return /라인|현관|호/.test(v) ? v : v+'라인';
+  const lineText = v => { v=(v||'').trim(); return !v?'':(/라인|현관|호/.test(v)?v:v+'라인'); };
+  const core = d => (d.lvl==='under' ? '지하 '+d.floor+'층' : '지상')
+                  + ' · ' + d.dong.trim() + '동' + (d.line ? ' '+lineText(d.line) : '');
+  const sentence = d => !d ? '' : core(d)+' 앞에서 탈게요'+(d.etc.trim()?' ('+d.etc.trim()+')':'');
+  const ready = d => !!d.dong.trim() && (d.lvl==='ground' || (d.lvl==='under' && !!d.floor));
+  const reached = () => (!S.value||!S.confirmed) ? false : (S.origin==='start' ? true : S.sent);
+
+  /* ── 단계 정의. 탭으로 끝나는 것 먼저, 키보드는 뒤로 몰아 한 번만 열리게 ── */
+  function steps(){
+    const l=['lvl'];
+    if(S.d.lvl==='under') l.push('floor');
+    return l.concat(['dong','line','etc']);
   }
-  function core(d){
-    const lv = d.lvl==='under' ? '지하 '+d.floor+'층' : '지상';
-    return lv + ' · ' + d.dong.trim() + '동' + (d.line ? ' ' + lineText(d.line) : '');
+  const answered = k => k==='lvl' ? !!S.d.lvl
+                      : k==='floor' ? !!S.d.floor
+                      : k==='dong' ? !!S.d.dong.trim()
+                      : (!!S.d[k].trim() || !!S.skipped[k]);
+  function advance(){
+    const rest = steps().filter(k=>!answered(k));
+    S.step = rest.length ? rest[0] : null;
+    renderForm();
   }
-  function sentence(d){
-    if(!d) return '';
-    return core(d) + ' 앞에서 탈게요' + (d.etc.trim() ? ' ('+d.etc.trim()+')' : '');
+
+  const ASK = {
+    lvl:  {q:'어디서 타세요?',            k:'위치'},
+    floor:{q:'지하 몇 층에서 타세요?',     k:'층'},
+    dong: {q:'몇 동이세요?',              k:'동'},
+    line: {q:'호수 라인이 있나요?',        k:'라인', opt:true},
+    etc:  {q:'더 알려줄 게 있나요?',       k:'그 외', opt:true}
+  };
+  function ansText(k){
+    if(k==='lvl')   return S.d.lvl==='under' ? '지하 주차장' : '지상';
+    if(k==='floor') return '지하 '+S.d.floor+'층';
+    if(k==='dong')  return S.d.dong.trim()+'동';
+    if(k==='line')  return S.d.line.trim() ? lineText(S.d.line) : '없음';
+    return S.d.etc.trim() || '없음';
   }
-  function ready(d){
-    if(!d.dong.trim()) return false;
-    if(d.lvl==='under') return !!d.floor;
-    return d.lvl==='ground';
+
+  /* ── 입력 화면 ── */
+  function renderForm(){
+    const done = S.step===null;
+
+    /* 답한 것: 위로 쌓인다. 누르면 그 단계로 돌아간다 */
+    const box=el('answers'); box.innerHTML='';
+    steps().forEach(k=>{
+      if(k===S.step || !answered(k)) return;
+      const b=document.createElement('button');
+      b.type='button'; b.className='ansrow';
+      b.innerHTML='<span class="k">'+ASK[k].k+'</span><span class="v">'+ansText(k)+'</span><span class="e">수정</span>';
+      b.addEventListener('click',()=>{ S.skipped[k]=false; S.step=k; renderForm(); });
+      box.appendChild(b);
+    });
+
+    /* 지금 묻는 것 */
+    const ask=el('ask'), lab=el('ask-lab'), ctl=el('ask-ctl');
+    ask.hidden=done;
+    if(!done){
+      const a=ASK[S.step];
+      lab.innerHTML=a.q+(a.opt?'<em>선택</em>':'');
+      ctl.innerHTML='';
+      if(S.step==='lvl'){
+        const seg=document.createElement('div'); seg.className='seg';
+        [['ground','지상'],['under','지하 주차장']].forEach(([v,t])=>{
+          const b=document.createElement('button'); b.type='button'; b.className='segb'+(S.d.lvl===v?' on':'');
+          b.textContent=t;
+          b.addEventListener('click',()=>{ S.d.lvl=v; if(v!=='under') S.d.floor=null; advance(); });
+          seg.appendChild(b);
+        });
+        ctl.appendChild(seg);
+      } else if(S.step==='floor'){
+        const w=document.createElement('div'); w.className='chips';
+        FLOORS.forEach(f=>{
+          const b=document.createElement('button'); b.type='button'; b.className='chip2'+(S.d.floor===f?' on':'');
+          b.textContent='지하 '+f+'층';
+          b.addEventListener('click',()=>{ S.d.floor=f; advance(); });
+          w.appendChild(b);
+        });
+        ctl.appendChild(w);
+      } else {
+        const cfg={dong:{max:5,ph:'예: 가동, 101, 1901'},
+                   line:{max:6,ph:'예: 1-2'},
+                   etc:{max:30,ph:S.d.lvl==='ground'?'예: 상가 앞, 놀이터 쪽':'예: 엘리베이터 앞, B구역'}}[S.step];
+        const w=document.createElement('div'); w.className='tinwrap';
+        w.innerHTML='<input class="tin" id="tin" maxlength="'+cfg.max+'" placeholder="'+cfg.ph+'" />'
+                   +'<span class="tcnt"><b id="tcnt">0</b>/'+cfg.max+'</span>';
+        ctl.appendChild(w);
+        if(S.step==='line'){
+          const p=document.createElement('p'); p.className='askhelp';
+          p.innerHTML='공동현관에 붙어 있는 <b>그대로</b> 적으면 됩니다. 계단식은 보통 한 현관이 두 라인을 함께 씁니다.';
+          ctl.appendChild(p);
+        }
+        const inp=el('tin');
+        inp.value=S.d[S.step];
+        el('tcnt').textContent=inp.value.length;
+        inp.addEventListener('input',ev=>{
+          let v=ev.target.value;
+          if(S.step==='dong') v=v.replace(/동\s*$/,'');
+          S.d[S.step]=v; el('tcnt').textContent=v.length; paintFoot();
+        });
+        inp.addEventListener('keydown',ev=>{ if(ev.key==='Enter') el('ph-next').click(); });
+        setTimeout(()=>inp.focus(),60);
+      }
+    }
+    paintFoot();
   }
-  function reached(){
-    if(!S.value || !S.confirmed) return false;
-    return S.origin==='start' ? true : S.sent;
+
+  function paintFoot(){
+    const done=S.step===null, ok=ready(S.d);
+    el('prev2').classList.toggle('ready', ok);
+    el('prev2-tx').textContent = ok ? sentence(S.d) : '고르면 기사님께 갈 문장이 여기 만들어져요';
+    el('savewrap').hidden = !done;
+    el('chk-save').checked = S.always;
+
+    const skip=el('ph-skip'), next=el('ph-next');
+    skip.hidden = done || !ASK[S.step].opt;
+    if(done){
+      next.disabled=false;
+      next.textContent = S.opened==='start' ? '이 위치로 저장' : '이대로 보내기';
+    } else if(S.step==='lvl' || S.step==='floor'){
+      next.disabled=true; next.textContent='다음';
+    } else {
+      const v=S.d[S.step].trim();
+      next.disabled = (S.step==='dong') && !v;
+      next.textContent='다음';
+    }
+  }
+
+  function openForm(where){
+    S.opened=where; S.skipped={};
+    S.d = S.current ? Object.assign({},S.current) : {lvl:null,floor:null,dong:'',line:'',etc:''};
+    el('ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
+    el('ph-hint').innerHTML = (where==='start')
+      ? '배차되면 기사님께 함께 전달됩니다.'
+      : '<b>지금 이동 중인 기사님에게</b> 바로 전달됩니다.';
+    /* 값이 이미 있으면 전부 답한 상태로 열어 요약만 보여준다 */
+    if(S.current){ Object.keys(ASK).forEach(k=>{ if(ASK[k].opt && !S.d[k].trim()) S.skipped[k]=true; }); }
+    advance();
+    $('#phscr').classList.add('on');
+  }
+
+  function submitForm(){
+    if(!ready(S.d)) return;
+    S.edited=(S.opened==='voyage') && !!S.value;
+    S.current=Object.assign({},S.d);
+    S.value=sentence(S.d);
+    S.fromSaved=false;
+    S.always=el('chk-save').checked;
+    S.origin=S.opened;
+    $('#phscr').classList.remove('on');
+    if(S.origin==='start'){ S.sending=false; S.sent=true; S.confirmed=false; render(); return; }
+    S.confirmed=true; S.sending=true; S.sent=false; render();
+    setTimeout(()=>{
+      S.sending=false; S.sent=true; render();
+      toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
+                     : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
+    },2000);
   }
 
   /* ── 폰 화면 ── */
-  function paintField(txId, wasId){
-    const has = !!S.value;
+  function paintField(txId,wasId){
+    const has=!!S.value;
     el(txId).textContent = has ? S.value : PH;
     el(txId).className   = has ? 'fill' : 'ph';
-    const w = el(wasId);
+    const w=el(wasId);
     w.hidden = !(has && S.fromSaved);
     if(!w.hidden) w.textContent = S.always ? '항상' : '지난번';
   }
-
   function render(){
-    $$('.tab').forEach(t=>t.classList.toggle('on', t.dataset.mode===S.mode));
-    $$('#rider .scr').forEach(x=>x.classList.toggle('on', x.id===(S.screen==='start'?'s-start':'s-voyage')));
-
-    const has = !!S.value;
+    $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.mode===S.mode));
+    $$('#rider .scr').forEach(x=>x.classList.toggle('on',x.id===(S.screen==='start'?'s-start':'s-voyage')));
+    const has=!!S.value;
     paintField('pk-start-tx','pk-start-tx-was');
     paintField('pk-voy-tx','pk-voy-tx-was');
-
-    const st = el('pk-voy-st'), sr = el('pk-voy-sr');
-    if(!has || !S.confirmed){ st.hidden=true; sr.textContent=''; }
+    const st=el('pk-voy-st'), sr=el('pk-voy-sr');
+    if(!has||!S.confirmed){ st.hidden=true; sr.textContent=''; }
     else if(S.sending){ st.hidden=false; st.textContent='···'; sr.textContent='기사님에게 보내는 중'; }
     else { st.hidden=false; st.textContent='✓'; sr.textContent='기사님에게 전달됨'; }
 
-    const got = reached();
-    $('#dtalk').classList.toggle('empty', !got);
-    $('#dtalkbody').innerHTML = got ? '<em>탑승</em>&nbsp; ' + S.value : '탑승 위치 미전달';
+    const got=reached();
+    $('#dtalk').classList.toggle('empty',!got);
+    $('#dtalkbody').innerHTML = got ? '<em>탑승</em>&nbsp; '+S.value : '탑승 위치 미전달';
 
     el('rstep').textContent = S.screen==='start'
       ? (has ? (S.fromSaved ? '지난번 값이 채워져 있습니다. 다르면 눌러서 바꾸세요.'
@@ -655,70 +788,17 @@
       : (!has ? '출발지에서 건너뛰었습니다. 여기서도 넣을 수 있습니다.'
               : (S.origin==='start' ? '출발지에서 확정한 값이 그대로 보입니다. 여기서 바꿀 수도 있습니다.'
                                     : '이동 중에 전달했습니다.'));
-
     el('dstep').textContent = !got
       ? (S.sending ? '아직 못 받았습니다. 그 사이에도 이동 중입니다.'
                    : (has ? '라이더가 아직 확정하지 않았습니다. 완료를 눌러야 전달됩니다.'
                           : '아직 전달된 픽업 위치가 없습니다.'))
       : (S.origin==='start' ? '배차와 동시에 받았습니다.'
                             : (S.edited ? '이동 중에 바뀐 값을 받았습니다.' : '이동을 시작한 뒤 받았습니다.'));
-
     el('fdesc').innerHTML = S.screen==='start'
       ? (S.mode==='repeat' ? '출발지 설정 화면. 이 주소에 저장된 값이 <b>미리 채워져</b> 있습니다.'
                            : '출발지 설정 화면. 픽업 위치는 <b>선택</b>입니다.')
       : (has ? '운행 화면. 값이 채워진 필드로 뜹니다. 눌러서 바꿀 수 있습니다.'
              : '운행 화면. 입력 전 필드로 뜹니다. 여기서 넣으면 기사는 이동 중에 받습니다.');
-  }
-
-  /* ── 입력 화면 ── */
-  function renderForm(){
-    const d = S.d;
-    $$('.segb').forEach(b=>b.classList.toggle('on', b.dataset.lvl===d.lvl));
-    el('fw-floor').classList.toggle('on', d.lvl==='under');
-    $$('#floors2 .chip2').forEach(b=>b.classList.toggle('on', +b.dataset.f===d.floor));
-
-    [['in-dong','dong','c-dong'],['in-line','line','c-line'],['in-etc','etc','c-etc']].forEach(([i,k,c])=>{
-      if(el(i).value !== d[k]) el(i).value = d[k];
-      el(c).textContent = d[k].length;
-    });
-    el('in-etc').placeholder = d.lvl==='ground' ? '예: 상가 앞, 놀이터 쪽' : '예: 엘리베이터 앞, B구역';
-
-    const ok = ready(d);
-    el('prev2').classList.toggle('ready', ok);
-    el('prev2-tx').textContent = ok ? sentence(d) : '고르면 기사님께 갈 문장이 여기 만들어져요';
-    el('ph-submit').disabled = !ok;
-    el('ph-submit').textContent = S.opened==='start' ? '이 위치로 저장' : '이대로 보내기';
-    el('chk-save').checked = S.always;
-  }
-
-  function openForm(where){
-    S.opened = where;
-    S.d = S.current ? Object.assign({}, S.current) : {lvl:null,floor:null,dong:'',line:'',etc:''};
-    el('ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
-    el('ph-hint').innerHTML = (where==='start')
-      ? '배차되면 기사님께 함께 전달됩니다.'
-      : '<b>지금 이동 중인 기사님에게</b> 바로 전달됩니다. 도착이 가까우면 경로가 바뀔 수 있어요.';
-    renderForm();
-    $('#phscr').classList.add('on');
-  }
-
-  function submitForm(){
-    if(!ready(S.d)) return;
-    S.edited  = (S.opened==='voyage') && !!S.value;
-    S.current = Object.assign({}, S.d);
-    S.value   = sentence(S.d);
-    S.fromSaved = false;
-    S.always  = el('chk-save').checked;
-    S.origin  = S.opened;
-    $('#phscr').classList.remove('on');
-
-    if(S.origin === 'start'){ S.sending=false; S.sent=true; S.confirmed=false; render(); return; }
-    S.confirmed=true; S.sending=true; S.sent=false; render();
-    setTimeout(()=>{
-      S.sending=false; S.sent=true; render();
-      toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
-                     : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
-    }, 2000);
   }
 
   function toast(msg){
@@ -728,7 +808,7 @@
 
   function setMode(m){
     S.mode=m; S.screen='start';
-    S.sending=false; S.sent=false; S.edited=false; S.opened=null;
+    S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={};
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
       S.value=sentence(SAVED_FOR_ADDRESS); S.origin='start';
@@ -741,26 +821,9 @@
     render();
   }
 
-  (function build(){
-    const fw = el('floors2');
-    FLOORS.forEach(f=>{
-      const b=document.createElement('button'); b.type='button'; b.className='chip2'; b.dataset.f=f;
-      b.textContent='지하 '+f+'층';
-      b.addEventListener('click',()=>{ S.d.floor=(S.d.floor===f?null:f); renderForm(); });
-      fw.appendChild(b);
-    });
-  })();
-
-  $$('.segb').forEach(b=>b.addEventListener('click',()=>{
-    S.d.lvl=b.dataset.lvl;
-    if(S.d.lvl!=='under') S.d.floor=null;
-    renderForm();
-  }));
-  el('in-dong').addEventListener('input', e=>{ S.d.dong=e.target.value.replace(/동\s*$/,''); renderForm(); });
-  el('in-line').addEventListener('input', e=>{ S.d.line=e.target.value; renderForm(); });
-  el('in-etc').addEventListener('input',  e=>{ S.d.etc =e.target.value; renderForm(); });
-  el('chk-save').addEventListener('change', renderForm);
-  el('ph-submit').addEventListener('click', submitForm);
+  el('ph-next').addEventListener('click',()=>{ S.step===null ? submitForm() : advance(); });
+  el('ph-skip').addEventListener('click',()=>{ S.skipped[S.step]=true; S.d[S.step]=''; advance(); });
+  el('chk-save').addEventListener('change',()=>{ S.always=el('chk-save').checked; });
   $('#phclose').addEventListener('click',()=>$('#phscr').classList.remove('on'));
   $$('[data-open]').forEach(n=>n.addEventListener('click',()=>openForm(n.dataset.open)));
   $('#cta-start').addEventListener('click',()=>{ if(S.value) S.confirmed=true; S.screen='voyage'; render(); });
