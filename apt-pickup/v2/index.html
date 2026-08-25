@@ -27,7 +27,7 @@
   /* ══════ 하네스 ══════ */
   .hd{max-width:1000px;margin:0 auto;padding:30px 20px 0;}
   .hd h1{margin:0 0 8px;font-size:21px;line-height:29px;font-weight:700;color:var(--ink);letter-spacing:-.3px;}
-  .hd .lede{margin:0;font-size:13.5px;line-height:21px;color:var(--ink-2);max-width:720px;}
+  .hd .lede{margin:0;font-size:13.5px;line-height:21px;color:var(--ink-2);max-width:660px;word-break:keep-all;}
   .hd .lede a{color:var(--ink);}
   .tabs{display:flex;gap:8px;margin:18px 0 0;flex-wrap:wrap;align-items:center;}
   .tab{border:1px solid var(--line);background:#fff;border-radius:9999px;padding:9px 15px;
@@ -102,12 +102,39 @@
     display:flex;align-items:center;gap:15px;background:#fff;}
   .addr .sq{width:10px;height:10px;border:3px solid var(--navy-700);flex:0 0 auto;}
   .addr span{font-size:14px;color:#000;}
-  .pkbox{background:var(--blue-050);border:1px solid var(--blue-100);border-radius:4px;
+  .pkbox{width:100%;font:inherit;text-align:left;background:var(--blue-050);
+    border:1px solid var(--blue-100);border-radius:4px;
     padding:12px 12px 12px 16px;display:flex;align-items:center;gap:8px;cursor:pointer;min-height:44px;}
   .pkbox .ph{font-size:14px;color:var(--gray-500);}
-  .pkbox .fill{font-size:14px;color:#000;flex:1 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .pkbox .fill{font-size:14px;line-height:20px;color:#000;flex:1 1 auto;word-break:keep-all;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   .pkbox .ico{font-size:14px;flex:0 0 auto;}
+  .pkbox[hidden],.confirm[hidden],.skipnote[hidden]{display:none;}
+  .confirm{display:flex;align-items:flex-start;gap:8px;background:var(--gray-30);border-radius:4px;
+    padding:12px 12px 12px 14px;}
+  .confirm .ck{flex:0 0 auto;font-size:13px;color:#0ca30c;line-height:20px;}
+  .confirm .tx{flex:1 1 auto;font-size:13.5px;line-height:20px;color:var(--gray-800);word-break:keep-all;}
+  .confirm .tx b{display:block;font-size:14px;font-weight:600;color:#000;margin-bottom:2px;}
+  .confirm.pending .ck{color:var(--gray-500);}
+  .skipnote{border:1px dashed var(--gray-100);border-radius:4px;padding:12px 14px;
+    font-size:13px;line-height:20px;color:var(--gray-500);word-break:keep-all;}
+  .rtoast{position:absolute;left:16px;right:16px;bottom:88px;z-index:30;background:rgba(23,26,36,.92);
+    color:#fff;border-radius:8px;padding:11px 14px;font-size:13px;line-height:19px;
+    opacity:0;transform:translateY(8px);transition:.24s;pointer-events:none;}
+  .rtoast.on{opacity:1;transform:none;}
+  .samples{width:100%;display:flex;flex-direction:column;gap:7px;}
+  .samples button{width:100%;border:1.5px dashed var(--gray-200);background:none;border-radius:6px;
+    padding:11px 12px;font:inherit;font-size:13px;color:var(--gray-700);cursor:pointer;text-align:left;
+    word-break:keep-all;line-height:19px;}
+  .samples button:hover{border-color:var(--gray-300);background:var(--gray-30);}
+  .samples button b{display:block;font-size:11.5px;font-weight:600;color:var(--gray-500);margin-bottom:3px;}
+  .ph-body .qbox{width:100%;border:1.5px dashed var(--gray-100);border-radius:10px;padding:22px 20px;}
+  .ph-body .qbox b{display:block;font-size:16px;font-weight:700;color:var(--gray-900);margin-bottom:8px;}
+  .ph-body .qbox span{display:block;font-size:13px;line-height:20px;color:var(--gray-500);word-break:keep-all;}
+  .ph-body .qbox .q{display:block;margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-30);
+    font-size:13.5px;line-height:21px;color:var(--gray-900);font-weight:600;}
   .ctaw{padding:10px;}
+  button:focus-visible,.pkbox:focus-visible{outline:2px solid var(--blue-600);outline-offset:2px;}
   .cta{width:100%;border:none;border-radius:4px;background:var(--navy-800);color:#fff;
     padding:14px 18px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:-.2px;}
 
@@ -152,16 +179,17 @@
 
   /* ══════ 입력 화면 placeholder ══════ */
   .ph-scr{position:absolute;inset:0;z-index:40;background:#fff;transform:translateY(100%);
-    transition:transform var(--dur) cubic-bezier(.32,.72,.24,1);display:flex;flex-direction:column;}
-  .ph-scr.on{transform:translateY(0);}
+    visibility:hidden;transition:transform var(--dur) cubic-bezier(.32,.72,.24,1),visibility 0s var(--dur);
+    display:flex;flex-direction:column;}
+  .ph-scr.on{transform:translateY(0);visibility:visible;transition:transform var(--dur) cubic-bezier(.32,.72,.24,1),visibility 0s 0s;}
   .ph-bar{display:flex;align-items:center;padding:10px 12px;border-bottom:1px solid var(--gray-30);}
   .ph-bar button{border:none;background:none;font:inherit;font-size:20px;color:var(--gray-800);cursor:pointer;padding:6px 10px;}
   .ph-bar b{font-size:15px;font-weight:600;letter-spacing:-.2px;}
-  .ph-body{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;
-    gap:14px;padding:28px;text-align:center;}
+  .ph-body{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    gap:14px;padding:24px 24px 28px;text-align:left;overflow-y:auto;}
   .ph-body .box{width:100%;border:1.5px dashed var(--gray-100);border-radius:10px;padding:28px 20px;}
   .ph-body .box b{display:block;font-size:16px;font-weight:700;color:var(--gray-900);margin-bottom:6px;}
-  .ph-body .box span{display:block;font-size:13px;line-height:20px;color:var(--gray-500);}
+  .ph-body .box span{display:block;font-size:13px;line-height:20px;color:var(--gray-500);word-break:keep-all;}
   .ph-body .tmp{width:100%;border:none;border-radius:4px;background:var(--navy-800);color:#fff;
     padding:14px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;}
   .ph-body .tmpnote{font-size:11.5px;line-height:17px;color:var(--gray-500);}
@@ -213,7 +241,8 @@
   .dtalk .tail{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;
     border-bottom:9px solid var(--navy-700);}
   .dtalk .body{width:100%;background:var(--navy-700);border-radius:2px;padding:12px 16px;
-    font-size:16px;line-height:23px;color:var(--gray-e6);font-weight:400;}
+    font-size:16px;line-height:23px;color:var(--gray-e6);font-weight:400;word-break:keep-all;
+    display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
   .dtalk .body em{font-style:normal;color:var(--blue-500);}
   .dtalk.empty .body{color:var(--gray-300);font-size:14px;}
   .dgo{width:100%;border:none;background:var(--gray-50);padding:10px 16px;font:inherit;
@@ -287,9 +316,16 @@
             </div>
             <div class="fields">
               <div class="addr"><span class="sq"></span><span>래미안원베일리아파트</span></div>
-              <div class="pkbox" data-open="start" id="pk-start">
+              <button type="button" class="pkbox" data-open="start" id="pk-start"
+                      aria-label="자세한 픽업 위치 입력하기">
                 <span class="ph" id="pk-start-ph">자세한 픽업 위치를 입력해주세요</span>
+              </button>
+              <div class="confirm" id="cf-start" hidden>
+                <span class="ck">✓</span>
+                <span class="tx"><b id="cf-start-v"></b>배차되면 기사님께 함께 전달돼요</span>
               </div>
+              <div class="skipnote" id="skip-start" hidden>B안에서는 이 화면에서 묻지 않습니다.
+                배차된 뒤 운행 화면에서 받습니다.</div>
             </div>
           </div>
           <div class="ctaw"><button class="cta" id="cta-start">출발지 설정 완료</button></div>
@@ -321,6 +357,7 @@
           <div class="rcirc">⌂</div>
           <div class="rpill">✕ 호출 취소</div>
         </div>
+        <div class="rtoast" id="rtoast"></div>
         <div class="vsheet">
           <div class="handle"><i></i></div>
           <div class="vrow1">
@@ -328,9 +365,13 @@
             <button class="obtn">경로 변경</button>
           </div>
           <div class="vpk">
-            <div class="pkbox" data-open="voyage" id="pk-voy">
-              <span class="ico">🚶</span>
+            <button type="button" class="pkbox" data-open="voyage" id="pk-voy"
+                    aria-label="자세한 픽업 위치 입력하기">
               <span class="ph" id="pk-voy-ph">자세한 픽업 위치를 입력해주세요</span>
+            </button>
+            <div class="confirm" id="cf-voy" hidden>
+              <span class="ck" id="cf-voy-ck">✓</span>
+              <span class="tx"><b id="cf-voy-v"></b><span id="cf-voy-sub"></span></span>
             </div>
           </div>
           <div class="vdiv"></div>
@@ -356,12 +397,13 @@
           <span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
         <div class="ph-bar"><button id="phclose">←</button><b>상세 위치 입력</b></div>
         <div class="ph-body">
-          <div class="box">
+          <div class="qbox">
             <b>상세 위치 입력 화면</b>
-            <span>Figma에서도 빈 프레임으로 남아 있는 자리입니다.<br>다음 논의에서 정합니다.</span>
+            <span>Figma에서도 빈 프레임으로 남아 있는 자리입니다.</span>
+            <span class="q">정할 것 하나. 자유 텍스트 한 줄인가, 구조화된 선택(동 / 지상·지하 / 층)인가?</span>
           </div>
-          <button class="tmp" id="phfill">예시 값으로 채우고 돌아가기</button>
-          <p class="tmpnote">지금은 뒤 흐름을 보기 위한 임시 버튼입니다.<br>Figma 예시값을 그대로 넣습니다.</p>
+          <div class="samples" id="samples"></div>
+          <p class="tmpnote">위 셋은 결과만 보기 위한 임시 값입니다. 화면 설계가 아닙니다.</p>
         </div>
       </div>
     </div>
@@ -458,61 +500,121 @@
   const $ = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
 
-  const SAMPLE = '지하 4층 · 1901동 앞에서 탈게요 (3번 게이트)';
+  const SAMPLES = [
+    {k:'short',  lab:'자유 텍스트 · 짧게',  v:'지하 4층 · 1901동 앞에서 탈게요 (3번 게이트)'},
+    {k:'long',   lab:'자유 텍스트 · 실제로 쓰는 길이',
+                 v:'지하 2층 주차장 B구역 1903동 엘리베이터 앞, 기둥 P-14 옆에서 기다릴게요'},
+    {k:'struct', lab:'구조화된 선택의 결과', v:'1901동 · 지하 4층 · 3번 게이트'}
+  ];
   const DESC = {
-    a: 'A안. 출발지를 정하는 화면에서 <b>미리</b> 받습니다. 배차되는 기사에게 <b>처음부터</b> 붙어 갑니다.',
-    b: 'B안. 배차가 끝난 뒤 운행 화면에서 받습니다. 기사는 <b>이미 이동 중</b>이라 값이 도중에 도착합니다.'
+    a: 'A안. 출발지를 정하는 화면에서 <b>미리</b> 받습니다. 운행 화면에서는 확인만 하고 다시 묻지 않습니다.',
+    b: 'B안. 출발지 화면에서는 <b>묻지 않고</b>, 배차가 끝난 뒤 운행 화면에서 받습니다. 기사는 이미 이동 중입니다.'
   };
+  const SENT_AT = '12:46';
 
-  const S = { flow:'a', screen:'start', value:null, filledAt:null };
+  const S = { flow:'a', screen:'start', value:null, sending:false, sent:false };
 
   function show(id){ $$('#rider .scr').forEach(s=>s.classList.toggle('on', s.id===id)); }
+  function el(id){ return $('#'+id); }
+
+  /* 기사에게 실제로 닿았는가 */
+  function reachedDriver(){
+    if(!S.value) return false;
+    return S.flow==='a' ? true : S.sent;
+  }
 
   function render(){
     $$('.tab').forEach(t=>t.classList.toggle('on', t.dataset.flow===S.flow));
     $('#fdesc').innerHTML = DESC[S.flow];
     show(S.screen==='start' ? 's-start' : 's-voyage');
 
-    // 라이더 입력 필드
     const has = !!S.value;
-    const sp = $('#pk-start-ph'), vp = $('#pk-voy-ph');
-    sp.textContent = has ? S.value : '자세한 픽업 위치를 입력해주세요';
-    sp.className = has ? 'fill' : 'ph';
-    vp.textContent = has ? S.value : '자세한 픽업 위치를 입력해주세요';
-    vp.className = has ? 'fill' : 'ph';
+    const isA = S.flow==='a';
 
-    // 드라이버 배지
+    /* ── 출발지 화면: A만 입력을 받는다 ── */
+    el('pk-start').hidden    = !(isA && !has);
+    el('cf-start').hidden    = !(isA && has);
+    el('skip-start').hidden  = isA;
+    if(isA && has) el('cf-start-v').textContent = S.value;
+
+    /* ── 운행 화면: B만 입력을 받는다 ── */
+    el('pk-voy').hidden = !(!isA && !has);
+    el('cf-voy').hidden = !has;
+    if(has){
+      el('cf-voy-v').textContent = S.value;
+      if(isA){
+        el('cf-voy').classList.remove('pending');
+        el('cf-voy-ck').textContent = '✓';
+        el('cf-voy-sub').textContent = '배차와 함께 기사님께 전달됐어요';
+      } else if(S.sending){
+        el('cf-voy').classList.add('pending');
+        el('cf-voy-ck').textContent = '…';
+        el('cf-voy-sub').textContent = '기사님에게 보내는 중이에요';
+      } else {
+        el('cf-voy').classList.remove('pending');
+        el('cf-voy-ck').textContent = '✓';
+        el('cf-voy-sub').textContent = '기사님에게 전달했어요 · ' + SENT_AT;
+      }
+    }
+
+    /* ── 드라이버 말풍선 ── */
+    const reached = reachedDriver();
     const t = $('#dtalk'), b = $('#dtalkbody');
-    t.classList.toggle('empty', !has);
-    b.innerHTML = has ? '<em>탑승</em>&nbsp; ' + S.value : '탑승 위치 미전달';
+    t.classList.toggle('empty', !reached);
+    b.innerHTML = reached ? '<em>탑승</em>&nbsp; ' + S.value : '탑승 위치 미전달';
 
-    // 단계 설명
-    $('#rstep').textContent = S.screen==='start'
-      ? '출발지 설정 화면입니다. 파란 입력 칸을 눌러보세요.'
-      : (S.flow==='b' && !has ? '배차 완료. 파란 입력 칸을 눌러보세요.' : '배차 완료. 픽업 위치가 함께 표시됩니다.');
-    $('#dstep').textContent = !has
-      ? '아직 전달된 픽업 위치가 없습니다.'
-      : (S.filledAt==='start' ? '배차와 동시에 받았습니다.' : '이동을 시작한 뒤 받았습니다.');
+    /* ── 캡션 ── */
+    el('rstep').textContent = S.screen==='start'
+      ? (isA ? '출발지 설정 화면입니다. 파란 입력 칸을 눌러보세요.'
+             : 'B안은 여기서 묻지 않습니다. 그대로 완료를 누르세요.')
+      : (has ? '배차 완료. 값이 어떻게 보이는지 확인하세요.'
+             : '배차 완료. 기사가 오는 중입니다. 파란 입력 칸을 눌러보세요.');
+
+    el('dstep').textContent = !reached
+      ? (S.sending ? '아직 못 받았습니다. 그 사이에도 이동 중입니다.' : '아직 전달된 픽업 위치가 없습니다.')
+      : (isA ? '배차와 동시에 받았습니다.' : '이동을 시작한 뒤 받았습니다.');
+  }
+
+  function toast(msg){
+    const el = $('#rtoast'); el.textContent = msg; el.classList.add('on');
+    clearTimeout(el._t); el._t = setTimeout(()=>el.classList.remove('on'), 3000);
   }
 
   function setFlow(f){
-    S.flow = f; S.value = null; S.filledAt = null;
-    S.screen = 'start';
+    S.flow=f; S.value=null; S.sending=false; S.sent=false;
+    S.screen='start';
     $('#phscr').classList.remove('on');
     render();
   }
 
+  function fill(v){
+    S.value = v;
+    $('#phscr').classList.remove('on');
+    if(S.flow==='a'){ S.sending=false; S.sent=true; render(); return; }
+    /* B안: 기사가 달리는 중이므로 전달에 시간이 걸린다 */
+    S.sending=true; S.sent=false; render();
+    setTimeout(()=>{
+      S.sending=false; S.sent=true; render();
+      toast('기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
+    }, 2000);
+  }
+
+  /* 샘플 버튼 */
+  (function build(){
+    const box = $('#samples');
+    SAMPLES.forEach(s=>{
+      const b=document.createElement('button');
+      b.type='button';
+      b.innerHTML = '<b>[임시] '+s.lab+'</b>'+s.v;
+      b.addEventListener('click',()=>fill(s.v));
+      box.appendChild(b);
+    });
+  })();
+
   $$('[data-open]').forEach(el=>el.addEventListener('click',()=>{
-    S.pending = el.dataset.open;
     $('#phscr').classList.add('on');
   }));
   $('#phclose').addEventListener('click',()=>$('#phscr').classList.remove('on'));
-  $('#phfill').addEventListener('click',()=>{
-    S.value = SAMPLE;
-    S.filledAt = S.pending;
-    $('#phscr').classList.remove('on');
-    render();
-  });
   $('#cta-start').addEventListener('click',()=>{ S.screen='voyage'; render(); });
   $$('.tab').forEach(t=>t.addEventListener('click',()=>setFlow(t.dataset.flow)));
   $('#rst').addEventListener('click',()=>setFlow(S.flow));
