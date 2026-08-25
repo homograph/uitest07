@@ -449,12 +449,12 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
    ══════════════════════════════════════════════════════════════ */
 /* 상태바 뒤로 그라디언트가 이어지도록 프레임 배경을 맞춘다 */
 .col[data-v="figma"] .phone, .v-figma-frame{background:#e2f2fe;}
-.fg-head{padding:28px 28px 20px;display:flex;flex-direction:column;align-items:center;gap:28px;
+.fg-head{padding:36px 28px 28px;display:flex;flex-direction:column;align-items:center;gap:28px;
   background:linear-gradient(180deg,#e2f2fe 0%,#ffffff 100%);}
 .fg-head .tt{width:100%;display:flex;flex-direction:column;gap:8px;}
 .fg-head h1{margin:0;font-size:24px;line-height:34px;font-weight:700;color:#000000;letter-spacing:-.4px;}
 .fg-head p{margin:0;font-size:14px;line-height:20px;font-weight:400;color:#4b5064;}
-.fg-head img{width:290px;height:131px;object-fit:contain;display:block;}
+.fg-head img{width:290px;aspect-ratio:290/131;height:auto;object-fit:contain;display:block;}
 
 .fg-meth{padding:24px;display:flex;flex-direction:column;gap:12px;align-items:center;}
 .fg-meth .lab{width:100%;font-size:16px;line-height:23px;font-weight:700;color:#262a38;letter-spacing:-.2px;}
@@ -487,7 +487,7 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fg-pick .r i.d{background:#383d4f;border:none;}
 .fg-pick .r span{font-size:14px;line-height:20px;color:#383d4f;white-space:nowrap;}
 
-.fg-coupon{padding:6px 24px 12px;}
+.fg-coupon{padding:6px 24px 6px;}
 .fg-meth + .fg-coupon{margin-top:-10px;}   /* 다시예약하기 없이 쿠폰만 바로 이어질 때 방법 섹션에 붙인다 */
 .fg-coupon .card{background:#f9f9f9;border:1px solid #f9f9f9;border-radius:4px;
   display:flex;align-items:center;gap:14px;padding:12px 20px;}
@@ -1233,6 +1233,15 @@ function layout(){
     const addonEl = col.querySelector('.addon');
     scroller.style.marginTop = d.status + 'px';
     if (mock){
+      // 히어로 이미지: 화면(실제 vw)에 반응해 커지고 줄어들되 최소/최대 안에서만.
+      // .phone 전체가 transform:scale(k)로 한 번 더 축소/확대되므로, 여기서 원하는
+      // '화면에 실제로 보일 크기'를 먼저 정하고 k로 나눠 디자인 좌표로 되돌려 넣는다
+      // (안 그러면 화면폭 → k → 이 폭이 다시 배로 곱해져 제곱으로 커져버린다).
+      const heroImg = app.querySelector('.fg-head img');
+      if (heroImg){
+        const wantVisual = Math.max(240, Math.min(vw * 0.74, 320));
+        heroImg.style.width = (wantVisual / k) + 'px';
+      }
       // 실제 폰처럼 세로는 콘텐츠 길이만큼, 내부 스크롤 없이 페이지 자체가 스크롤된다.
       scroller.style.height = 'auto';
       phone.style.height = (d.status + app.offsetHeight) + 'px';
