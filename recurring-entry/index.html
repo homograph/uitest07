@@ -465,6 +465,7 @@ body:not(.wide) .stage{justify-content:flex-start;}
 .fg-pick .r span{font-size:13px;line-height:19px;color:#000000;white-space:nowrap;}
 
 .fg-coupon{padding:6px 24px 12px;}
+.fg-meth + .fg-coupon{margin-top:-10px;}   /* 다시예약하기 없이 쿠폰만 바로 이어질 때 방법 섹션에 붙인다 */
 .fg-coupon .card{background:#f9f9f9;border:1px solid #f9f9f9;border-radius:8px;
   display:flex;align-items:center;gap:14px;padding:12px 20px;}
 .fg-coupon .ic{flex:0 0 auto;width:24px;height:24px;object-fit:contain;display:block;}
@@ -991,7 +992,7 @@ function fFigmaHome(){
       <img src="${A.hero4}" alt="">
     </section>
     <section class="fg-meth"><div class="lab">예약 방법</div><div class="fg-row">${row}</div></section>
-    ${picks}${coupon}<div style="height:20px;background:#fff"></div>`
+    ${picks}${coupon}<div style="height:36px;background:#fff"></div>`
     + fTesti3() + fFaq3();
 }
 
