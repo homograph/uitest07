@@ -1162,13 +1162,17 @@ function render(){
 function syncViewportVars(){
   const vv = window.visualViewport;
   const root = document.documentElement.style;
-  if (vv){
-    root.setProperty('--vv-left', vv.offsetLeft + 'px');
-    root.setProperty('--vv-top', vv.offsetTop + 'px');
-    root.setProperty('--vv-w', vv.width + 'px');
-    root.setProperty('--vv-h', vv.height + 'px');
-  }
-  return vv ? {w: vv.width, h: vv.height, left: vv.offsetLeft, top: vv.offsetTop} : null;
+  if (!vv) return null;
+  // 폭은 (세로 스크롤바 정도를 빼면) 주소창이 뜨고 접혀도 안 변한다. 그런데 카톡/
+  // 슬랙 인앱 브라우저는 초기 로드 순간 visualViewport.width가 실제보다 훨씬 좁게
+  // 잠깐 잘못 잡히는 경우가 있어서, clientWidth보다 훨씬 좁으면 그 값을 못 믿는다.
+  const docW = document.documentElement.clientWidth || vv.width;
+  const w = vv.width < docW * 0.6 ? docW : vv.width;
+  root.setProperty('--vv-left', vv.offsetLeft + 'px');
+  root.setProperty('--vv-top', vv.offsetTop + 'px');
+  root.setProperty('--vv-w', w + 'px');
+  root.setProperty('--vv-h', vv.height + 'px');
+  return {w, h: vv.height, left: vv.offsetLeft, top: vv.offsetTop};
 }
 
 function layout(){
@@ -1353,7 +1357,13 @@ document.getElementById('reset').addEventListener('click', () => {
 
 syncSegs();
 render();
-setTimeout(relayout, 300);
+/* 카톡·슬랙·문자 등에서 연 인앱 브라우저(SFSafariViewController)는 실제 컨테이너
+   크기가 첫 로드 이후에 한 번 더(때로는 여러 번) 뒤늦게 자리잡는다. 한 번만 재보면
+   그 순간의 좁은 값을 그대로 굳혀서 목업이 실제 화면보다 작게 잡히고 오른쪽에
+   빈 여백이 남는다. 그래서 로드 직후 몇 차례 더 재본다. */
+[80, 200, 400, 800, 1500].forEach(ms => setTimeout(relayout, ms));
+window.addEventListener('pageshow', relayout);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) relayout(); });
 </script>
 </body>
 </html>
