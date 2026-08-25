@@ -109,7 +109,12 @@
   .pkbox .fill{font-size:14px;line-height:20px;color:#000;flex:1 1 auto;word-break:keep-all;
     display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
   .pkbox .ico{font-size:14px;flex:0 0 auto;}
-  .pkbox[hidden],.confirm[hidden],.skipnote[hidden]{display:none;}
+  .pkbox[hidden],.confirm[hidden],.skipnote[hidden],.pksub[hidden]{display:none;}
+  .pksub{margin:7px 2px 0;font-size:12.5px;line-height:19px;color:var(--gray-700);
+    display:flex;align-items:flex-start;gap:5px;word-break:keep-all;}
+  .pksub .ck{flex:0 0 auto;color:#0ca30c;}
+  .pksub.pending .ck{color:var(--gray-500);}
+  .pksub.pending{color:var(--gray-500);}
   .confirm{display:flex;align-items:flex-start;gap:8px;background:var(--gray-30);border-radius:4px;
     padding:12px 12px 12px 14px;}
   .confirm .ck{flex:0 0 auto;font-size:13px;color:#0ca30c;line-height:20px;}
@@ -269,11 +274,9 @@
 <div class="hd">
   <h1>픽업 위치, 입력 진입점 화면 프로토타입</h1>
   <p class="lede">Figma <b>8월 24일 킥오프 이후 시안</b>(node 10476:126439)을 화면으로 옮겼습니다.
-     입력 진입점 두 갈래와 드라이버앱 표시 자리까지만 만들었고,
+     입력 진입점은 <b>둘 다 살아 있습니다.</b> 출발지 설정에서 넣어도 되고, 배차된 뒤 운행 화면에서 넣어도 됩니다.
      <b>진입점을 누른 다음 화면은 자리만 비워 두었습니다.</b></p>
   <div class="tabs">
-    <button class="tab on" data-flow="a">A. 출발지 검색에서 입력</button>
-    <button class="tab" data-flow="b">B. Matched 화면에서 입력</button>
     <span class="sp"></span>
     <button class="rst" id="rst">처음부터</button>
   </div>
@@ -318,14 +321,9 @@
               <div class="addr"><span class="sq"></span><span>래미안원베일리아파트</span></div>
               <button type="button" class="pkbox" data-open="start" id="pk-start"
                       aria-label="자세한 픽업 위치 입력하기">
-                <span class="ph" id="pk-start-ph">자세한 픽업 위치를 입력해주세요</span>
+                <span class="ph" id="pk-start-tx">자세한 픽업 위치를 입력해주세요</span>
               </button>
-              <div class="confirm" id="cf-start" hidden>
-                <span class="ck">✓</span>
-                <span class="tx"><b id="cf-start-v"></b>배차되면 기사님께 함께 전달돼요</span>
-              </div>
-              <div class="skipnote" id="skip-start" hidden>B안에서는 이 화면에서 묻지 않습니다.
-                배차된 뒤 운행 화면에서 받습니다.</div>
+              <p class="pksub" id="pksub-start" hidden></p>
             </div>
           </div>
           <div class="ctaw"><button class="cta" id="cta-start">출발지 설정 완료</button></div>
@@ -367,12 +365,9 @@
           <div class="vpk">
             <button type="button" class="pkbox" data-open="voyage" id="pk-voy"
                     aria-label="자세한 픽업 위치 입력하기">
-              <span class="ph" id="pk-voy-ph">자세한 픽업 위치를 입력해주세요</span>
+              <span class="ph" id="pk-voy-tx">자세한 픽업 위치를 입력해주세요</span>
             </button>
-            <div class="confirm" id="cf-voy" hidden>
-              <span class="ck" id="cf-voy-ck">✓</span>
-              <span class="tx"><b id="cf-voy-v"></b><span id="cf-voy-sub"></span></span>
-            </div>
+            <p class="pksub" id="pksub-voy" hidden></p>
           </div>
           <div class="vdiv"></div>
           <div class="vdrv">
@@ -395,7 +390,7 @@
       <div class="ph-scr" id="phscr">
         <div class="sb light"><span>12:45</span>
           <span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
-        <div class="ph-bar"><button id="phclose">←</button><b>상세 위치 입력</b></div>
+        <div class="ph-bar"><button id="phclose">←</button><b id="ph-title">상세 위치 입력</b></div>
         <div class="ph-body">
           <div class="qbox">
             <b>상세 위치 입력 화면</b>
@@ -469,17 +464,18 @@
 
 <div class="notes">
   <div class="note">
-    <h3><i>1</i>진입점 두 갈래</h3>
-    <p><b>A</b>는 출발지를 정하는 화면에서, <b>B</b>는 배차가 끝나고 기사가 오는 중인 화면에서 받습니다.
-       Figma에 그려진 두 흐름 그대로입니다.</p>
-    <p>차이는 <b>기사에게 닿는 시점</b>입니다. A는 배차와 동시에, B는 기사가 이미 이동을 시작한 뒤입니다.</p>
+    <h3><i>1</i>진입점은 둘 다 산다</h3>
+    <p>출발지 설정에서 넣으면 운행 화면에는 <b>채워진 필드</b>가 뜹니다. 건너뛰면 운행 화면에 <b>입력 전 필드</b>가 뜹니다.
+       같은 컴포넌트의 두 상태이지 두 개의 안이 아닙니다.</p>
+    <p>운행 화면에서는 <b>바꿀 수도</b> 있습니다. 그때는 기사가 이미 이동 중이라 값이 도중에 갱신됩니다.</p>
     <p class="src">Figma: 출발지 검색에서 상세 위치 입력 / Matched 화면에서 상세 위치 입력</p>
   </div>
   <div class="note">
     <h3><i>2</i>다음 화면은 비워 두었습니다</h3>
     <p>Figma에도 <b>상세 위치 입력 화면</b>이 흰 빈 프레임으로 두 군데 남아 있습니다. 프로토도 같은 상태로 두고,
-       뒤 흐름을 볼 수 있게 임시 버튼만 넣었습니다.</p>
-    <p>여기서 정해야 할 것은 <b>자유 텍스트 한 줄이냐, 구조화된 선택이냐</b>입니다.</p>
+       결과만 보기 위한 임시 값 셋을 넣었습니다.</p>
+    <p>여기서 정해야 할 것은 <b>자유 텍스트 한 줄이냐, 구조화된 선택이냐</b>입니다.
+       임시 값 중 <b>실제로 쓰는 길이</b>를 눌러 보면 라이더는 두 줄, 기사는 세 줄로 차오릅니다.</p>
   </div>
   <div class="note">
     <h3><i>3</i>드라이버 표시 자리</h3>
@@ -497,109 +493,113 @@
 
 <script>
 (function(){
-  const $ = s => document.querySelector(s);
+  const $  = s => document.querySelector(s);
   const $$ = s => Array.from(document.querySelectorAll(s));
+  const el = id => document.getElementById(id);
 
   const SAMPLES = [
-    {k:'short',  lab:'자유 텍스트 · 짧게',  v:'지하 4층 · 1901동 앞에서 탈게요 (3번 게이트)'},
-    {k:'long',   lab:'자유 텍스트 · 실제로 쓰는 길이',
-                 v:'지하 2층 주차장 B구역 1903동 엘리베이터 앞, 기둥 P-14 옆에서 기다릴게요'},
-    {k:'struct', lab:'구조화된 선택의 결과', v:'1901동 · 지하 4층 · 3번 게이트'}
+    {lab:'자유 텍스트 · 짧게',            v:'지하 4층 · 1901동 앞에서 탈게요 (3번 게이트)'},
+    {lab:'자유 텍스트 · 실제로 쓰는 길이', v:'지하 2층 주차장 B구역 1903동 엘리베이터 앞, 기둥 P-14 옆에서 기다릴게요'},
+    {lab:'구조화된 선택의 결과',          v:'1901동 · 지하 4층 · 3번 게이트'}
   ];
-  const DESC = {
-    a: 'A안. 출발지를 정하는 화면에서 <b>미리</b> 받습니다. 운행 화면에서는 확인만 하고 다시 묻지 않습니다.',
-    b: 'B안. 출발지 화면에서는 <b>묻지 않고</b>, 배차가 끝난 뒤 운행 화면에서 받습니다. 기사는 이미 이동 중입니다.'
-  };
+  const PH = '자세한 픽업 위치를 입력해주세요';
   const SENT_AT = '12:46';
 
-  const S = { flow:'a', screen:'start', value:null, sending:false, sent:false };
+  /* origin: 값이 어디서 마지막으로 정해졌나. 'start' | 'voyage' | null
+     edited: 출발지에서 넣은 뒤 운행 화면에서 바꿨나 */
+  const S = { screen:'start', value:null, origin:null, edited:false,
+              sending:false, sent:false, opened:null };
 
-  function show(id){ $$('#rider .scr').forEach(s=>s.classList.toggle('on', s.id===id)); }
-  function el(id){ return $('#'+id); }
-
-  /* 기사에게 실제로 닿았는가 */
-  function reachedDriver(){
+  function reached(){                 /* 기사에게 실제로 닿았나 */
     if(!S.value) return false;
-    return S.flow==='a' ? true : S.sent;
+    return S.origin==='start' ? true : S.sent;
+  }
+
+  function setField(boxId, txId, subId){
+    const has = !!S.value;
+    el(txId).textContent = has ? S.value : PH;
+    el(txId).className   = has ? 'fill' : 'ph';
+    el(boxId).setAttribute('aria-label', (has ? '픽업 위치 변경하기, 현재 ' + S.value : '자세한 픽업 위치 입력하기'));
+    return has;
   }
 
   function render(){
-    $$('.tab').forEach(t=>t.classList.toggle('on', t.dataset.flow===S.flow));
-    $('#fdesc').innerHTML = DESC[S.flow];
-    show(S.screen==='start' ? 's-start' : 's-voyage');
+    $$('#rider .scr').forEach(s=>s.classList.toggle('on', s.id===(S.screen==='start'?'s-start':'s-voyage')));
 
     const has = !!S.value;
-    const isA = S.flow==='a';
 
-    /* ── 출발지 화면: A만 입력을 받는다 ── */
-    el('pk-start').hidden    = !(isA && !has);
-    el('cf-start').hidden    = !(isA && has);
-    el('skip-start').hidden  = isA;
-    if(isA && has) el('cf-start-v').textContent = S.value;
+    /* ── 출발지 화면: 항상 입력 가능 ── */
+    setField('pk-start','pk-start-tx','pksub-start');
+    el('pksub-start').hidden = !has;
+    if(has) el('pksub-start').innerHTML = '<span class="ck">✓</span>배차되면 기사님께 함께 전달돼요';
 
-    /* ── 운행 화면: B만 입력을 받는다 ── */
-    el('pk-voy').hidden = !(!isA && !has);
-    el('cf-voy').hidden = !has;
+    /* ── 운행 화면: 값이 있으면 채워진 채로, 없으면 입력 전으로. 둘 다 누를 수 있음 ── */
+    setField('pk-voy','pk-voy-tx','pksub-voy');
+    const sub = el('pksub-voy');
+    sub.hidden = !has;
+    sub.classList.toggle('pending', S.sending);
     if(has){
-      el('cf-voy-v').textContent = S.value;
-      if(isA){
-        el('cf-voy').classList.remove('pending');
-        el('cf-voy-ck').textContent = '✓';
-        el('cf-voy-sub').textContent = '배차와 함께 기사님께 전달됐어요';
-      } else if(S.sending){
-        el('cf-voy').classList.add('pending');
-        el('cf-voy-ck').textContent = '…';
-        el('cf-voy-sub').textContent = '기사님에게 보내는 중이에요';
-      } else {
-        el('cf-voy').classList.remove('pending');
-        el('cf-voy-ck').textContent = '✓';
-        el('cf-voy-sub').textContent = '기사님에게 전달했어요 · ' + SENT_AT;
-      }
+      if(S.origin==='start')      sub.innerHTML = '<span class="ck">✓</span>배차와 함께 기사님께 전달됐어요';
+      else if(S.sending)          sub.innerHTML = '<span class="ck">…</span>기사님에게 보내는 중이에요';
+      else if(S.edited)           sub.innerHTML = '<span class="ck">✓</span>바뀐 위치를 전달했어요 · ' + SENT_AT;
+      else                        sub.innerHTML = '<span class="ck">✓</span>기사님에게 전달했어요 · ' + SENT_AT;
     }
 
     /* ── 드라이버 말풍선 ── */
-    const reached = reachedDriver();
-    const t = $('#dtalk'), b = $('#dtalkbody');
-    t.classList.toggle('empty', !reached);
-    b.innerHTML = reached ? '<em>탑승</em>&nbsp; ' + S.value : '탑승 위치 미전달';
+    const got = reached();
+    $('#dtalk').classList.toggle('empty', !got);
+    $('#dtalkbody').innerHTML = got ? '<em>탑승</em>&nbsp; ' + S.value : '탑승 위치 미전달';
 
     /* ── 캡션 ── */
     el('rstep').textContent = S.screen==='start'
-      ? (isA ? '출발지 설정 화면입니다. 파란 입력 칸을 눌러보세요.'
-             : 'B안은 여기서 묻지 않습니다. 그대로 완료를 누르세요.')
-      : (has ? '배차 완료. 값이 어떻게 보이는지 확인하세요.'
-             : '배차 완료. 기사가 오는 중입니다. 파란 입력 칸을 눌러보세요.');
+      ? (has ? '입력했습니다. 완료를 누르면 배차와 함께 전달됩니다.'
+             : '픽업 위치는 선택입니다. 지금 넣어도 되고 건너뛰어도 됩니다.')
+      : (!has ? '출발지에서 건너뛰었습니다. 여기서도 넣을 수 있습니다.'
+              : (S.origin==='start' ? '출발지에서 넣은 값이 그대로 보입니다. 여기서 바꿀 수도 있습니다.'
+                                    : '이동 중에 전달했습니다.'));
 
-    el('dstep').textContent = !reached
+    el('dstep').textContent = !got
       ? (S.sending ? '아직 못 받았습니다. 그 사이에도 이동 중입니다.' : '아직 전달된 픽업 위치가 없습니다.')
-      : (isA ? '배차와 동시에 받았습니다.' : '이동을 시작한 뒤 받았습니다.');
+      : (S.origin==='start' ? '배차와 동시에 받았습니다.'
+                            : (S.edited ? '이동 중에 바뀐 값을 받았습니다.' : '이동을 시작한 뒤 받았습니다.'));
+
+    el('fdesc').innerHTML = S.screen==='start'
+      ? '출발지 설정 화면. 픽업 위치는 <b>선택</b>입니다.'
+      : (S.origin==='start' && !S.edited
+          ? '운행 화면. 출발지에서 넣었으므로 <b>채워진 필드</b>가 뜹니다.'
+          : '운행 화면. 출발지에서 건너뛰었으므로 <b>입력 전 필드</b>가 뜹니다. 여기서 넣으면 기사는 이동 중에 받습니다.');
   }
 
   function toast(msg){
-    const el = $('#rtoast'); el.textContent = msg; el.classList.add('on');
-    clearTimeout(el._t); el._t = setTimeout(()=>el.classList.remove('on'), 3000);
+    const t = $('#rtoast'); t.textContent = msg; t.classList.add('on');
+    clearTimeout(t._t); t._t = setTimeout(()=>t.classList.remove('on'), 3200);
   }
 
-  function setFlow(f){
-    S.flow=f; S.value=null; S.sending=false; S.sent=false;
-    S.screen='start';
+  function fill(v){
+    const changedOnVoyage = (S.opened === 'voyage');
+    S.edited = changedOnVoyage && S.origin === 'start';
+    S.value  = v;
+    S.origin = S.opened;
+    $('#phscr').classList.remove('on');
+
+    if(S.origin === 'start'){ S.sending=false; S.sent=true; render(); return; }
+
+    /* 운행 화면에서 넣거나 바꾸면 기사는 달리는 중이라 도중에 받는다 */
+    S.sending=true; S.sent=false; render();
+    setTimeout(()=>{
+      S.sending=false; S.sent=true; render();
+      toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
+                     : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
+    }, 2000);
+  }
+
+  function reset(){
+    S.screen='start'; S.value=null; S.origin=null; S.edited=false;
+    S.sending=false; S.sent=false; S.opened=null;
     $('#phscr').classList.remove('on');
     render();
   }
 
-  function fill(v){
-    S.value = v;
-    $('#phscr').classList.remove('on');
-    if(S.flow==='a'){ S.sending=false; S.sent=true; render(); return; }
-    /* B안: 기사가 달리는 중이므로 전달에 시간이 걸린다 */
-    S.sending=true; S.sent=false; render();
-    setTimeout(()=>{
-      S.sending=false; S.sent=true; render();
-      toast('기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
-    }, 2000);
-  }
-
-  /* 샘플 버튼 */
   (function build(){
     const box = $('#samples');
     SAMPLES.forEach(s=>{
@@ -611,15 +611,16 @@
     });
   })();
 
-  $$('[data-open]').forEach(el=>el.addEventListener('click',()=>{
+  $$('[data-open]').forEach(node=>node.addEventListener('click',()=>{
+    S.opened = node.dataset.open;
+    $('#ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
     $('#phscr').classList.add('on');
   }));
   $('#phclose').addEventListener('click',()=>$('#phscr').classList.remove('on'));
   $('#cta-start').addEventListener('click',()=>{ S.screen='voyage'; render(); });
-  $$('.tab').forEach(t=>t.addEventListener('click',()=>setFlow(t.dataset.flow)));
-  $('#rst').addEventListener('click',()=>setFlow(S.flow));
+  $('#rst').addEventListener('click', reset);
 
-  setFlow('a');
+  reset();
 })();
 </script>
 </body>
