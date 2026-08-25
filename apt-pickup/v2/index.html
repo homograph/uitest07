@@ -106,11 +106,11 @@
     border:1px solid var(--blue-100);border-radius:4px;
     padding:12px 12px 12px 16px;display:flex;align-items:center;gap:8px;cursor:pointer;min-height:44px;}
   .pkbox .ph{font-size:14px;color:var(--gray-500);}
-  .pkbox .fill{font-size:14px;line-height:20px;color:#000;flex:1 1 auto;word-break:keep-all;
-    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .pkbox .fill{font-size:14px;line-height:20px;color:#000;flex:1 1 auto;min-width:0;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pkbox .ico{font-size:14px;flex:0 0 auto;}
   .pkbox[hidden],.confirm[hidden],.skipnote[hidden]{display:none;}
-  .pkbox .st{margin-left:auto;flex:0 0 auto;align-self:flex-start;font-size:12px;line-height:20px;
+  .pkbox .st{margin-left:auto;flex:0 0 auto;align-self:center;font-size:12px;line-height:20px;
     color:var(--gray-500);}
   .pkbox .st[hidden]{display:none;}
   .ic{display:block;flex:0 0 auto;}
@@ -137,9 +137,13 @@
   .ph-body .qbox{width:100%;border:1.5px dashed var(--gray-100);border-radius:10px;padding:22px 20px;}
   .ph-body .qbox b{display:block;font-size:16px;font-weight:700;color:var(--gray-900);margin-bottom:8px;}
   .ph-body .qbox span{display:block;font-size:13px;line-height:20px;color:var(--gray-500);word-break:keep-all;}
+  .curval{width:100%;border:1px solid var(--blue-100);background:var(--blue-050);border-radius:6px;
+    padding:12px 14px;}
+  .curval[hidden]{display:none;}
+  .curval b{display:block;font-size:11.5px;font-weight:600;color:var(--gray-500);margin-bottom:5px;}
+  .curval p{margin:0;font-size:14px;line-height:21px;color:#000;word-break:keep-all;}
   .phhint{margin:0;width:100%;font-size:13px;line-height:20px;color:var(--gray-700);
-    word-break:keep-all;display:flex;gap:6px;align-items:flex-start;}
-  .phhint i{font-style:normal;flex:0 0 auto;}
+    word-break:keep-all;}
   .ph-body .qbox .q{display:block;margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-30);
     font-size:13.5px;line-height:21px;color:var(--gray-900);font-weight:600;}
   .ctaw{padding:10px;}
@@ -162,7 +166,7 @@
     position:relative;z-index:10;}
   .handle{display:flex;justify-content:center;padding:10px;}
   .handle i{display:block;width:36px;height:4px;border-radius:2px;background:var(--gray-300);}
-  .vrow1{display:flex;gap:12px;align-items:center;padding:18px 24px;}
+  .vrow1{display:flex;gap:12px;align-items:flex-start;padding:18px 24px;}
   .vrow1 .l{flex:1 1 auto;display:flex;flex-direction:column;gap:2px;}
   .vrow1 .l b{font-size:20px;line-height:27px;font-weight:700;color:var(--gray-900);letter-spacing:-.3px;}
   .vrow1 .l span{font-size:14px;color:var(--gray-500);}
@@ -401,6 +405,10 @@
           <span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
         <div class="ph-bar"><button id="phclose">←</button><b id="ph-title">상세 위치 입력</b></div>
         <div class="ph-body">
+          <div class="curval" id="ph-current" hidden>
+            <b>지금 입력된 내용</b>
+            <p id="ph-current-v"></p>
+          </div>
           <div class="qbox">
             <b>상세 위치 입력 화면</b>
             <span>Figma에서도 빈 프레임으로 남아 있는 자리입니다.</span>
@@ -621,6 +629,9 @@
   $$('[data-open]').forEach(node=>node.addEventListener('click',()=>{
     S.opened = node.dataset.open;
     $('#ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
+    /* 필드가 한 줄로 잘리므로, 전문은 이 화면에서 읽는다 */
+    $('#ph-current').hidden = !S.value;
+    if(S.value) $('#ph-current-v').textContent = S.value;
     $('#ph-hint').innerHTML = (S.opened === 'start')
       ? '여기서 넣으면 <b>배차되면 기사님께 함께</b> 전달돼요.'
       : '<b>지금 이동 중인 기사님에게</b> 바로 전달돼요. 도착이 가까우면 경로가 바뀔 수 있어요.';
