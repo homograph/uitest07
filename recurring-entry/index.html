@@ -454,7 +454,7 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fg-head .tt{width:100%;display:flex;flex-direction:column;gap:8px;}
 .fg-head h1{margin:0;font-size:24px;line-height:34px;font-weight:700;color:#000000;letter-spacing:-.4px;}
 .fg-head p{margin:0;font-size:14px;line-height:20px;font-weight:400;color:#4b5064;}
-.fg-head img{width:290px;aspect-ratio:290/131;height:auto;object-fit:contain;display:block;}
+.fg-head img, .fgc-top img{width:290px;aspect-ratio:290/131;height:auto;object-fit:contain;display:block;}
 
 .fg-meth{padding:24px;display:flex;flex-direction:column;gap:12px;align-items:center;}
 .fg-meth .lab{width:100%;font-size:16px;line-height:23px;font-weight:700;color:#262a38;letter-spacing:-.2px;}
@@ -500,6 +500,43 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fg-pickv .r span{font-size:14px;line-height:20px;color:#383d4f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .fg-pickv .btn{flex:0 0 auto;background:#f5f6f7;border-radius:4px;padding:12px 18px;
   font-size:14px;line-height:20px;font-weight:700;color:#383d4f;white-space:nowrap;}
+
+/* C안(Figma 10658:139142): 방법+쿠폰을 한 블록으로 묶고, 다시예약하기는 2열 그리드(버튼 없음,
+   카드 전체를 탭), 색 블록 대신 얇은 회색 띠(divider)로 섹션을 가르고, 후기 카드에 예약
+   종류 태그를 붙인다. A/B와 겹치지 않게 클래스를 통째로 새로 둔다. */
+.fgc-top{padding:36px 28px 16px;display:flex;flex-direction:column;align-items:center;gap:24px;
+  background:linear-gradient(180deg,#e2f2fe 0%,#ffffff 100%);}
+.fgc-methcoupon{padding:24px;display:flex;flex-direction:column;gap:20px;align-items:center;}
+.fgc-methcoupon .fg-row .c span{color:#383d4f;}
+.fgc-coupon{display:flex;align-items:center;gap:14px;background:rgba(230,233,239,.3);
+  border-radius:4px;padding:10px 20px;width:100%;box-sizing:border-box;}
+.fgc-divider{height:12px;background:#f5f6f7;}
+.fgc-sch{padding:24px;display:flex;flex-direction:column;gap:20px;align-items:center;}
+.fgc-sch .lab{width:100%;font-size:18px;line-height:26px;font-weight:700;color:#262a38;letter-spacing:-.2px;}
+.fgc-cardgrid{display:flex;flex-wrap:wrap;gap:8px;width:100%;}
+.fgc-card{flex:1 1 calc(50% - 4px);min-width:140px;box-sizing:border-box;background:#fff;
+  border:1px solid #e6e9ef;border-radius:4px;box-shadow:0 6px 16px rgba(25,37,77,.05);
+  padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;}
+.fgc-card .lb{font-size:15px;line-height:22px;font-weight:700;color:#32a2fa;}
+.fgc-card .rows{display:flex;flex-direction:column;gap:4px;}
+.fgc-card .r{display:flex;align-items:center;gap:8px;}
+.fgc-card .r i{width:8px;height:8px;flex:0 0 auto;border-radius:1px;border:1.5px solid #383d4f;box-sizing:border-box;}
+.fgc-card .r i.d{background:#383d4f;border:none;}
+.fgc-card .r span{font-size:14px;line-height:20px;color:#383d4f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fgc-testi{background:#fff;padding:32px 24px;display:flex;flex-direction:column;gap:24px;align-items:center;}
+.fgc-testi h3{margin:0;width:100%;font-size:18px;line-height:26px;font-weight:700;color:#262a38;}
+.fgc-tlist{display:flex;flex-direction:column;gap:10px;width:100%;}
+.fgc-tcard{display:flex;align-items:center;gap:18px;background:rgba(230,233,239,.3);
+  border-radius:9999px;padding:20px 32px 20px 24px;}
+.fgc-tcard .av{flex:0 0 auto;width:44px;height:44px;border-radius:50%;overflow:hidden;}
+.fgc-tcard .av svg{display:block;width:100%;height:100%;}
+.fgc-tcard .body{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:6px;}
+.fgc-tcard .tag{display:flex;align-items:center;gap:2px;}
+.fgc-tcard .tag span{font-size:12px;line-height:17px;font-weight:500;color:#73788b;}
+.fgc-tcard .tag svg{flex:0 0 auto;}
+.fgc-tcard p{margin:0;font-size:14px;line-height:20px;color:#383d4f;word-break:keep-all;}
+.fgc-faq .faq3{padding:32px 24px 150px;}
+.fgc-faq .faq3 .q{border-radius:4px;}
 
 .fg-coupon{padding:6px 24px 6px;}
 .fg-meth + .fg-coupon{margin-top:-10px;}   /* 다시예약하기 없이 쿠폰만 바로 이어질 때 방법 섹션에 붙인다 */
@@ -792,7 +829,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
     </div>
     <div class="rline cond" id="condRows">
       <div class="rname" style="min-width:52px">레이아웃<i>다시 예약하기</i></div>
-      <div class="seg" id="segLayout"><button data-v="figma">A안</button><button data-v="figmaB">B안</button></div>
+      <div class="seg" id="segLayout"><button data-v="figma">A안</button><button data-v="figmaB">B안</button><button data-v="figmaC">C안</button></div>
       <div class="rname">정기 노출<i>리모트 컨피그</i></div>
       <div class="seg" id="segRecur"><button data-v="1">ON</button><button data-v="0">OFF</button></div>
       <div class="rname" style="min-width:52px">작성 중</div>
@@ -886,7 +923,8 @@ const A = {
 const DEV = {
   _def:  {w:360, h:800, status:32, sheet:110, tab:63},
   figma: {w:393, h:852, status:32, sheet:112, tab:61},
-  figmaB:{w:393, h:852, status:32, sheet:112, tab:61}
+  figmaB:{w:393, h:852, status:32, sheet:112, tab:61},
+  figmaC:{w:393, h:852, status:32, sheet:112, tab:61}
 };
 const dev = vid => DEV[vid] || DEV._def;
 const W = DEV._def.w, H = DEV._def.h, STATUS = DEV._def.status;
@@ -900,7 +938,10 @@ const VARIANTS = [
    desc:'프레임 393×852. 다시 예약하기 카드가 가로로 스크롤됩니다. 방법 아이콘 행에 정기예약이 NEW 뱃지와 함께 붙고, 다시 예약하기·쿠폰·후기·FAQ 순으로 이어집니다.'},
   {id:'figmaB', tag:'B', short:'B안 (세로 나열 + 버튼)', name:'정기예약 진입점 · B안',
    ref:'Figma 10632:137802. 값 전부 실측',
-   desc:'다시 예약하기 카드를 가로 스크롤 대신 세로로 전부 펼치고, 카드마다 "계속"/"예약" 버튼을 명시적으로 붙였습니다. 나머지 섹션은 A안과 동일합니다.'}
+   desc:'다시 예약하기 카드를 가로 스크롤 대신 세로로 전부 펼치고, 카드마다 "계속"/"예약" 버튼을 명시적으로 붙였습니다. 나머지 섹션은 A안과 동일합니다.'},
+  {id:'figmaC', tag:'C', short:'C안 (2열 그리드 + 구분선)', name:'정기예약 진입점 · C안',
+   ref:'Figma 10658:139142. 값 전부 실측',
+   desc:'방법+쿠폰을 한 블록으로 묶고, 다시 예약하기는 버튼 없이 2열 그리드로 배치했습니다. 색 블록 대신 얇은 회색 띠로 섹션을 가르고, 후기 카드마다 예약 종류 태그를 붙였습니다. 정기예약 아이콘의 NEW 뱃지는 빠졌습니다.'}
 ];
 
 function foldFor(vid){
@@ -1082,6 +1123,65 @@ function fFigmaHomeB(){
     + fTesti3() + fFaq3();
 }
 
+/* C안(Figma 10658:139142): 방법+쿠폰을 한 블록으로 묶고, 다시예약하기는 2열 그리드(버튼
+   없음, 카드 전체를 탭), 색 블록 대신 얇은 회색 띠로 섹션을 가르고, 후기 카드에 예약
+   종류 태그(예: "일반 예약 >")를 붙인다. 정기예약 아이콘의 NEW 뱃지는 이 안에서 빠졌다. */
+function fFigmaHomeC(){
+  const ICONS = [
+    {id:'normal', t:'일반예약', img:A.ic2n},
+    {id:'time',   t:'시간예약', img:A.ic2t},
+    {id:'custom', t:'맞춤예약', img:A.ic2c},
+    {id:'recur',  t:'정기예약', img:A.ic2r}
+  ];
+  const list = S.recur ? ICONS : ICONS.filter(m => m.id !== 'recur');
+  const row = list.map(m => `
+    <div class="c" data-m="${m.id}"><img src="${m.img}" alt=""><span>${esc(m.t)}</span></div>`).join('');
+
+  const pickC = (lb, f, t) => `
+      <div class="fgc-card" data-m="pick"><div class="lb">${esc(lb)}</div><div class="rows">
+        <div class="r"><i></i><span>${esc(f)}</span></div>
+        <div class="r"><i class="d"></i><span>${esc(t)}</span></div>
+      </div></div>`;
+  const cardsC = ADDRS.slice(0, S.drafts).map(([f, t]) => pickC('작성 중', f, t))
+    .concat(PREV.slice(0, S.prevCount).map(([f, t]) => pickC('이전 예약', f, t))).join('');
+  const picksC = !cardsC ? '' : `<section class="fgc-sch"><div class="lab">다시 예약하기</div>
+    <div class="fgc-cardgrid">${cardsC}</div></section>`;
+
+  const couponC = !S.coupon ? '' : `<div class="fgc-coupon">
+      <img class="ic" src="${A.icCoupon}" alt="" style="flex:0 0 auto;width:24px;height:24px;object-fit:contain;display:block;">
+      <div class="t" style="flex:1 1 auto;min-width:0;font-size:14px;line-height:20px;color:#4b5064;">지금 쓸 수 있는 쿠폰이 있어요</div>
+      <div class="b" style="flex:0 0 auto;border-radius:6px;padding:8px 10px;font-size:13px;line-height:19px;font-weight:700;color:#262a38;">보기</div></div>`;
+
+  const arrow = '<svg width="10" height="10" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M5.5 3.5L9 7l-3.5 3.5" stroke="#9DA0AE" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const TESTI_C = [
+    {text: TESTI[0][0], av:3, tag:'일반 예약'},
+    {text: TESTI_FIGMA3,  av:2, tag:'정기 예약'},
+    {text: TESTI[3][0], av:1, tag:'시간 예약'},
+    {text: TESTI[1][0], av:0, tag:'일반 예약'}
+  ];
+  const tcards = TESTI_C.map(t => `
+    <div class="fgc-tcard"><div class="av">${AV[t.av]}</div>
+      <div class="body"><div class="tag"><span>${esc(t.tag)}</span>${arrow}</div>
+      <p>“${t.text}”</p></div></div>`).join('');
+
+  return `<section class="fgc-top">
+      <div class="tt"><h1>타다 예약</h1>
+        <p>중요한 일정이 어긋나지 않도록<br>타다와 이동을 약속해 보세요.</p></div>
+      <img src="${A.hero4}" alt="">
+    </section>
+    <section class="fgc-methcoupon"><div class="lab" style="width:100%;font-size:16px;line-height:23px;font-weight:700;color:#262a38;letter-spacing:-.2px;">예약 방법</div>
+      <div class="fg-row">${row}</div>
+      ${couponC}
+    </section>
+    <div class="fgc-divider"></div>
+    ${picksC}
+    <div class="fgc-divider"></div>
+    <section class="fgc-testi"><h3>예약,<br>이렇게 사용할 수 있어요!</h3>
+      <div class="fgc-tlist">${tcards}</div></section>
+    <div class="fgc-divider"></div>
+    <div class="fgc-faq">${fFaq3()}</div>`;
+}
+
 /* 4차 수정: 후기 배경이 흰색에서 #f9f9f9 로, 세 번째 후기 문구가 정기예약 테마로 바뀌었다.
    공용 TESTI 를 건드리면 다른 안(as-is/A/B/D 등)까지 같이 바뀌므로 이 변형에서만 덮어쓴다. */
 const TESTI_FIGMA3 = '아이 <b>학교</b>가 멀어서 매번 택시를 불렀는데 이제 4주 일정을 한 번에 예약해 신경쓸 일이 줄었어요.';
@@ -1124,7 +1224,9 @@ const TESTI = [
 
 /* ── variant composition ────────────────────────────────────── */
 function buildApp(v){
-  return v === 'figmaB' ? fFigmaHomeB() : fFigmaHome();
+  if (v === 'figmaB') return fFigmaHomeB();
+  if (v === 'figmaC') return fFigmaHomeC();
+  return fFigmaHome();
 }
 
 /* ── device chrome ──────────────────────────────────────────── */
@@ -1300,7 +1402,7 @@ function layout(){
       // .phone 전체가 transform:scale(k)로 한 번 더 축소/확대되므로, 여기서 원하는
       // '화면에 실제로 보일 크기'를 먼저 정하고 k로 나눠 디자인 좌표로 되돌려 넣는다
       // (안 그러면 화면폭 → k → 이 폭이 다시 배로 곱해져 제곱으로 커져버린다).
-      const heroImg = app.querySelector('.fg-head img');
+      const heroImg = app.querySelector('.fg-head img, .fgc-top img');
       if (heroImg){
         const wantVisual = Math.max(240, Math.min(vw * 0.74, 320));
         heroImg.style.width = (wantVisual / k) + 'px';
@@ -1399,7 +1501,7 @@ if (window.visualViewport){
 
 function syncSegs(){
   document.getElementById('condSummary').textContent = [
-    S.variant === 'figmaB' ? 'B안' : 'A안',
+    S.variant === 'figmaB' ? 'B안' : S.variant === 'figmaC' ? 'C안' : 'A안',
     S.recur ? '정기 ON' : '정기 OFF',
     '작성 중 ' + S.drafts + '건',
     '이전 예약 ' + S.prevCount + '건',
