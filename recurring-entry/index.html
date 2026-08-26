@@ -506,12 +506,12 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
    종류 태그를 붙인다. A/B와 겹치지 않게 클래스를 통째로 새로 둔다. */
 .fgc-top{padding:36px 28px 16px;display:flex;flex-direction:column;align-items:center;gap:24px;
   background:linear-gradient(180deg,#e2f2fe 0%,#ffffff 100%);}
-.fgc-methcoupon{padding:24px;display:flex;flex-direction:column;gap:20px;align-items:center;}
+.fgc-methcoupon{padding:20px 24px;display:flex;flex-direction:column;gap:20px;align-items:center;}
 .fgc-methcoupon .fg-row .c span{color:#383d4f;}
 .fgc-coupon{display:flex;align-items:center;gap:14px;background:rgba(230,233,239,.3);
   border-radius:4px;padding:10px 20px;width:100%;box-sizing:border-box;}
 .fgc-divider{height:12px;background:#f5f6f7;}
-.fgc-sch{padding:24px;display:flex;flex-direction:column;gap:20px;align-items:center;}
+.fgc-sch{padding:20px 24px;display:flex;flex-direction:column;gap:16px;align-items:center;}
 .fgc-sch .lab{width:100%;font-size:18px;line-height:26px;font-weight:700;color:#262a38;letter-spacing:-.2px;}
 .fgc-cardgrid{display:flex;flex-wrap:wrap;gap:8px;width:100%;}
 .fgc-card{flex:1 1 calc(50% - 4px);min-width:140px;box-sizing:border-box;background:#fff;
@@ -534,7 +534,7 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fgc-tcard .tag{display:flex;align-items:center;gap:2px;}
 .fgc-tcard .tag span{font-size:12px;line-height:17px;font-weight:500;color:#73788b;}
 .fgc-tcard .tag svg{flex:0 0 auto;}
-.fgc-tcard p{margin:0;font-size:14px;line-height:20px;color:#383d4f;word-break:keep-all;}
+.fgc-tcard p{margin:0;font-size:15px;line-height:22px;color:#383d4f;word-break:keep-all;}
 .fgc-faq .faq3{padding:32px 24px 150px;}
 .fgc-faq .faq3 .q{border-radius:4px;}
 
@@ -1130,8 +1130,8 @@ function fFigmaHomeC(){
   const ICONS = [
     {id:'normal', t:'일반예약', img:A.ic2n},
     {id:'time',   t:'시간예약', img:A.ic2t},
-    {id:'custom', t:'맞춤예약', img:A.ic2c},
-    {id:'recur',  t:'정기예약', img:A.ic2r}
+    {id:'recur',  t:'정기예약', img:A.ic2r},
+    {id:'custom', t:'맞춤예약', img:A.ic2c}
   ];
   const list = S.recur ? ICONS : ICONS.filter(m => m.id !== 'recur');
   const row = list.map(m => `
@@ -1173,8 +1173,8 @@ function fFigmaHomeC(){
       <div class="fg-row">${row}</div>
       ${couponC}
     </section>
-    <div class="fgc-divider"></div>
     ${picksC}
+    <div style="height:12px;background:#fff"></div>
     <div class="fgc-divider"></div>
     <section class="fgc-testi"><h3>예약,<br>이렇게 사용할 수 있어요!</h3>
       <div class="fgc-tlist">${tcards}</div></section>
