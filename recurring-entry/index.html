@@ -474,7 +474,7 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fgd-methcoupon{padding:20px 24px;display:flex;flex-direction:column;gap:20px;align-items:center;}
 .fgd-methcoupon .fg-row .c span{color:#383d4f;}
 .fgd-coupon{display:flex;align-items:center;gap:14px;background:rgba(230,233,239,.3);
-  border-radius:4px;padding:10px 20px;width:100%;box-sizing:border-box;}
+  border:1px solid #f9f9f9;border-radius:4px;padding:10px 20px;width:100%;box-sizing:border-box;}
 
 .fgd-sch{padding:20px 24px;display:flex;flex-direction:column;gap:16px;align-items:center;}
 .fgd-sch .lab{width:100%;font-size:18px;line-height:26px;font-weight:700;color:#262a38;letter-spacing:-.2px;}
@@ -482,7 +482,7 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
   margin:0 -24px;padding:0 24px;}
 .fgd-cardrow::-webkit-scrollbar{display:none;}
 .fgd-card{flex:0 0 auto;width:240px;box-sizing:border-box;background:#fff;
-  border:1px solid #e6e9ef;border-radius:4px;box-shadow:0 6px 16px rgba(25,37,77,.05);
+  border:1px solid #efeff1;border-radius:4px;box-shadow:0 6px 16px rgba(25,37,77,.05);
   padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;}
 .fgd-card .lb{font-size:15px;line-height:22px;font-weight:700;color:#32a2fa;}
 .fgd-card .rows{display:flex;flex-direction:column;gap:4px;}
@@ -906,15 +906,15 @@ const el = (h) => { const d = document.createElement('div'); d.innerHTML = h.tri
 
 /* ── fragments ──────────────────────────────────────────────── */
 const ADDRS = [
-  ['아크로포레스트 101동', '왕십리로 83-21'],
+  ['아크로포레스트 101', '왕십리로 83-21'],
   ['서울숲트리마제 101동', '인천공항 제2터미널']
 ];
 /* 다시 예약하기 행에는 두 종류가 섞인다.
    '작성 중' = 만들다 만 예약(0~2건, 토글이 조절). '이전 예약' = 지난 예약(항상 있음).
    전에는 한 카운터로 묶어 놔서 1건이면 카드가 하나만 나왔다. */
 const PREV = [
-  ['왕십리로 83-21', '아크로포레스트 101동'],
-  ['서울숲트리마제 101동', '김포공항 국내선']
+  ['한남동 680-1', '김포공항 국내선'],
+  ['한남동 680-1', '용산트레이드센터']
 ];
 
 /* 정기 카드를 누르면 뜨는 설명 시트. PRD 패턴은 카드 → 설명 시트 → 액션 → 진입이고,
