@@ -487,6 +487,20 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fg-pick .r i.d{background:#383d4f;border:none;}
 .fg-pick .r span{font-size:14px;line-height:20px;color:#383d4f;white-space:nowrap;}
 
+/* B안: 가로 스크롤 카드 대신 세로로 전부 펼치고 카드마다 버튼을 붙인다 (Figma 10632:137802) */
+.fg-pickcol{display:flex;flex-direction:column;gap:10px;}
+.fg-pickv{display:flex;align-items:center;gap:12px;background:#fff;
+  border:1px solid #efeff1;border-radius:4px;box-shadow:0 6px 16px rgba(25,37,77,.05);padding:18px;}
+.fg-pickv .left{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:12px;}
+.fg-pickv .lb{font-size:13px;line-height:19px;font-weight:700;color:#32a2fa;}
+.fg-pickv .rows{display:flex;flex-direction:column;gap:4px;}
+.fg-pickv .r{display:flex;align-items:center;gap:10px;}
+.fg-pickv .r i{width:8px;height:8px;flex:0 0 auto;border-radius:1px;border:1.5px solid #383d4f;box-sizing:border-box;}
+.fg-pickv .r i.d{background:#383d4f;border:none;}
+.fg-pickv .r span{font-size:14px;line-height:20px;color:#383d4f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fg-pickv .btn{flex:0 0 auto;background:#f5f6f7;border-radius:4px;padding:12px 18px;
+  font-size:14px;line-height:20px;font-weight:700;color:#383d4f;white-space:nowrap;}
+
 .fg-coupon{padding:6px 24px 6px;}
 .fg-meth + .fg-coupon{margin-top:-10px;}   /* 다시예약하기 없이 쿠폰만 바로 이어질 때 방법 섹션에 붙인다 */
 .fg-coupon .card{background:#f9f9f9;border:1px solid #f9f9f9;border-radius:4px;
@@ -777,6 +791,8 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       </button>
     </div>
     <div class="rline cond" id="condRows">
+      <div class="rname" style="min-width:52px">레이아웃<i>다시 예약하기</i></div>
+      <div class="seg" id="segLayout"><button data-v="figma">A안</button><button data-v="figmaB">B안</button></div>
       <div class="rname">정기 노출<i>리모트 컨피그</i></div>
       <div class="seg" id="segRecur"><button data-v="1">ON</button><button data-v="0">OFF</button></div>
       <div class="rname" style="min-width:52px">작성 중</div>
@@ -869,7 +885,8 @@ const A = {
    그래서 규격을 변형별로 나눈다. */
 const DEV = {
   _def:  {w:360, h:800, status:32, sheet:110, tab:63},
-  figma: {w:393, h:852, status:32, sheet:112, tab:61}
+  figma: {w:393, h:852, status:32, sheet:112, tab:61},
+  figmaB:{w:393, h:852, status:32, sheet:112, tab:61}
 };
 const dev = vid => DEV[vid] || DEV._def;
 const W = DEV._def.w, H = DEV._def.h, STATUS = DEV._def.status;
@@ -878,9 +895,12 @@ const FOLD = H - STATUS - SHEET - TAB;          // 595. 기본 규격의 시트 
 
 /* ── data ───────────────────────────────────────────────────── */
 const VARIANTS = [
-  {id:'figma', tag:'', short:'신 Figma안', name:'정기예약 진입점 (Figma 4차 수정)',
+  {id:'figma', tag:'A', short:'A안 (가로 스크롤)', name:'정기예약 진입점 · A안',
    ref:'Figma 10411:115941 / 115942. 값 전부 실측',
-   desc:'프레임 393×852. 방법 아이콘 행에 정기예약이 NEW 뱃지와 함께 붙고, 다시 예약하기·쿠폰·후기·FAQ 순으로 이어집니다.'}
+   desc:'프레임 393×852. 다시 예약하기 카드가 가로로 스크롤됩니다. 방법 아이콘 행에 정기예약이 NEW 뱃지와 함께 붙고, 다시 예약하기·쿠폰·후기·FAQ 순으로 이어집니다.'},
+  {id:'figmaB', tag:'B', short:'B안 (세로 나열 + 버튼)', name:'정기예약 진입점 · B안',
+   ref:'Figma 10632:137802. 값 전부 실측',
+   desc:'다시 예약하기 카드를 가로 스크롤 대신 세로로 전부 펼치고, 카드마다 "계속"/"예약" 버튼을 명시적으로 붙였습니다. 나머지 섹션은 A안과 동일합니다.'}
 ];
 
 function foldFor(vid){
@@ -1019,6 +1039,49 @@ function fFigmaHome(){
     + fTesti3() + fFaq3();
 }
 
+/* B안(Figma 10632:137802): 다시 예약하기 카드를 가로 스크롤 대신 세로로 전부
+   펼치고, 카드마다 "계속"/"예약" 버튼을 명시적으로 붙인다. 나머지 섹션(헤더·방법·
+   쿠폰·후기·FAQ)은 A안과 동일해서 그대로 재사용한다. */
+function fFigmaHomeB(){
+  const ICONS = [
+    {id:'normal', t:'일반예약', img:A.ic2n},
+    {id:'time',   t:'시간예약', img:A.ic2t},
+    {id:'custom', t:'맞춤예약', img:A.ic2c},
+    {id:'recur',  t:'정기예약', img:A.ic2r}
+  ];
+  const list = S.recur ? ICONS : ICONS.filter(m => m.id !== 'recur');
+  const row = list.map(m => `
+    <div class="c" data-m="${m.id}">
+      ${m.id === 'recur' ? '<div class="newbdg">NEW</div>' : ''}
+      <img src="${m.img}" alt=""><span>${esc(m.t)}</span>
+    </div>`).join('');
+
+  const pickV = (lb, f, t, btn) => `
+      <div class="fg-pickv"><div class="left"><div class="lb">${lb}</div><div class="rows">
+        <div class="r"><i></i><span>${esc(f)}</span></div>
+        <div class="r"><i class="d"></i><span>${esc(t)}</span></div>
+      </div></div>
+      <div class="btn">${esc(btn)}</div></div>`;
+  const cards = ADDRS.slice(0, S.drafts).map(([f, t]) => pickV('작성 중', f, t, '계속'))
+    .concat(PREV.slice(0, S.prevCount).map(([f, t]) => pickV('이전 예약', f, t, '예약'))).join('');
+  const picks = !cards ? '' : `<section class="fg-sch"><div class="lab">다시 예약하기</div>
+    <div class="fg-pickcol">${cards}</div></section>`;
+
+  const coupon = !S.coupon ? '' : `<section class="fg-coupon"><div class="card">
+      <img class="ic" src="${A.icCoupon}" alt="">
+      <div class="t">지금 쓸 수 있는 쿠폰이 있어요</div>
+      <div class="b">보기</div></div></section>`;
+
+  return `<section class="fg-head">
+      <div class="tt"><h1>타다 예약</h1>
+        <p>중요한 일정이 어긋나지 않도록<br>타다와 이동을 약속해 보세요.</p></div>
+      <img src="${A.hero4}" alt="">
+    </section>
+    <section class="fg-meth"><div class="lab">예약 방법</div><div class="fg-row">${row}</div></section>
+    ${picks}${coupon}<div style="height:28px;background:#fff"></div>`
+    + fTesti3() + fFaq3();
+}
+
 /* 4차 수정: 후기 배경이 흰색에서 #f9f9f9 로, 세 번째 후기 문구가 정기예약 테마로 바뀌었다.
    공용 TESTI 를 건드리면 다른 안(as-is/A/B/D 등)까지 같이 바뀌므로 이 변형에서만 덮어쓴다. */
 const TESTI_FIGMA3 = '아이 <b>학교</b>가 멀어서 매번 택시를 불렀는데 이제 4주 일정을 한 번에 예약해 신경쓸 일이 줄었어요.';
@@ -1061,7 +1124,7 @@ const TESTI = [
 
 /* ── variant composition ────────────────────────────────────── */
 function buildApp(v){
-  return fFigmaHome();
+  return v === 'figmaB' ? fFigmaHomeB() : fFigmaHome();
 }
 
 /* ── device chrome ──────────────────────────────────────────── */
@@ -1336,6 +1399,7 @@ if (window.visualViewport){
 
 function syncSegs(){
   document.getElementById('condSummary').textContent = [
+    S.variant === 'figmaB' ? 'B안' : 'A안',
     S.recur ? '정기 ON' : '정기 OFF',
     '작성 중 ' + S.drafts + '건',
     '이전 예약 ' + S.prevCount + '건',
@@ -1347,6 +1411,7 @@ function syncSegs(){
     b.classList.toggle('on', on);
     b.setAttribute('aria-pressed', String(on));
   });
+  set('segLayout', S.variant);
   set('segRecur', S.recur); set('segDraft', S.drafts); set('segPrev', S.prevCount);
   set('segCoupon', S.coupon); set('segMode', S.mode);
 }
@@ -1358,6 +1423,7 @@ function bind(id, key, cast){
     syncSegs(); render();
   });
 }
+bind('segLayout', 'variant');
 bind('segRecur', 'recur', Number);
 bind('segDraft', 'drafts', Number);
 bind('segPrev', 'prevCount', Number);
