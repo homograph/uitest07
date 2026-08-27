@@ -483,8 +483,12 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 
 .fgd-sch{padding:16px 24px 24px;display:flex;flex-direction:column;gap:16px;align-items:stretch;}
 .fgd-sch .lab{width:100%;font-size:18px;line-height:26px;font-weight:700;color:#262a38;letter-spacing:-.2px;}
+/* overflow-x:auto 만 지정해도 스펙상 overflow-y 가 auto 로 계산돼(visible 아님) 카드
+   그림자(0 6px 16px = 아래 22px·위 10px 번짐)가 위아래로 잘린다. 그림자만큼 padding 을
+   주고 같은 값을 음수 margin 으로 상쇄해, 레이아웃(라벨과의 gap·섹션 하단 여백)은 그대로
+   두면서 스크롤 박스의 클립 경계만 넓힌다. */
 .fgd-cardrow{display:flex;gap:8px;width:100%;overflow-x:auto;scrollbar-width:none;
-  margin:0 -24px;padding:0 24px;}
+  margin:-12px -24px -24px;padding:12px 24px 24px;}
 .fgd-cardrow::-webkit-scrollbar{display:none;}
 .fgd-card{flex:0 0 auto;width:240px;box-sizing:border-box;background:#fff;
   border:1px solid #efeff1;border-radius:4px;box-shadow:0 6px 16px rgba(25,37,77,.05);
