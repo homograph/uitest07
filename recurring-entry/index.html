@@ -601,6 +601,19 @@ body.mock.flowopen{overflow:hidden;}
 .cf-r{display:flex;align-items:center;gap:10px;}
 .cf-r span{font-size:15px;line-height:22px;color:#171a24;}
 .cf-r span.d{font-size:13px;color:#868b9c;}
+/* 정기 예약 확인의 반복 요약 카드 */
+.cf-c.rp{gap:14px;}
+.cf-c.rp .cf-t .x{font-style:normal;font-size:15px;color:#868b9c;cursor:pointer;}
+.rp-b{display:flex;gap:14px;align-items:center;}
+.rp-b img{width:52px;height:52px;flex:0 0 auto;object-fit:contain;}
+.rp-l{display:flex;flex-direction:column;gap:6px;}
+.rp-l div{display:flex;gap:12px;}
+.rp-l i{font-style:normal;flex:0 0 auto;width:28px;font-size:13px;line-height:19px;color:#73788b;}
+.rp-l span{font-size:13px;line-height:19px;color:#262a38;}
+.rp-n{background:#f5f6f7;border-radius:8px;padding:14px;text-align:center;
+  font-size:14px;line-height:20px;font-weight:700;color:#383d4f;}
+.fw-cta .p i em{font-style:normal;font-size:10px;color:#73788b;}
+
 /* bridge: 자동 전환 구간. 전체를 덮어 탭을 흡수한다(핸들러가 없으니 아무 일도 안 난다).
    ⚠ pointer-events:none 으로 두면 탭이 아래 확인 화면으로 통과해 뒤로가기가 눌린다. */
 .fw-breaker{position:absolute;inset:0;z-index:5;
@@ -1036,7 +1049,7 @@ function foldFor(vid){
   return d.h - d.status - d.tab - d.sheet;
 }
 
-const DEFAULTS = {variant:'figmaD', recur:1, drafts:1, prevCount:2, coupon:1, mode:'device', step:''};
+const DEFAULTS = {variant:'figmaD', recur:1, drafts:1, prevCount:2, coupon:1, mode:'device', step:'', days:['월']};
 let S = Object.assign({}, DEFAULTS);
 let wasWide = null;
 let consoleFull = false;   // 모바일에서 콘솔 전체를 펼쳤는지
@@ -1172,10 +1185,12 @@ function fBridge(){
   </div>`;
 }
 
-/* 반복 요일 선택 시트. 월만 선택된 상태로 랜딩한다. */
+/* 반복 요일 선택 시트. 월만 선택된 상태로 랜딩하고, 칩은 실제로 눌러 바꿀 수 있다.
+   고른 요일이 다음 화면(정기 예약 확인)의 "○요일 반복"과 건수에 그대로 반영된다. */
 function fWeekday(){
   const days = ['월','화','수','목','금','토','일'];
-  const chips = days.map((d,i) => `<span class="wd${i === 0 ? ' on' : ''}">${d}</span>`).join('');
+  const chips = days.map(d =>
+    `<span class="wd${S.days.includes(d) ? ' on' : ''}" data-day="${d}">${d}</span>`).join('');
   return `<div class="fw-scr fw-gray">
     ${fwBar('정기 예약')}
     <div class="fw-body"></div>
@@ -1187,8 +1202,40 @@ function fWeekday(){
         <span><em>월요일</em> 반복 설정</span></div>
       <div class="wd-row">${chips}</div>
       <div class="wd-note">픽업 시간은 캘린더에서 하루씩 변경할 수 있습니다</div>
-      <div class="wd-cta"><div class="b2" data-flow="close">취소</div><div class="b" data-flow="close">다음</div></div>
+      <div class="wd-cta"><div class="b2" data-flow="cancel">취소</div><div class="b" data-flow="rconfirm">다음</div></div>
     </div>
+  </div>`;
+}
+
+/* 요일 선택 다음. 일반 확인과 뼈대는 같고 (1)제목이 '정기', (2)맨 위 반복 요약 카드,
+   (3)요금이 '1회 예상 요금 + 배수'로 바뀐다. 반복 건수는 고른 요일 x 4주로 계산한다. */
+function fRConfirm(){
+  const ds = S.days.length ? S.days : ['월'];
+  return `<div class="fw-scr fw-gray">
+    ${fwBar('')}
+    <div class="fw-body">
+      <div class="cf-hd"><div><b>넥스트 정기 예약</b><span>12월 12일 (목) 낮 3시 20분<br>(한국시간/KST)</span></div><img src="${A.carNext}" alt=""></div>
+      <div class="cf-c rp">
+        <div class="cf-t"><b>${ds.join(', ')}요일 반복</b><i class="x">✕</i></div>
+        <div class="rp-b"><img src="${A.ic2r}" alt="">
+          <div class="rp-l">
+            <div><i>시작</i><span>4월 13일 (월)</span></div>
+            <div><i>종료</i><span>4월 29일 (수)</span></div>
+            <div><i>예외</i><span>시간 변경 3건, 제외 1건</span></div>
+          </div></div>
+        <div class="rp-n">${ds.length * 4}건 설정됨</div>
+      </div>
+      <div class="cf-c"><div class="cf-t"><b>경로</b><i>48분 예상</i></div>
+        <div class="cf-r">${MK_START}<span>위워크 삼성 1호점</span></div>
+        <div class="cf-r">${MK_DEST}<span>김포공항 국내선</span></div></div>
+      <div class="cf-c"><div class="cf-t"><b>차량</b><i>최대 5인</i></div>
+        <div class="cf-r"><span>넓고 쾌적한 넥스트</span></div>
+        <div class="cf-r"><span class="d">스타리아 등</span></div></div>
+      <div class="cf-c"><div class="cf-t"><b>부가 서비스</b></div>
+        <div class="cf-r"><span>드라이버 지정 · 카시트 1개</span></div></div>
+    </div>
+    <div class="fw-fix">넥스트 예약 시 <b>100% 확정</b></div>
+    <div class="fw-cta pay"><div class="p"><i>1회 예상 요금 <em>↗ 1.4배</em></i><b>125,000원</b></div><div class="b">예약하기</div></div>
   </div>`;
 }
 
@@ -1201,6 +1248,7 @@ function flowLayer(){
     case 'confirm':  return fConfirm();
     case 'bridge':   return fBridge();
     case 'weekday':  return fWeekday();
+    case 'rconfirm': return fRConfirm();
     default:         return '';
   }
 }
@@ -1518,14 +1566,16 @@ const FLOW_T = { confirmToBridge: 300, bridgeToWeekday: 1200 };
 let flowTimers = [];
 function clearFlowTimers(){ flowTimers.forEach(clearTimeout); flowTimers = []; }
 
-function goStep(step){
+/* noAuto: 확인 화면으로 '되돌아올' 때 쓴다. 그냥 goStep('confirm') 하면 진입 훅이
+   다시 걸려 bridge -> 요일선택으로 무한히 끌려간다(취소가 취소되지 않는다). */
+function goStep(step, opts){
   clearFlowTimers();
   S.step = step;
   // 오버레이가 '기기 화면 한 장' 크기라, 폰 상단이 보이도록 맞춰야 화면이 맞물린다
   document.body.classList.toggle('flowopen', !!step);
   if (step) window.scrollTo(0, 0);
   renderFlow();
-  if (step === 'confirm'){
+  if (step === 'confirm' && !(opts && opts.noAuto)){
     flowTimers.push(setTimeout(() => goStep('bridge'), FLOW_T.confirmToBridge));
   } else if (step === 'bridge'){
     flowTimers.push(setTimeout(() => goStep('weekday'), FLOW_T.bridgeToWeekday));
@@ -1548,9 +1598,22 @@ function wireFlow(){
     node.addEventListener('click', e => {
       e.stopPropagation();
       const to = node.dataset.flow;
-      if (to === 'close') return goStep('');
-      if (to === 'back')  return goStep(S.step === 'schedule' ? 'sheet' : '');
+      if (to === 'close')  return goStep('');
+      if (to === 'back')   return goStep(S.step === 'schedule' ? 'sheet' : '');
+      if (to === 'cancel') return goStep('confirm', {noAuto:true});   // 요일선택 취소 -> 예약 확인
       goStep(to);
+    });
+  });
+  // 요일 칩 토글. 최소 하나는 남긴다.
+  stage.querySelectorAll('.fwlayer [data-day]').forEach(chip => {
+    chip.addEventListener('click', e => {
+      e.stopPropagation();
+      const d = chip.dataset.day;
+      const has = S.days.includes(d);
+      if (has && S.days.length === 1) return;
+      S.days = has ? S.days.filter(x => x !== d)
+                   : ['월','화','수','목','금','토','일'].filter(x => S.days.includes(x) || x === d);
+      renderFlow();
     });
   });
 }
@@ -1575,7 +1638,8 @@ const BRANCH = [
   {t:'3. 차량 선택', d:'프리미엄밴은 정기로 못 부르므로 비활성입니다.', step:'car'},
   {t:'4. 예약 확인', d:'아직 정기 설정 전이라 "일반 예약"으로 뜹니다. 0.3초 뒤 자동 전환됩니다.', step:'confirm'},
   {t:'5. bridge', d:'터치·뒤로가기 없이 1.2초간만 보이는 자동 구간입니다.', step:'bridge'},
-  {t:'6. 요일 선택', d:'반복할 요일을 고릅니다. 여기까지가 정기 고유 구간입니다.', step:'weekday'}
+  {t:'6. 요일 선택', d:'반복할 요일을 고릅니다. 취소하면 4번 예약 확인으로 돌아갑니다.', step:'weekday'},
+  {t:'7. 정기 예약 확인', d:'제목이 "정기"로 바뀌고 반복 요약 카드가 맨 위에 붙습니다.', step:'rconfirm'}
 ];
 
 function renderBranch(){
