@@ -531,6 +531,124 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 /* 보조 정보 토큰 통일: FAQ 아코디언도 후기 카드와 같은 #e6e9ef@0.3 을 쓴다 */
 .fgd-faq .faq3 .q{background:#f9f9f9;box-shadow:inset 0 0 0 1px #f5f6f7;border-radius:4px;}
 
+/* ── 정기예약 플로우 오버레이 ─────────────────────────────────────
+   .fwlayer 는 .phone 을 통째로 덮는다. 시트 단계(설명/요일)만 홈이 비치도록
+   투명하게 두고, 나머지 단계는 자기 화면으로 화면을 가린다. */
+/* ⚠ 목업 모드에서 .phone 은 콘텐츠 전체 높이(2000px+)라 inset:0 으로 덮으면 시트가
+   페이지 맨 아래에 붙는다. .phone 은 transform:scale 이 걸려 있어 position:fixed 도
+   못 쓴다(고정 기준이 뷰포트가 아니라 그 조상이 된다). 그래서 '기기 화면 한 장'
+   크기로 폰 상단에 고정하고, 단계 진입 시 최상단으로 스크롤해 맞춘다. */
+.fwlayer{position:absolute;left:0;top:0;width:var(--vw);height:var(--vh);z-index:30;display:none;}
+.fwlayer.on{display:block;}
+body.mock.flowopen{overflow:hidden;}
+.fw-scr{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column;overflow:hidden;}
+.fw-scr.fw-gray{background:#e9ecf1;}
+.fw-bar{flex:0 0 auto;display:flex;align-items:center;gap:8px;padding:44px 16px 12px;background:inherit;}
+.fw-bar .bk{width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.fw-bar i{width:36px;height:36px;flex:0 0 auto;}
+.fw-bar b{font-size:17px;line-height:24px;font-weight:700;color:#171a24;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fw-body{flex:1 1 auto;min-height:0;overflow:hidden;padding:8px 16px 0;display:flex;flex-direction:column;gap:12px;}
+.fw-tabs{display:flex;gap:8px;}
+.fw-tabs span{padding:9px 18px;border-radius:999px;font-size:14px;line-height:20px;font-weight:700;
+  color:#383d4f;background:#fff;box-shadow:inset 0 0 0 1px #e6e9ef;}
+.fw-tabs span.on{background:#19254d;color:#fff;box-shadow:none;}
+.fw-card{background:#fff;border-radius:12px;padding:16px;}
+.fw-route{display:flex;gap:16px;align-items:center;}
+.fw-route i{font-style:normal;font-size:14px;color:#73788b;flex:0 0 auto;}
+.fw-route b{font-size:14px;font-weight:400;color:#171a24;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.fw-pick{padding:0;}
+.fw-ph{padding:16px 16px 12px;display:flex;flex-direction:column;gap:4px;}
+.fw-ph b{font-size:20px;line-height:28px;font-weight:700;color:#171a24;}
+.fw-ph span{font-size:14px;line-height:20px;color:#4b5064;}
+.fw-wheel{display:flex;padding:8px 0 16px;}
+.fw-wcol{flex:1 1 0;display:flex;flex-direction:column;}
+.fw-w{height:44px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:#aeb1bd;}
+.fw-w.on{color:#0094f9;font-weight:700;background:#eef7ff;}
+.fw-wcol:first-child .fw-w.on{border-radius:8px 0 0 8px;}
+.fw-wcol:last-child .fw-w.on{border-radius:0 8px 8px 0;}
+.fw-note{display:flex;gap:12px;align-items:center;background:#eff1f4;border-radius:12px;padding:14px 16px;}
+.fw-note img{width:28px;height:28px;flex:0 0 auto;object-fit:contain;}
+.fw-note b{display:block;font-size:14px;line-height:20px;font-weight:700;color:#383d4f;}
+.fw-note span{display:block;font-size:13px;line-height:19px;color:#73788b;}
+.fw-h{display:flex;align-items:center;justify-content:space-between;}
+.fw-h b{font-size:18px;line-height:26px;font-weight:700;color:#171a24;}
+.fw-h span{font-size:13px;color:#868b9c;}
+.fw-h2{font-size:17px;line-height:24px;font-weight:700;color:#171a24;margin-top:4px;}
+.fw-add{background:#fff;border-radius:10px;box-shadow:inset 0 0 0 1px #eff1f4;padding:14px 16px;
+  display:flex;flex-direction:column;gap:2px;}
+.fw-add b{font-size:15px;line-height:22px;font-weight:700;color:#171a24;}
+.fw-add span{font-size:13px;line-height:19px;color:#73788b;}
+.fw-fix{flex:0 0 auto;background:#dcefff;text-align:center;padding:10px;font-size:13px;color:#383d4f;}
+.fw-fix b{color:#0094f9;font-weight:700;}
+.fw-cta{flex:0 0 auto;display:flex;align-items:center;gap:12px;padding:12px 16px 24px;background:inherit;}
+.fw-cta .b{flex:1 1 auto;height:52px;border-radius:8px;background:#19254d;color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;cursor:pointer;}
+.fw-cta.pay .b{flex:0 0 auto;padding:0 38px;}
+.fw-cta .p{flex:1 1 auto;display:flex;flex-direction:column;gap:2px;}
+.fw-cta .p i{font-style:normal;font-size:13px;color:#73788b;}
+.fw-cta .p b{font-size:18px;font-weight:700;color:#171a24;}
+/* 예약 확인 */
+.cf-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:4px 4px 8px;}
+.cf-hd b{display:block;font-size:22px;line-height:30px;font-weight:700;color:#171a24;}
+.cf-hd span{display:block;margin-top:6px;font-size:15px;line-height:22px;color:#4b5064;}
+.cf-hd img{width:88px;height:auto;flex:0 0 auto;object-fit:contain;}
+.cf-c{background:#fff;border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;}
+.cf-t{display:flex;align-items:center;justify-content:space-between;}
+.cf-t b{font-size:16px;line-height:23px;font-weight:700;color:#171a24;}
+.cf-t i{font-style:normal;font-size:12px;color:#73788b;background:#eff1f4;border-radius:999px;padding:4px 10px;}
+.cf-r{display:flex;align-items:center;gap:10px;}
+.cf-r span{font-size:15px;line-height:22px;color:#171a24;}
+.cf-r span.d{font-size:13px;color:#868b9c;}
+/* bridge: 자동 전환 구간. 전체를 덮어 탭을 흡수한다(핸들러가 없으니 아무 일도 안 난다).
+   ⚠ pointer-events:none 으로 두면 탭이 아래 확인 화면으로 통과해 뒤로가기가 눌린다. */
+.fw-breaker{position:absolute;inset:0;z-index:5;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;
+  background:linear-gradient(180deg, rgba(255,255,255,.5) 0%, #fff 50%);}
+.fw-breaker img{width:120px;height:120px;object-fit:contain;}
+.fw-breaker .bk-tx{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;}
+.fw-breaker .bk-tx b{font-size:24px;line-height:32px;font-weight:700;
+  background:linear-gradient(135deg,#5cb4fa 0%,#0063c5 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;}
+.fw-breaker .bk-tx span{font-size:14px;line-height:20px;color:#73788b;}
+/* 요일 선택 시트 */
+.fwlayer .scrim.on{opacity:1;}
+.fwlayer .sheet.on{transform:none;}
+.wd-hd{display:flex;flex-direction:column;align-items:center;gap:6px;padding:8px 0 4px;text-align:center;}
+.wd-hd b{font-size:18px;line-height:26px;font-weight:700;color:#171a24;}
+.wd-hd span{font-size:15px;line-height:22px;color:#4b5064;}
+.wd-hd em{font-style:normal;color:#0094f9;font-weight:700;}
+.wd-row{display:flex;gap:8px;justify-content:center;padding:20px 0 4px;}
+.wd{width:40px;height:40px;flex:0 0 auto;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;color:#383d4f;background:#fff;box-shadow:inset 0 0 0 1px #e6e9ef;cursor:pointer;}
+.wd.on{background:#19254d;color:#fff;box-shadow:none;}
+.wd-note{margin-top:18px;background:#f6f8fa;border-radius:8px;padding:14px;text-align:center;
+  font-size:13px;line-height:19px;color:#868b9c;}
+.wd-cta{display:flex;gap:8px;margin-top:16px;}
+.wd-cta .b,.wd-cta .b2{flex:1 1 0;height:52px;border-radius:8px;display:flex;align-items:center;
+  justify-content:center;font-size:16px;font-weight:700;cursor:pointer;}
+.wd-cta .b{background:#19254d;color:#fff;}
+.wd-cta .b2{background:#e6ebf2;color:#19254d;}
+/* 설명 시트 신규 레이아웃 */
+.sh-hd{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;}
+.sh-t{font-size:20px;line-height:28px;font-weight:700;color:#171a24;}
+.sh-s{font-size:15px;line-height:22px;color:#4b5064;}
+.sh-ic{width:76px;height:76px;object-fit:contain;align-self:center;margin:14px 0 0;}
+.sh-uses{display:flex;gap:8px;justify-content:center;margin-top:14px;}
+.sh-uses .uc{padding:8px 16px;border-radius:999px;background:#f2f4f7;
+  font-size:14px;line-height:20px;font-weight:500;color:#383d4f;}
+.sh-div{height:1px;background:#eff1f4;margin:18px 0 4px;}
+/* 설명 시트에서는 불릿 점 목록으로 바꾼다(기존 구분선 목록 스타일을 덮어쓴다) */
+.fwlayer .sh-list{margin:12px 0 0;border-top:none;}
+.fwlayer .sh-i{position:relative;padding:6px 0 6px 14px;border-bottom:none;
+  font-size:14px;line-height:21px;color:#4b5064;}
+.fwlayer .sh-i::before{content:'';position:absolute;left:2px;top:13px;width:3px;height:3px;
+  border-radius:50%;background:#aeb1bd;}
+.fwlayer .sh-ic{display:block;margin:14px auto 0;}
+/* 플로우가 떠 있는 동안 홈의 하단 CTA·탭바는 가린다 */
+body.flowopen .addon{display:none;}
+
 .faq3{background:#fff;padding:32px 24px 150px;display:flex;flex-direction:column;gap:24px;}
 .faq3 h3{margin:0;font-size:18px;line-height:26px;font-weight:700;color:#262a38;}
 .faq3 .qs{display:flex;flex-direction:column;gap:10px;}
@@ -918,7 +1036,7 @@ function foldFor(vid){
   return d.h - d.status - d.tab - d.sheet;
 }
 
-const DEFAULTS = {variant:'figmaD', recur:1, drafts:1, prevCount:2, coupon:1, mode:'device'};
+const DEFAULTS = {variant:'figmaD', recur:1, drafts:1, prevCount:2, coupon:1, mode:'device', step:''};
 let S = Object.assign({}, DEFAULTS);
 let wasWide = null;
 let consoleFull = false;   // 모바일에서 콘솔 전체를 펼쳤는지
@@ -940,69 +1058,154 @@ const PREV = [
   ['한남동 680-1', '용산트레이드센터']
 ];
 
-/* 정기 카드를 누르면 뜨는 설명 시트. PRD 패턴은 카드 → 설명 시트 → 액션 → 진입이고,
-   못 고르는 조건을 말해주는 자리가 바로 여기다. */
+/* 정기 아이콘을 누르면 뜨는 설명 시트 (Figma 10822:91287 / shortcut_sheet).
+   기존안에 있던 "프리미엄밴 불가·비즈니스 프로필 불가"가 빠지고 왕복 안내로 바뀌었다.
+   대신 통학/병원/출퇴근 용례 칩이 들어와 "언제 쓰는 기능인지"를 먼저 말한다. */
 function fSheet(){
-  return `<div class="scrim"></div>
-  <div class="sheet" role="dialog" aria-label="정기 예약">
+  const chips = ['통학','병원','출퇴근'].map(t => `<span class="uc">${t}</span>`).join('');
+  return `<div class="scrim on" data-flow="close"></div>
+  <div class="sheet on" role="dialog" aria-label="정기 예약">
     <div class="grab"></div>
-    <div class="sh-top">
-      <img src="${A.thRecur}" alt="">
-      <div>
-        <div class="sh-t">정기 예약</div>
-        <div class="sh-s">매주 같은 시간에 반복되는 이동을 한 번에 잡아둡니다. 최대 4주까지.</div>
-      </div>
+    <div class="sh-hd">
+      <div class="sh-t">정기 예약</div>
+      <div class="sh-s">반복되는 일정이라면<br>한 번에 모두 예약할 수 있어요</div>
     </div>
+    <img class="sh-ic" src="${A.ic2r}" alt="">
+    <div class="sh-uses">${chips}</div>
+    <div class="sh-div"></div>
     <div class="sh-list">
-      <div class="sh-i">첫 픽업은 <b>지금부터 2시간 뒤</b>부터 고를 수 있어요</div>
-      <div class="sh-i"><b>프리미엄밴</b>은 정기 예약으로 부를 수 없어요</div>
-      <div class="sh-i"><b>비즈니스 프로필</b>로는 결제할 수 없어요</div>
+      <div class="sh-i">하루 1회, 최대 4주까지 설정할 수 있어요.</div>
+      <div class="sh-i">출발 시간까지 최소 2시간 남아있어야 해요</div>
+      <div class="sh-i">왕복 이동이 필요하다면 가는 편과 오는 편을 각각 따로 예약해 주세요.</div>
     </div>
-    <div class="sh-cta">정기 예약 시작하기</div>
+    <div class="sh-cta" data-flow="schedule">정기 예약하기</div>
   </div>`;
 }
 
 function icBack(){ return `<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 4.5L7 10l5.5 5.5" stroke="#171A24" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`; }
 
-/* 분기 이후 1: 첫 픽업 시간. 2시간 미만은 고르지 못하게 막고 이유를 붙인다. */
-function fStepTime(){
-  const off = ['13:00','13:30','14:00','14:30'];
-  const ok  = ['15:00','15:30','16:00','16:30','17:00','17:30'];
-  return `<div class="appbar"><div class="bk">${icBack()}</div><div class="ti">정기 예약하기</div></div>
-    <div class="step"><h4>첫 픽업 시간</h4><p>이 시각을 기준으로 매주 반복됩니다.</p></div>
-    <div class="dates">
-      <div class="dchip on">오늘 8/24</div><div class="dchip">내일 8/25</div><div class="dchip">8/26 화</div>
-    </div>
-    <div class="times">
-      ${off.map(t => `<div class="tchip off">${t}</div>`).join('')}
-      ${ok.map((t,i) => `<div class="tchip${i===0?' on':''}">${t}</div>`).join('')}
-    </div>
-    <div class="why"><div class="mk">!</div><div>
-      <b>지금은 12:45 이에요</b>
-      <span>정기 예약은 첫 픽업까지 두 시간이 남아야 해서, 14:45 이전 시각은 고를 수 없어요.</span>
-    </div></div>
-    <div class="stepcta"><div class="b">다음</div></div>`;
+/* ── 정기예약 플로우 (Figma Section 9 / 10822:91890) ─────────────────
+   홈 → 설명시트 → 경로·시간 → 차량선택 → 예약확인 → bridge → 요일선택.
+   경로·시간/차량/확인은 기존 예약 플로우를 그대로 타는 구간이라 "다 입력된 상태"로
+   랜딩만 시키고, 정기 고유 화면(설명시트·bridge·요일선택)을 실측대로 맞춘다. */
+
+function fwBar(title, back){
+  return `<div class="fw-bar">${back === false ? '<i></i>' : `<div class="bk" data-flow="back">${icBack()}</div>`}<b>${title}</b></div>`;
 }
 
-/* 분기 이후 2: 차량 선택. 프리미엄밴을 아예 못 고르게 하고 이유를 붙인다. */
-function fStepCar(){
-  return `<div class="appbar"><div class="bk">${icBack()}</div><div class="ti">정기 예약하기</div></div>
-    <div class="lineup">
-      <div class="hd"><div class="t">차량 선택</div><div class="c">예약 가능 조건</div></div>
+/* 경로·시간 설정. 휠 피커는 가운데 행만 선택색으로, 위아래는 흐리게 둔다. */
+function fSchedule(){
+  const wheel = (rows) => `<div class="fw-wcol">${rows.map((r,i) =>
+    `<div class="fw-w${i === 1 ? ' on' : ''}">${r}</div>`).join('')}</div>`;
+  return `<div class="fw-scr fw-gray">
+    ${fwBar('정기 예약하기')}
+    <div class="fw-body">
+      <div class="fw-tabs"><span class="on">일반예약</span><span>시간예약</span></div>
+      <div class="fw-card fw-route"><i>경로</i><b>신세계백화점 강남점 정문, 인천공항 제 1…</b></div>
+      <div class="fw-card fw-pick">
+        <div class="fw-ph"><b>첫 탑승일</b><span>12월 16일(월) 오전 0시 50분</span></div>
+        <div class="fw-wheel">
+          ${wheel(['12/15(일)','12/16(월)','12/17(화)'])}
+          ${wheel(['11시','0시','1시'])}
+          ${wheel(['40분','50분','0분'])}
+        </div>
+      </div>
+      <div class="fw-note"><img src="${A.cal}" alt=""><div><b>경유지 대기 시간이 필요하다면</b><span>내 차처럼 빌려 쓰는 시간 예약으로 바꿔보세요</span></div></div>
+    </div>
+    <div class="fw-cta"><div class="b" data-flow="car">설정 완료</div></div>
+  </div>`;
+}
+
+/* 차량 선택. 프리미엄밴(3번째)은 정기예약으로 못 부르므로 비활성으로 둔다. */
+function fCar(){
+  return `<div class="fw-scr">
+    ${fwBar('신세계백화점 강남점, 인천공항 제 1…')}
+    <div class="fw-body">
+      <div class="fw-h"><b>차량 선택</b><span>예약 가능 조건 ⓘ</span></div>
       <div class="vehs">
         <div class="veh sel"><img src="${A.carNext}" alt=""></div>
         <div class="veh"><img src="${A.carPlus}" alt=""></div>
         <div class="veh dis"><img src="${A.carVan}" alt=""></div>
       </div>
       <div class="carname"><div class="n">넓고 쾌적한 넥스트</div>
-        <div class="sub">최대 5인 탑승 · 스타리아 · 카니발 · 시에나 등</div></div>
+        <div class="pr">125,000원</div>
+        <div class="sub">최대 5인 탑승 · 수하물 가이드</div>
+        <div class="sub">스타리아 · 카니발 · 카니발 하이리무진 · 시에나 등</div></div>
+      <div class="fw-h2">부가 서비스</div>
+      <div class="fw-add"><b>드라이버 지정</b><span>N명의 마이 드라이버 중 운행할 드라이버를 지정합니다</span><span>이용료 3,000원</span></div>
+      <div class="fw-add"><b>카시트 1개</b><span>0세부터 이용하는 카시트 1개</span><span>이용료 5,000원</span></div>
     </div>
-    <div class="why"><div class="mk">!</div><div>
-      <b>프리미엄밴은 고를 수 없어요</b>
-      <span>정기 예약은 프리미엄밴을 지원하지 않아요. 단건 예약으로는 부를 수 있어요.</span>
-    </div></div>
-    <div class="stepcta"><div class="b">다음</div></div>`;
+    <div class="fw-fix">넥스트 예약 시 <b>100% 확정</b></div>
+    <div class="fw-cta pay"><div class="p"><i>예상 요금</i><b>125,000원</b></div><div class="b" data-flow="confirm">다음</div></div>
+  </div>`;
 }
+
+/* 예약 확인. 이 시점엔 아직 정기 설정 전이라 "일반 예약"으로 뜨는 게 맞다. */
+function fConfirm(){
+  return `<div class="fw-scr fw-gray">
+    ${fwBar('')}
+    <div class="fw-body">
+      <div class="cf-hd"><div><b>넥스트 일반 예약</b><span>12월 12일 (목) 낮 3시 20분<br>(한국시간/KST)</span></div><img src="${A.carNext}" alt=""></div>
+      <div class="cf-c"><div class="cf-t"><b>경로</b><i>48분 예상</i></div>
+        <div class="cf-r">${MK_START}<span>위워크 삼성 1호점</span></div>
+        <div class="cf-r">${MK_DEST}<span>김포공항 국내선</span></div></div>
+      <div class="cf-c"><div class="cf-t"><b>차량</b><i>최대 5인</i></div>
+        <div class="cf-r"><span>넓고 쾌적한 넥스트</span></div>
+        <div class="cf-r"><span class="d">스타리아 등</span></div></div>
+      <div class="cf-c"><div class="cf-t"><b>부가 서비스</b></div>
+        <div class="cf-r"><span>드라이버 지정 · 카시트 1개</span></div></div>
+      <div class="cf-c"><div class="cf-t"><b>탑승자 정보</b></div>
+        <div class="cf-r"><span>이지현님</span></div>
+        <div class="cf-r"><span class="d">010 2344 2321</span></div></div>
+    </div>
+    <div class="fw-fix">넥스트 예약 시 <b>100% 확정</b></div>
+    <div class="fw-cta pay"><div class="p"><i>예상 요금</i><b>125,000원</b></div><div class="b">예약하기</div></div>
+  </div>`;
+}
+
+/* bridge: 확인 화면 위에 흰 그라디언트를 덮고 다음 할 일을 한 줄로 알린다.
+   자동 전환 구간이라 터치를 막는다(pointer-events:none 는 CSS). */
+function fBridge(){
+  return `${fConfirm()}<div class="fw-breaker">
+    <img src="${A.ic2r}" alt="">
+    <div class="bk-tx"><b>마지막으로,<br>반복할 날짜를 알려주세요</b><span>선택 화면으로 이동합니다</span></div>
+  </div>`;
+}
+
+/* 반복 요일 선택 시트. 월만 선택된 상태로 랜딩한다. */
+function fWeekday(){
+  const days = ['월','화','수','목','금','토','일'];
+  const chips = days.map((d,i) => `<span class="wd${i === 0 ? ' on' : ''}">${d}</span>`).join('');
+  return `<div class="fw-scr fw-gray">
+    ${fwBar('정기 예약')}
+    <div class="fw-body"></div>
+    <div class="scrim on"></div>
+    <div class="sheet on" role="dialog" aria-label="반복할 요일 선택">
+      <div class="grab"></div>
+      <div class="wd-hd"><b>반복할 요일을 선택해주세요</b>
+        <span>4월 13일 (월) 부터</span>
+        <span><em>월요일</em> 반복 설정</span></div>
+      <div class="wd-row">${chips}</div>
+      <div class="wd-note">픽업 시간은 캘린더에서 하루씩 변경할 수 있습니다</div>
+      <div class="wd-cta"><div class="b2" data-flow="close">취소</div><div class="b" data-flow="close">다음</div></div>
+    </div>
+  </div>`;
+}
+
+/* 단계별 오버레이. '' 이면 홈만 보인다. */
+function flowLayer(){
+  switch (S.step){
+    case 'sheet':    return fSheet();
+    case 'schedule': return fSchedule();
+    case 'car':      return fCar();
+    case 'confirm':  return fConfirm();
+    case 'bridge':   return fBridge();
+    case 'weekday':  return fWeekday();
+    default:         return '';
+  }
+}
+
+
 
 /* 출발/도착 마커. figma-check render.js --svg 로 뽑은 원본 path 를 그대로 쓴다
    (ic_startpoint / ic_destination, 6x6, 각짐, #383D4F). 출발은 두께 1.5의 사각 링,
@@ -1203,7 +1406,7 @@ function render(){
           ${chrome()}
           <div class="scroller"><div class="app v-${v.id}">${buildApp(v.id)}</div></div>
           ${S.mode === 'full' ? `<div class="fold" style="top:${d.status + foldFor(v.id)}px"><b>첫 화면 끝</b></div>` : ''}
-          ${fSheet()}
+          <div class="fwlayer"></div>
         </div>
         ${S.mode === 'device' ? addon() : ''}
       </div>
@@ -1308,47 +1511,89 @@ function layout(){
   });
 }
 
+/* ── 플로우 단계 전환 ────────────────────────────────────────────
+   예약 확인에 들어가면 사용자가 아무것도 안 해도 bridge를 거쳐 요일 선택으로 간다.
+   ⚠ 자동 구간에 타이머가 겹치면 단계가 건너뛰어지므로 진입할 때마다 항상 먼저 지운다. */
+const FLOW_T = { confirmToBridge: 300, bridgeToWeekday: 1200 };
+let flowTimers = [];
+function clearFlowTimers(){ flowTimers.forEach(clearTimeout); flowTimers = []; }
+
+function goStep(step){
+  clearFlowTimers();
+  S.step = step;
+  // 오버레이가 '기기 화면 한 장' 크기라, 폰 상단이 보이도록 맞춰야 화면이 맞물린다
+  document.body.classList.toggle('flowopen', !!step);
+  if (step) window.scrollTo(0, 0);
+  renderFlow();
+  if (step === 'confirm'){
+    flowTimers.push(setTimeout(() => goStep('bridge'), FLOW_T.confirmToBridge));
+  } else if (step === 'bridge'){
+    flowTimers.push(setTimeout(() => goStep('weekday'), FLOW_T.bridgeToWeekday));
+  }
+}
+
+/* 단계만 다시 그린다. 홈(app)은 그대로 두므로 스크롤 위치가 안 튄다. */
+function renderFlow(){
+  stage.querySelectorAll('.fwlayer').forEach(host => {
+    host.innerHTML = flowLayer();
+    host.classList.toggle('on', !!S.step);
+    // 시트류(설명/요일)는 홈 위에 얹히고, 나머지는 화면을 통째로 덮는다
+    host.classList.toggle('sheetmode', S.step === 'sheet');
+  });
+  wireFlow();
+}
+
+function wireFlow(){
+  stage.querySelectorAll('.fwlayer [data-flow]').forEach(node => {
+    node.addEventListener('click', e => {
+      e.stopPropagation();
+      const to = node.dataset.flow;
+      if (to === 'close') return goStep('');
+      if (to === 'back')  return goStep(S.step === 'schedule' ? 'sheet' : '');
+      goStep(to);
+    });
+  });
+}
+
 function wireTaps(){
   stage.querySelectorAll('[data-m]').forEach(node => {
     node.addEventListener('click', () => {
       const phone = node.closest('.phone');
       phone.querySelectorAll('.hit-card').forEach(n => n.classList.remove('hit-card'));
       node.classList.add('hit-card');
-      if (node.dataset.m === 'recur') phone.classList.add('sheeton');
+      if (node.dataset.m === 'recur') goStep('sheet');
     });
   });
-  // 시트 밖을 누르면 닫힌다
-  stage.querySelectorAll('.scrim').forEach(sc => {
-    sc.addEventListener('click', e => {
-      e.stopPropagation();
-      sc.closest('.phone').classList.remove('sheeton');
-    });
-  });
+  renderFlow();
 }
 
-/* ── 분기 이후 세 화면. 홈 화면 상태와 무관하게 항상 같은 흐름이라 한 번만 그린다. ── */
+/* ── 정기예약 플로우 전체를 한 줄로 펼쳐 보여준다(폰 안에서 실제로 걸어볼 수도 있다).
+   홈 이후 6단계. 시트 단계는 홈 위에 얹히므로 배경으로 홈을 같이 그린다. ── */
 const BRANCH = [
-  {t:'1. 설명 시트', d:'카드를 누르면 뜹니다. 못 고르는 조건을 여기서 먼저 말합니다.', build:() => 'sheet'},
-  {t:'2. 첫 픽업 시간', d:'지금부터 2시간 안쪽 시각은 아예 못 고릅니다.', build:fStepTime},
-  {t:'3. 차량 선택', d:'프리미엄밴은 고를 수 없고, 대신 무엇이 되는지 말합니다.', build:fStepCar}
+  {t:'1. 설명 시트', d:'정기 아이콘을 누르면 뜹니다. 통학·병원·출퇴근으로 쓰임새를 먼저 말합니다.', step:'sheet'},
+  {t:'2. 경로·시간', d:'기존 예약 플로우 구간이라 다 입력된 상태로 랜딩합니다.', step:'schedule'},
+  {t:'3. 차량 선택', d:'프리미엄밴은 정기로 못 부르므로 비활성입니다.', step:'car'},
+  {t:'4. 예약 확인', d:'아직 정기 설정 전이라 "일반 예약"으로 뜹니다. 0.3초 뒤 자동 전환됩니다.', step:'confirm'},
+  {t:'5. bridge', d:'터치·뒤로가기 없이 1.2초간만 보이는 자동 구간입니다.', step:'bridge'},
+  {t:'6. 요일 선택', d:'반복할 요일을 고릅니다. 여기까지가 정기 고유 구간입니다.', step:'weekday'}
 ];
 
 function renderBranch(){
   const host = document.getElementById('bstage');
+  const prev = S.step;
   host.innerHTML = BRANCH.map(b => {
-    const isSheet = b.build() === 'sheet';
-    const body = isSheet
-      ? `<div class="app">${fFigmaHomeD()}</div>`
-      : `<div class="app">${b.build()}</div>`;
+    S.step = b.step;                       // flowLayer 가 단계별로 그리도록 잠시 바꿔 끼운다
+    const onHome = b.step === 'sheet';     // 시트만 홈이 비친다
     return `<div class="bcol">
       <p class="bcap"><b>${b.t}</b>${b.d}</p>
-      <div class="bwrap"><div class="bphone${isSheet ? ' sheeton' : ''}">
+      <div class="bwrap"><div class="bphone">
         ${chrome()}
-        <div class="bscroll">${body}</div>
-        ${isSheet ? fSheet() : ''}
+        <div class="bscroll"><div class="app">${onHome ? fFigmaHomeD() : ''}</div></div>
+        <div class="fwlayer on${onHome ? ' sheetmode' : ''}">${flowLayer()}</div>
       </div></div>
     </div>`;
   }).join('');
+  S.step = prev;
   layoutBranch();
 }
 
