@@ -471,7 +471,7 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fgd-top p{margin:0;font-size:14px;line-height:20px;font-weight:400;color:#4b5064;}
 .fgd-top img{width:290px;aspect-ratio:290/145;height:auto;object-fit:contain;display:block;}
 
-.fgd-methcoupon{padding:16px 24px 24px;display:flex;flex-direction:column;gap:32px;align-items:center;}
+.fgd-methcoupon{padding:20px 24px;display:flex;flex-direction:column;gap:28px;align-items:center;}
 /* 아이콘 래퍼. NEW 뱃지를 셀이 아니라 '아이콘' 기준으로 얹기 위한 좌표계 */
 .fgd-methcoupon .fg-row .c .ic{position:relative;display:block;width:44px;height:44px;}
 .fgd-newbdg{position:absolute;top:0;right:0;box-sizing:border-box;width:24px;height:12px;
@@ -481,7 +481,7 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fgd-coupon{display:flex;align-items:center;gap:14px;background:rgba(230,233,239,.3);
   border-radius:4px;padding:10px 18px;width:100%;box-sizing:border-box;}
 
-.fgd-sch{padding:16px 24px 24px;display:flex;flex-direction:column;gap:16px;align-items:stretch;}
+.fgd-sch{padding:20px 24px;display:flex;flex-direction:column;gap:16px;align-items:stretch;}
 .fgd-sch .lab{width:100%;font-size:18px;line-height:26px;font-weight:700;color:#262a38;letter-spacing:-.2px;}
 /* overflow-x:auto 만 지정해도 스펙상 overflow-y 가 auto 로 계산돼(visible 아님) 카드
    그림자(0 6px 16px = 아래 22px·위 10px 번짐)가 위아래로 잘린다. 그림자만큼 padding 을
@@ -493,16 +493,19 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fgd-card{flex:0 0 auto;width:240px;box-sizing:border-box;background:#fff;
   border:1px solid #efeff1;border-radius:4px;box-shadow:0 6px 16px rgba(25,37,77,.05);
   padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;}
-.fgd-card .lb{font-size:15px;line-height:22px;font-weight:700;color:#383d4f;}
+.fgd-card .lb{font-size:15px;line-height:22px;font-weight:700;color:#262a38;}
 .fgd-card .rows{display:flex;flex-direction:column;gap:4px;}
 .fgd-card .r{display:flex;align-items:center;gap:8px;}
 /* 마커는 Figma 원본 벡터(6x6, 각짐)를 그대로 삽입한다. CSS 사각형으로 흉내내지 말 것 */
 .fgd-card .r .mk{flex:0 0 auto;display:block;}
 .fgd-card .r span{font-size:14px;line-height:20px;color:#383d4f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
-.fgd-divider{height:12px;background:#f5f6f7;}
+/* Figma 'divider container': 회색 띠 12px 위아래로 흰 여백 12px씩(총 36).
+   띠 자체를 ::before 로 그려 바깥 여백과 분리한다. */
+.fgd-divider{padding:12px 0;background:#fff;}
+.fgd-divider::before{content:'';display:block;height:12px;background:#f5f6f7;}
 
-.fgd-testi{background:#fff;padding:32px 24px;display:flex;flex-direction:column;gap:24px;align-items:center;}
+.fgd-testi{background:#fff;padding:20px 24px;display:flex;flex-direction:column;gap:24px;align-items:center;}
 .fgd-testi h3{margin:0;width:100%;font-size:18px;line-height:26px;font-weight:700;color:#262a38;}
 .fgd-tlist{display:flex;flex-direction:column;gap:10px;width:100%;}
 .fgd-tcard{display:flex;align-items:center;gap:18px;background:rgba(230,233,239,.3);
@@ -514,7 +517,7 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fgd-tcard .tag span{font-size:12px;line-height:17px;font-weight:500;color:#73788b;}
 .fgd-tcard .tag svg{flex:0 0 auto;}
 .fgd-tcard p{margin:0;font-size:15px;line-height:22px;color:#383d4f;word-break:keep-all;}
-.fgd-faq .faq3{padding:32px 24px 150px;}
+.fgd-faq .faq3{padding:20px 24px 150px;}
 .fgd-faq .faq3 .q{border-radius:4px;}
 
 .faq3{background:#fff;padding:32px 24px 150px;display:flex;flex-direction:column;gap:24px;}
