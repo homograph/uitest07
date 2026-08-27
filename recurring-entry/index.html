@@ -461,22 +461,22 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
   background:#fff;color:#0094f9;box-shadow:inset 0 0 0 1.6px #32a2fa;
   font-size:8px;line-height:14px;font-weight:700;letter-spacing:.2px;}
 
-/* D안(Figma 10674:153154, 현재 상태 그대로): 방법+쿠폰을 한 블록으로 묶고, 다시 예약하기는
+/* D안(Figma 10741:48150, 현재 상태 그대로): 방법+쿠폰을 한 블록으로 묶고, 다시 예약하기는
    고정폭 240px 카드를 가로 스크롤(NO_WRAP)한다. 색 블록 대신 얇은 회색 띠(divider)로 섹션을
    가르고, 후기 카드마다 예약 종류 태그를 붙인다. */
-.fgd-top{padding:36px 28px 16px;display:flex;flex-direction:column;align-items:center;gap:24px;
+.fgd-top{padding:32px 28px 20px;display:flex;flex-direction:column;align-items:center;gap:24px;
   background:linear-gradient(180deg,#e2f2fe 0%,#ffffff 100%);}
 .fgd-top .tt{width:100%;display:flex;flex-direction:column;gap:8px;}
 .fgd-top h1{margin:0;font-size:24px;line-height:34px;font-weight:700;color:#000000;letter-spacing:-.4px;}
 .fgd-top p{margin:0;font-size:14px;line-height:20px;font-weight:400;color:#4b5064;}
 .fgd-top img{width:290px;aspect-ratio:290/145;height:auto;object-fit:contain;display:block;}
 
-.fgd-methcoupon{padding:20px 24px;display:flex;flex-direction:column;gap:20px;align-items:center;}
+.fgd-methcoupon{padding:20px 24px 24px;display:flex;flex-direction:column;gap:32px;align-items:center;}
 .fgd-methcoupon .fg-row .c span{color:#383d4f;}
 .fgd-coupon{display:flex;align-items:center;gap:14px;background:rgba(230,233,239,.3);
-  border:1px solid #f9f9f9;border-radius:4px;padding:10px 20px;width:100%;box-sizing:border-box;}
+  border:1px solid #f9f9f9;border-radius:4px;padding:10px 18px;width:100%;box-sizing:border-box;}
 
-.fgd-sch{padding:20px 24px;display:flex;flex-direction:column;gap:16px;align-items:stretch;}
+.fgd-sch{padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px;align-items:stretch;}
 .fgd-sch .lab{width:100%;font-size:18px;line-height:26px;font-weight:700;color:#262a38;letter-spacing:-.2px;}
 .fgd-cardrow{display:flex;gap:8px;width:100%;overflow-x:auto;scrollbar-width:none;
   margin:0 -24px;padding:0 24px;}
@@ -886,7 +886,7 @@ const FOLD = H - STATUS - SHEET - TAB;          // 595. 기본 규격의 시트 
    상태 그대로" 하나만(D안) 정확히 맞추는 쪽으로 정리했다. */
 const VARIANTS = [
   {id:'figmaD', tag:'', short:'정기예약 진입점', name:'정기예약 진입점 · D안',
-   ref:'Figma 10674:153154. 값 전부 실측',
+   ref:'Figma 10741:48150. 값 전부 실측',
    desc:'방법+쿠폰을 한 블록으로 묶고, 다시 예약하기 카드는 고정폭 240px로 가로 스크롤됩니다. 색 블록 대신 얇은 회색 띠로 섹션을 가르고, 후기 카드마다 예약 종류 태그를 붙였습니다.'}
 ];
 
@@ -981,7 +981,7 @@ function fStepCar(){
     <div class="stepcta"><div class="b">다음</div></div>`;
 }
 
-/* D안(Figma 10674:153154): 방법+쿠폰을 한 블록으로 묶고, 다시 예약하기 카드는
+/* D안(Figma 10741:48150): 방법+쿠폰을 한 블록으로 묶고, 다시 예약하기 카드는
    고정폭 240px로 가로 스크롤한다(2열 그리드 아님. Figma 실측 결과 카드가 FIXED 240px에
    NO_WRAP이라 넘치는 카드는 옆으로 밀려서 봐야 한다). 색 블록 대신 얇은 회색 띠로
    섹션을 가르고, 후기 카드마다 예약 종류 태그를 붙인다. 정기예약 NEW 뱃지는 없다. */
@@ -1033,7 +1033,6 @@ function fFigmaHomeD(){
       ${couponD}
     </section>
     ${picksD}
-    <div style="height:12px;background:#fff"></div>
     <div class="fgd-divider"></div>
     <section class="fgd-testi"><h3>예약,<br>이렇게 사용할 수 있어요!</h3>
       <div class="fgd-tlist">${tcards}</div></section>
