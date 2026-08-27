@@ -633,6 +633,18 @@ body.mock.flowopen{overflow:hidden;}
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;
   background:linear-gradient(180deg, rgba(255,255,255,.5) 0%, #fff 50%);}
 .fw-breaker img{width:120px;height:120px;object-fit:contain;}
+/* 등장 연출. bridge 는 1.2초만 머무는 구간이라 진입을 0.48초 안에 끝내고 나머지는
+   정지 상태로 둬야 문구가 읽힌다. 그래서 요소 간 간격(80ms)을 지속시간(260ms)보다
+   훨씬 짧게 잡아 앞 요소가 끝나기 전에 다음이 시작되도록 겹친다. */
+@keyframes fwFade{from{opacity:0;} to{opacity:1;}}
+@keyframes fwRise{from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);}}
+.fw-breaker{animation:fwFade .22s ease-out both;}
+.fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .08s both;}
+.fw-breaker .bk-tx b{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .16s both;}
+.fw-breaker .bk-tx span{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .22s both;}
+@media (prefers-reduced-motion:reduce){
+  .fw-breaker,.fw-breaker img,.fw-breaker .bk-tx b,.fw-breaker .bk-tx span{animation:none;}
+}
 .fw-breaker .bk-tx{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;}
 .fw-breaker .bk-tx b{font-size:24px;line-height:32px;font-weight:700;
   background:linear-gradient(135deg,#5cb4fa 0%,#0063c5 100%);
