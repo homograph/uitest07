@@ -271,6 +271,19 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .tabbar{height:63px;background:#fff;border-top:1px solid #efeff1;
   display:flex;align-items:flex-start;overflow:hidden;}
 .tabbar img{width:100%;height:61px;display:block;}
+/* PC에서 콘솔(머리말·설명·판정·주석·분기 스트립)을 접고 폰 화면만 크게 보는 모드.
+   모바일의 목업 모드와 달리 폰을 가로로 늘리지 않고 '기기 크기 그대로' 세로에 맞춘다. */
+.scrbtn{display:none;position:fixed;right:16px;top:16px;z-index:60;border:0;cursor:pointer;font:inherit;
+  padding:8px 14px;border-radius:999px;font-size:12.5px;font-weight:600;
+  background:var(--ink);color:#fff;opacity:.82;}
+.scrbtn:hover{opacity:1;}
+body.wide .scrbtn{display:block;}
+body.screenonly .page > *:not(.stage){display:none;}
+body.screenonly .page{padding:0;}
+body.screenonly .stage{margin:0 auto;min-height:100vh;align-items:center;justify-content:center;}
+body.screenonly .col .cap,
+body.screenonly .col .readout{display:none;}
+body.screenonly .col{margin:0;}
 .fold{position:absolute;left:0;right:0;z-index:9;pointer-events:none;border-top:2px dashed rgba(208,59,59,.9);}
 .fold b{position:absolute;right:6px;top:-9px;background:#d03b3b;color:#fff;
   font-size:10px;line-height:18px;font-weight:700;padding:0 7px;border-radius:9px;}
@@ -998,6 +1011,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
 </div>
 <div class="pscrim" id="pscrim"></div>
 <button class="fab" id="fab" aria-label="설정 열기"><span class="dot"></span>설정</button>
+<button class="scrbtn" id="scrbtn" aria-pressed="false">화면만 보기</button>
 
 <script>
 const A = {
@@ -1053,6 +1067,7 @@ const DEFAULTS = {variant:'figmaD', recur:1, drafts:1, prevCount:2, coupon:1, mo
 let S = Object.assign({}, DEFAULTS);
 let wasWide = null;
 let consoleFull = false;   // 모바일에서 콘솔 전체를 펼쳤는지
+let screenOnly = false;    // PC에서 콘솔을 접고 폰 화면만 볼지
 
 /* ── helpers ────────────────────────────────────────────────── */
 const esc = s => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
@@ -1493,6 +1508,7 @@ function layout(){
   // 한 열짜리 콘솔로 두는 게 낫다 (짧은 뷰포트에서 화면 맞춤을 하면 폰이 작아진다).
   const mock = !wide && vw < 700 && !consoleFull;
   document.body.classList.toggle('mock', mock);
+  document.body.classList.toggle('screenonly', wide && screenOnly);
   if (!mock) document.body.classList.remove('panelopen');
 
   if (mock){
@@ -1510,6 +1526,10 @@ function layout(){
     // 늘어나 페이지가 스크롤되므로 세로 비율은 맞출 대상이 아니다(여백 없음).
     const d = dev(S.variant);
     k = vw / d.w;
+  } else if (wide && screenOnly) {
+    // 기기 비율을 유지한 채 세로에 맞춘다. 1을 넘겨 확대하진 않는다.
+    const d = dev(S.variant);
+    k = Math.min(1, (vh - 40) / d.h);
   } else {
     const cols = wide ? Math.min(4, VARIANTS.length) : 1;   // 한 줄에 넷까지, 나머지는 아랫줄로
     const gap = 22, pad = wide ? 40 : 28;
@@ -1737,6 +1757,15 @@ document.getElementById('pFull').addEventListener('click', () => {
   consoleFull = !consoleFull;
   document.getElementById('pFull').textContent = consoleFull ? '목업만 보기' : '설명과 주석 보기';
   panel(false); layout(); layoutBranch();
+  window.scrollTo(0, 0);
+});
+/* PC에서 콘솔을 접고 폰 화면만 보기 */
+document.getElementById('scrbtn').addEventListener('click', () => {
+  screenOnly = !screenOnly;
+  const b = document.getElementById('scrbtn');
+  b.textContent = screenOnly ? '콘솔 보기' : '화면만 보기';
+  b.setAttribute('aria-pressed', String(screenOnly));
+  layout(); layoutBranch();
   window.scrollTo(0, 0);
 });
 document.getElementById('reset').addEventListener('click', () => {
