@@ -496,8 +496,8 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fgd-card .lb{font-size:15px;line-height:22px;font-weight:700;color:#383d4f;}
 .fgd-card .rows{display:flex;flex-direction:column;gap:4px;}
 .fgd-card .r{display:flex;align-items:center;gap:8px;}
-.fgd-card .r i{width:8px;height:8px;flex:0 0 auto;border-radius:1px;border:1.5px solid #383d4f;box-sizing:border-box;}
-.fgd-card .r i.d{background:#383d4f;border:none;}
+/* 마커는 Figma 원본 벡터(6x6, 각짐)를 그대로 삽입한다. CSS 사각형으로 흉내내지 말 것 */
+.fgd-card .r .mk{flex:0 0 auto;display:block;}
 .fgd-card .r span{font-size:14px;line-height:20px;color:#383d4f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
 .fgd-divider{height:12px;background:#f5f6f7;}
@@ -990,10 +990,17 @@ function fStepCar(){
     <div class="stepcta"><div class="b">다음</div></div>`;
 }
 
+/* 출발/도착 마커. figma-check render.js --svg 로 뽑은 원본 path 를 그대로 쓴다
+   (ic_startpoint / ic_destination, 6x6, 각짐, #383D4F). 출발은 두께 1.5의 사각 링,
+   도착은 꽉 찬 사각형. ⚠ CSS border/background 사각형으로 흉내내면 크기·모서리가
+   틀어진다(실제로 8x8 + radius 1px 로 잘못 그려져 있던 것을 원본으로 교체했다). */
+const MK_START = '<svg class="mk" width="6" height="6" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M4.5 4.5V13.5H13.5V4.5H4.5ZM0 0H18V18H0V0Z" fill="#383D4F"/></svg>';
+const MK_DEST  = '<svg class="mk" width="6" height="6" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M0 0H18V18H0V0Z" fill="#383D4F"/></svg>';
+
 /* D안(Figma 10766:65699): 방법+쿠폰을 한 블록으로 묶고, 다시 예약하기 카드는
    고정폭 240px로 가로 스크롤한다(2열 그리드 아님. Figma 실측 결과 카드가 FIXED 240px에
    NO_WRAP이라 넘치는 카드는 옆으로 밀려서 봐야 한다). 색 블록 대신 얇은 회색 띠로
-   섹션을 가르고, 후기 카드마다 예약 종류 태그를 붙인다. 정기예약 NEW 뱃지는 없다. */
+   섹션을 가르고, 후기 카드마다 예약 종류 태그를 붙인다. */
 function fFigmaHomeD(){
   /* 순서 주의: 정기가 맨 뒤다(Figma 10766:65699에서 맞춤과 자리를 바꿨다).
      정기 노출 OFF면 이 배열에서 recur 만 빠지고 나머지 순서는 그대로 간다. */
@@ -1013,8 +1020,8 @@ function fFigmaHomeD(){
 
   const pickD = (lb, f, t) => `
       <div class="fgd-card" data-m="pick"><div class="lb">${esc(lb)}</div><div class="rows">
-        <div class="r"><i></i><span>${esc(f)}</span></div>
-        <div class="r"><i class="d"></i><span>${esc(t)}</span></div>
+        <div class="r">${MK_START}<span>${esc(f)}</span></div>
+        <div class="r">${MK_DEST}<span>${esc(t)}</span></div>
       </div></div>`;
   const cardsD = ADDRS.slice(0, S.drafts).map(([f, t]) => pickD('작성 중', f, t))
     .concat(PREV.slice(0, S.prevCount).map(([f, t]) => pickD('이전 예약', f, t))).join('');
