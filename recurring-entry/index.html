@@ -471,12 +471,17 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fgd-top p{margin:0;font-size:14px;line-height:20px;font-weight:400;color:#4b5064;}
 .fgd-top img{width:290px;aspect-ratio:290/145;height:auto;object-fit:contain;display:block;}
 
-.fgd-methcoupon{padding:20px 24px 24px;display:flex;flex-direction:column;gap:32px;align-items:center;}
+.fgd-methcoupon{padding:16px 24px 24px;display:flex;flex-direction:column;gap:32px;align-items:center;}
+/* 아이콘 래퍼. NEW 뱃지를 셀이 아니라 '아이콘' 기준으로 얹기 위한 좌표계 */
+.fgd-methcoupon .fg-row .c .ic{position:relative;display:block;width:44px;height:44px;}
+.fgd-newbdg{position:absolute;top:0;right:0;box-sizing:border-box;width:24px;height:12px;
+  border-radius:6px;background:#32a2fa;color:#fff;text-align:center;
+  font-size:8px;line-height:12px;font-weight:700;letter-spacing:0;}
 .fgd-methcoupon .fg-row .c span{color:#383d4f;}
 .fgd-coupon{display:flex;align-items:center;gap:14px;background:rgba(230,233,239,.3);
-  border:1px solid #f9f9f9;border-radius:4px;padding:10px 18px;width:100%;box-sizing:border-box;}
+  border-radius:4px;padding:10px 18px;width:100%;box-sizing:border-box;}
 
-.fgd-sch{padding:20px 24px 24px;display:flex;flex-direction:column;gap:16px;align-items:stretch;}
+.fgd-sch{padding:16px 24px 24px;display:flex;flex-direction:column;gap:16px;align-items:stretch;}
 .fgd-sch .lab{width:100%;font-size:18px;line-height:26px;font-weight:700;color:#262a38;letter-spacing:-.2px;}
 .fgd-cardrow{display:flex;gap:8px;width:100%;overflow-x:auto;scrollbar-width:none;
   margin:0 -24px;padding:0 24px;}
@@ -484,7 +489,7 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 .fgd-card{flex:0 0 auto;width:240px;box-sizing:border-box;background:#fff;
   border:1px solid #efeff1;border-radius:4px;box-shadow:0 6px 16px rgba(25,37,77,.05);
   padding:18px;display:flex;flex-direction:column;gap:10px;cursor:pointer;}
-.fgd-card .lb{font-size:15px;line-height:22px;font-weight:700;color:#32a2fa;}
+.fgd-card .lb{font-size:15px;line-height:22px;font-weight:700;color:#383d4f;}
 .fgd-card .rows{display:flex;flex-direction:column;gap:4px;}
 .fgd-card .r{display:flex;align-items:center;gap:8px;}
 .fgd-card .r i{width:8px;height:8px;flex:0 0 auto;border-radius:1px;border:1.5px solid #383d4f;box-sizing:border-box;}
@@ -993,8 +998,12 @@ function fFigmaHomeD(){
     {id:'custom', t:'맞춤예약', img:A.ic2c}
   ];
   const list = S.recur ? ICONS : ICONS.filter(m => m.id !== 'recur');
+  /* 정기예약에만 NEW 뱃지. 아이콘 이미지에 붙어야 해서(셀 전체가 아니라) .ic 래퍼를 두고
+     그 안에서 절대배치한다(Figma도 아이콘마다 'img container'를 두고 그 안에 얹었다). */
   const row = list.map(m => `
-    <div class="c" data-m="${m.id}"><img src="${m.img}" alt=""><span>${esc(m.t)}</span></div>`).join('');
+    <div class="c" data-m="${m.id}"><span class="ic"><img src="${m.img}" alt="">${
+      m.id === 'recur' ? '<i class="fgd-newbdg">New</i>' : ''
+    }</span><span>${esc(m.t)}</span></div>`).join('');
 
   const pickD = (lb, f, t) => `
       <div class="fgd-card" data-m="pick"><div class="lb">${esc(lb)}</div><div class="rows">
@@ -1012,11 +1021,15 @@ function fFigmaHomeD(){
       <div class="b" style="flex:0 0 auto;border-radius:6px;padding:8px 10px;font-size:13px;line-height:19px;font-weight:700;color:#262a38;">보기</div></div>`;
 
   const arrow = '<svg width="10" height="10" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M5.5 3.5L9 7l-3.5 3.5" stroke="#9DA0AE" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  /* 후기 4개를 예약 종류 4개와 1:1로 맞춘다(Figma 10758:56779). 상단 아이콘만으론 알 수 없는
+     "이 방법이 어떤 상황에 쓰이나"를 후기가 받아주는 구조라, 종류가 겹치거나 빠지면 안 된다.
+     ⚠ Figma는 시간 예약 문구에만 따옴표가 빠져 있는데(3/4는 있음) 실수로 보여 여기선 넷 다
+     통일한다. 따옴표는 마크업(“${...}”)에서 일괄로 붙인다. */
   const TESTI_D = [
     {text: TESTI[0][0], av:3, tag:'일반 예약'},
-    {text: TESTI_FIGMA3,  av:2, tag:'정기 예약'},
-    {text: TESTI[3][0], av:1, tag:'시간 예약'},
-    {text: TESTI[1][0], av:0, tag:'일반 예약'}
+    {text: '짐도 많고 <b>경유지</b>마다 대기가 필요했는데, 종일 같은 차량으로 이동하니 편안했어요.', av:2, tag:'시간 예약'},
+    {text: '매번 택시로 <b>출퇴근</b>하는데, 한 달치 일정을 한 번에 예약할 수 있어 신경쓸 일이 줄었어요.', av:1, tag:'정기 예약'},
+    {text: '회사 <b>워크샵</b>에 필요한 10대 이상의 차량을 한 번에 예약할 수 있었어요.', av:0, tag:'맞춤 예약'}
   ];
   const tcards = TESTI_D.map(t => `
     <div class="fgd-tcard"><div class="av">${AV[t.av]}</div>
@@ -1039,10 +1052,6 @@ function fFigmaHomeD(){
     <div class="fgd-divider"></div>
     <div class="fgd-faq">${fFaq3()}</div>`;
 }
-
-/* 세 번째 후기 문구를 정기예약 테마로 덮어쓴 것. 공용 TESTI 배열 자체를 건드리면
-   다른 화면(분기 이후 등)까지 같이 바뀌므로 여기서만 별도로 쓴다. */
-const TESTI_FIGMA3 = '아이 <b>학교</b>가 멀어서 매번 택시를 불렀는데 이제 4주 일정을 한 번에 예약해 신경쓸 일이 줄었어요.';
 
 function fFaq3(){
   // 4차 수정: 질문 3개 -> 6개, 아래에 '예약 서비스 추가 문의하기' 버튼 + 상세 안내 링크 3개가 붙었다
