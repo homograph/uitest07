@@ -133,7 +133,9 @@ body:not(.wide).condshut .rline.cond{display:none;}
    콘텐츠 길이만큼 자연스럽게 늘어나 페이지 자체가 스크롤된다(베젤 없음). */
 body.mock{overflow-x:hidden;}
 body.mock .page{padding:0;max-width:none;}
-body.mock .page > *:not(.stage):not(.rail){display:none;}
+body.mock .page > *:not(.work):not(.rail){display:none;}
+body.mock .work{display:block;}
+body.mock .devdoc{display:none;}
 body.mock .stage{position:static;width:100%;margin:0;max-width:none;padding:0;
   display:block;}
 body.mock .col{width:auto;display:block;}
@@ -223,6 +225,40 @@ tr.off td.plot, tr.off td.num{opacity:.4;}
   font-size:11.5px;line-height:18px;color:var(--ink-3);word-break:keep-all;}
 
 /* ── 4. stage / frames ─────────────────────────────────────── */
+/* PC: 왼쪽 폰(고정) / 오른쪽 개발 가이드. 폰은 가이드를 읽는 동안 붙어 있어야
+   대조가 되므로 sticky 로 둔다. rail 이 sticky top:0 이라 그 높이만큼 내린다
+   (--railh 는 layout() 이 실측해 넣는다). */
+.work{margin-top:26px;}
+body.wide:not(.screenonly) .work{display:grid;grid-template-columns:auto minmax(0,1fr);
+  gap:34px;align-items:start;}
+body.wide:not(.screenonly) .work .stage{margin:0;max-width:none;
+  position:sticky;top:calc(var(--railh, 64px) + 16px);}
+/* 캡션은 위 헤더와 겹치는 정보라 2단에서는 접는다. 세로 예산도 그만큼 는다. */
+body.wide:not(.screenonly) .work .stage .cap{display:none;}
+
+.devdoc{margin-top:32px;display:flex;flex-direction:column;gap:16px;}
+body.wide .devdoc{margin-top:0;}
+.dd-hd h2{margin:0;font-size:15px;line-height:22px;font-weight:700;color:var(--ink);}
+.dd-hd p{margin:6px 0 0;font-size:12px;line-height:18px;color:var(--ink-3);word-break:keep-all;}
+.dd-sec{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-surface);padding:18px 20px;}
+.dd-sec h3{margin:0 0 12px;font-size:13px;line-height:19px;font-weight:700;color:var(--ink);}
+.dd-t{width:100%;border-collapse:collapse;font-size:12px;line-height:18px;}
+.dd-t th{text-align:left;font-weight:600;color:var(--ink-3);padding:5px 14px 5px 0;
+  vertical-align:top;word-break:keep-all;}
+.dd-t td{padding:5px 0;color:var(--ink-2);vertical-align:top;word-break:keep-all;}
+.dd-t b{color:var(--ink);font-variant-numeric:tabular-nums;}
+.dd-sec pre{margin:0;background:var(--sunken);border:1px solid var(--line-soft);
+  border-radius:8px;padding:12px 14px;overflow-x:auto;}
+.dd-sec code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:11.5px;line-height:19px;color:var(--ink-2);white-space:pre;}
+.dd-n code.i{background:var(--sunken);border-radius:4px;padding:1px 5px;font-size:11px;}
+.dd-n{margin:10px 0 0;font-size:11.5px;line-height:18px;color:var(--ink-3);word-break:keep-all;}
+.dd-n b{color:var(--ink-2);}
+.dd-l{margin:12px 0 0;padding-left:17px;display:flex;flex-direction:column;gap:8px;}
+.dd-l li{font-size:12px;line-height:18px;color:var(--ink-3);word-break:keep-all;}
+.dd-l b{color:var(--ink);}
+
 .stage{display:flex;gap:22px 22px;align-items:flex-start;justify-content:flex-start;
   flex-wrap:wrap;margin:26px auto 0;
   max-width:calc(393px * var(--k) * 4 + 66px);}
@@ -278,7 +314,9 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
   background:var(--ink);color:#fff;opacity:.82;}
 .scrbtn:hover{opacity:1;}
 body.wide .scrbtn{display:block;}
-body.screenonly .page > *:not(.stage){display:none;}
+body.screenonly .page > *:not(.work){display:none;}
+body.screenonly .work{display:block;margin:0;}
+body.screenonly .devdoc{display:none;}
 body.screenonly .page{padding:0;}
 body.screenonly .stage{margin:0 auto;min-height:100vh;align-items:center;justify-content:center;}
 body.screenonly .col .cap,
@@ -1019,7 +1057,94 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
     </div>
   </div>
 
-  <div class="stage" id="stage"></div>
+  <div class="work">
+    <div class="stage" id="stage"></div>
+
+    <aside class="devdoc">
+      <div class="dd-hd">
+        <h2>개발 가이드</h2>
+        <p>Figma 에 안 담기는 타이밍과 상태 규칙을 여기 모읍니다. 값은 왼쪽 프로토타입에서 실측한 것입니다.</p>
+      </div>
+
+      <section class="dd-sec">
+        <h3>브릿지 화면 타이밍</h3>
+        <table class="dd-t">
+          <tr><th>차량 선택 [다음] &rarr; 확인 화면</th><td>슬라이드 <b>320ms</b> (우&rarr;좌)</td></tr>
+          <tr><th>확인 화면 &rarr; 브릿지</th><td><b>400ms</b> 뒤. 슬라이드 없이 위에 덮음</td></tr>
+          <tr><th>브릿지 체류</th><td><b>1300ms</b> = 등장 480 + 정지 820</td></tr>
+          <tr><th>브릿지 &rarr; 요일 선택</th><td>슬라이드 <b>320ms</b> (우&rarr;좌)</td></tr>
+        </table>
+        <p class="dd-n">확인 화면이 보이는 시간은 400ms 뿐입니다. 300ms 로 줄이면 슬라이드(320ms)보다 짧아져
+          정지 상태가 100ms 남짓이 되고, 화면이 아니라 깜빡임으로 읽힙니다. <b>400ms 가 하한</b>입니다.</p>
+      </section>
+
+      <section class="dd-sec">
+        <h3>브릿지 등장 순서</h3>
+        <pre><code>오버레이   fade  220ms  ease-out            delay    0
+아이콘     rise  260ms  cubic(.2,.8,.3,1)   delay   80ms
+헤드라인   rise  260ms  cubic(.2,.8,.3,1)   delay  160ms
+서브       rise  260ms  cubic(.2,.8,.3,1)   delay  220ms
+
+rise = opacity 0 -&gt; 1, translateY(12px) -&gt; 0</code></pre>
+        <p class="dd-n">마지막 요소가 <b>220 + 260 = 480ms</b> 에 끝납니다. 남은 <b>820ms</b> 가 정지 구간입니다.
+          아이콘은 등장 뒤 2초 주기로 8px 위아래 부유합니다(delay 340ms).</p>
+      </section>
+
+      <section class="dd-sec">
+        <h3>전환 로직</h3>
+        <pre><code>const FLOW_T = { confirmToBridge: 400, bridgeStay: 1300 };
+
+function goStep(step, opts){
+  clearFlowTimers();                 // 겹친 타이머부터 지운다
+  S.step = step;
+  renderFlow();
+
+  if (step === 'confirm' &amp;&amp; !(opts &amp;&amp; opts.noAuto)){
+    setTimeout(() =&gt; goStep('bridge'),  FLOW_T.confirmToBridge);
+  } else if (step === 'bridge'){
+    setTimeout(() =&gt; goStep('weekday'), FLOW_T.bridgeStay);
+  }
+}
+
+// 요일 선택에서 취소 -&gt; 확인 화면(경고 배너). 자동 전환은 끈다
+goStep('confirm', { noAuto: true });</code></pre>
+        <ul class="dd-l">
+          <li><b>타이머를 먼저 지웁니다.</b> 안 지우면 이전 단계의 예약분이 살아남아 단계를 건너뜁니다.</li>
+          <li><b>확인 &rarr; 브릿지만 슬라이드가 없습니다.</b> 같은 화면 위에 오버레이를 얹는 것이라 밀면 안 됩니다.
+            나머지 단계는 전부 우&rarr;좌 push, 뒤로가기는 그 역방향 pop 입니다.</li>
+          <li><b>취소로 확인 화면에 돌아올 때는 자동 전환을 꺼야 합니다.</b> 그냥 되돌리면 진입 훅이 다시 걸려
+            브릿지 &rarr; 요일 선택으로 끌려갑니다. <b>취소가 취소되지 않습니다.</b></li>
+        </ul>
+      </section>
+
+      <section class="dd-sec">
+        <h3>인터럽트</h3>
+        <table class="dd-t">
+          <tr><th>탭</th><td>어디를 눌러도 즉시 요일 선택으로. 대기 타이머는 취소</td></tr>
+          <tr><th>뒤로가기</th><td>불가. 오버레이가 화면 전체를 덮고 탭을 흡수</td></tr>
+          <tr><th>모션 축소</th><td>등장&middot;부유&middot;슬라이드 전부 off. <b>타이밍은 그대로</b></td></tr>
+        </table>
+        <p class="dd-n">⚠ 오버레이를 <code class="i">pointer-events:none</code> 으로 두면 안 됩니다.
+          탭이 통과해서 <b>뒤 화면의 뒤로가기가 눌립니다.</b> 핸들러 없이 받아내기만 하면 됩니다.
+          모션 축소에서는 등장이 없으므로 정지 구간이 820ms 가 아니라 1300ms 전체가 됩니다.</p>
+      </section>
+
+      <section class="dd-sec">
+        <h3>다시 예약하기 카드 폭</h3>
+        <pre><code>카드 폭 = clamp(200dp, 화면 폭 × 60%, 280dp)
+
+카드 높이     112dp   고정
+카드 사이     10dp    고정
+좌우 인셋     24dp    고정
+안쪽 패딩     18dp    고정</code></pre>
+        <p class="dd-n">폭만 유동이고 나머지는 고정입니다. 최소 200dp 는 주소가 한글 약 10자에서 끊기는 지점이라
+          그 아래로 가면 장소를 알아볼 수 없습니다(분할 화면에서만 걸립니다). 최대 280dp 는 폰에서는 안 걸리고,
+          폴더블&middot;태블릿에서 넓어진 폭이 카드 크기가 아니라 <b>카드 개수</b>로 가도록 하는 가드입니다.</p>
+        <p class="dd-n">가로 스크롤 컨테이너는 <b>화면 폭 전체</b>를 씁니다. 좌우 패딩 안쪽(345dp)으로 잡으면
+          카드가 화면 가장자리에 닿지 못하고 24dp 안쪽에서 잘립니다.</p>
+      </section>
+    </aside>
+  </div>
 
   <div class="branch">
     <h2>정기라고 선언하면 그때부터 갈라집니다</h2>
@@ -1593,6 +1718,10 @@ function layout(){
   const mock = !wide && vw < 700 && !consoleFull;
   document.body.classList.toggle('mock', mock);
   document.body.classList.toggle('screenonly', wide && screenOnly);
+  // 폰을 sticky 로 붙일 때 sticky rail 과 겹치지 않도록 실제 높이를 잰다
+  const railEl = document.querySelector('.rail');
+  const railH = railEl ? railEl.offsetHeight : 0;
+  document.documentElement.style.setProperty('--railh', railH + 'px');
   if (!mock) document.body.classList.remove('panelopen');
 
   if (mock){
@@ -1620,6 +1749,16 @@ function layout(){
     const widest = Math.max(...VARIANTS.map(v => dev(v.id).w));
     const avail = Math.min(vw, 1800) - pad - gap * (cols - 1);
     k = avail / (widest * cols);
+    if (wide){
+      // 2단(왼쪽 폰 / 오른쪽 가이드)에서는 가로가 아니라 세로가 제약이다.
+      // 폰이 한 화면에 다 들어와야 sticky 로 붙여두는 의미가 있다.
+      // 40 = sticky 여백 16 + 아래 숨통 24. rail 은 sticky 라 항상 위를 먹는다.
+      // 폰 아래 readout 처럼 배율을 안 타는 요소가 있으므로 그 높이는 따로 뺀다.
+      const colEl = stage.querySelector('.col');
+      const wrapEl = colEl && colEl.querySelector('.phonewrap');
+      const chrome = (colEl && wrapEl) ? Math.max(0, colEl.offsetHeight - wrapEl.offsetHeight) : 0;
+      k = Math.min(k, (vh - railH - 40 - chrome) / dev(S.variant).h);
+    }
   }
   // 목업 모드는 가로 폭을 실제 화면에 꽉 채우는 배율이라 1을 넘어도(화면이 기기
   // 기준 폭보다 넓어도) 그대로 써야 여백이 안 생긴다. 비교 화면은 기존처럼 100%를 상한으로 둔다.
