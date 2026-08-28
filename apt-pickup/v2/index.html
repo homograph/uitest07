@@ -234,6 +234,7 @@
   button:focus-visible,.pkbox:focus-visible{outline:2px solid var(--blue-600);outline-offset:2px;}
   .cta{width:100%;border:none;border-radius:4px;background:var(--navy-800);color:#fff;
     padding:14px 18px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:-.2px;}
+  .cta:disabled{background:var(--gray-80);color:var(--gray-500);cursor:default;}
 
   /* ══════ 라이더 : 매칭 후 운행 ══════ */
   .topbtns{position:absolute;top:34px;left:0;right:0;display:flex;justify-content:space-between;
@@ -289,6 +290,36 @@
   .ph-body .tmp{width:100%;border:none;border-radius:4px;background:var(--navy-800);color:#fff;
     padding:14px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;}
   .ph-body .tmpnote{font-size:11.5px;line-height:17px;color:var(--gray-500);}
+
+  /* ══════ B안: 한 화면 문장형 ══════
+     필수(위치·층·동)는 처음부터 전부 보이고, 선택 입력만 필수를 채운 뒤 나타난다.
+     층·동은 라벨을 따로 두지 않는다. 문장 안의 '층' '동' 글자가 곧 라벨이다. */
+  .ph-body.sform{justify-content:flex-start;gap:0;}
+  .ph-body.sform .phhint{margin:0 0 20px;}
+  .fform{width:100%;}
+  .fform .flab{margin:0 0 12px;font-size:19px;line-height:27px;font-weight:700;
+    letter-spacing:-.3px;color:#000;word-break:keep-all;}
+  .sent{display:flex;flex-wrap:wrap;align-items:center;margin:24px 0 0;
+    font-size:20px;line-height:48px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
+  .sent .w{flex:0 0 auto;}
+  /* '앞에서 탈게요' 는 고정 문구다. 줄이 바뀌어도 값이 갈라지지 않도록 따로 떼어 두고,
+     입력값이 아니라는 게 보이게 한 톤 낮춘다. */
+  .sent .tail2{margin-left:5px;font-weight:500;color:var(--gray-500);}
+  .blank{flex:0 0 auto;border:none;outline:none;background:var(--gray-30);
+    border-bottom:2px solid var(--gray-100);border-radius:6px 6px 0 0;
+    height:48px;margin:0 5px;padding:0 6px;text-align:center;
+    font:inherit;font-size:20px;font-weight:700;color:var(--navy-800);}
+  .blank::placeholder{color:var(--gray-200);font-weight:500;}
+  .blank:focus{background:var(--blue-050);border-bottom-color:var(--navy-800);}
+  .blank.fl{width:48px;}
+  .blank.dg{width:88px;}
+  .fform .kbswap{display:block;margin-top:6px;}
+  .fform .kbswap[hidden]{display:none;}
+  .fopt{width:100%;margin-top:24px;padding-top:22px;border-top:1px solid var(--gray-30);
+    animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
+  .fopt .flab3{margin:0 0 9px;font-size:15px;line-height:22px;font-weight:700;color:var(--gray-900);}
+  .fopt .flab3 em{font-style:normal;font-size:13px;font-weight:400;color:var(--gray-500);margin-left:5px;}
+  .fopt .sp2{height:22px;}
 
   /* ══════ 드라이버 앱 ══════ */
   .dscr{background:var(--navy-900);}
@@ -412,12 +443,16 @@
   <h1>지하 주차장 정보 전달하기</h1>
   <p class="lede">TADA-9539 · ID 8781. Figma <b>8월 24일 킥오프 이후 시안</b>을 화면으로 옮겼습니다.
      입력 진입점은 <b>둘 다 살아 있습니다.</b> 출발지 설정에서 넣어도 되고, 배차된 뒤 운행 화면에서 넣어도 됩니다.
-     <b>진입점을 누른 다음 화면은 자리만 비워 두었습니다.</b></p>
+     상세 위치 입력 화면은 <b>두 가지 안</b>을 나란히 켜 두었습니다.</p>
   <div class="tabs">
     <button class="tab on" data-mode="new">첫 이용</button>
     <button class="tab" data-mode="repeat">재방문 · 지난번 값 있음</button>
     <span class="sp"></span>
     <button class="rst" id="rst">처음부터</button>
+  </div>
+  <div class="tabs">
+    <button class="tab" data-form="seq">A · 순차 쌓기</button>
+    <button class="tab on" data-form="sform">B · 한 화면 문장형</button>
   </div>
   <p class="flowdesc" id="fdesc"></p>
 </div>
@@ -511,6 +546,38 @@
             <p class="asklab" id="ask-lab"></p>
             <div class="askctl" id="ask-ctl"></div>
           </div>
+
+          <div class="fform" id="fform" hidden>
+            <p class="flab">어디서 타세요?</p>
+            <div class="seg" id="f-seg"></div>
+            <div class="sent" id="f-sent">
+              <span class="w" id="f-w-u">지하</span>
+              <input class="blank fl" id="f-floor" inputmode="numeric" maxlength="1"
+                     placeholder="2" aria-label="지하 몇 층" />
+              <span class="w" id="f-w-c">층</span>
+              <input class="blank dg" id="f-dong" maxlength="5"
+                     placeholder="101" aria-label="몇 동" />
+              <span class="w">동</span>
+              <span class="w tail2">앞에서 탈게요</span>
+            </div>
+            <button type="button" class="kbswap" id="f-swap"></button>
+
+            <div class="fopt" id="fopt" hidden>
+              <p class="flab3">호수 라인 <em>선택</em></p>
+              <div class="tinwrap">
+                <input class="tin" id="f-line" maxlength="8" placeholder="예: 1-2, 3,4호" />
+                <span class="tcnt"><b id="f-line-c">0</b>/8</span>
+              </div>
+              <p class="askhelp">공동현관에 붙어 있는 <b>그대로</b> 적으면 됩니다. 1-2, 3,4호, 1/2 어떤 표기든 괜찮아요.</p>
+              <div class="sp2"></div>
+              <p class="flab3">찾아오는 길 <em>선택</em></p>
+              <div class="tinwrap">
+                <input class="tin" id="f-etc" maxlength="100" />
+                <span class="tcnt"><b id="f-etc-c">0</b>/100</span>
+              </div>
+              <p class="askhelp" id="f-etc-help"></p>
+            </div>
+          </div>
         </div>
         <div class="ph-foot">
           <div class="prev2" id="prev2"><span id="prev2-tx">고르면 기사님께 갈 문장이 여기 만들어져요</span></div>
@@ -590,6 +657,19 @@
 <h2 class="sech">설계 노트</h2>
 <div class="notes">
   <div class="note">
+    <h3><i>0</i>입력 방식 A · B</h3>
+    <p><b>A · 순차 쌓기</b>는 한 번에 하나만 묻고 답한 것을 위로 쌓습니다. 지금 무엇을 답해야 하는지가
+       화면에 하나뿐이라 헤매지 않지만, <b>전체 분량이 보이지 않아</b> 몇 번 더 눌러야 끝나는지 알 수 없습니다.</p>
+    <p><b>B · 한 화면 문장형</b>은 필수 세 가지(위치·층·동)를 처음부터 전부 펼칩니다. 층과 동은 라벨을 따로 두지 않고
+       <b>문장 안의 빈칸</b>으로 받습니다. 문장 속 &lsquo;층&rsquo; &lsquo;동&rsquo; 글자가 그대로 라벨이고,
+       입력하는 화면이 곧 <b>기사님이 받을 문장</b>이라 하단 미리보기 줄이 필요 없어집니다.</p>
+    <p>선택 입력(라인·찾아오는 길)은 <b>필수를 다 채운 뒤에만</b> 나타납니다. 처음부터 다섯 칸을 보여 주면
+       선택 항목까지 의무처럼 읽히기 때문입니다.</p>
+    <p>B의 대가는 <b>스크롤</b>입니다. 선택 입력이 펼쳐지면 한 화면에 다 담기지 않습니다.
+       A는 끝까지 스크롤이 없습니다. 반대로 A의 대가는 <b>탭 수</b>이고, B는 층을 한 자리 치면
+       동으로 자동으로 넘어가 필수 입력이 <b>탭 두 번 + 타이핑</b>으로 끝납니다.</p>
+  </div>
+  <div class="note">
     <h3><i>1</i>진입점은 둘 다 산다</h3>
     <p>출발지 설정에서 넣으면 운행 화면에는 <b>채워진 필드</b>가 뜹니다. 건너뛰면 운행 화면에 <b>입력 전 필드</b>가 뜹니다.
        같은 컴포넌트의 두 상태이지 두 개의 안이 아닙니다.</p>
@@ -660,7 +740,7 @@
     sending:false, sent:false, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:''},
-    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go'
+    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform'
   };
 
   /* ── 문장 ── */
@@ -704,6 +784,12 @@
 
   /* ── 입력 화면 ── */
   function renderForm(){
+    const sf = S.form==='sform';
+    $('.ph-body').classList.toggle('sform', sf);
+    el('fform').hidden = !sf;
+    el('answers').hidden = sf;
+    el('ask').hidden = sf;
+    if(sf){ renderSentence(); return; }
     const done = S.step===null;
 
     /* 답한 것: 위로 쌓인다. 누르면 그 단계로 돌아간다 */
@@ -803,12 +889,110 @@
       p.innerHTML='길 안내는 <b>기사님이 멈춰 있을 때</b> 펼쳐 봅니다. 운전 중에는 위치만 보여요.';
     }
   }
+  /* ── B안: 한 화면 문장형 ──
+     필수 세 가지를 한 화면에 다 펼친다. 위치는 세그먼트, 층·동은 문장 안의 빈칸이다.
+     '층' '동' 이라는 글자가 그대로 라벨이라 별도 라벨 줄이 필요 없고,
+     '앞에서 탈게요' 꼬리 덕분에 기사님이 받을 문장이 입력 그 자체로 보인다.
+     선택 입력은 필수를 다 채운 뒤에만 나타난다. */
+  function renderSentence(){
+    const d=S.d, ok=ready(d);
+
+    const seg=el('f-seg'); seg.innerHTML='';
+    [['under','지하 주차장'],['ground','지상']].forEach(([v,t])=>{
+      const b=document.createElement('button'); b.type='button';
+      b.className='segb'+(d.lvl===v?' on':''); b.textContent=t;
+      b.addEventListener('click',()=>{
+        if(d.lvl===v) return;
+        d.lvl=v; if(v!=='under') d.floor=null;
+        renderSentence();
+        setTimeout(()=>el(v==='under'?'f-floor':'f-dong').focus(),40);
+      });
+      seg.appendChild(b);
+    });
+
+    /* 지상이면 층 빈칸을 문장에서 아예 뺀다. 비활성 필드를 남겨 두는 것보다 낫다 */
+    const und = d.lvl==='under';
+    el('f-w-u').hidden=!und; el('f-w-c').hidden=!und; el('f-floor').hidden=!und;
+
+    const fl=el('f-floor'); fl.value = d.floor ? String(d.floor) : '';
+    const dg=el('f-dong');  dg.value = d.dong;
+    dg.setAttribute('inputmode', S.dongMode==='text' ? 'text' : 'numeric');
+
+    /* 키패드 전환은 아직 안 쓴 사람에게만 필요하다. 동을 채우고 나면 치운다 */
+    const sw=el('f-swap');
+    sw.hidden = !!d.dong.trim();
+    sw.textContent = S.dongMode==='text' ? '숫자로 입력' : '가동·C동처럼 글자로 입력';
+
+    el('fopt').hidden = !ok;
+    if(ok){
+      const ln=el('f-line'), et=el('f-etc');
+      ln.value=d.line; el('f-line-c').textContent=d.line.length;
+      et.value=d.etc;  el('f-etc-c').textContent=d.etc.length;
+      et.placeholder = S.d.lvl==='ground'?'예: 정문으로 들어와서 우회전':'예: 게이트2로 들어와서 좌회전';
+      paintFEtc();
+    }
+    paintFoot();
+  }
+  function paintFEtc(){
+    const p=el('f-etc-help'); if(!p) return;
+    const n=S.d.etc.trim().length;
+    if(n>60){
+      p.className='askhelp warn';
+      p.innerHTML='길어지면 <b>운전 중에는 못 읽습니다.</b> 기사님은 멈췄을 때 펼쳐 봐요. '
+                 +'가능하면 목적지를 정확히 적는 편이 더 도움이 됩니다.';
+    } else {
+      p.className='askhelp';
+      p.innerHTML='길 안내는 <b>기사님이 멈춰 있을 때</b> 펼쳐 봅니다. 운전 중에는 위치만 보여요.';
+    }
+  }
+  /* 문장형 빈칸은 한 번만 묶어 둔다. 매 렌더마다 다시 그리면 포커스가 날아간다 */
+  function bindSentence(){
+    const fl=el('f-floor'), dg=el('f-dong');
+    fl.addEventListener('input',ev=>{
+      const v=ev.target.value.replace(/[^0-9]/g,'').slice(0,1);
+      ev.target.value=v; S.d.floor = v ? +v : null;
+      el('fopt').hidden = !ready(S.d);
+      if(ready(S.d)) renderSentence(); else paintFoot();
+      if(v) dg.focus();                       /* 층은 한 자리다. 채우면 바로 넘긴다 */
+    });
+    dg.addEventListener('input',ev=>{
+      S.d.dong = ev.target.value.replace(/동\s*$/,'');
+      ev.target.value=S.d.dong;
+      const ok=ready(S.d), was=!el('fopt').hidden;
+      if(ok!==was) renderSentence(); else paintFoot();
+    });
+    el('f-swap').addEventListener('click',()=>{
+      S.dongMode = (S.dongMode==='text') ? 'num' : 'text';
+      renderSentence(); setTimeout(()=>dg.focus(),20);
+    });
+    el('f-line').addEventListener('input',ev=>{
+      S.d.line=ev.target.value; el('f-line-c').textContent=ev.target.value.length; paintFoot();
+    });
+    el('f-etc').addEventListener('input',ev=>{
+      S.d.etc=ev.target.value; el('f-etc-c').textContent=ev.target.value.length;
+      paintFEtc(); paintFoot();
+    });
+    [fl,dg,el('f-line'),el('f-etc')].forEach(i=>i.addEventListener('keydown',ev=>{
+      if(ev.key==='Enter' && !el('ph-next').disabled) el('ph-next').click();
+    }));
+  }
+
   function paintFoot(){
     const done=S.step===null, ok=ready(S.d);
+    /* B안은 문장 자체가 미리보기라 하단 미리보기 줄이 같은 말을 두 번 하게 된다 */
+    const sf = S.form==='sform';
+    el('prev2').hidden = sf;
     el('prev2').classList.toggle('ready', ok);
     el('prev2-tx').textContent = ok ? sentence(S.d) : '고르면 기사님께 갈 문장이 여기 만들어져요';
-    el('savewrap').hidden = !done;
+    el('savewrap').hidden = sf ? !ok : !done;
     el('chk-save').checked = S.always;
+    if(sf){
+      el('ph-skip').hidden = true;
+      const n=el('ph-next');
+      n.disabled = !ok;
+      n.textContent = S.opened==='start' ? '이 위치로 저장' : '이대로 보내기';
+      return;
+    }
 
     const skip=el('ph-skip'), next=el('ph-next');
     skip.hidden = done || !ASK[S.step].opt;
@@ -835,6 +1019,10 @@
     if(S.current){ Object.keys(ASK).forEach(k=>{ if(ASK[k].opt && !S.d[k].trim()) S.skipped[k]=true; }); }
     advance();
     $('#phscr').classList.add('on');
+    if(S.form==='sform'){
+      const first = (S.d.lvl==='under' && !S.d.floor) ? 'f-floor' : (!S.d.dong.trim() ? 'f-dong' : null);
+      if(first) setTimeout(()=>el(first).focus(),260);
+    }
   }
 
   function submitForm(){
@@ -867,7 +1055,7 @@
     if(!w.hidden) w.textContent = S.always ? '항상' : '지난번';
   }
   function render(){
-    $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.mode===S.mode));
+    $$('.tab[data-mode]').forEach(t=>t.classList.toggle('on',t.dataset.mode===S.mode));
     $$('#rider .scr').forEach(x=>x.classList.toggle('on',x.id===(S.screen==='start'?'s-start':'s-voyage')));
     const has=!!S.value;
     paintField('pk-start-tx','pk-start-tx-was');
@@ -974,13 +1162,19 @@
     S.routeOpen = !el('droute').classList.contains('open');
     render();
   });
-  el('ph-next').addEventListener('click',()=>{ S.step===null ? submitForm() : advance(); });
+  el('ph-next').addEventListener('click',()=>{ (S.form==='sform'||S.step===null) ? submitForm() : advance(); });
   el('ph-skip').addEventListener('click',()=>{ S.skipped[S.step]=true; S.d[S.step]=''; advance(); });
   el('chk-save').addEventListener('change',()=>{ S.always=el('chk-save').checked; });
   $('#phclose').addEventListener('click',()=>$('#phscr').classList.remove('on'));
   $$('[data-open]').forEach(n=>n.addEventListener('click',()=>openForm(n.dataset.open)));
   $('#cta-start').addEventListener('click',()=>{ if(S.value) S.confirmed=true; S.screen='voyage'; render(); });
-  $$('.tab').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
+  bindSentence();
+  $$('.tab[data-mode]').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
+  $$('.tab[data-form]').forEach(t=>t.addEventListener('click',()=>{
+    S.form=t.dataset.form;
+    $$('.tab[data-form]').forEach(x=>x.classList.toggle('on',x.dataset.form===S.form));
+    if($('#phscr').classList.contains('on')) openForm(S.opened); else render();
+  }));
   $('#rst').addEventListener('click',()=>setMode(S.mode));
 
   setMode('new');
