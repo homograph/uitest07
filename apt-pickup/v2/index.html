@@ -317,6 +317,13 @@
   .fform .kbswap{display:block;margin-top:6px;}
   .fform #f-lnhelp{margin-top:10px;}
   .fform .kbswap[hidden]{display:none;}
+  /* 필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면 문장을 쓰는 도중에 방해가 된다.
+     한 줄짜리 링크만 조용히 나타나고, 필요한 사람(26.9%)이 눌렀을 때 필드를 연다. */
+  .addetc{width:100%;margin-top:22px;border:none;background:none;padding:12px 0;
+    font:inherit;font-size:15px;font-weight:600;color:var(--navy-800);text-align:left;cursor:pointer;
+    border-top:1px solid var(--gray-30);border-radius:0;
+    animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
+  .addetc[hidden]{display:none;}
   .fopt{width:100%;margin-top:24px;padding-top:22px;border-top:1px solid var(--gray-30);
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .fopt .flab3{margin:0 0 9px;font-size:15px;line-height:22px;font-weight:700;color:var(--gray-900);}
@@ -564,6 +571,7 @@
             <p class="askhelp" id="f-lnhelp">라인은 <b>공동현관에 붙어 있는 그대로</b> 적으면 됩니다.
                1-2, 3,4호, 1/2 어떤 표기든 괜찮아요. <b>없으면 비워 두세요.</b></p>
 
+            <button type="button" class="addetc" id="f-addetc" hidden>＋ 찾아오는 길 적기</button>
             <div class="fopt" id="fopt" hidden>
               <p class="flab3">찾아오는 길 <em>선택</em></p>
               <div class="tinwrap">
@@ -668,8 +676,13 @@
        빠져나갈 길을 막는 것은 다른 얘기입니다.</p>
     <p>라인 칸이 처음부터 비어 보이는 대가로 <b>없으면 비워 두세요</b>를 문장 아래에 붙였습니다.
        라인이 없는 60%가 이 칸에서 멈추지 않게 하는 장치입니다.</p>
-    <p>문장 밖에 남은 <b>찾아오는 길</b>은 필수를 다 채운 뒤에만 나타납니다. 긴 자유 입력을 첫 화면에 펼쳐 두면
-       길게 쓰게 되는데, 기사님은 운전 중에 그걸 못 읽습니다.</p>
+    <p>문장 밖에 남은 <b>찾아오는 길</b>은 필드가 아니라 <b>한 줄 링크</b>로 나타납니다.
+       필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면, 아직 라인 칸이 비어 있는데 문장 쓰던 사람을
+       가로막습니다. 링크는 조용히 한 줄만 늘어나고, 필요한 사람(요청사항의 <b>26.9%</b>)이 눌렀을 때 필드가 열립니다.</p>
+    <p>라인까지 채워야 뜨게 하는 방법도 있지만, 라인이 없는 <b>60%</b>는 찾아오는 길을 영영 못 보게 됩니다.
+       조건을 조이는 대신 <b>등장 방식을 조용하게</b> 만든 이유입니다.</p>
+    <p>긴 자유 입력을 첫 화면에 펼쳐 두면 길게 쓰게 되는데, 기사님은 운전 중에 그걸 못 읽습니다.
+       한 번 더 누르게 하는 것 자체가 장치입니다.</p>
     <p>2안의 대가는 <b>탭 수</b>이고, 몇 번 더 눌러야 끝나는지 화면에 안 보입니다. 1안은 층을 한 자리 치면
        동으로 자동으로 넘어가 주소 입력이 <b>탭 두 번 + 타이핑</b>으로 끝나고, 분량이 처음부터 보입니다.
        대신 1안은 자유 서술까지 펼치면 화면 아래가 빠듯해집니다.</p>
@@ -752,7 +765,7 @@
     sending:false, sent:false, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:''},
-    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform'
+    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false
   };
 
   /* ── 문장 ── */
@@ -937,8 +950,10 @@
     sw.hidden = !!d.dong.trim();
     sw.textContent = S.dongMode==='text' ? '숫자로 입력' : '가동·C동처럼 글자로 입력';
 
-    el('fopt').hidden = !ok;
-    if(ok){
+    const showEtc = ok && (S.etcOpen || !!d.etc.trim());
+    el('f-addetc').hidden = !(ok && !showEtc);
+    el('fopt').hidden = !showEtc;
+    if(showEtc){
       const et=el('f-etc');
       et.value=d.etc;  el('f-etc-c').textContent=d.etc.length;
       et.placeholder = S.d.lvl==='ground'?'예: 정문으로 들어와서 우회전':'예: 게이트2로 들어와서 좌회전';
@@ -964,14 +979,13 @@
     fl.addEventListener('input',ev=>{
       const v=ev.target.value.replace(/[^0-9]/g,'').slice(0,1);
       ev.target.value=v; S.d.floor = v ? +v : null;
-      el('fopt').hidden = !ready(S.d);
-      if(ready(S.d)) renderSentence(); else paintFoot();
+      renderSentence();
       if(v) dg.focus();                       /* 층은 한 자리다. 채우면 바로 넘긴다 */
     });
     dg.addEventListener('input',ev=>{
       S.d.dong = ev.target.value.replace(/동\s*$/,'');
       ev.target.value=S.d.dong;
-      const ok=ready(S.d), was=!el('fopt').hidden;
+      const ok=ready(S.d), was=!el('f-addetc').hidden || !el('fopt').hidden;
       if(ok!==was) renderSentence(); else paintFoot();
     });
     el('f-swap').addEventListener('click',()=>{
@@ -983,6 +997,9 @@
     ln2.addEventListener('input',ev=>{
       const v=ev.target.value.replace(/\s*라인\s*$/,'');
       ev.target.value=v; S.d.line=v; paintFoot();
+    });
+    el('f-addetc').addEventListener('click',()=>{
+      S.etcOpen=true; renderSentence(); setTimeout(()=>el('f-etc').focus(),40);
     });
     el('f-etc').addEventListener('input',ev=>{
       S.d.etc=ev.target.value; el('f-etc-c').textContent=ev.target.value.length;
@@ -1025,7 +1042,7 @@
   }
 
   function openForm(where){
-    S.opened=where; S.skipped={};
+    S.opened=where; S.skipped={}; S.etcOpen=false;
     S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,dong:'',line:'',etc:''};
     el('ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
     el('ph-hint').innerHTML = (where==='start')
