@@ -685,10 +685,10 @@ body.mock.flowopen{overflow:hidden;}
    훨씬 짧게 잡아 앞 요소가 끝나기 전에 다음이 시작되도록 겹친다. */
 @keyframes fwFade{from{opacity:0;} to{opacity:1;}}
 @keyframes fwRise{from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);}}
-.fw-breaker{animation:fwFade .22s ease-out .18s both;}
-.fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .26s both;}
-.fw-breaker .bk-tx b{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .34s both;}
-.fw-breaker .bk-tx span{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .40s both;}
+.fw-breaker{animation:fwFade .3s cubic-bezier(.45,0,.25,1) .18s both;}
+.fw-breaker img{animation:fwRise .38s cubic-bezier(.45,0,.25,1) .26s both;}
+.fw-breaker .bk-tx b{animation:fwRise .38s cubic-bezier(.45,0,.25,1) .34s both;}
+.fw-breaker .bk-tx span{animation:fwRise .38s cubic-bezier(.45,0,.25,1) .40s both;}
 /* 화면 전환: 앱 기본값인 우->좌 push. 뒤로가기는 역방향(pop).
    나가는 화면은 -25% 까지만 밀려 시차(parallax)를 준다(iOS/안드로이드 공통 관례).
    복제본이므로 자식들의 등장 애니메이션은 꺼서 다시 재생되지 않게 한다. */
@@ -710,8 +710,8 @@ body.mock.flowopen{overflow:hidden;}
    ⚠ 부유는 등장(fwRise)이 끝난 뒤 시작해야 한다. 같은 transform 을 쓰므로 뒤에
      선언해 등장이 끝난 구간부터 이 쪽이 이기게 한다. */
 @keyframes fwFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
-.fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .26s both,
-                          fwFloat 2s ease-in-out .52s infinite;}
+.fw-breaker img{animation:fwRise .38s cubic-bezier(.45,0,.25,1) .26s both,
+                          fwFloat 2s ease-in-out .64s infinite;}
 .fw-breaker{cursor:pointer;}
 @media (prefers-reduced-motion:reduce){
   .fw-breaker,.fw-breaker img,.fw-breaker .bk-tx b,.fw-breaker .bk-tx span{animation:none;}
@@ -1010,9 +1010,9 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
         <h3>브릿지 화면 타이밍</h3>
         <table class="dd-t">
           <tr><th>차량 선택 [다음]</th><td>확인 화면과 브릿지를 <b>한 번에</b> 그리고 슬라이드 <b>320ms</b> (우&rarr;좌)</td></tr>
-          <tr><th>흰 베일</th><td><b>180ms</b> 에 페이드 시작, 400ms 에 완성</td></tr>
-          <tr><th>문구까지 등장 완료</th><td><b>660ms</b></td></tr>
-          <tr><th>요일 선택으로</th><td><b>1800ms</b> (정지 구간 1140ms)</td></tr>
+          <tr><th>흰 베일</th><td><b>180ms</b> 에 페이드 시작, 480ms 에 완성</td></tr>
+          <tr><th>문구까지 등장 완료</th><td><b>780ms</b></td></tr>
+          <tr><th>요일 선택으로</th><td><b>1900ms</b> (정지 구간 1120ms)</td></tr>
         </table>
         <p class="dd-n">확인 화면은 브릿지 뒤에 비치는 배경이지 읽으라고 두는 화면이 아닙니다.
           베일을 슬라이드가 끝난 뒤에 띄우지 말고 <b>도중(180ms)부터 겹치게</b> 하세요.
@@ -1023,21 +1023,24 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
 
       <section class="dd-sec">
         <h3>브릿지 등장 순서</h3>
-        <pre><code>슬라이드   scrInR 320ms  cubic(.2,.8,.3,1)   delay    0
-베일       fade   220ms  ease-out            delay  180ms
-아이콘     rise   260ms  cubic(.2,.8,.3,1)   delay  260ms
-헤드라인   rise   260ms  cubic(.2,.8,.3,1)   delay  340ms
-서브       rise   260ms  cubic(.2,.8,.3,1)   delay  400ms
+        <pre><code>슬라이드   scrInR 320ms  cubic(.2,.8,.3,1)     delay    0
+베일       fade   300ms  cubic(.45,0,.25,1)    delay  180ms
+아이콘     rise   380ms  cubic(.45,0,.25,1)    delay  260ms
+헤드라인   rise   380ms  cubic(.45,0,.25,1)    delay  340ms
+서브       rise   380ms  cubic(.45,0,.25,1)    delay  400ms
 
 rise = opacity 0 -&gt; 1, translateY(12px) -&gt; 0</code></pre>
-        <p class="dd-n">마지막 요소가 <b>400 + 260 = 660ms</b> 에 끝납니다. 남은 <b>1140ms</b> 가 정지 구간입니다.
-          아이콘은 등장 뒤 2초 주기로 8px 위아래 부유합니다(delay 520ms).
+        <p class="dd-n">마지막 요소가 <b>400 + 380 = 780ms</b> 에 끝납니다. 남은 <b>1120ms</b> 가 정지 구간입니다.
+          아이콘은 등장 뒤 2초 주기로 8px 위아래 부유합니다(delay 640ms).
+          ⚠ 등장 커브는 <b>양끝이 누운 cubic-bezier(.45,0,.25,1)</b> 입니다. 화면 전환용 감속 커브
+          (.2,.8,.3,1)를 쓰면 시작부터 최고 속도라 급하게 보입니다. 커브만 바꾸고 지속시간을
+          그대로 두면 중간이 빨라져 역효과이므로 380ms 와 한 쌍으로 보세요.
           베일은 슬라이드 중인 화면 위에 와야 하므로 <b>z-index 가 그보다 높아야</b> 합니다.</p>
       </section>
 
       <section class="dd-sec">
         <h3>전환 로직</h3>
-        <pre><code>const FLOW_T = { bridgeStay: 1800 };
+        <pre><code>const FLOW_T = { bridgeStay: 1900 };
 
 function goStep(step){
   clearFlowTimers();                 // 겹친 타이머부터 지운다
@@ -1716,13 +1719,17 @@ function layout(){
    ⚠ 자동 구간에 타이머가 겹치면 단계가 건너뛰어지므로 진입할 때마다 항상 먼저 지운다. */
 /* bridgeStay 는 '읽는 시간'이 아니라 차량 선택에서 [다음] 을 누른 순간부터
    요일 선택으로 넘어갈 때까지의 총 시간이다.
-   타임라인: 0 슬라이드 시작 / 180 베일 페이드 / 400 베일 완성 / 660 문구까지
-   등장 완료 / 1800 요일 선택. 실제 정지 구간은 1800 - 660 = 1140ms 다.
-   820 은 짧다는 피드백이 있어 늘렸다. 브릿지를 한 번에 렌더해 아낀 220ms 를
-   읽는 시간으로 돌린 셈이라, 총 시간은 종전 1700 보다 100ms 만 길다.
+   타임라인: 0 슬라이드 시작 / 180 베일 시작 / 480 베일 완성 / 780 문구까지
+   등장 완료 / 1900 요일 선택. 실제 정지 구간은 1900 - 780 = 1120ms 다.
+
+   등장 커브는 cubic-bezier(.45,0,.25,1). 종전 (.2,.8,.3,1) 은 두 번째 값이 .8 이라
+   시작하자마자 최고 속도로 튀어나가는 감속 커브였고, 그게 '급하다'의 원인이었다.
+   지금은 y1=0 으로 눕혀 시작을 만들고 x2=.25 로 끝을 길게 끈다.
+   ⚠ 커브만 바꾸고 지속시간을 그대로 두면 양끝이 느려진 만큼 중간이 빨라져
+   오히려 더 급해 보인다. 그래서 260 -> 380ms 로 같이 늘렸다.
    등장 지연은 CSS(.fw-breaker 계열 animation-delay)가 쥐고 있으므로 이 값만
    바꾸면 정지 구간이 늘고 준다. */
-const FLOW_T = { bridgeStay: 1800 };
+const FLOW_T = { bridgeStay: 1900 };
 let flowTimers = [];
 function clearFlowTimers(){ flowTimers.forEach(clearTimeout); flowTimers = []; }
 
