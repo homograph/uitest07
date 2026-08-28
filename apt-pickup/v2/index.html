@@ -161,6 +161,8 @@
   .tcnt b{font-weight:700;}
   .askhelp{margin:9px 0 0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
   .askhelp b{color:var(--gray-700);font-weight:600;}
+  .askhelp.warn{color:#a8620a;}
+  .askhelp.warn b{color:#8a4f08;}
 
   .footrow{display:flex;gap:8px;align-items:center;}
   .skipb{flex:0 0 auto;border:1px solid var(--gray-80);background:#fff;border-radius:8px;
@@ -612,7 +614,7 @@
     sending:false, sent:false, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:''},
-    step:null, skipped:{}
+    step:null, skipped:{}, routeOpen:null   /* null = 길이로 자동 */
   };
 
   /* ── 문장 ── */
@@ -706,8 +708,7 @@
                    +'<span class="tcnt"><b id="tcnt">0</b>/'+cfg.max+'</span>';
         ctl.appendChild(w);
         if(S.step==='etc'){
-          const p=document.createElement('p'); p.className='askhelp';
-          p.innerHTML='길 안내는 <b>기사님이 멈춰 있을 때</b> 펼쳐 봅니다. 운전 중에는 위치만 보여요.';
+          const p=document.createElement('p'); p.className='askhelp'; p.id='etc-help';
           ctl.appendChild(p);
         }
         if(S.step==='line'){
@@ -721,8 +722,9 @@
         inp.addEventListener('input',ev=>{
           let v=ev.target.value;
           if(S.step==='dong') v=v.replace(/동\s*$/,'');
-          S.d[S.step]=v; el('tcnt').textContent=v.length; paintFoot();
+          S.d[S.step]=v; el('tcnt').textContent=v.length; paintEtcHelp(); paintFoot();
         });
+        paintEtcHelp();
         inp.addEventListener('keydown',ev=>{ if(ev.key==='Enter') el('ph-next').click(); });
         setTimeout(()=>inp.focus(),60);
       }
@@ -730,6 +732,18 @@
     paintFoot();
   }
 
+  function paintEtcHelp(){
+    const p=el('etc-help'); if(!p) return;
+    const n=S.d.etc.trim().length;
+    if(n>60){
+      p.className='askhelp warn';
+      p.innerHTML='길어지면 <b>운전 중에는 못 읽습니다.</b> 기사님은 멈췄을 때 펼쳐 봐요. '
+                 +'가능하면 목적지를 정확히 적는 편이 더 도움이 됩니다.';
+    } else {
+      p.className='askhelp';
+      p.innerHTML='길 안내는 <b>기사님이 멈춰 있을 때</b> 펼쳐 봅니다. 운전 중에는 위치만 보여요.';
+    }
+  }
   function paintFoot(){
     const done=S.step===null, ok=ready(S.d);
     el('prev2').classList.toggle('ready', ok);
@@ -769,6 +783,7 @@
     S.edited=(S.opened==='voyage') && !!S.value;
     S.current=Object.assign({},S.d);
     S.value=sentence(S.d);
+    S.routeOpen=null;
     S.fromSaved=false;
     S.always=el('chk-save').checked;
     S.origin=S.opened;
@@ -812,7 +827,16 @@
       : '탑승 위치 미전달';
     const dr=el('droute'), route=(got && cur && cur.etc.trim()) ? cur.etc.trim() : '';
     dr.hidden = !route;
-    if(route){ el('droute-v').textContent = route; }
+    if(route){
+      el('droute-v').textContent = route;
+      /* 실측: 경로 안내 포함 문장의 절반이 64자 이하다. 짧은 건 접을 이유가 없다.
+         접어두면 운전 중에 탭을 하게 만든다. 긴 것만 접고 정차 후로 미룬다. */
+      const auto = route.length <= 60;
+      const open = (S.routeOpen===null) ? auto : S.routeOpen;
+      dr.classList.toggle('open', open);
+      el('droute-x').textContent = open ? '접기' : '보기';
+      el('droute-x').hidden = route.length <= 60 && S.routeOpen===null;
+    }
 
     el('rstep').textContent = S.screen==='start'
       ? (has ? (S.fromSaved ? '지난번 값이 채워져 있습니다. 다르면 눌러서 바꾸세요.'
@@ -855,8 +879,8 @@
   }
 
   el('droute').addEventListener('click',()=>{
-    const dr=el('droute'), on=dr.classList.toggle('open');
-    el('droute-x').textContent = on ? '접기' : '보기';
+    S.routeOpen = !el('droute').classList.contains('open');
+    render();
   });
   el('ph-next').addEventListener('click',()=>{ S.step===null ? submitForm() : advance(); });
   el('ph-skip').addEventListener('click',()=>{ S.skipped[S.step]=true; S.d[S.step]=''; advance(); });
