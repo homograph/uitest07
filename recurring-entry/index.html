@@ -647,14 +647,23 @@ body.mock.flowopen{overflow:hidden;}
 .fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .08s both;}
 .fw-breaker .bk-tx b{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .16s both;}
 .fw-breaker .bk-tx span{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .22s both;}
-/* 퇴장: 복제본이라 자식들의 등장 애니메이션은 끄고 통째로 페이드아웃만 시킨다.
-   z-index 를 올려 시트(25) 위에서 사라지게 해야 크로스디졸브로 보인다. */
-@keyframes fwOut{from{opacity:1;} to{opacity:0;}}
-.fw-breaker.leaving,.fw-breaker.leaving *{animation:none;}
-.fw-breaker.leaving{z-index:40;pointer-events:none;animation:fwOut .2s ease-in both;}
+/* 화면 전환: 앱 기본값인 우->좌 push. 뒤로가기는 역방향(pop).
+   나가는 화면은 -25% 까지만 밀려 시차(parallax)를 준다(iOS/안드로이드 공통 관례).
+   복제본이므로 자식들의 등장 애니메이션은 꺼서 다시 재생되지 않게 한다. */
+@keyframes scrInR{from{transform:translateX(100%);} to{transform:translateX(0);}}
+@keyframes scrOutL{from{transform:translateX(0);} to{transform:translateX(-25%);}}
+@keyframes scrInL{from{transform:translateX(-25%);} to{transform:translateX(0);}}
+@keyframes scrOutR{from{transform:translateX(0);} to{transform:translateX(100%);}}
+.fw-scr.push-out *,.fw-scr.pop-out *{animation:none !important;}
+.fw-scr.push-in{z-index:12;animation:scrInR .32s cubic-bezier(.2,.8,.3,1) both;
+  box-shadow:-10px 0 28px rgba(16,20,34,.12);}
+.fw-scr.push-out{z-index:8;animation:scrOutL .32s cubic-bezier(.2,.8,.3,1) both;}
+.fw-scr.pop-in{z-index:8;animation:scrInL .32s cubic-bezier(.2,.8,.3,1) both;}
+.fw-scr.pop-out{z-index:12;animation:scrOutR .32s cubic-bezier(.2,.8,.3,1) both;
+  box-shadow:-10px 0 28px rgba(16,20,34,.12);}
 @media (prefers-reduced-motion:reduce){
   .fw-breaker,.fw-breaker img,.fw-breaker .bk-tx b,.fw-breaker .bk-tx span{animation:none;}
-  .fw-breaker.leaving{animation:none;opacity:0;}
+  .fw-scr.push-in,.fw-scr.push-out,.fw-scr.pop-in,.fw-scr.pop-out{animation:none;}
 }
 .fw-breaker .bk-tx{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;}
 .fw-breaker .bk-tx b{font-size:24px;line-height:32px;font-weight:700;
@@ -1632,32 +1641,46 @@ function goStep(step, opts){
 /* 단계만 다시 그린다. 홈(app)은 그대로 두므로 스크롤 위치가 안 튄다.
    ⚠ 시트는 .on 없이 그린 뒤 '다음 프레임'에 붙여야 slide-up transition 이 돈다.
    처음부터 .on 으로 그리면 시작 상태가 없어 최종 위치에 그냥 튀어나온다. */
+/* 화면 전환은 앱 기본값대로 우->좌 push, 뒤로가기는 그 역방향(pop).
+   순서 배열로 방향을 정한다. 'sheet' 는 화면이 아니라 홈 위 바텀시트라 제외.
+   confirm->bridge 는 같은 화면 위에 오버레이만 얹는 것이라 슬라이드하지 않는다. */
+const STEP_ORDER = ['', 'sheet', 'schedule', 'car', 'confirm', 'bridge', 'weekday', 'rconfirm'];
+const SCREENS = ['schedule','car','confirm','bridge','weekday','rconfirm'];
 let prevStep = '';
+
 function renderFlow(){
-  const leavingBridge = prevStep === 'bridge' && S.step !== 'bridge';
+  const from = prevStep, to = S.step;
+  const overlayOnly = (from === 'confirm' && to === 'bridge');   // 같은 화면 + 오버레이
+  const slide = SCREENS.includes(to) && !overlayOnly && from !== to;
+  const fwd = STEP_ORDER.indexOf(to) >= STEP_ORDER.indexOf(from);
+
   stage.querySelectorAll('.fwlayer').forEach(host => {
-    // bridge 에서 나갈 때는 기존 breaker 를 복제해 위에 남기고 페이드아웃시킨다.
-    // 그냥 지우면 하드컷이라 앞의 정지 구간이 '멈췄다가 튄 것'으로 읽힌다.
-    const oldBreaker = leavingBridge ? host.querySelector('.fw-breaker') : null;
-    const g = oldBreaker ? oldBreaker.cloneNode(true) : null;
+    // 나가는 화면을 복제해 남겨야 두 화면이 같이 움직이는 push 가 된다.
+    const oldScr = slide && SCREENS.includes(from) ? host.querySelector('.fw-scr') : null;
+    const g = oldScr ? oldScr.cloneNode(true) : null;
+
     host.innerHTML = flowLayer();
-    host.classList.toggle('on', !!S.step);
-    // 시트류(설명/요일)는 홈 위에 얹히고, 나머지는 화면을 통째로 덮는다
-    host.classList.toggle('sheetmode', S.step === 'sheet');
+    host.classList.toggle('on', !!to);
+    host.classList.toggle('sheetmode', to === 'sheet');
+
     if (g){
-      g.classList.add('leaving');
+      g.classList.add(fwd ? 'push-out' : 'pop-out');
       host.appendChild(g);
-      setTimeout(() => g.remove(), 240);
+      setTimeout(() => g.remove(), 360);
     }
-    // ⚠ rAF 로 다음 프레임에 붙이면 백그라운드 탭 등에서 콜백이 안 돌아 시트가 영영
-    //   안 뜬다(실제로 그렇게 됐다). offsetHeight 를 읽어 '시작 상태'를 강제로 확정한
-    //   뒤 같은 태스크에서 붙이면 transition 이 확실히 돈다.
+    const scr = host.querySelector('.fw-scr');
+    if (slide && scr) scr.classList.add(fwd ? 'push-in' : 'pop-in');
+
+    // 바텀시트: 'sheet' 단계만 슬라이드업 시킨다. push 로 들어오는 화면 안의 시트는
+    // 화면과 같이 밀려 들어오므로 처음부터 최종 상태여야 한다(따로 또 올라오면 산만하다).
+    // ⚠ rAF 로 다음 프레임에 붙이면 백그라운드 탭에서 콜백이 안 돌아 시트가 영영 안 뜬다.
+    //   offsetHeight 를 읽어 시작 상태를 확정한 뒤 같은 태스크에서 붙여야 확실히 돈다.
     host.querySelectorAll('.scrim, .sheet').forEach(el => {
-      void el.offsetHeight;
+      if (to === 'sheet') void el.offsetHeight;
       el.classList.add('on');
     });
   });
-  prevStep = S.step;
+  prevStep = to;
   wireFlow();
 }
 
