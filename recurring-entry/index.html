@@ -948,44 +948,6 @@ body.flowopen .addon{display:none;}
 .q{background:#f5f6f7;border-radius:8px;padding:16px 20px;display:flex;gap:10px;align-items:center;}
 .q span{flex:1 1 auto;font-size:14px;line-height:20px;font-weight:700;color:#4b5064;}
 
-/* ── 7. notes ──────────────────────────────────────────────── */
-.branch{margin-top:40px;background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-surface);padding:22px 24px 26px;box-shadow:var(--shadow);}
-.branch h2{margin:0 0 6px;font-size:15px;line-height:22px;font-weight:700;color:var(--ink);}
-.branch > p{margin:0 0 20px;max-width:74ch;font-size:12.5px;line-height:21px;color:var(--ink-2);word-break:keep-all;}
-.branch > p b{color:var(--ink);font-weight:600;}
-.bstage{display:flex;gap:22px;flex-wrap:wrap;}
-.bcol{flex:0 0 auto;width:calc(360px * var(--kb));}
-.bcol .bcap{margin:0 0 9px;font-size:12px;line-height:18px;color:var(--ink-3);}
-.bcol .bcap b{display:block;font-size:13px;line-height:19px;color:var(--ink);font-weight:700;margin-bottom:2px;}
-.bwrap{position:relative;width:calc(360px * var(--kb));}
-.bphone{width:360px;transform:scale(var(--kb));transform-origin:top left;background:#fff;
-  border-radius:calc(var(--r-device) / var(--kb));overflow:hidden;border:1px solid var(--line);
-  box-shadow:var(--shadow);position:relative;}
-
-.notes{margin-top:38px;display:grid;gap:22px;grid-template-columns:minmax(0,1fr);}
-@media (min-width:900px){ .notes{grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:26px 40px;} }
-.notes .refs{grid-column:1 / -1;background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r-surface);padding:20px 22px;}
-@media (min-width:900px){ .notes .refs{columns:2;column-gap:40px;padding:22px 24px;} }
-.notes .refs h2{column-span:all;}
-.notes .refs > p{break-inside:avoid;}
-.notes .refs em{font-style:normal;color:var(--ink);font-weight:600;}
-.notes .refs .verdict{border-top:1px solid var(--line);padding-top:12px;}
-.notes .refs .src{font-size:11.5px;line-height:19px;color:var(--ink-3);}
-.notes .refs .src a{color:var(--ink-2);text-underline-offset:3px;}
-.notes section{min-width:0;}
-.notes h2{margin:0 0 12px;font-size:13.5px;line-height:20px;font-weight:700;color:var(--ink);}
-.notes .flow > p{margin:0 0 12px;font-size:12.5px;line-height:21px;color:var(--ink-2);word-break:keep-all;}
-.notes .flow > p:last-child{margin-bottom:0;}
-.notes .flow b{color:var(--ink);font-weight:600;}
-dl.assume{margin:0;display:grid;gap:0;}
-dl.assume > div{display:grid;grid-template-columns:minmax(0,1fr);gap:3px;
-  padding:12px 0;border-top:1px solid var(--line);}
-@media (min-width:640px){ dl.assume > div{grid-template-columns:132px minmax(0,1fr);gap:16px;align-items:baseline;} }
-dl.assume dt{font-size:12.5px;line-height:19px;font-weight:600;color:var(--ink);word-break:keep-all;}
-dl.assume dd{margin:0;font-size:12.5px;line-height:20px;color:var(--ink-2);word-break:keep-all;}
-dl.assume dd em{font-style:normal;color:var(--ink);font-weight:600;}
 code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
 
 @media (prefers-reduced-motion:reduce){
@@ -995,7 +957,6 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
   .page{padding:18px 14px 60px;}
   .rail{margin:14px -14px 0;padding:10px 14px;}
   .verdict{padding:15px 14px 6px;}
-  .branch{padding:16px 13px 18px;}
   col.c-name{width:72px;} col.c-num{width:52px;} col.c-verd{width:52px;}
   table.vt tbody th{font-size:11.5px;}
   td.num{font-size:12px;} td.verd{font-size:11.5px;}
@@ -1126,44 +1087,6 @@ goStep('confirm', { noAuto: true });</code></pre>
     </div>
   </div>
 
-  <div class="branch">
-    <h2>정기라고 선언하면 그때부터 갈라집니다</h2>
-    <p>진입점을 앞에 두는 이유입니다. 지금은 마지막 미리보기에서 배너가 뜨느냐 안 뜨느냐로만 조건을 알 수 있어서,
-      걸린 사람은 이유도 모른 채 기능을 못 봅니다. 앞에서 갈라두면 <b>못 고르게 막고 그 자리에서 이유를 말할 수 있습니다.</b>
-      아래 세 화면이 그 흐름입니다.</p>
-    <div class="bstage" id="bstage"></div>
-  </div>
-
-  <div class="notes">
-    <section class="flow">
-      <h2>읽는 법</h2>
-      <p>판정선은 <b>콘텐츠 상단부터 647px</b>입니다. 기기 높이 852에서 상태바 32, 하단 시트 112, 탭바 61을 뺀 값이고,
-        시트에 가려지는 영역은 실제로 보이지 않으므로 제외했습니다.</p>
-      <p>이 화면은 <b>2026-08-24 Figma(10411:115941 / 115942)를 실측해 그대로 옮긴 것</b>입니다.
-        아래 세 조건을 바꿔가며 실제 정책상 세 가지 상태를 재현할 수 있습니다:
-        <b>이전 예약 없음</b>(10419:118615), <b>이전 예약 없음 · 쿠폰 있음</b>(10419:118121),
-        <b>이전 예약 있음 · 쿠폰 있음</b>(10411:115942).</p>
-      <p><b>‘작성 중’과 ‘이전 예약’ 둘 다 0건이면 ‘다시 예약하기’ 제목과 카드 행 자체가 사라집니다.</b>
-        쿠폰은 그 유무와 무관하게 독립적으로 뜨거나 사라집니다. 0/0으로 내려 보면 이 화면이 통째로 비는 것도 확인할 수 있습니다.</p>
-      <p>범위는 <b>홈 화면까지</b>입니다. 정기 카드를 누르면 설명 시트가 열리고, 그 뒤 첫 픽업 시간과 차량 선택 화면은
-        아래 ‘분기 이후’ 섹션에 따로 있습니다.</p>
-      <p>프레임 안쪽은 라이트 모드 앱의 사진이라, 페이지를 다크 모드로 봐도 뒤집지 않습니다.</p>
-    </section>
-    <section>
-      <h2>이 프로토에서 임의로 정한 것</h2>
-      <dl class="assume">
-        <div><dt>정기 카드 카피</dt><dd>Figma 탐색안에는 맞춤 예약에서 복사된 “일반 예약, 시간 예약 모두 가능해요”가 그대로 들어가 있었습니다.
-          PRD의 씬 데이터(평일 오전 6시에서 9시, 출퇴근과 등교)를 근거로 <em>정기 예약 설명 시트의 문구를 “매주 같은 시간에 반복되는
-          이동을 한 번에 잡아둡니다”로 썼습니다.</em></dd></div>
-        <div><dt>‘작성 중’과 ‘이전 예약’은 다른 것</dt><dd>다시 예약하기 행에는 두 종류가 섞입니다. 만들다 만 <b>작성 중</b>과
-          지난 <b>이전 예약</b>입니다. 둘을 한 카운터로 묶으면 실제로는 카드가 여러 장 나와야 할 상황에서 한 장만 나오는 버그가 됩니다.
-          이번에 둘을 분리하고, Figma가 실제로 보여준 세 가지 조합(둘 다 없음 / 이전만 없음+쿠폰 있음 / 둘 다 있음)을
-          위 토글로 재현할 수 있게 했습니다.</dd></div>
-        <div><dt>‘다시 예약하기’ 라벨</dt><dd>작성 중이던 예약을 이어서 하는 블록인데 라벨은 ‘다시 예약하기’입니다.
-          하는 일과 말이 어긋나 보이지만 제품 용어라 <em>바꾸지 않고 그대로 뒀습니다.</em> 별도로 볼 만한 건입니다.</dd></div>
-      </dl>
-    </section>
-  </div>
 </div>
 <div class="pscrim" id="pscrim"></div>
 <button class="fab" id="fab" aria-label="설정 열기"><span class="dot"></span>설정</button>
@@ -1667,7 +1590,6 @@ function render(){
   });
   layout();
   wireTaps();
-  renderBranch();
 }
 
 function syncViewportVars(){
@@ -1903,59 +1825,10 @@ function wireTaps(){
   renderFlow();
 }
 
-/* ── 정기예약 플로우 전체를 한 줄로 펼쳐 보여준다(폰 안에서 실제로 걸어볼 수도 있다).
-   홈 이후 6단계. 시트 단계는 홈 위에 얹히므로 배경으로 홈을 같이 그린다. ── */
-const BRANCH = [
-  {t:'1. 설명 시트', d:'정기 아이콘을 누르면 뜹니다. 통학·병원·출퇴근으로 쓰임새를 먼저 말합니다.', step:'sheet'},
-  {t:'2. 경로·시간', d:'기존 예약 플로우 구간이라 다 입력된 상태로 랜딩합니다.', step:'schedule'},
-  {t:'3. 차량 선택', d:'프리미엄밴은 정기로 못 부르므로 비활성입니다.', step:'car'},
-  {t:'4. 예약 확인', d:'아직 정기 설정 전이라 "일반 예약"으로 뜹니다. 0.3초 뒤 자동 전환됩니다.', step:'confirm'},
-  {t:'5. bridge', d:'터치·뒤로가기 없이 2초간만 보이는 자동 구간입니다.', step:'bridge'},
-  {t:'6. 요일 선택', d:'반복할 요일을 고릅니다. 취소하면 4번 예약 확인으로 돌아갑니다.', step:'weekday'},
-  {t:'7. 정기 예약 확인', d:'제목이 "정기"로 바뀌고 반복 요약 카드가 맨 위에 붙습니다.', step:'rconfirm'}
-];
-
-function renderBranch(){
-  const host = document.getElementById('bstage');
-  const prev = S.step;
-  host.innerHTML = BRANCH.map(b => {
-    S.step = b.step;                       // flowLayer 가 단계별로 그리도록 잠시 바꿔 끼운다
-    const onHome = b.step === 'sheet';     // 시트만 홈이 비친다
-    return `<div class="bcol">
-      <p class="bcap"><b>${b.t}</b>${b.d}</p>
-      <div class="bwrap"><div class="bphone">
-        ${chrome()}
-        <div class="bscroll"><div class="app">${onHome ? fFigmaHomeD() : ''}</div></div>
-        <div class="fwlayer on${onHome ? ' sheetmode' : ''}" data-static>${flowLayer()}</div>
-      </div></div>
-    </div>`;
-  }).join('');
-  S.step = prev;
-  // 스트립은 정지 화면이라 시트를 바로 최종 상태로 둔다(트랜지션 없이)
-  host.querySelectorAll('[data-static] .scrim, [data-static] .sheet')
-      .forEach(el => el.classList.add('on'));
-  layoutBranch();
-}
-
-function layoutBranch(){
-  const host = document.getElementById('bstage');
-  const wide = isWide();
-  const per = wide ? 3 : 1;
-  const avail = (host.clientWidth || 360) - 22 * (per - 1);
-  const kb = Math.max(0.4, Math.min(1, avail / (W * per)));
-  document.documentElement.style.setProperty('--kb', kb.toFixed(4));
-  host.querySelectorAll('.bcol').forEach(col => {
-    const ph = col.querySelector('.bphone'), sc = col.querySelector('.bscroll');
-    ph.style.height = H + 'px';
-    sc.style.cssText = `position:absolute;inset:${STATUS}px 0 0;overflow:hidden;background:#fff;`;
-    col.querySelector('.bwrap').style.height = (H * kb) + 'px';
-  });
-}
-
 /* ── controls ───────────────────────────────────────────────── */
 let rt;
 const relayout = () => { clearTimeout(rt); rt = setTimeout(() => {
-  if (isWide() !== wasWide) render(); else { layout(); layoutBranch(); }
+  if (isWide() !== wasWide) render(); else layout();
 }, 120); };
 window.addEventListener('resize', relayout);
 window.addEventListener('orientationchange', relayout);
@@ -2016,7 +1889,7 @@ document.getElementById('pClose').addEventListener('click', () => panel(false));
 document.getElementById('pFull').addEventListener('click', () => {
   consoleFull = !consoleFull;
   document.getElementById('pFull').textContent = consoleFull ? '목업만 보기' : '설명과 주석 보기';
-  panel(false); layout(); layoutBranch();
+  panel(false); layout();
   window.scrollTo(0, 0);
 });
 /* PC에서 콘솔을 접고 폰 화면만 보기 */
@@ -2025,7 +1898,7 @@ document.getElementById('scrbtn').addEventListener('click', () => {
   const b = document.getElementById('scrbtn');
   b.textContent = screenOnly ? '콘솔 보기' : '화면만 보기';
   b.setAttribute('aria-pressed', String(screenOnly));
-  layout(); layoutBranch();
+  layout();
   window.scrollTo(0, 0);
 });
 document.getElementById('reset').addEventListener('click', () => {
