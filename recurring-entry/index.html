@@ -647,8 +647,14 @@ body.mock.flowopen{overflow:hidden;}
 .fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .08s both;}
 .fw-breaker .bk-tx b{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .16s both;}
 .fw-breaker .bk-tx span{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .22s both;}
+/* 퇴장: 복제본이라 자식들의 등장 애니메이션은 끄고 통째로 페이드아웃만 시킨다.
+   z-index 를 올려 시트(25) 위에서 사라지게 해야 크로스디졸브로 보인다. */
+@keyframes fwOut{from{opacity:1;} to{opacity:0;}}
+.fw-breaker.leaving,.fw-breaker.leaving *{animation:none;}
+.fw-breaker.leaving{z-index:40;pointer-events:none;animation:fwOut .2s ease-in both;}
 @media (prefers-reduced-motion:reduce){
   .fw-breaker,.fw-breaker img,.fw-breaker .bk-tx b,.fw-breaker .bk-tx span{animation:none;}
+  .fw-breaker.leaving{animation:none;opacity:0;}
 }
 .fw-breaker .bk-tx{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;}
 .fw-breaker .bk-tx b{font-size:24px;line-height:32px;font-weight:700;
@@ -1108,8 +1114,8 @@ const PREV = [
    대신 통학/병원/출퇴근 용례 칩이 들어와 "언제 쓰는 기능인지"를 먼저 말한다. */
 function fSheet(){
   const chips = ['통학','병원','출퇴근'].map(t => `<span class="uc">${t}</span>`).join('');
-  return `<div class="scrim on" data-flow="close"></div>
-  <div class="sheet on" role="dialog" aria-label="정기 예약">
+  return `<div class="scrim" data-flow="close"></div>
+  <div class="sheet" role="dialog" aria-label="정기 예약">
     <div class="grab"></div>
     <div class="sh-hd">
       <div class="sh-t">정기 예약</div>
@@ -1226,8 +1232,8 @@ function fWeekday(){
   return `<div class="fw-scr fw-gray">
     ${fwBar('정기 예약')}
     <div class="fw-body"></div>
-    <div class="scrim on"></div>
-    <div class="sheet on" role="dialog" aria-label="반복할 요일 선택">
+    <div class="scrim"></div>
+    <div class="sheet" role="dialog" aria-label="반복할 요일 선택">
       <div class="grab"></div>
       <div class="wd-hd"><b>반복할 요일을 선택해주세요</b>
         <span>4월 13일 (월) 부터</span>
@@ -1623,14 +1629,35 @@ function goStep(step, opts){
   }
 }
 
-/* 단계만 다시 그린다. 홈(app)은 그대로 두므로 스크롤 위치가 안 튄다. */
+/* 단계만 다시 그린다. 홈(app)은 그대로 두므로 스크롤 위치가 안 튄다.
+   ⚠ 시트는 .on 없이 그린 뒤 '다음 프레임'에 붙여야 slide-up transition 이 돈다.
+   처음부터 .on 으로 그리면 시작 상태가 없어 최종 위치에 그냥 튀어나온다. */
+let prevStep = '';
 function renderFlow(){
+  const leavingBridge = prevStep === 'bridge' && S.step !== 'bridge';
   stage.querySelectorAll('.fwlayer').forEach(host => {
+    // bridge 에서 나갈 때는 기존 breaker 를 복제해 위에 남기고 페이드아웃시킨다.
+    // 그냥 지우면 하드컷이라 앞의 정지 구간이 '멈췄다가 튄 것'으로 읽힌다.
+    const oldBreaker = leavingBridge ? host.querySelector('.fw-breaker') : null;
+    const g = oldBreaker ? oldBreaker.cloneNode(true) : null;
     host.innerHTML = flowLayer();
     host.classList.toggle('on', !!S.step);
     // 시트류(설명/요일)는 홈 위에 얹히고, 나머지는 화면을 통째로 덮는다
     host.classList.toggle('sheetmode', S.step === 'sheet');
+    if (g){
+      g.classList.add('leaving');
+      host.appendChild(g);
+      setTimeout(() => g.remove(), 240);
+    }
+    // ⚠ rAF 로 다음 프레임에 붙이면 백그라운드 탭 등에서 콜백이 안 돌아 시트가 영영
+    //   안 뜬다(실제로 그렇게 됐다). offsetHeight 를 읽어 '시작 상태'를 강제로 확정한
+    //   뒤 같은 태스크에서 붙이면 transition 이 확실히 돈다.
+    host.querySelectorAll('.scrim, .sheet').forEach(el => {
+      void el.offsetHeight;
+      el.classList.add('on');
+    });
   });
+  prevStep = S.step;
   wireFlow();
 }
 
@@ -1694,11 +1721,14 @@ function renderBranch(){
       <div class="bwrap"><div class="bphone">
         ${chrome()}
         <div class="bscroll"><div class="app">${onHome ? fFigmaHomeD() : ''}</div></div>
-        <div class="fwlayer on${onHome ? ' sheetmode' : ''}">${flowLayer()}</div>
+        <div class="fwlayer on${onHome ? ' sheetmode' : ''}" data-static>${flowLayer()}</div>
       </div></div>
     </div>`;
   }).join('');
   S.step = prev;
+  // 스트립은 정지 화면이라 시트를 바로 최종 상태로 둔다(트랜지션 없이)
+  host.querySelectorAll('[data-static] .scrim, [data-static] .sheet')
+      .forEach(el => el.classList.add('on'));
   layoutBranch();
 }
 
