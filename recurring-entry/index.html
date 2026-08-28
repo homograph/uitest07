@@ -136,6 +136,7 @@ body.mock .page{padding:0;max-width:none;}
 body.mock .page > *:not(.work):not(.rail){display:none;}
 body.mock .work{display:block;}
 body.mock .devdoc{display:none;}
+body.mock .side{display:contents;}
 body.mock .stage{position:static;width:100%;margin:0;max-width:none;padding:0;
   display:block;}
 body.mock .col{width:auto;display:block;}
@@ -231,13 +232,25 @@ tr.off td.plot, tr.off td.num{opacity:.4;}
 .work{margin-top:26px;}
 body.wide:not(.screenonly) .work{display:grid;grid-template-columns:auto minmax(0,1fr);
   gap:34px;align-items:start;}
+/* 조건 컨트롤은 오른쪽 콘솔로. 상단에 sticky 로 두면 그 높이가 폰 배율 계산에
+   들어가서, 컨트롤이 한 줄 늘거나 줄 때마다 폰 크기가 같이 흔들린다.
+   위에서 빼면 세로 예산도 그만큼 돌아와 폰이 커진다. */
+.side{display:flex;flex-direction:column;gap:16px;min-width:0;}
+body.wide:not(.screenonly) .side .rail{position:sticky;top:16px;z-index:30;
+  margin:0;padding:12px 16px;border:1px solid var(--line);border-radius:var(--r-surface);
+  background:var(--surface);backdrop-filter:none;-webkit-backdrop-filter:none;}
+/* 좁은 데스크톱 창(700~1120)에서는 한 열이라 컨트롤이 폰 아래로 밀린다.
+   .side 를 display:contents 로 풀어 rail 만 위로 올리고 가이드는 폰 아래에 둔다.
+   .side 통째로 order:-1 하면 가이드까지 위로 가서 폰이 한참 아래로 밀린다. */
+body:not(.wide):not(.mock) .work{display:flex;flex-direction:column;gap:20px;}
+body:not(.wide):not(.mock) .side{display:contents;}
+body:not(.wide):not(.mock) .side .rail{order:-1;}
 body.wide:not(.screenonly) .work .stage{margin:0;max-width:none;
-  position:sticky;top:calc(var(--railh, 64px) + 16px);}
+  position:sticky;top:16px;}
 /* 캡션은 위 헤더와 겹치는 정보라 2단에서는 접는다. 세로 예산도 그만큼 는다. */
 body.wide:not(.screenonly) .work .stage .cap{display:none;}
 
-.devdoc{margin-top:32px;display:flex;flex-direction:column;gap:16px;}
-body.wide .devdoc{margin-top:0;}
+.devdoc{margin-top:0;display:flex;flex-direction:column;gap:16px;}
 .dd-hd h2{margin:0;font-size:15px;line-height:22px;font-weight:700;color:var(--ink);}
 .dd-hd p{margin:6px 0 0;font-size:12px;line-height:18px;color:var(--ink-3);word-break:keep-all;}
 .dd-sec{background:var(--surface);border:1px solid var(--line);
@@ -316,7 +329,7 @@ body:not(.mock) .addon{overflow:hidden;border-radius:0 0 var(--r-device) var(--r
 body.wide .scrbtn{display:block;}
 body.screenonly .page > *:not(.work){display:none;}
 body.screenonly .work{display:block;margin:0;}
-body.screenonly .devdoc{display:none;}
+body.screenonly .side{display:none;}
 body.screenonly .page{padding:0;}
 body.screenonly .stage{margin:0 auto;min-height:100vh;align-items:center;justify-content:center;}
 body.screenonly .col .cap,
@@ -1028,37 +1041,38 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
     </div>
   </header>
 
-  <div class="rail">
-    <div class="rline condbar">
-      <button class="condbtn" id="condToggle" aria-expanded="false" aria-controls="condRows">
-        <span class="ttl">조건</span><span class="sum" id="condSummary"></span>
-        <svg class="car" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-    </div>
-    <div class="rline cond" id="condRows">
-      <div class="rname">정기 노출<i>리모트 컨피그</i></div>
-      <div class="seg" id="segRecur"><button data-v="1">ON</button><button data-v="0">OFF</button></div>
-      <div class="rname" style="min-width:52px">작성 중</div>
-      <div class="seg" id="segDraft"><button data-v="0">0건</button><button data-v="1">1건</button><button data-v="2">2건</button></div>
-      <div class="rname" style="min-width:52px">이전 예약</div>
-      <div class="seg" id="segPrev"><button data-v="0">0건</button><button data-v="1">1건</button><button data-v="2">2건</button></div>
-    </div>
-    <div class="rline cond">
-      <div class="rname">쿠폰 배너</div>
-      <div class="seg" id="segCoupon"><button data-v="1">있음</button><button data-v="0">없음</button></div>
-      <div class="rname" style="min-width:36px">보기</div>
-      <div class="seg" id="segMode"><button data-v="device">실기기</button><button data-v="full">전체 길이</button></div>
-      <button class="reset" id="playBridge">브릿지 재생</button>
-      <button class="reset" id="reset">초기화</button>
-    </div>
-    <div class="pfoot">
-      <button id="pClose">닫기</button>
-      <button id="pFull">설명과 주석 보기</button>
-    </div>
-  </div>
-
   <div class="work">
     <div class="stage" id="stage"></div>
+
+    <div class="side">
+    <div class="rail">
+      <div class="rline condbar">
+        <button class="condbtn" id="condToggle" aria-expanded="false" aria-controls="condRows">
+          <span class="ttl">조건</span><span class="sum" id="condSummary"></span>
+          <svg class="car" width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="rline cond" id="condRows">
+        <div class="rname">정기 노출<i>리모트 컨피그</i></div>
+        <div class="seg" id="segRecur"><button data-v="1">ON</button><button data-v="0">OFF</button></div>
+        <div class="rname" style="min-width:52px">작성 중</div>
+        <div class="seg" id="segDraft"><button data-v="0">0건</button><button data-v="1">1건</button><button data-v="2">2건</button></div>
+        <div class="rname" style="min-width:52px">이전 예약</div>
+        <div class="seg" id="segPrev"><button data-v="0">0건</button><button data-v="1">1건</button><button data-v="2">2건</button></div>
+      </div>
+      <div class="rline cond">
+        <div class="rname">쿠폰 배너</div>
+        <div class="seg" id="segCoupon"><button data-v="1">있음</button><button data-v="0">없음</button></div>
+        <div class="rname" style="min-width:36px">보기</div>
+        <div class="seg" id="segMode"><button data-v="device">실기기</button><button data-v="full">전체 길이</button></div>
+        <button class="reset" id="playBridge">브릿지 재생</button>
+        <button class="reset" id="reset">초기화</button>
+      </div>
+      <div class="pfoot">
+        <button id="pClose">닫기</button>
+        <button id="pFull">설명과 주석 보기</button>
+      </div>
+    </div>
 
     <aside class="devdoc">
       <div class="dd-hd">
@@ -1144,6 +1158,7 @@ goStep('confirm', { noAuto: true });</code></pre>
           카드가 화면 가장자리에 닿지 못하고 24dp 안쪽에서 잘립니다.</p>
       </section>
     </aside>
+    </div>
   </div>
 
   <div class="branch">
@@ -1752,12 +1767,13 @@ function layout(){
     if (wide){
       // 2단(왼쪽 폰 / 오른쪽 가이드)에서는 가로가 아니라 세로가 제약이다.
       // 폰이 한 화면에 다 들어와야 sticky 로 붙여두는 의미가 있다.
-      // 40 = sticky 여백 16 + 아래 숨통 24. rail 은 sticky 라 항상 위를 먹는다.
-      // 폰 아래 readout 처럼 배율을 안 타는 요소가 있으므로 그 높이는 따로 뺀다.
+      // 40 = sticky 여백 16 + 아래 숨통 24. 조건 컨트롤은 오른쪽에 있으므로
+      // 그 높이를 여기 넣지 않는다. 넣으면 버튼 한 번에 폰 크기가 흔들린다.
+      // 폰 아래 readout 처럼 배율을 안 타는 요소만 따로 뺀다.
       const colEl = stage.querySelector('.col');
       const wrapEl = colEl && colEl.querySelector('.phonewrap');
       const chrome = (colEl && wrapEl) ? Math.max(0, colEl.offsetHeight - wrapEl.offsetHeight) : 0;
-      k = Math.min(k, (vh - railH - 40 - chrome) / dev(S.variant).h);
+      k = Math.min(k, (vh - 40 - chrome) / dev(S.variant).h);
     }
   }
   // 목업 모드는 가로 폭을 실제 화면에 꽉 채우는 배율이라 1을 넘어도(화면이 기기
