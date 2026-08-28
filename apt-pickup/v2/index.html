@@ -890,11 +890,14 @@
          출발지 POI 에 동은 41%가 이미 들어 있지만(예: 반포래미안원베일리아파트 101동),
          지하·층 정보는 0.8% 뿐이다. 요청사항의 82.3%가 지하를 말한다.
          즉 항상 새 정보인 것은 층이고, 동은 절반쯤 바로 윗줄과 겹친다. */
-      el('db-main').textContent = cur.lvl==='under' ? '지하 '+cur.floor+'층' : '지상';
-      const sub=[ cur.dong.trim()+'동' ];
-      if(cur.line.trim()) sub.push(lineText(cur.line));
-      el('db-sub').textContent = sub.join('  ·  ');
-      el('db-sub').hidden = false;
+      /* 층과 동은 한 줄로 합친다. 실측 조립 길이가 중앙 10자, 최대 17자라
+         라인만 빼면 한 줄에 들어간다. 어순은 실제 문장 어순을 따른다.
+         층·동이 함께 나온 899건 중 층이 먼저인 것이 64.4%다(지하2층 101동). */
+      el('db-main').textContent =
+        (cur.lvl==='under' ? '지하 '+cur.floor+'층' : '지상') + ' ' + cur.dong.trim()+'동';
+      const ln = cur.line.trim() ? lineText(cur.line) : '';
+      el('db-sub').textContent = ln;
+      el('db-sub').hidden = !ln;
       el('db-chg').hidden = !(S.edited && S.origin==='voyage');
     } else {
       el('db-main').textContent = '위치 미전달';
