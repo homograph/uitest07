@@ -676,7 +676,7 @@ body.mock.flowopen{overflow:hidden;}
 
 /* bridge: 자동 전환 구간. 전체를 덮어 탭을 흡수한다(핸들러가 없으니 아무 일도 안 난다).
    ⚠ pointer-events:none 으로 두면 탭이 아래 확인 화면으로 통과해 뒤로가기가 눌린다. */
-.fw-breaker{position:absolute;inset:0;z-index:5;
+.fw-breaker{position:absolute;inset:0;z-index:20;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;
   background:linear-gradient(180deg, rgba(255,255,255,.5) 0%, #fff 50%);}
 .fw-breaker img{width:120px;height:120px;object-fit:contain;}
@@ -685,10 +685,10 @@ body.mock.flowopen{overflow:hidden;}
    훨씬 짧게 잡아 앞 요소가 끝나기 전에 다음이 시작되도록 겹친다. */
 @keyframes fwFade{from{opacity:0;} to{opacity:1;}}
 @keyframes fwRise{from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);}}
-.fw-breaker{animation:fwFade .22s ease-out both;}
-.fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .08s both;}
-.fw-breaker .bk-tx b{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .16s both;}
-.fw-breaker .bk-tx span{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .22s both;}
+.fw-breaker{animation:fwFade .22s ease-out .18s both;}
+.fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .26s both;}
+.fw-breaker .bk-tx b{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .34s both;}
+.fw-breaker .bk-tx span{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .40s both;}
 /* 화면 전환: 앱 기본값인 우->좌 push. 뒤로가기는 역방향(pop).
    나가는 화면은 -25% 까지만 밀려 시차(parallax)를 준다(iOS/안드로이드 공통 관례).
    복제본이므로 자식들의 등장 애니메이션은 꺼서 다시 재생되지 않게 한다. */
@@ -710,8 +710,8 @@ body.mock.flowopen{overflow:hidden;}
    ⚠ 부유는 등장(fwRise)이 끝난 뒤 시작해야 한다. 같은 transform 을 쓰므로 뒤에
      선언해 등장이 끝난 구간부터 이 쪽이 이기게 한다. */
 @keyframes fwFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
-.fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .08s both,
-                          fwFloat 2s ease-in-out .34s infinite;}
+.fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .26s both,
+                          fwFloat 2s ease-in-out .52s infinite;}
 .fw-breaker{cursor:pointer;}
 @media (prefers-reduced-motion:reduce){
   .fw-breaker,.fw-breaker img,.fw-breaker .bk-tx b,.fw-breaker .bk-tx span{animation:none;}
@@ -1009,51 +1009,55 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       <section class="dd-sec">
         <h3>브릿지 화면 타이밍</h3>
         <table class="dd-t">
-          <tr><th>차량 선택 [다음] &rarr; 확인 화면</th><td>슬라이드 <b>320ms</b> (우&rarr;좌)</td></tr>
-          <tr><th>확인 화면 &rarr; 브릿지</th><td><b>400ms</b> 뒤. 슬라이드 없이 위에 덮음</td></tr>
-          <tr><th>브릿지 체류</th><td><b>1300ms</b> = 등장 480 + 정지 820</td></tr>
-          <tr><th>브릿지 &rarr; 요일 선택</th><td>슬라이드 <b>320ms</b> (우&rarr;좌)</td></tr>
+          <tr><th>차량 선택 [다음]</th><td>확인 화면과 브릿지를 <b>한 번에</b> 그리고 슬라이드 <b>320ms</b> (우&rarr;좌)</td></tr>
+          <tr><th>흰 베일</th><td><b>180ms</b> 에 페이드 시작, 400ms 에 완성</td></tr>
+          <tr><th>문구까지 등장 완료</th><td><b>660ms</b></td></tr>
+          <tr><th>요일 선택으로</th><td><b>1480ms</b> (정지 구간 820ms)</td></tr>
         </table>
-        <p class="dd-n">확인 화면이 보이는 시간은 400ms 뿐입니다. 300ms 로 줄이면 슬라이드(320ms)보다 짧아져
-          정지 상태가 100ms 남짓이 되고, 화면이 아니라 깜빡임으로 읽힙니다. <b>400ms 가 하한</b>입니다.</p>
+        <p class="dd-n">확인 화면은 브릿지 뒤에 비치는 배경이지 읽으라고 두는 화면이 아닙니다.
+          베일을 슬라이드가 끝난 뒤에 띄우지 말고 <b>도중(180ms)부터 겹치게</b> 하세요.
+          ⚠ 확인 화면을 먼저 그린 뒤 나중에 브릿지를 덧그리는 방식은 피해야 합니다.
+          그 재렌더가 진행 중이던 슬라이드를 죽여 화면이 튀고, 그걸 피하려면 400ms 를
+          기다려야 해서 브릿지가 그만큼 늦게 뜹니다.</p>
       </section>
 
       <section class="dd-sec">
         <h3>브릿지 등장 순서</h3>
-        <pre><code>오버레이   fade  220ms  ease-out            delay    0
-아이콘     rise  260ms  cubic(.2,.8,.3,1)   delay   80ms
-헤드라인   rise  260ms  cubic(.2,.8,.3,1)   delay  160ms
-서브       rise  260ms  cubic(.2,.8,.3,1)   delay  220ms
+        <pre><code>슬라이드   scrInR 320ms  cubic(.2,.8,.3,1)   delay    0
+베일       fade   220ms  ease-out            delay  180ms
+아이콘     rise   260ms  cubic(.2,.8,.3,1)   delay  260ms
+헤드라인   rise   260ms  cubic(.2,.8,.3,1)   delay  340ms
+서브       rise   260ms  cubic(.2,.8,.3,1)   delay  400ms
 
 rise = opacity 0 -&gt; 1, translateY(12px) -&gt; 0</code></pre>
-        <p class="dd-n">마지막 요소가 <b>220 + 260 = 480ms</b> 에 끝납니다. 남은 <b>820ms</b> 가 정지 구간입니다.
-          아이콘은 등장 뒤 2초 주기로 8px 위아래 부유합니다(delay 340ms).</p>
+        <p class="dd-n">마지막 요소가 <b>400 + 260 = 660ms</b> 에 끝납니다. 남은 <b>820ms</b> 가 정지 구간입니다.
+          아이콘은 등장 뒤 2초 주기로 8px 위아래 부유합니다(delay 520ms).
+          베일은 슬라이드 중인 화면 위에 와야 하므로 <b>z-index 가 그보다 높아야</b> 합니다.</p>
       </section>
 
       <section class="dd-sec">
         <h3>전환 로직</h3>
-        <pre><code>const FLOW_T = { confirmToBridge: 400, bridgeStay: 1300 };
+        <pre><code>const FLOW_T = { bridgeStay: 1480 };
 
-function goStep(step, opts){
+function goStep(step){
   clearFlowTimers();                 // 겹친 타이머부터 지운다
   S.step = step;
-  renderFlow();
-
-  if (step === 'confirm' &amp;&amp; !(opts &amp;&amp; opts.noAuto)){
-    setTimeout(() =&gt; goStep('bridge'),  FLOW_T.confirmToBridge);
-  } else if (step === 'bridge'){
+  renderFlow();                      // 확인 화면 + 브릿지를 한 번에 그린다
+  if (step === 'bridge'){
     setTimeout(() =&gt; goStep('weekday'), FLOW_T.bridgeStay);
   }
 }
 
-// 요일 선택에서 취소 -&gt; 확인 화면(경고 배너). 자동 전환은 끈다
-goStep('confirm', { noAuto: true });</code></pre>
+// 차량 선택 [다음] 은 확인 화면이 아니라 브릿지로 바로 간다
+goStep('bridge');
+// 요일 선택에서 취소하면 확인 화면으로. 진입 훅이 없으니 거기서 멈춘다
+goStep('confirm');</code></pre>
         <ul class="dd-l">
           <li><b>타이머를 먼저 지웁니다.</b> 안 지우면 이전 단계의 예약분이 살아남아 단계를 건너뜁니다.</li>
-          <li><b>확인 &rarr; 브릿지만 슬라이드가 없습니다.</b> 같은 화면 위에 오버레이를 얹는 것이라 밀면 안 됩니다.
-            나머지 단계는 전부 우&rarr;좌 push, 뒤로가기는 그 역방향 pop 입니다.</li>
-          <li><b>취소로 확인 화면에 돌아올 때는 자동 전환을 꺼야 합니다.</b> 그냥 되돌리면 진입 훅이 다시 걸려
-            브릿지 &rarr; 요일 선택으로 끌려갑니다. <b>취소가 취소되지 않습니다.</b></li>
+          <li><b>확인 화면은 독립 단계가 아닙니다.</b> 정방향에서는 브릿지와 한 덩어리로 그려지고,
+            취소로 되돌아올 때만 단독으로 뜹니다. 모든 화면 전환은 우&rarr;좌 push, 뒤로가기는 pop 입니다.</li>
+          <li><b>확인 화면에 자동 전환 훅을 걸지 마세요.</b> 걸면 취소로 돌아왔을 때 다시
+            브릿지 &rarr; 요일 선택으로 끌려가 <b>취소가 취소됩니다.</b></li>
         </ul>
       </section>
 
@@ -1245,7 +1249,7 @@ function fCar(){
       <div class="fw-add"><b>카시트 1개</b><span>0세부터 이용하는 카시트 1개</span><span>이용료 5,000원</span></div>
     </div>
     <div class="fw-fix">넥스트 예약 시 <b>100% 확정</b></div>
-    <div class="fw-cta pay"><div class="p"><i>예상 요금</i><b>125,000원</b></div><div class="b" data-flow="confirm">다음</div></div>
+    <div class="fw-cta pay"><div class="p"><i>예상 요금</i><b>125,000원</b></div><div class="b" data-flow="bridge">다음</div></div>
   </div>`;
 }
 
@@ -1710,27 +1714,30 @@ function layout(){
 /* ── 플로우 단계 전환 ────────────────────────────────────────────
    예약 확인에 들어가면 사용자가 아무것도 안 해도 bridge를 거쳐 요일 선택으로 간다.
    ⚠ 자동 구간에 타이머가 겹치면 단계가 건너뛰어지므로 진입할 때마다 항상 먼저 지운다. */
-/* confirmToBridge 를 300 으로 두면 푸시 슬라이드(320ms)보다 짧아서, 확인 화면이
-   정지 상태로 보이는 시간이 100ms 남짓이 된다. 한 번 응시가 200~250ms 이니
-   구조적으로 읽을 수 없고 사용자에겐 깜빡임(글리치)으로 읽힌다. 400 이 하한이다.
-   bridgeStay 는 '읽는 시간'이 아니라 '머무는 총 시간'이다. 등장 애니메이션이
-   480ms 를 먹으므로 실제 정지 상태는 1300 - 480 = 약 820ms 다. */
-const FLOW_T = { confirmToBridge: 400, bridgeStay: 1300 };
+/* bridgeStay 는 '읽는 시간'이 아니라 차량 선택에서 [다음] 을 누른 순간부터
+   요일 선택으로 넘어갈 때까지의 총 시간이다.
+   타임라인: 0 슬라이드 시작 / 180 베일 페이드 / 400 베일 완성 / 660 문구까지
+   등장 완료 / 1480 요일 선택. 실제 정지 구간은 1480 - 660 = 820ms 다.
+   등장 지연은 CSS(.fw-breaker 계열 animation-delay)가 쥐고 있으므로 이 값만
+   바꾸면 정지 구간이 늘고 준다. */
+const FLOW_T = { bridgeStay: 1480 };
 let flowTimers = [];
 function clearFlowTimers(){ flowTimers.forEach(clearTimeout); flowTimers = []; }
 
-/* noAuto: 확인 화면으로 '되돌아올' 때 쓴다. 그냥 goStep('confirm') 하면 진입 훅이
-   다시 걸려 bridge -> 요일선택으로 무한히 끌려간다(취소가 취소되지 않는다). */
-function goStep(step, opts){
+/* 예전에는 confirm 을 그린 뒤 400ms 뒤 bridge 로 '재렌더' 했는데, 그 재렌더가
+   renderFlow 의 innerHTML 교체라 진행 중이던 푸시 슬라이드(320ms)를 통째로 죽였다.
+   400ms 는 연출이 아니라 구조가 강제한 하한이었다는 뜻이다.
+   지금은 차량 선택에서 곧바로 bridge 로 가고 확인 화면과 브릿지를 한 번에 그린다.
+   흰 베일만 CSS animation-delay 180ms 로 늦춰 슬라이드와 겹친다.
+   덕분에 confirm 진입 훅이 사라져 noAuto 도 필요 없다(취소가 취소되지 않던 함정 제거). */
+function goStep(step){
   clearFlowTimers();
   S.step = step;
   // 오버레이가 '기기 화면 한 장' 크기라, 폰 상단이 보이도록 맞춰야 화면이 맞물린다
   document.body.classList.toggle('flowopen', !!step);
   if (step) window.scrollTo(0, 0);
   renderFlow();
-  if (step === 'confirm' && !(opts && opts.noAuto)){
-    flowTimers.push(setTimeout(() => goStep('bridge'), FLOW_T.confirmToBridge));
-  } else if (step === 'bridge'){
+  if (step === 'bridge'){
     flowTimers.push(setTimeout(() => goStep('weekday'), FLOW_T.bridgeStay));
   }
 }
@@ -1747,8 +1754,7 @@ let prevStep = '';
 
 function renderFlow(){
   const from = prevStep, to = S.step;
-  const overlayOnly = (from === 'confirm' && to === 'bridge');   // 같은 화면 + 오버레이
-  const slide = SCREENS.includes(to) && !overlayOnly && from !== to;
+  const slide = SCREENS.includes(to) && from !== to;
   const fwd = STEP_ORDER.indexOf(to) >= STEP_ORDER.indexOf(from);
 
   stage.querySelectorAll('.fwlayer').forEach(host => {
@@ -1788,14 +1794,14 @@ function wireFlow(){
       const to = node.dataset.flow;
       if (to === 'close')  return goStep('');
       if (to === 'back'){
-        if (S.step === 'weekday'){ S.cfBanner = 'warn'; return goStep('confirm', {noAuto:true}); }
+        if (S.step === 'weekday'){ S.cfBanner = 'warn'; return goStep('confirm'); }
         return goStep(S.step === 'schedule' ? 'sheet' : '');
       }
       if (to === 'cancel'){                       // 요일선택 취소/뒤로 -> 예약 확인(경고 배너)
         S.cfBanner = 'warn';
-        return goStep('confirm', {noAuto:true});
+        return goStep('confirm');
       }
-      if (to === 'confirm') S.cfBanner = 'promo';  // 차량선택 -> 다음 (권유 배너)
+      if (to === 'bridge') S.cfBanner = 'promo';   // 차량선택 -> 다음 (권유 배너)
       goStep(to);
     });
   });
@@ -1869,7 +1875,7 @@ bind('segCoupon', 'coupon', Number);
 bind('segMode', 'mode');
 
 document.getElementById('playBridge').addEventListener('click', () => {
-  S.cfBanner = 'promo'; panel(false); goStep('confirm');
+  S.cfBanner = 'promo'; panel(false); goStep('bridge');
 });
 
 document.body.classList.add('condshut');
