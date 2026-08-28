@@ -46,6 +46,10 @@
   .cap .dot.d{background:var(--navy-900);}
   .cap b{font-size:12.5px;font-weight:600;color:var(--ink-2);}
   .cap em{font-style:normal;font-size:11.5px;color:var(--ink-3);}
+  .dsw{margin-left:auto;display:flex;gap:4px;}
+  .dswb{border:1px solid var(--line);background:#fff;border-radius:9999px;padding:5px 11px;
+    font:inherit;font-size:11.5px;color:var(--ink-2);cursor:pointer;}
+  .dswb.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600;}
   .step{margin:10px 3px 0;font-size:12px;line-height:18px;color:var(--ink-3);}
 
   .phone{width:360px;height:780px;background:#fff;border-radius:30px;border:1px solid #e2e6ee;
@@ -307,12 +311,16 @@
   .dpass b{flex:1 1 auto;font-size:22px;font-weight:700;color:var(--gray-50);letter-spacing:-.3px;}
   .dpass .tel{display:flex;padding-right:15px;}
   .dsheet{background:var(--navy-900);border-radius:12px 12px 0 0;padding:14px;}
+  .rhead{padding:16px 16px 0;font-size:15px;line-height:21px;color:var(--gray-300);}
   .dcard{border:1px solid var(--gray-50);border-radius:8px;overflow:hidden;background:var(--navy-900);}
   .dtop{padding:16px 16px 24px;display:flex;flex-direction:column;gap:8px;}
   .dtop .row{display:flex;gap:12px;}
   .dbadge{background:var(--blue-600);border-radius:4px;padding:6px 10px;font-size:16px;
     font-weight:700;color:var(--gray-50);align-self:flex-start;line-height:22px;}
   .dtop .ci{flex:1 1 auto;display:flex;flex-direction:column;gap:8px;}
+  .cnav{display:flex;align-items:center;gap:15px;}
+  .cnav .navb{flex:0 0 auto;}
+  .cnav .navb svg path{fill:#ffffff;}
   .dtop .ci b{font-size:24px;font-weight:700;color:#fff;line-height:31px;letter-spacing:-.4px;}
   .dtop .ci span{font-size:15px;color:var(--gray-200);line-height:20px;}
   .dtalk{display:flex;flex-direction:column;align-items:center;}
@@ -344,6 +352,8 @@
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:keep-all;}
   .droute.open .rv{white-space:normal;overflow:visible;text-overflow:clip;}
   .droute .rx{position:absolute;right:12px;top:11px;font-size:13px;color:var(--gray-300);}
+  .dgo.arrived{background:var(--blue-500);color:#fff;}
+  .dgo.arrived svg path{fill:#ffffff;}
   .dgo{width:100%;border:none;background:var(--gray-50);padding:10px 16px;font:inherit;
     font-size:20px;font-weight:700;color:var(--gray-950);display:flex;align-items:center;
     justify-content:center;gap:10px;letter-spacing:-.3px;}
@@ -517,7 +527,9 @@
   </div>
 
   <div>
-    <div class="cap"><span class="dot d"></span><b>드라이버 앱</b><em>기사님</em></div>
+    <div class="cap"><span class="dot d"></span><b>드라이버 앱</b><em>기사님</em>
+      <span class="dsw"><button type="button" class="dswb on" data-ds="go">이동 중</button><button
+        type="button" class="dswb" data-ds="arrived">픽업지 도착</button></span></div>
     <div class="phone">
       <div class="scr on dscr">
         <div class="sb dark"><span class="ic"><i class="wifi"></i><i class="sig"></i><i class="bat"></i></span><span>12:30</span></div>
@@ -553,11 +565,15 @@
           <span class="pic"><svg class="ic" width="26" height="26" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_19_10)"><path fill-rule="evenodd" clip-rule="evenodd" d="M42 84C65.196 84 84 65.196 84 42C84 18.804 65.196 0 42 0C18.804 0 0 18.804 0 42C0 65.196 18.804 84 42 84ZM50.4116 27.5621C50.4116 32.6369 46.4355 36.7492 41.5321 36.7492C36.6285 36.7492 32.6526 32.6369 32.6526 27.5621C32.6526 22.4873 36.6285 18.375 41.5321 18.375C46.4355 18.375 50.4116 22.4873 50.4116 27.5621ZM21 60.375L22.694 43.6772C22.694 43.6772 42.4725 41.4653 61.684 43.4777L63 60.172L21 60.375Z" fill="#D5D7DC"/></g><defs><clipPath id="clip0_0_19_10"><rect width="28" height="28" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><b>김지혜</b><span class="tel"><svg class="ic" width="24" height="24" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M53.4992 53.7L51.5826 65.4C51.5826 65.4 41.9416 61.5557 34.3326 51.75C26.7236 41.9443 22.8326 28.35 22.8326 28.35L34.3326 26.4V3H7.50003V27.6314C7.50003 29.4002 7.73162 31.1559 8.29943 32.831C10.0058 37.8648 14.5411 49.5047 22.8326 59.55C29.4371 67.5515 36.4544 73.7153 40.974 77.3405C44.065 79.82 47.9413 81 51.9039 81H76.5V53.7H53.4992Z" fill="white"/></svg></span>
         </div>
         <div class="dsheet">
+          <div class="rhead" id="rhead" hidden>고객 위치로 이동 중</div>
           <div class="dcard">
             <div class="dtop">
               <div class="row">
                 <span class="dbadge">출발지</span>
-                <div class="ci"><b>래미안원베일리</b><span>서울 서초구 반포대로 333</span></div>
+                <div class="ci">
+                  <div class="cnav"><b>래미안원베일리</b><span class="navb" id="cnav" hidden><svg class="ic" width="20" height="20" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_nav)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_nav"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg></span></div>
+                  <span>서울 서초구 반포대로 333</span>
+                </div>
               </div>
               <div class="dtalk empty" id="dtalk">
                 <div class="tail"></div>
@@ -577,7 +593,7 @@
                 <span class="rx" id="droute-x">보기</span>
               </button>
             </div>
-            <button class="dgo"><svg class="ic" width="22" height="22" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_12)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_12"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>고객 위치로 출발하기</button>
+            <button class="dgo" id="dgo"></button>
           </div>
         </div>
       </div>
@@ -635,7 +651,7 @@
     sending:false, sent:false, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:''},
-    step:null, skipped:{}, routeOpen:null, dongMode:'num'
+    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go'
   };
 
   /* ── 문장 ── */
@@ -897,6 +913,18 @@
                           : '아직 전달된 픽업 위치가 없습니다.'))
       : (S.origin==='start' ? '배차와 동시에 받았습니다.'
                             : (S.edited ? '이동 중에 바뀐 값을 받았습니다.' : '이동을 시작한 뒤 받았습니다.'));
+    /* Figma 실측: 세 드라이버 화면 모두 탑승 배지는 동일하다. 달라지는 것은
+       RouteHeader, 주소 옆 내비 버튼, CTA 색과 문구다. 상태마다 배지를 바꾸면
+       기사가 다시 학습해야 한다. 같은 자리 같은 모양이 맞다. */
+    const arrived = S.dstate==='arrived';
+    el('rhead').hidden = !arrived;
+    el('cnav').hidden = !arrived;
+    el('dgo').className = 'dgo'+(arrived?' arrived':'');
+    el('dgo').innerHTML = arrived
+      ? '<svg class="ic" width="20" height="20" viewBox="0 0 71 68" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.74022 0.391808C3.07348 -0.871381 0 1.07361 0 4.0244V25.8094L44.2147 33.8484L0 41.8874V63.6724C0 66.6232 3.07348 68.5682 5.74021 67.305L68.702 37.481C71.7671 36.0291 71.7671 31.6677 68.702 30.2158L5.74022 0.391808Z" fill="white"/></svg>고객에게 도착 알리기'
+      : '<svg class="ic" width="22" height="22" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_go)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_go"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>고객 위치로 출발하기';
+    $$('.dswb').forEach(b=>b.classList.toggle('on', b.dataset.ds===S.dstate));
+
     el('fdesc').innerHTML = S.screen==='start'
       ? (S.mode==='repeat' ? '출발지 설정 화면. 이 주소에 저장된 값이 <b>미리 채워져</b> 있습니다.'
                            : '출발지 설정 화면. 픽업 위치는 <b>선택</b>입니다.')
@@ -924,6 +952,7 @@
     render();
   }
 
+  $$('.dswb').forEach(b=>b.addEventListener('click',()=>{ S.dstate=b.dataset.ds; render(); }));
   el('droute').addEventListener('click',()=>{
     S.routeOpen = !el('droute').classList.contains('open');
     render();
