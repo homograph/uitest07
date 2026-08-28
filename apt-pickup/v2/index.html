@@ -586,7 +586,7 @@
   const $$ = s => Array.from(document.querySelectorAll(s));
   const el = id => document.getElementById(id);
 
-  const FLOORS=[1,2,3,4,5,6,7];
+  const FLOORS=[1,2,3,4,5];
   const PH='자세한 픽업 위치를 입력해주세요';
   const SENT_AT='12:46';
   const SAVED_FOR_ADDRESS={lvl:'under',floor:4,dong:'1901',line:'',etc:'엘리베이터 앞'};
@@ -596,12 +596,12 @@
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     sending:false, sent:false, opened:null,
     saved:null, current:null,
-    d:{lvl:null,floor:null,dong:'',line:'',etc:''},
+    d:{lvl:'under',floor:null,dong:'',line:'',etc:''},
     step:null, skipped:{}
   };
 
   /* ── 문장 ── */
-  const lineText = v => { v=(v||'').trim(); return !v?'':(/라인|현관|호/.test(v)?v:v+'라인'); };
+  const lineText = v => { v=(v||'').trim(); return !v?'':(/라인|현관/.test(v)?v:v+'라인'); };
   const core = d => (d.lvl==='under' ? '지하 '+d.floor+'층' : '지상')
                   + ' · ' + d.dong.trim() + '동' + (d.line ? ' '+lineText(d.line) : '');
   const sentence = d => !d ? '' : core(d)+' 앞에서 탈게요'+(d.etc.trim()?' ('+d.etc.trim()+')':'');
@@ -665,7 +665,7 @@
       ctl.innerHTML='';
       if(S.step==='lvl'){
         const seg=document.createElement('div'); seg.className='seg';
-        [['ground','지상'],['under','지하 주차장']].forEach(([v,t])=>{
+        [['under','지하 주차장'],['ground','지상']].forEach(([v,t])=>{
           const b=document.createElement('button'); b.type='button'; b.className='segb'+(S.d.lvl===v?' on':'');
           b.textContent=t;
           b.addEventListener('click',()=>{ S.d.lvl=v; if(v!=='under') S.d.floor=null; advance(); });
@@ -682,16 +682,17 @@
         });
         ctl.appendChild(w);
       } else {
-        const cfg={dong:{max:5,ph:'예: 가동, 101, 1901'},
-                   line:{max:6,ph:'예: 1-2'},
-                   etc:{max:30,ph:S.d.lvl==='ground'?'예: 상가 앞, 놀이터 쪽':'예: 엘리베이터 앞, B구역'}}[S.step];
+        const cfg={dong:{max:5,ph:'예: 101, 1901, C'},
+                   line:{max:8,ph:'예: 1-2, 3,4호'},
+                   etc:{max:50,ph:S.d.lvl==='ground'?'예: 정문으로 들어와서 우회전'
+                                                    :'예: 게이트2로 들어와서 좌회전'}}[S.step];
         const w=document.createElement('div'); w.className='tinwrap';
         w.innerHTML='<input class="tin" id="tin" maxlength="'+cfg.max+'" placeholder="'+cfg.ph+'" />'
                    +'<span class="tcnt"><b id="tcnt">0</b>/'+cfg.max+'</span>';
         ctl.appendChild(w);
         if(S.step==='line'){
           const p=document.createElement('p'); p.className='askhelp';
-          p.innerHTML='공동현관에 붙어 있는 <b>그대로</b> 적으면 됩니다. 계단식은 보통 한 현관이 두 라인을 함께 씁니다.';
+          p.innerHTML='공동현관에 붙어 있는 <b>그대로</b> 적으면 됩니다. 1-2, 3,4호, 1/2 어떤 표기든 괜찮아요.';
           ctl.appendChild(p);
         }
         const inp=el('tin');
@@ -732,7 +733,7 @@
 
   function openForm(where){
     S.opened=where; S.skipped={};
-    S.d = S.current ? Object.assign({},S.current) : {lvl:null,floor:null,dong:'',line:'',etc:''};
+    S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,dong:'',line:'',etc:''};
     el('ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
     el('ph-hint').innerHTML = (where==='start')
       ? '배차되면 기사님께 함께 전달됩니다.'
