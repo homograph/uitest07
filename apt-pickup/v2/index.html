@@ -319,6 +319,16 @@
     display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}
   .dtalk .body em{font-style:normal;color:var(--blue-500);}
   .dtalk.empty .body{color:var(--gray-300);font-size:14px;}
+  /* 순서가 있는 길 안내는 목적지와 분리한다. 운전 중엔 접혀 있고, 멈췄을 때 펼친다.
+     3줄로 자른 길 안내는 없느니만 못하다. */
+  .droute{position:relative;width:100%;margin-top:8px;border:1px solid var(--navy-600);
+    background:transparent;border-radius:2px;padding:11px 46px 11px 14px;
+    display:flex;align-items:flex-start;gap:8px;font:inherit;text-align:left;cursor:pointer;}
+  .droute .rl{flex:0 0 auto;font-size:14px;font-weight:700;color:var(--blue-500);line-height:21px;}
+  .droute .rv{flex:1 1 auto;min-width:0;font-size:14px;line-height:21px;color:var(--gray-200);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:keep-all;}
+  .droute.open .rv{white-space:normal;overflow:visible;text-overflow:clip;}
+  .droute .rx{position:absolute;right:12px;top:11px;font-size:13px;color:var(--gray-300);}
   .dgo{width:100%;border:none;background:var(--gray-50);padding:10px 16px;font:inherit;
     font-size:20px;font-weight:700;color:var(--gray-950);display:flex;align-items:center;
     justify-content:center;gap:10px;letter-spacing:-.3px;}
@@ -538,6 +548,11 @@
                 <div class="tail"></div>
                 <div class="body" id="dtalkbody">탑승 위치 미전달</div>
               </div>
+              <button type="button" class="droute" id="droute" hidden>
+                <span class="rl">길 안내</span>
+                <span class="rv" id="droute-v"></span>
+                <span class="rx" id="droute-x">보기</span>
+              </button>
             </div>
             <button class="dgo"><svg class="ic" width="22" height="22" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_12)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_12"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>고객 위치로 출발하기</button>
           </div>
@@ -629,7 +644,7 @@
     floor:{q:'지하 몇 층에서 타세요?',     k:'층'},
     dong: {q:'몇 동이세요?',              k:'동'},
     line: {q:'호수 라인이 있나요?',        k:'라인', opt:true},
-    etc:  {q:'더 알려줄 게 있나요?',       k:'그 외', opt:true}
+    etc:  {q:'찾아오는 길을 알려줄까요?',   k:'길 안내', opt:true}
   };
   function ansText(k){
     if(k==='lvl')   return S.d.lvl==='under' ? '지하 주차장' : '지상';
@@ -684,12 +699,17 @@
       } else {
         const cfg={dong:{max:5,ph:'예: 101, 1901, C'},
                    line:{max:8,ph:'예: 1-2, 3,4호'},
-                   etc:{max:50,ph:S.d.lvl==='ground'?'예: 정문으로 들어와서 우회전'
-                                                    :'예: 게이트2로 들어와서 좌회전'}}[S.step];
+                   etc:{max:100,ph:S.d.lvl==='ground'?'예: 정문으로 들어와서 우회전'
+                                                     :'예: 게이트2로 들어와서 좌회전'}}[S.step];
         const w=document.createElement('div'); w.className='tinwrap';
         w.innerHTML='<input class="tin" id="tin" maxlength="'+cfg.max+'" placeholder="'+cfg.ph+'" />'
                    +'<span class="tcnt"><b id="tcnt">0</b>/'+cfg.max+'</span>';
         ctl.appendChild(w);
+        if(S.step==='etc'){
+          const p=document.createElement('p'); p.className='askhelp';
+          p.innerHTML='길 안내는 <b>기사님이 멈춰 있을 때</b> 펼쳐 봅니다. 운전 중에는 위치만 보여요.';
+          ctl.appendChild(p);
+        }
         if(S.step==='line'){
           const p=document.createElement('p'); p.className='askhelp';
           p.innerHTML='공동현관에 붙어 있는 <b>그대로</b> 적으면 됩니다. 1-2, 3,4호, 1/2 어떤 표기든 괜찮아요.';
@@ -784,7 +804,15 @@
 
     const got=reached();
     $('#dtalk').classList.toggle('empty',!got);
-    $('#dtalkbody').innerHTML = got ? '<em>탑승</em>&nbsp; '+S.value : '탑승 위치 미전달';
+    /* 운전 중 읽는 화면이다. 말풍선엔 목적지만 두고, 순서가 있는 길 안내는 분리한다.
+       3줄로 자른 길 안내는 없느니만 못하다. */
+    const cur=S.current;
+    $('#dtalkbody').innerHTML = got
+      ? '<em>탑승</em>&nbsp; '+core(cur)+' 앞에서 탈게요'
+      : '탑승 위치 미전달';
+    const dr=el('droute'), route=(got && cur && cur.etc.trim()) ? cur.etc.trim() : '';
+    dr.hidden = !route;
+    if(route){ el('droute-v').textContent = route; }
 
     el('rstep').textContent = S.screen==='start'
       ? (has ? (S.fromSaved ? '지난번 값이 채워져 있습니다. 다르면 눌러서 바꾸세요.'
@@ -826,6 +854,10 @@
     render();
   }
 
+  el('droute').addEventListener('click',()=>{
+    const dr=el('droute'), on=dr.classList.toggle('open');
+    el('droute-x').textContent = on ? '접기' : '보기';
+  });
   el('ph-next').addEventListener('click',()=>{ S.step===null ? submitForm() : advance(); });
   el('ph-skip').addEventListener('click',()=>{ S.skipped[S.step]=true; S.d[S.step]=''; advance(); });
   el('chk-save').addEventListener('change',()=>{ S.always=el('chk-save').checked; });
