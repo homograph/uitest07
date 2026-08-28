@@ -678,12 +678,9 @@ body.mock.flowopen{overflow:hidden;}
 @keyframes fwFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
 .fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .08s both,
                           fwFloat 2s ease-in-out .34s infinite;}
-.bk-skip{font-size:12px;line-height:16px;color:#9da0ae;letter-spacing:-.01em;}
 .fw-breaker{cursor:pointer;}
-.fw-breaker .bk-skip{animation:fwFade .3s ease-out .6s both;}
 @media (prefers-reduced-motion:reduce){
-  .fw-breaker,.fw-breaker img,.fw-breaker .bk-tx b,.fw-breaker .bk-tx span,
-  .fw-breaker .bk-skip{animation:none;}
+  .fw-breaker,.fw-breaker img,.fw-breaker .bk-tx b,.fw-breaker .bk-tx span{animation:none;}
   .fw-scr.push-in,.fw-scr.push-out,.fw-scr.pop-in,.fw-scr.pop-out{animation:none;}
 }
 .fw-breaker .bk-tx{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;}
@@ -1264,9 +1261,14 @@ function fConfirm(kind){
 
 /* bridge: 확인 화면 위에 흰 그라디언트를 덮는다.
 
-   확인 화면은 400ms 라 제대로 읽히지 않는다. 그래서 그 화면이 못 준 '보상'
-   (저장됐다)과 남은 일의 범위를 여기서 대신 말한다. 다음 화면 제목인
-   "반복할 요일을 선택해주세요"와 겹치지 않게 지시가 아니라 상태를 말한다.
+   헤드라인이 "아직 안 끝났다"를 진다. "마지막으로," 가 남은 일의 양을 못 박아
+   자동 이동이 납치로 읽히는 걸 막는다. ⚠ 여기서 "저장됐어요" 류로 바꾸지 말 것.
+   이 시점엔 아직 확정된 게 없어서(요일 선택에서 취소하면 경고 배너가 "아직
+   완료되지 않았습니다"라고 말한다) 사실과 어긋나는 약속이 된다.
+
+   서브는 탭 안내다. 원래 "선택 화면으로 이동합니다" 였는데 헤드라인이 이미
+   함의하는 내용이라 빈 줄이었다. 그 자리를 실제 쓸모 있는 안내로 바꿨다.
+   12px 힌트를 따로 두는 것보다 14px 서브가 훨씬 잘 발견된다.
 
    자동으로 넘어가되 탭하면 즉시 넘어간다. 강제 대기는 느린 사람을 위한 배려인데
    빠른 사람에겐 세금이라, 둘 다 만족시키려면 건너뛸 수 있어야 한다. 오버레이
@@ -1278,8 +1280,7 @@ function fConfirm(kind){
 function fBridge(){
   return `${fConfirm()}<div class="fw-breaker" data-flow="weekday">
     <img src="${A.icCal}" alt="">
-    <div class="bk-tx"><b>예약 내용이 저장됐어요</b><span>반복할 요일만 고르면 끝나요</span></div>
-    <span class="bk-skip">탭하면 바로 이동</span>
+    <div class="bk-tx"><b>마지막으로,<br>반복할 날짜를 알려주세요</b><span>탭하면 바로 이동</span></div>
   </div>`;
 }
 
