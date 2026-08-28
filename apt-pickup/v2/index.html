@@ -161,6 +161,8 @@
   .tcnt b{font-weight:700;}
   .askhelp{margin:9px 0 0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
   .askhelp b{color:var(--gray-700);font-weight:600;}
+  .kbswap{margin-top:9px;border:none;background:none;padding:4px 0;font:inherit;font-size:13px;
+    color:var(--navy-800);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
   .askhelp.warn{color:#a8620a;}
   .askhelp.warn b{color:#8a4f08;}
 
@@ -614,7 +616,7 @@
     sending:false, sent:false, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:''},
-    step:null, skipped:{}, routeOpen:null   /* null = 길이로 자동 */
+    step:null, skipped:{}, routeOpen:null, dongMode:'num'
   };
 
   /* ── 문장 ── */
@@ -704,12 +706,25 @@
                    etc:{max:100,ph:S.d.lvl==='ground'?'예: 정문으로 들어와서 우회전'
                                                      :'예: 게이트2로 들어와서 좌회전'}}[S.step];
         const w=document.createElement('div'); w.className='tinwrap';
-        w.innerHTML='<input class="tin" id="tin" maxlength="'+cfg.max+'" placeholder="'+cfg.ph+'" />'
+        const im = (S.step==='dong' && S.dongMode!=='text') ? ' inputmode="numeric"' : '';
+        w.innerHTML='<input class="tin" id="tin"'+im+' maxlength="'+cfg.max+'" placeholder="'+cfg.ph+'" />'
                    +'<span class="tcnt"><b id="tcnt">0</b>/'+cfg.max+'</span>';
         ctl.appendChild(w);
         if(S.step==='etc'){
           const p=document.createElement('p'); p.className='askhelp'; p.id='etc-help';
           ctl.appendChild(p);
+        }
+        if(S.step==='dong'){
+          /* 동 표기의 95%가 숫자다. 숫자 키패드를 먼저 띄우고,
+             가동·C동 같은 나머지는 한 번 눌러 전환한다. */
+          const b=document.createElement('button');
+          b.type='button'; b.className='kbswap';
+          b.textContent = S.dongMode==='text' ? '숫자로 입력' : '가동·C동처럼 글자로 입력';
+          b.addEventListener('click',()=>{
+            S.dongMode = (S.dongMode==='text') ? 'num' : 'text';
+            renderForm();
+          });
+          ctl.appendChild(b);
         }
         if(S.step==='line'){
           const p=document.createElement('p'); p.className='askhelp';
