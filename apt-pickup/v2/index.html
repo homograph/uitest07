@@ -313,7 +313,9 @@
   .blank:focus{background:var(--blue-050);border-bottom-color:var(--navy-800);}
   .blank.fl{width:48px;}
   .blank.dg{width:88px;}
+  .blank.ln{width:96px;}
   .fform .kbswap{display:block;margin-top:6px;}
+  .fform #f-lnhelp{margin-top:10px;}
   .fform .kbswap[hidden]{display:none;}
   .fopt{width:100%;margin-top:24px;padding-top:22px;border-top:1px solid var(--gray-30);
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
@@ -558,18 +560,16 @@
               <input class="blank dg" id="f-dong" maxlength="5"
                      placeholder="101" aria-label="몇 동" />
               <span class="w">동</span>
+              <input class="blank ln" id="f-line2" maxlength="8"
+                     placeholder="2-5호" aria-label="호수 라인, 없으면 비워 두세요" />
+              <span class="w">라인</span>
               <span class="w tail2">앞에서 탈게요</span>
             </div>
             <button type="button" class="kbswap" id="f-swap"></button>
+            <p class="askhelp" id="f-lnhelp">라인은 <b>공동현관에 붙어 있는 그대로</b> 적으면 됩니다.
+               1-2, 3,4호, 1/2 어떤 표기든 괜찮아요. <b>없으면 비워 두세요.</b></p>
 
             <div class="fopt" id="fopt" hidden>
-              <p class="flab3">호수 라인 <em>선택</em></p>
-              <div class="tinwrap">
-                <input class="tin" id="f-line" maxlength="8" placeholder="예: 1-2, 3,4호" />
-                <span class="tcnt"><b id="f-line-c">0</b>/8</span>
-              </div>
-              <p class="askhelp">공동현관에 붙어 있는 <b>그대로</b> 적으면 됩니다. 1-2, 3,4호, 1/2 어떤 표기든 괜찮아요.</p>
-              <div class="sp2"></div>
               <p class="flab3">찾아오는 길 <em>선택</em></p>
               <div class="tinwrap">
                 <input class="tin" id="f-etc" maxlength="100" />
@@ -660,14 +660,20 @@
     <h3><i>0</i>입력 방식 A · B</h3>
     <p><b>A · 순차 쌓기</b>는 한 번에 하나만 묻고 답한 것을 위로 쌓습니다. 지금 무엇을 답해야 하는지가
        화면에 하나뿐이라 헤매지 않지만, <b>전체 분량이 보이지 않아</b> 몇 번 더 눌러야 끝나는지 알 수 없습니다.</p>
-    <p><b>B · 한 화면 문장형</b>은 필수 세 가지(위치·층·동)를 처음부터 전부 펼칩니다. 층과 동은 라벨을 따로 두지 않고
-       <b>문장 안의 빈칸</b>으로 받습니다. 문장 속 &lsquo;층&rsquo; &lsquo;동&rsquo; 글자가 그대로 라벨이고,
+    <p><b>B · 한 화면 문장형</b>은 주소를 이루는 것(위치·층·동·라인)을 처음부터 전부 펼칩니다. 층과 동은 라벨을 따로 두지 않고
+       <b>문장 안의 빈칸</b>으로 받고, 라인도 같은 문장에 붙입니다. 문장 속 &lsquo;층&rsquo; &lsquo;동&rsquo; 글자가 그대로 라벨이고,
        입력하는 화면이 곧 <b>기사님이 받을 문장</b>이라 하단 미리보기 줄이 필요 없어집니다.</p>
-    <p>선택 입력(라인·찾아오는 길)은 <b>필수를 다 채운 뒤에만</b> 나타납니다. 처음부터 다섯 칸을 보여 주면
-       선택 항목까지 의무처럼 읽히기 때문입니다.</p>
-    <p>B의 대가는 <b>스크롤</b>입니다. 선택 입력이 펼쳐지면 한 화면에 다 담기지 않습니다.
-       A는 끝까지 스크롤이 없습니다. 반대로 A의 대가는 <b>탭 수</b>이고, B는 층을 한 자리 치면
-       동으로 자동으로 넘어가 필수 입력이 <b>탭 두 번 + 타이핑</b>으로 끝납니다.</p>
+    <p>나누는 축은 <b>필수와 선택이 아니라 정보의 종류</b>입니다. 위치·층·동·라인은 전부
+       <b>주소 성분</b>이라 한 문장에 들어가고, 찾아오는 길만 <b>자유 서술</b>이라 문장 밖으로 뺐습니다.
+       실제 요청사항 1,727건에서 동을 말한 사람의 <b>40.0%</b>가 라인까지 말했고, 표기도 예외 없이
+       <b>101동 2-5라인</b>처럼 동에 곧바로 붙습니다. 라인은 덤이 아니라 주소의 일부입니다.</p>
+    <p>라인 칸이 처음부터 비어 보이는 대가로 <b>없으면 비워 두세요</b>를 문장 아래에 붙였습니다.
+       라인이 없는 60%가 이 칸에서 멈추지 않게 하는 장치입니다.</p>
+    <p>문장 밖에 남은 <b>찾아오는 길</b>은 필수를 다 채운 뒤에만 나타납니다. 긴 자유 입력을 첫 화면에 펼쳐 두면
+       길게 쓰게 되는데, 기사님은 운전 중에 그걸 못 읽습니다.</p>
+    <p>A의 대가는 <b>탭 수</b>이고, 몇 번 더 눌러야 끝나는지 화면에 안 보입니다. B는 층을 한 자리 치면
+       동으로 자동으로 넘어가 주소 입력이 <b>탭 두 번 + 타이핑</b>으로 끝나고, 분량이 처음부터 보입니다.
+       대신 B는 자유 서술까지 펼치면 화면 아래가 빠듯해집니다.</p>
   </div>
   <div class="note">
     <h3><i>1</i>진입점은 둘 다 산다</h3>
@@ -916,6 +922,7 @@
 
     const fl=el('f-floor'); fl.value = d.floor ? String(d.floor) : '';
     const dg=el('f-dong');  dg.value = d.dong;
+    el('f-line2').value = d.line;
     dg.setAttribute('inputmode', S.dongMode==='text' ? 'text' : 'numeric');
 
     /* 키패드 전환은 아직 안 쓴 사람에게만 필요하다. 동을 채우고 나면 치운다 */
@@ -925,8 +932,7 @@
 
     el('fopt').hidden = !ok;
     if(ok){
-      const ln=el('f-line'), et=el('f-etc');
-      ln.value=d.line; el('f-line-c').textContent=d.line.length;
+      const et=el('f-etc');
       et.value=d.etc;  el('f-etc-c').textContent=d.etc.length;
       et.placeholder = S.d.lvl==='ground'?'예: 정문으로 들어와서 우회전':'예: 게이트2로 들어와서 좌회전';
       paintFEtc();
@@ -965,14 +971,17 @@
       S.dongMode = (S.dongMode==='text') ? 'num' : 'text';
       renderSentence(); setTimeout(()=>dg.focus(),20);
     });
-    el('f-line').addEventListener('input',ev=>{
-      S.d.line=ev.target.value; el('f-line-c').textContent=ev.target.value.length; paintFoot();
+    /* 문장에 '라인' 이라는 글자가 이미 찍혀 있다. 값에 또 적으면 '3,5호라인 라인' 이 된다 */
+    const ln2=el('f-line2');
+    ln2.addEventListener('input',ev=>{
+      const v=ev.target.value.replace(/\s*라인\s*$/,'');
+      ev.target.value=v; S.d.line=v; paintFoot();
     });
     el('f-etc').addEventListener('input',ev=>{
       S.d.etc=ev.target.value; el('f-etc-c').textContent=ev.target.value.length;
       paintFEtc(); paintFoot();
     });
-    [fl,dg,el('f-line'),el('f-etc')].forEach(i=>i.addEventListener('keydown',ev=>{
+    [fl,dg,ln2,el('f-etc')].forEach(i=>i.addEventListener('keydown',ev=>{
       if(ev.key==='Enter' && !el('ph-next').disabled) el('ph-next').click();
     }));
   }
