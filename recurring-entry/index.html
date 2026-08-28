@@ -678,13 +678,17 @@ body.mock.flowopen{overflow:hidden;}
 @keyframes fwFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
 .fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .08s both,
                           fwFloat 2s ease-in-out .34s infinite;}
+.bk-skip{font-size:12px;line-height:16px;color:#9da0ae;letter-spacing:-.01em;}
+.fw-breaker.skip{cursor:pointer;}
+.fw-breaker .bk-skip{animation:fwFade .3s ease-out .6s both;}
 .bk-bar{width:96px;height:3px;border-radius:999px;background:#e6e9ef;overflow:hidden;}
 .bk-bar i{display:block;height:100%;width:100%;border-radius:999px;transform-origin:left center;
   background:linear-gradient(90deg,#5cb4fa 0%,#0063c5 100%);
   animation-name:fwBar;animation-timing-function:linear;animation-delay:.3s;animation-fill-mode:both;}
 @keyframes fwBar{from{transform:scaleX(0);} to{transform:scaleX(1);}}
 @media (prefers-reduced-motion:reduce){
-  .fw-breaker,.fw-breaker img,.fw-breaker .bk-tx b,.fw-breaker .bk-tx span{animation:none;}
+  .fw-breaker,.fw-breaker img,.fw-breaker .bk-tx b,.fw-breaker .bk-tx span,
+  .fw-breaker .bk-skip{animation:none;}
   .bk-bar i{animation:none;transform:scaleX(1);}
   .fw-scr.push-in,.fw-scr.push-out,.fw-scr.pop-in,.fw-scr.pop-out{animation:none;}
 }
@@ -1017,6 +1021,13 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       <div class="seg" id="segMode"><button data-v="device">실기기</button><button data-v="full">전체 길이</button></div>
       <button class="reset" id="reset">초기화</button>
     </div>
+    <div class="rline cond">
+      <div class="rname">브릿지<i>A안 · C안 비교</i></div>
+      <div class="seg" id="segBridge"><button data-v="now">현행</button><button data-v="a">A안</button><button data-v="c">C안</button><button data-v="ac">A+C</button></div>
+      <div class="rname" style="min-width:52px">확인 노출</div>
+      <div class="seg" id="segFlash"><button data-v="300">300</button><button data-v="400">400</button></div>
+      <button class="reset" id="playBridge">브릿지 재생</button>
+    </div>
     <div class="pfoot">
       <button id="pClose">닫기</button>
       <button id="pFull">설명과 주석 보기</button>
@@ -1120,7 +1131,8 @@ function foldFor(vid){
   return d.h - d.status - d.tab - d.sheet;
 }
 
-const DEFAULTS = {variant:'figmaD', recur:1, drafts:1, prevCount:2, coupon:1, mode:'device', step:'', days:['월'], cfBanner:'promo'};
+const DEFAULTS = {variant:'figmaD', recur:1, drafts:1, prevCount:2, coupon:1, mode:'device', step:'', days:['월'], cfBanner:'promo',
+  bridge:'now', flash:300};
 let S = Object.assign({}, DEFAULTS);
 let wasWide = null;
 let consoleFull = false;   // 모바일에서 콘솔 전체를 펼쳤는지
@@ -1263,15 +1275,22 @@ function fConfirm(kind){
   </div>`;
 }
 
-/* bridge: 확인 화면 위에 흰 그라디언트를 덮고 다음 할 일을 한 줄로 알린다.
-   자동 전환 구간이라 터치를 막는다(pointer-events:none 는 CSS). */
+/* bridge: 확인 화면 위에 흰 그라디언트를 덮고 다음 할 일을 알린다.
+   자동 구간이라 오버레이가 탭을 '흡수'한다(핸들러가 없을 뿐 pointer-events 는 살아 있다.
+   none 으로 두면 탭이 뒤 화면의 뒤로가기로 새어 들어간다). skip 프리셋에서만
+   오버레이 자신이 data-flow 를 갖고 즉시 다음으로 보낸다. */
 function fBridge(){
-  // 진행선 길이를 FLOW_T 에서 계산해 체류 시간을 바꿔도 자동으로 따라오게 한다.
-  const barMs = Math.max(300, FLOW_T.bridgeToWeekday - 300);
-  return `${fConfirm()}<div class="fw-breaker">
+  const m = bmode();
+  // 진행선 길이를 체류 시간에서 계산해 프리셋을 바꿔도 자동으로 따라오게 한다.
+  const barMs = Math.max(300, m.stay - 300);
+  const tx = m.copy === 'reward'
+    ? '<b>예약 내용이 저장됐어요</b><span>반복할 요일만 고르면 끝나요</span>'
+    : '<b>마지막으로,<br>반복할 날짜를 알려주세요</b><span>선택 화면으로 이동합니다</span>';
+  return `${fConfirm()}<div class="fw-breaker${m.skip ? ' skip' : ''}"${m.skip ? ' data-flow="weekday"' : ''}>
     <img src="${A.icCal}" alt="">
-    <div class="bk-tx"><b>마지막으로,<br>반복할 날짜를 알려주세요</b><span>선택 화면으로 이동합니다</span></div>
-    <div class="bk-bar" aria-hidden="true"><i style="animation-duration:${barMs}ms"></i></div>
+    <div class="bk-tx">${tx}</div>
+    ${m.bar ? `<div class="bk-bar" aria-hidden="true"><i style="animation-duration:${barMs}ms"></i></div>` : ''}
+    ${m.skip ? '<span class="bk-skip">탭하면 바로 이동</span>' : ''}
   </div>`;
 }
 
@@ -1659,9 +1678,24 @@ function layout(){
 /* ── 플로우 단계 전환 ────────────────────────────────────────────
    예약 확인에 들어가면 사용자가 아무것도 안 해도 bridge를 거쳐 요일 선택으로 간다.
    ⚠ 자동 구간에 타이머가 겹치면 단계가 건너뛰어지므로 진입할 때마다 항상 먼저 지운다. */
-/* bridgeToWeekday 는 '읽는 시간'이 아니라 '머무는 총 시간'이다. 등장 애니메이션이
-   480ms 를 먹으므로 실제 정지 상태는 이 값에서 480 을 뺀 만큼(2000 -> 약 1.5초)이다. */
-const FLOW_T = { confirmToBridge: 300, bridgeToWeekday: 2000 };
+/* stay 는 '읽는 시간'이 아니라 '머무는 총 시간'이다. 등장 애니메이션이 480ms 를
+   먹으므로 실제 정지 상태는 이 값에서 480 을 뺀 만큼이다(2000 -> 약 1.5초).
+
+   A안과 C안은 서로 직교한다. A 는 '무엇을 말하느냐', C 는 '기다림을 강제하느냐'라
+   겹쳐 볼 수 있게 A+C 까지 넷을 뒀다.
+   · copy 'inst'   현행. 다음 화면과 같은 지시를 미리 한다. 요일 화면 제목
+                   "반복할 요일을 선택해주세요"와 사실상 같은 문장이라 중복이다.
+   · copy 'reward' 확인 화면은 300ms 라 어차피 못 읽힌다. 그 역할(보상)을 브릿지가
+                   대신 지고, 남은 일의 범위를 말한다. 다음 화면과 겹치지 않는다.
+   · bar           로딩이 없는 구간의 진행바는 '가짜 로딩'이라 A 에서 뺀다.
+   · skip          강제 대기는 느린 사람을 위한 배려인데 빠른 사람에게 세금이 된다. */
+const BRIDGE_MODES = {
+  now: {label:'현행', stay:2000, bar:true,  skip:false, copy:'inst'},
+  a:   {label:'A안',  stay:1300, bar:false, skip:false, copy:'reward'},
+  c:   {label:'C안',  stay:2000, bar:true,  skip:true,  copy:'inst'},
+  ac:  {label:'A+C',  stay:1300, bar:false, skip:true,  copy:'reward'},
+};
+const bmode = () => BRIDGE_MODES[S.bridge] || BRIDGE_MODES.now;
 let flowTimers = [];
 function clearFlowTimers(){ flowTimers.forEach(clearTimeout); flowTimers = []; }
 
@@ -1675,9 +1709,9 @@ function goStep(step, opts){
   if (step) window.scrollTo(0, 0);
   renderFlow();
   if (step === 'confirm' && !(opts && opts.noAuto)){
-    flowTimers.push(setTimeout(() => goStep('bridge'), FLOW_T.confirmToBridge));
+    flowTimers.push(setTimeout(() => goStep('bridge'), S.flash));
   } else if (step === 'bridge'){
-    flowTimers.push(setTimeout(() => goStep('weekday'), FLOW_T.bridgeToWeekday));
+    flowTimers.push(setTimeout(() => goStep('weekday'), bmode().stay));
   }
 }
 
@@ -1848,6 +1882,7 @@ function syncSegs(){
   });
   set('segRecur', S.recur); set('segDraft', S.drafts); set('segPrev', S.prevCount);
   set('segCoupon', S.coupon); set('segMode', S.mode);
+  set('segBridge', S.bridge); set('segFlash', S.flash);
 }
 
 function bind(id, key, cast){
@@ -1862,6 +1897,22 @@ bind('segDraft', 'drafts', Number);
 bind('segPrev', 'prevCount', Number);
 bind('segCoupon', 'coupon', Number);
 bind('segMode', 'mode');
+
+/* 브릿지 프리셋은 값만 바꾸면 이미 돌고 있는 타이머가 옛 시간으로 남는다.
+   그 구간을 보고 있었으면 바뀐 값으로 처음부터 다시 재생한다. */
+function bindFlow(id, key, cast){
+  document.getElementById(id).addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    S[key] = cast ? cast(b.dataset.v) : b.dataset.v;
+    syncSegs(); render();
+    if (S.step === 'bridge' || S.step === 'confirm'){ S.cfBanner = 'promo'; goStep('confirm'); }
+  });
+}
+bindFlow('segBridge', 'bridge');
+bindFlow('segFlash', 'flash', Number);
+document.getElementById('playBridge').addEventListener('click', () => {
+  S.cfBanner = 'promo'; panel(false); goStep('confirm');
+});
 
 document.body.classList.add('condshut');
 document.getElementById('condToggle').addEventListener('click', () => {
