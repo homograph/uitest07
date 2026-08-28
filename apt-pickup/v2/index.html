@@ -291,7 +291,7 @@
     padding:14px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;}
   .ph-body .tmpnote{font-size:11.5px;line-height:17px;color:var(--gray-500);}
 
-  /* ══════ B안: 한 화면 문장형 ══════
+  /* ══════ 1안: 한 화면 문장형 ══════
      필수(위치·층·동)는 처음부터 전부 보이고, 선택 입력만 필수를 채운 뒤 나타난다.
      층·동은 라벨을 따로 두지 않는다. 문장 안의 '층' '동' 글자가 곧 라벨이다. */
   .ph-body.sform{justify-content:flex-start;gap:0;}
@@ -448,8 +448,8 @@
     <button class="rst" id="rst">처음부터</button>
   </div>
   <div class="tabs">
-    <button class="tab" data-form="seq">A · 순차 쌓기</button>
-    <button class="tab on" data-form="sform">B · 한 화면 문장형</button>
+    <button class="tab on" data-form="sform">1안 · 한 화면 문장형</button>
+    <button class="tab" data-form="seq">2안 · 순차 쌓기</button>
   </div>
   <p class="flowdesc" id="fdesc"></p>
 </div>
@@ -651,23 +651,28 @@
 <h2 class="sech">설계 노트</h2>
 <div class="notes">
   <div class="note">
-    <h3><i>0</i>입력 방식 A · B</h3>
-    <p><b>A · 순차 쌓기</b>는 한 번에 하나만 묻고 답한 것을 위로 쌓습니다. 지금 무엇을 답해야 하는지가
+    <h3><i>0</i>입력 방식 1안 · 2안</h3>
+    <p><b>2안 · 순차 쌓기</b>는 한 번에 하나만 묻고 답한 것을 위로 쌓습니다. 지금 무엇을 답해야 하는지가
        화면에 하나뿐이라 헤매지 않지만, <b>전체 분량이 보이지 않아</b> 몇 번 더 눌러야 끝나는지 알 수 없습니다.</p>
-    <p><b>B · 한 화면 문장형</b>은 주소를 이루는 것(위치·층·동·라인)을 처음부터 전부 펼칩니다. 층과 동은 라벨을 따로 두지 않고
+    <p><b>1안 · 한 화면 문장형</b>은 주소를 이루는 것(위치·층·동·라인)을 처음부터 전부 펼칩니다. 층과 동은 라벨을 따로 두지 않고
        <b>문장 안의 빈칸</b>으로 받고, 라인도 같은 문장에 붙입니다. 문장 속 &lsquo;층&rsquo; &lsquo;동&rsquo; 글자가 그대로 라벨이고,
        입력하는 화면이 곧 <b>기사님이 받을 문장</b>이라 하단 미리보기 줄이 필요 없어집니다.</p>
     <p>나누는 축은 <b>필수와 선택이 아니라 정보의 종류</b>입니다. 위치·층·동·라인은 전부
        <b>주소 성분</b>이라 한 문장에 들어가고, 찾아오는 길만 <b>자유 서술</b>이라 문장 밖으로 뺐습니다.
        실제 요청사항 1,727건에서 동을 말한 사람의 <b>40.0%</b>가 라인까지 말했고, 표기도 예외 없이
        <b>101동 2-5라인</b>처럼 동에 곧바로 붙습니다. 라인은 덤이 아니라 주소의 일부입니다.</p>
+    <p>같은 축을 <b>2안</b>에도 적용했습니다. 라인 단계에서 <b>&lsquo;선택&rsquo; 뱃지를 뗐고</b>,
+       질문도 &lsquo;호수 라인이 있나요?&rsquo; 에서 <b>&lsquo;몇 호 라인이세요?&rsquo;</b> 로 바꿨습니다.
+       &lsquo;몇 동이세요?&rsquo; 와 같은 어투여야 같은 종류의 정보로 읽힙니다.
+       다만 라인이 없는 60%를 위해 <b>건너뛰기 버튼은 남깁니다.</b> 선택 뱃지를 떼는 것과
+       빠져나갈 길을 막는 것은 다른 얘기입니다.</p>
     <p>라인 칸이 처음부터 비어 보이는 대가로 <b>없으면 비워 두세요</b>를 문장 아래에 붙였습니다.
        라인이 없는 60%가 이 칸에서 멈추지 않게 하는 장치입니다.</p>
     <p>문장 밖에 남은 <b>찾아오는 길</b>은 필수를 다 채운 뒤에만 나타납니다. 긴 자유 입력을 첫 화면에 펼쳐 두면
        길게 쓰게 되는데, 기사님은 운전 중에 그걸 못 읽습니다.</p>
-    <p>A의 대가는 <b>탭 수</b>이고, 몇 번 더 눌러야 끝나는지 화면에 안 보입니다. B는 층을 한 자리 치면
+    <p>2안의 대가는 <b>탭 수</b>이고, 몇 번 더 눌러야 끝나는지 화면에 안 보입니다. 1안은 층을 한 자리 치면
        동으로 자동으로 넘어가 주소 입력이 <b>탭 두 번 + 타이핑</b>으로 끝나고, 분량이 처음부터 보입니다.
-       대신 B는 자유 서술까지 펼치면 화면 아래가 빠듯해집니다.</p>
+       대신 1안은 자유 서술까지 펼치면 화면 아래가 빠듯해집니다.</p>
   </div>
   <div class="note">
     <h3><i>1</i>값이 없으면 기사 화면에 아무것도 만들지 않는다</h3>
@@ -778,8 +783,8 @@
     lvl:  {q:'어디서 타세요?',            k:'위치'},
     floor:{q:'지하 몇 층에서 타세요?',     k:'층'},
     dong: {q:'몇 동이세요?',              k:'동'},
-    line: {q:'호수 라인이 있나요?',        k:'라인', opt:true},
-    etc:  {q:'찾아오는 길을 알려줄까요?',   k:'길 안내', opt:true}
+    line: {q:'몇 호 라인이세요?',          k:'라인', skip:true},
+    etc:  {q:'찾아오는 길을 알려줄까요?',   k:'길 안내', opt:true, skip:true}
   };
   function ansText(k){
     if(k==='lvl')   return S.d.lvl==='under' ? '지하 주차장' : '지상';
@@ -865,7 +870,8 @@
         }
         if(S.step==='line'){
           const p=document.createElement('p'); p.className='askhelp';
-          p.innerHTML='공동현관에 붙어 있는 <b>그대로</b> 적으면 됩니다. 1-2, 3,4호, 1/2 어떤 표기든 괜찮아요.';
+          p.innerHTML='공동현관에 붙어 있는 <b>그대로</b> 적으면 됩니다. 1-2, 3,4호, 1/2 어떤 표기든 괜찮아요. '
+                     +'<b>없으면 건너뛰세요.</b>';
           ctl.appendChild(p);
         }
         const inp=el('tin');
@@ -896,7 +902,7 @@
       p.innerHTML='길 안내는 <b>기사님이 멈춰 있을 때</b> 펼쳐 봅니다. 운전 중에는 위치만 보여요.';
     }
   }
-  /* ── B안: 한 화면 문장형 ──
+  /* ── 1안: 한 화면 문장형 ──
      필수 세 가지를 한 화면에 다 펼친다. 위치는 세그먼트, 층·동은 문장 안의 빈칸이다.
      '층' '동' 이라는 글자가 그대로 라벨이라 별도 라벨 줄이 필요 없고,
      '앞에서 탈게요' 꼬리 덕분에 기사님이 받을 문장이 입력 그 자체로 보인다.
@@ -989,7 +995,7 @@
 
   function paintFoot(){
     const done=S.step===null, ok=ready(S.d);
-    /* B안은 문장 자체가 미리보기라 하단 미리보기 줄이 같은 말을 두 번 하게 된다 */
+    /* 1안은 문장 자체가 미리보기라 하단 미리보기 줄이 같은 말을 두 번 하게 된다 */
     const sf = S.form==='sform';
     el('prev2').hidden = sf;
     el('prev2').classList.toggle('ready', ok);
@@ -1005,7 +1011,7 @@
     }
 
     const skip=el('ph-skip'), next=el('ph-next');
-    skip.hidden = done || !ASK[S.step].opt;
+    skip.hidden = done || !ASK[S.step].skip;
     if(done){
       next.disabled=false;
       next.textContent = S.opened==='start' ? '이 위치로 저장' : '이대로 보내기';
@@ -1026,7 +1032,7 @@
       ? '배차되면 기사님께 함께 전달됩니다.'
       : '<b>지금 이동 중인 기사님에게</b> 바로 전달됩니다.';
     /* 값이 이미 있으면 전부 답한 상태로 열어 요약만 보여준다 */
-    if(S.current){ Object.keys(ASK).forEach(k=>{ if(ASK[k].opt && !S.d[k].trim()) S.skipped[k]=true; }); }
+    if(S.current){ Object.keys(ASK).forEach(k=>{ if(ASK[k].skip && !S.d[k].trim()) S.skipped[k]=true; }); }
     advance();
     $('#phscr').classList.add('on');
     if(S.form==='sform'){
