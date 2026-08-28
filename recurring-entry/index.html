@@ -669,8 +669,23 @@ body.mock.flowopen{overflow:hidden;}
 .fw-scr.pop-in{z-index:8;animation:scrInL .32s cubic-bezier(.2,.8,.3,1) both;}
 .fw-scr.pop-out{z-index:12;animation:scrOutR .32s cubic-bezier(.2,.8,.3,1) both;
   box-shadow:-10px 0 28px rgba(16,20,34,.12);}
+/* 정지 구간이 '멈춘 화면'으로 읽히지 않게 두 가지를 둔다.
+   (1) 진행선: 자동으로 넘어가는 화면이고 얼마나 남았는지를 알려준다(스토리 관용구).
+       장식 모션만으로는 "멈춘 건가"는 풀려도 "언제 끝나지"가 안 풀린다.
+   (2) 아이콘 부유: 아주 약한 상하 왕복으로 화면이 살아있음을 계속 증명한다.
+   ⚠ 부유는 등장(fwRise)이 끝난 뒤 시작해야 한다. 같은 transform 을 쓰므로 뒤에
+     선언해 등장이 끝난 구간부터 이 쪽이 이기게 한다. */
+@keyframes fwFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-3px);}}
+.fw-breaker img{animation:fwRise .26s cubic-bezier(.2,.8,.3,1) .08s both,
+                          fwFloat 2s ease-in-out .34s infinite;}
+.bk-bar{width:96px;height:3px;border-radius:999px;background:#e6e9ef;overflow:hidden;}
+.bk-bar i{display:block;height:100%;width:100%;border-radius:999px;transform-origin:left center;
+  background:linear-gradient(90deg,#5cb4fa 0%,#0063c5 100%);
+  animation-name:fwBar;animation-timing-function:linear;animation-delay:.3s;animation-fill-mode:both;}
+@keyframes fwBar{from{transform:scaleX(0);} to{transform:scaleX(1);}}
 @media (prefers-reduced-motion:reduce){
   .fw-breaker,.fw-breaker img,.fw-breaker .bk-tx b,.fw-breaker .bk-tx span{animation:none;}
+  .bk-bar i{animation:none;transform:scaleX(1);}
   .fw-scr.push-in,.fw-scr.push-out,.fw-scr.pop-in,.fw-scr.pop-out{animation:none;}
 }
 .fw-breaker .bk-tx{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;}
@@ -1250,9 +1265,12 @@ function fConfirm(kind){
 /* bridge: 확인 화면 위에 흰 그라디언트를 덮고 다음 할 일을 한 줄로 알린다.
    자동 전환 구간이라 터치를 막는다(pointer-events:none 는 CSS). */
 function fBridge(){
+  // 진행선 길이를 FLOW_T 에서 계산해 체류 시간을 바꿔도 자동으로 따라오게 한다.
+  const barMs = Math.max(300, FLOW_T.bridgeToWeekday - 300);
   return `${fConfirm()}<div class="fw-breaker">
     <img src="${A.ic2r}" alt="">
     <div class="bk-tx"><b>마지막으로,<br>반복할 날짜를 알려주세요</b><span>선택 화면으로 이동합니다</span></div>
+    <div class="bk-bar" aria-hidden="true"><i style="animation-duration:${barMs}ms"></i></div>
   </div>`;
 }
 
