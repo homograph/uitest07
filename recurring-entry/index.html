@@ -638,7 +638,7 @@ body.mock.flowopen{overflow:hidden;}
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px;
   background:linear-gradient(180deg, rgba(255,255,255,.5) 0%, #fff 50%);}
 .fw-breaker img{width:120px;height:120px;object-fit:contain;}
-/* 등장 연출. bridge 는 1.2초만 머무는 구간이라 진입을 0.48초 안에 끝내고 나머지는
+/* 등장 연출. bridge 는 2초만 머무는 구간이라 진입을 0.48초 안에 끝내고 나머지 약 1.5초를
    정지 상태로 둬야 문구가 읽힌다. 그래서 요소 간 간격(80ms)을 지속시간(260ms)보다
    훨씬 짧게 잡아 앞 요소가 끝나기 전에 다음이 시작되도록 겹친다. */
 @keyframes fwFade{from{opacity:0;} to{opacity:1;}}
@@ -1601,7 +1601,9 @@ function layout(){
 /* ── 플로우 단계 전환 ────────────────────────────────────────────
    예약 확인에 들어가면 사용자가 아무것도 안 해도 bridge를 거쳐 요일 선택으로 간다.
    ⚠ 자동 구간에 타이머가 겹치면 단계가 건너뛰어지므로 진입할 때마다 항상 먼저 지운다. */
-const FLOW_T = { confirmToBridge: 300, bridgeToWeekday: 1200 };
+/* bridgeToWeekday 는 '읽는 시간'이 아니라 '머무는 총 시간'이다. 등장 애니메이션이
+   480ms 를 먹으므로 실제 정지 상태는 이 값에서 480 을 뺀 만큼(2000 -> 약 1.5초)이다. */
+const FLOW_T = { confirmToBridge: 300, bridgeToWeekday: 2000 };
 let flowTimers = [];
 function clearFlowTimers(){ flowTimers.forEach(clearTimeout); flowTimers = []; }
 
@@ -1676,7 +1678,7 @@ const BRANCH = [
   {t:'2. 경로·시간', d:'기존 예약 플로우 구간이라 다 입력된 상태로 랜딩합니다.', step:'schedule'},
   {t:'3. 차량 선택', d:'프리미엄밴은 정기로 못 부르므로 비활성입니다.', step:'car'},
   {t:'4. 예약 확인', d:'아직 정기 설정 전이라 "일반 예약"으로 뜹니다. 0.3초 뒤 자동 전환됩니다.', step:'confirm'},
-  {t:'5. bridge', d:'터치·뒤로가기 없이 1.2초간만 보이는 자동 구간입니다.', step:'bridge'},
+  {t:'5. bridge', d:'터치·뒤로가기 없이 2초간만 보이는 자동 구간입니다.', step:'bridge'},
   {t:'6. 요일 선택', d:'반복할 요일을 고릅니다. 취소하면 4번 예약 확인으로 돌아갑니다.', step:'weekday'},
   {t:'7. 정기 예약 확인', d:'제목이 "정기"로 바뀌고 반복 요약 카드가 맨 위에 붙습니다.', step:'rconfirm'}
 ];
