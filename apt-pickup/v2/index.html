@@ -10,6 +10,8 @@
     /* Figma 10476:126439 실측 토큰 */
     --navy-900:#101a3d; --navy-800:#19254d; --navy-700:#283873; --navy-600:#233565;
     --blue-600:#0074d7; --blue-500:#32a2fa; --blue-050:#f1f9fe; --blue-100:#e2f2fe;
+    /* 제안값: Figma 보더 #e2f2fe 는 카드 배경 위에서 1.07:1 이라 선이 없는 것과 같다 */
+    --blue-200:#a9d8f8;
     --gray-950:#171a24; --gray-900:#262a38; --gray-800:#383d4f; --gray-700:#4b5064;
     --gray-500:#73788b; --gray-300:#99a5c0; --gray-200:#c0c8d9; --gray-100:#d5d7dc;
     --gray-80:#e3e4e8; --gray-50:#efeff1; --gray-30:#f5f6f7; --gray-e6:#e6e9ef;
@@ -118,10 +120,11 @@
   .addr .sq{width:10px;height:10px;border:3px solid var(--navy-700);flex:0 0 auto;}
   .addr span{font-size:14px;color:#000;}
   .pkbox{width:100%;font:inherit;text-align:left;background:var(--blue-050);
-    border:1px solid var(--blue-100);border-radius:4px;
-    padding:12px 12px 12px 16px;display:flex;align-items:center;gap:8px;cursor:pointer;min-height:44px;}
+    border:1px solid var(--blue-200);border-radius:4px;
+    padding:12px;display:flex;align-items:center;gap:8px;cursor:pointer;min-height:44px;}
+  .pkbox:active{border-color:var(--blue-500);}
   .pkbox .ph{font-size:14px;color:var(--gray-500);}
-  .pkbox .fill{font-size:14px;line-height:20px;color:#000;flex:1 1 auto;min-width:0;
+  .pkbox .fill{font-size:14px;line-height:20px;color:var(--gray-950);flex:1 1 auto;min-width:0;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pkbox .ico{font-size:14px;flex:0 0 auto;}
   .pkbox[hidden],.confirm[hidden],.skipnote[hidden]{display:none;}
@@ -301,8 +304,10 @@
   .fform{width:100%;}
   /* 제목은 하나면 된다. 내비의 '상세 위치 입력' 이 이미 같은 말을 한다.
      안내문은 그 제목의 부제 자리로 올려 붙인다. */
-  .ph-body.sform{padding-top:16px;}
-  .ph-body.sform .phhint{margin:0 0 26px;}
+  /* 안내문 위아래를 같은 값으로. 구분선이 이미 위를 끊어 주므로 이 줄은 제목의 부제가 아니라
+     폼 전체의 캡션이다. 13px/20 의 half-leading 이 위아래 대칭이라 raw 값을 같게 두면 광학도 같다. */
+  .ph-body.sform{padding-top:20px;}
+  .ph-body.sform .phhint{margin:0 0 20px;}
   .fform .seg{margin-bottom:24px;}
   /* 위치는 값이 아니라 선택지다. 같은 채움·높이·라운드로 가족 안에 두되
      ⌄ 표식으로 '고르는 자리' 임을 표시한다. */
@@ -520,7 +525,7 @@
               <div class="addr"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg><span>래미안원베일리아파트</span></div>
               <button type="button" class="pkbox" data-open="start" id="pk-start"
                       aria-label="자세한 픽업 위치 입력하기">
-                <svg class="ic icp g" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pg)"><path d="M21.3808 16.6889H19.7576V24.3231H21.3808C23.7649 24.3231 25.7939 22.5731 25.7939 20.4933C25.7939 18.4136 23.8157 16.6636 21.3808 16.6636V16.6889Z" fill="#99A5C0"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#99A5C0"/></g><defs><clipPath id="clip0_0_4_pg"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg><svg class="ic icp b" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pb)"><path d="M21.3794 16.6882H19.7561V24.3224H21.3794C23.7634 24.3224 25.7925 22.5723 25.7925 20.4926C25.7925 18.4129 23.8142 16.6628 21.3794 16.6628V16.6882Z" fill="#5CB4FA"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#5CB4FA"/></g><defs><clipPath id="clip0_0_4_pb"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg>
+                <svg class="ic icp g" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pg)"><path d="M21.3808 16.6889H19.7576V24.3231H21.3808C23.7649 24.3231 25.7939 22.5731 25.7939 20.4933C25.7939 18.4136 23.8157 16.6636 21.3808 16.6636V16.6889Z" fill="#99A5C0"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#99A5C0"/></g><defs><clipPath id="clip0_0_4_pg"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg><svg class="ic icp b" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pb)"><path d="M21.3794 16.6882H19.7561V24.3224H21.3794C23.7634 24.3224 25.7925 22.5723 25.7925 20.4926C25.7925 18.4129 23.8142 16.6628 21.3794 16.6628V16.6882Z" fill="#1F90EE"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#1F90EE"/></g><defs><clipPath id="clip0_0_4_pb"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg>
                 <span class="was" id="pk-start-tx-was" hidden></span><span class="ph" id="pk-start-tx">자세한 픽업 위치를 입력해주세요</span>
               </button>
 
@@ -549,7 +554,7 @@
           <div class="vpk">
             <button type="button" class="pkbox" data-open="voyage" id="pk-voy"
                     aria-label="자세한 픽업 위치 입력하기">
-              <svg class="ic icp g" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pg)"><path d="M21.3808 16.6889H19.7576V24.3231H21.3808C23.7649 24.3231 25.7939 22.5731 25.7939 20.4933C25.7939 18.4136 23.8157 16.6636 21.3808 16.6636V16.6889Z" fill="#99A5C0"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#99A5C0"/></g><defs><clipPath id="clip0_0_4_pg"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg><svg class="ic icp b" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pb)"><path d="M21.3794 16.6882H19.7561V24.3224H21.3794C23.7634 24.3224 25.7925 22.5723 25.7925 20.4926C25.7925 18.4129 23.8142 16.6628 21.3794 16.6628V16.6882Z" fill="#5CB4FA"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#5CB4FA"/></g><defs><clipPath id="clip0_0_4_pb"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg>
+              <svg class="ic icp g" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pg)"><path d="M21.3808 16.6889H19.7576V24.3231H21.3808C23.7649 24.3231 25.7939 22.5731 25.7939 20.4933C25.7939 18.4136 23.8157 16.6636 21.3808 16.6636V16.6889Z" fill="#99A5C0"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#99A5C0"/></g><defs><clipPath id="clip0_0_4_pg"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg><svg class="ic icp b" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pb)"><path d="M21.3794 16.6882H19.7561V24.3224H21.3794C23.7634 24.3224 25.7925 22.5723 25.7925 20.4926C25.7925 18.4129 23.8142 16.6628 21.3794 16.6628V16.6882Z" fill="#1F90EE"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#1F90EE"/></g><defs><clipPath id="clip0_0_4_pb"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg>
               <span class="was" id="pk-voy-tx-was" hidden></span><span class="ph" id="pk-voy-tx">자세한 픽업 위치를 입력해주세요</span>
               <span class="st" id="pk-voy-st" hidden aria-hidden="true"></span>
               <span class="sr" id="pk-voy-sr"></span>
@@ -748,14 +753,36 @@
        위치가 세그먼트에만 남았습니다.</p>
   </div>
   <div class="note">
-    <h3><i>2</i>값이 없으면 기사 화면에 아무것도 만들지 않는다</h3>
+    <h3><i>2</i>hail_location 컴포넌트 정밀 확인</h3>
+    <p>Figma <b>10518:129597</b>(COMPONENT_SET, 6변형)을 audit 베이스라인으로 등록하고 값을 통째로 읽었습니다.
+       공통값은 <b>bg #f1f9fe · stroke #e2f2fe/1 · r4 · gap8 · pad[12,12,12,12] · 14sp w400</b>.</p>
+    <p><b>프로토가 틀렸던 것</b> — 좌측 패딩을 16 으로 두고 있었습니다. Figma 는 사방 12 입니다. 맞췄습니다.</p>
+    <p><b>대비가 뒤집혀 있었습니다.</b> P 아이콘이 빈 상태 <b>#99a5c0 = 2.32:1</b>, 채운 상태
+       <b>#5cb4fa = 2.11:1</b> — <b>값이 들어 있을 때가 더 안 보입니다.</b> 채운 쪽을 <b>#1f90ee(3.14:1)</b> 로
+       올려 역전을 없앴습니다. 비텍스트 3:1 도 이제 만족합니다.</p>
+    <p><b>테두리가 1.07:1 입니다.</b> #e2f2fe 를 카드 배경 #f1f9fe 위에 그었으니 선이 없는 것과 같고,
+       카드 배경도 흰 화면 대비 1.06:1 입니다. 이 필드가 이 기능의 유일한 진입점인데
+       <b>화면에 거의 존재하지 않습니다.</b> 제안값 <b>--blue-200 #a9d8f8</b> 로 올렸습니다 —
+       그래도 1.42:1 이라, 중간 톤 블루 토큰이 디자인 시스템에 필요합니다.</p>
+    <p><b>입력값이 순검정 #000000</b> 이었습니다. 앱의 나머지 텍스트는 #171a24 입니다. 통일했습니다.</p>
+    <p><b>체크 아이콘의 자리</b> — Figma 는 로딩·체크가 <b>리딩 P 아이콘을 교체</b>합니다.
+       그러면 전송 중에 &lsquo;주차장&rsquo; 이라는 단서가 사라지고, P 의 색 전환(회색→파랑)이 이미 말하는 것을
+       체크가 한 번 더 말합니다. 프로토는 <b>P 를 왼쪽에 고정하고 상태는 오른쪽 끝</b>에 두되,
+       체크를 <b>3초 뒤 걷어내</b> 운행 내내 남지 않게 했습니다. Figma 변형 구성도 같은 뜻입니다 —
+       입력완료·Default 에는 체크 없이 파란 P 만 있습니다.</p>
+    <p><b>디자이너 확인 필요</b> — 마스터 4개 변형(입력 완료 × Default/로딩 중/체크/pressed)의 샘플 텍스트가
+       아직 <b>&lsquo;… 앞에서 탈게요 (3-4라인)&rsquo;</b> 옛 포맷입니다. 라인을 문장 안으로 넣기로 한 뒤의
+       현재 포맷은 <b>&lsquo;지하 2층 · 1012동 2-5호라인 앞에서 탈게요&rsquo;</b> 이고, 괄호는 찾아오는 길 자리입니다.</p>
+  </div>
+  <div class="note">
+    <h3><i>3</i>값이 없으면 기사 화면에 아무것도 만들지 않는다</h3>
     <p>승객이 상세 위치를 넣지 않았을 때 기사 화면에 <b>&lsquo;위치 미전달&rsquo;</b> 같은 자리를 만들지 않습니다.
        기사가 할 일이 없는 정보이고, 거기 붙는 전화 버튼은 <b>안 해도 될 전화를 하게 만듭니다.</b></p>
     <p>상세 위치는 <b>선택 입력</b>입니다. 안 넣은 것은 결핍이 아니라 정상 상태입니다.
        그때의 올바른 기사 화면은 지금 운영 중인 화면 그대로입니다.</p>
   </div>
   <div class="note">
-    <h3><i>3</i>진입점은 둘 다 산다</h3>
+    <h3><i>4</i>진입점은 둘 다 산다</h3>
     <p>출발지 설정에서 넣으면 운행 화면에는 <b>채워진 필드</b>가 뜹니다. 건너뛰면 운행 화면에 <b>입력 전 필드</b>가 뜹니다.
        같은 컴포넌트의 두 상태이지 두 개의 안이 아닙니다.</p>
     <p>운행 화면에서는 <b>바꿀 수도</b> 있습니다. 그때는 기사가 이미 이동 중이라 값이 도중에 갱신됩니다.</p>
@@ -765,14 +792,14 @@
     <p class="src">Figma: 출발지 검색에서 상세 위치 입력 / Matched 화면에서 상세 위치 입력. 아이콘은 전부 원본 노드에서 SVG로 추출(ic_hail, ic_phone, ic_message, ic_passenger_28dp, btn_navigation, ic_checkbox_off, ic_startpoint, ic_safety_message, ic_btn_current_location), 차량 마커는 ic_car_basic 원본 이미지.</p>
   </div>
   <div class="note">
-    <h3><i>4</i>다음 화면은 비워 두었습니다</h3>
+    <h3><i>5</i>다음 화면은 비워 두었습니다</h3>
     <p>Figma에도 <b>상세 위치 입력 화면</b>이 흰 빈 프레임으로 두 군데 남아 있습니다. 프로토도 같은 상태로 두고,
        결과만 보기 위한 임시 값 셋을 넣었습니다.</p>
     <p>여기서 정해야 할 것은 <b>자유 텍스트 한 줄이냐, 구조화된 선택이냐</b>입니다.
        임시 값 중 <b>실제로 쓰는 길이</b>를 눌러 보면 라이더는 두 줄, 기사는 세 줄로 차오릅니다.</p>
   </div>
   <div class="note">
-    <h3><i>5</i>드라이버 표시 자리</h3>
+    <h3><i>6</i>드라이버 표시 자리</h3>
     <p>출발지 주소 바로 아래, 꼬리 달린 말풍선입니다. 배경 <b>#283873</b>, 라디우스 2, 안쪽 여백 12/16.
        본문 16sp에 <b>탑승</b>만 #32a2fa로 강조돼 있습니다.</p>
     <p>같은 배지가 <b>pickup-go, pickup-arrived, 예약 상세</b> 세 화면에 반복 배치돼 있어 운행 내내 남습니다.</p>
@@ -781,7 +808,7 @@
        말합니다. 항상 새 정보인 것은 층이고 동은 절반쯤 윗줄과 겹치므로 <b>지하 N층을 가장 크게</b> 둡니다.</p>
   </div>
   <div class="note">
-    <h3><i>6</i>실제 요청사항 1,727건이 말해준 것</h3>
+    <h3><i>7</i>실제 요청사항 1,727건이 말해준 것</h3>
     <p>상위 180개 단지 3년치 표본. <b>지하 82.3% 대 지상 0.8%</b>라 수직 위치를 묻는 것 자체가 낭비다.
        지하를 기본값으로 두고 바꿀 수 있게만 했다. 층은 <b>지하 1~5층에 전부 분포</b>하고 6층 이상은 0건이다.</p>
     <p>라인은 <b>36.2%</b>가 적고 표기가 제각각이다(구분자 <b>- 227, 쉼표 185, / 51</b>). 그래서 칩이 아니라
@@ -791,7 +818,7 @@
     <p class="src">아파트_요청사항_샘플_상위180단지.csv, 1,727건 / 174단지 / 1,040명</p>
   </div>
   <div class="note">
-    <h3><i>7</i>구조화가 흡수할 수 없는 것</h3>
+    <h3><i>8</i>구조화가 흡수할 수 없는 것</h3>
     <p>구조화로 완전히 담기는 건 <b>28.1%</b>뿐이다. 나머지에는 <b>짐과 동승자 32.9%</b>(캐리어만 272건),
        <b>경로 안내 20.3%</b>가 섞여 있다. 이건 픽업 필드가 흡수할 수 없고 요청사항이 계속 담아야 한다.</p>
     <p>그래서 <b>PRD의 성공 지표를 손봐야 한다.</b> 자유 텍스트 감소율을 그대로 KPI로 두면 구조적으로
@@ -801,7 +828,7 @@
     <p class="src">같은 표본. 강미래 PO: GPS 보정 없이는 결국 헤맨다</p>
   </div>
   <div class="note">
-    <h3><i>8</i>확인이 필요한 값</h3>
+    <h3><i>9</i>확인이 필요한 값</h3>
     <p><span class="mk warn"></span><b>탑승 라벨 대비 4.03대 1.</b> #32a2fa on #283873은 16sp 일반 텍스트 기준 AA(4.5대 1)에 못 미칩니다.
        운전 중 화면이라 굵기를 700으로 올리거나 밝기를 한 단계 올리는 편이 좋습니다.</p>
     <p><span class="mk warn"></span><b>용어가 셋입니다.</b> 화면 제목은 탑승 위치, 입력 필드는 픽업 위치, 드라이버 배지는 탑승입니다.</p>
@@ -822,7 +849,7 @@
   const S={
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
-    sending:false, sent:false, opened:null,
+    sending:false, sent:false, justSent:false, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:''},
     step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline'
@@ -1142,9 +1169,10 @@
     S.origin=S.opened;
     $('#phscr').classList.remove('on');
     if(S.origin==='start'){ S.sending=false; S.sent=true; S.confirmed=false; render(); return; }
-    S.confirmed=true; S.sending=true; S.sent=false; render();
+    S.confirmed=true; S.sending=true; S.sent=false; S.justSent=false; render();
     setTimeout(()=>{
-      S.sending=false; S.sent=true; render();
+      S.sending=false; S.sent=true; S.justSent=true; render();
+      setTimeout(()=>{ S.justSent=false; render(); },3000);
       toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
                      : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
     },2000);
@@ -1167,9 +1195,13 @@
     paintField('pk-start-tx','pk-start-tx-was');
     paintField('pk-voy-tx','pk-voy-tx-was');
     const st=el('pk-voy-st'), sr=el('pk-voy-sr');
+    /* 체크는 '방금 전달됐다'는 일시 신호다. 계속 남겨 두면 운행 내내 노이즈가 된다.
+       Figma 변형 구성도 같은 뜻이다 — 입력완료·Default 에는 체크 없이 파란 P 만 있다.
+       값이 들어 있다는 사실은 P 의 색 전환(회색→파랑)이 이미 말하고 있다. */
     if(!has||!S.confirmed){ st.hidden=true; sr.textContent=''; }
     else if(S.sending){ st.hidden=false; st.textContent='···'; sr.textContent='기사님에게 보내는 중'; }
-    else { st.hidden=false; st.textContent='✓'; sr.textContent='기사님에게 전달됨'; }
+    else if(S.justSent){ st.hidden=false; st.textContent='✓'; sr.textContent='기사님에게 전달됨'; }
+    else { st.hidden=true; sr.textContent=''; }
 
     const got=reached();
     /* 승객이 상세 위치를 넣지 않았으면 기사 화면에 아무것도 만들지 않는다.
