@@ -35,6 +35,8 @@
     font:inherit;font-size:13px;font-weight:500;color:var(--ink-2);cursor:pointer;}
   .tab.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600;}
   .tabs .sp{flex:1 1 auto;}
+  .tabs .tlab{font-size:12.5px;color:var(--ink-2);margin-right:2px;}
+  .tabs.off{opacity:.35;pointer-events:none;}
   .tabs .rst{border:1px solid var(--line);background:#fff;border-radius:7px;padding:7px 12px;
     font:inherit;font-size:12.5px;color:var(--ink-2);cursor:pointer;}
   .flowdesc{margin:12px 0 0;font-size:13px;line-height:20px;color:var(--ink-2);min-height:20px;}
@@ -297,15 +299,25 @@
   .ph-body.sform{justify-content:flex-start;gap:0;}
   .ph-body.sform .phhint{margin:0 0 20px;}
   .fform{width:100%;}
-  .fform .flab{margin:0 0 12px;font-size:17px;line-height:24px;font-weight:700;
-    letter-spacing:-.3px;color:var(--gray-950);word-break:keep-all;}
-  .sent{display:flex;flex-wrap:wrap;align-items:center;margin:24px 0 0;
+  /* 제목은 하나면 된다. 내비의 '상세 위치 입력' 이 이미 같은 말을 한다.
+     안내문은 그 제목의 부제 자리로 올려 붙인다. */
+  .ph-body.sform{padding-top:16px;}
+  .ph-body.sform .phhint{margin:0 0 26px;}
+  .fform .seg{margin-bottom:24px;}
+  /* 위치는 값이 아니라 선택지다. 같은 채움·높이·라운드로 가족 안에 두되
+     ⌄ 표식으로 '고르는 자리' 임을 표시한다. */
+  .blank.pick{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+    width:auto;padding:0 12px 0 14px;color:var(--navy-800);cursor:pointer;}
+  .blank.pick svg{opacity:.5;}
+  .blank.pick:hover{background:var(--gray-80);}
+  .sent{display:flex;flex-wrap:wrap;align-items:center;margin:0;
     font-size:22px;line-height:48px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
   .sent .w{flex:0 0 auto;}
   /* 접히는 자리를 고정한다. 우연히 접히면 '1012동'과 '2-5호라인'처럼
      한 덩어리인 주소가 두 줄로 갈라진다. */
   .sent .br{flex:0 0 100%;height:0;}
   .sent .br + .blank{margin-left:0;}
+  .sent .blank + .blank{margin-left:0;}
   /* '앞에서 탈게요' 는 고정 문구다. 줄이 바뀌어도 값이 갈라지지 않도록 따로 떼어 두고,
      입력값이 아니라는 게 보이게 한 톤 낮춘다. */
   .sent .tail2{font-weight:500;color:var(--gray-500);}
@@ -465,6 +477,11 @@
     <button class="tab on" data-form="sform">1안 · 한 화면 문장형</button>
     <button class="tab" data-form="seq">2안 · 순차 쌓기</button>
   </div>
+  <div class="tabs" id="toprow">
+    <span class="tlab">상단 구성</span>
+    <button class="tab on" data-top="inline">가 · 위치를 문장 안에</button>
+    <button class="tab" data-top="seg">나 · 세그먼트 유지</button>
+  </div>
   <p class="flowdesc" id="fdesc"></p>
 </div>
 
@@ -559,9 +576,9 @@
           </div>
 
           <div class="fform" id="fform" hidden>
-            <p class="flab">어디서 타세요?</p>
             <div class="seg" id="f-seg"></div>
             <div class="sent" id="f-sent">
+              <button type="button" class="blank pick" id="f-lvl" hidden><span id="f-lvl-t">지하</span><svg class="ic" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.2 1.4L5.5 5.6L9.8 1.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               <span class="w" id="f-w-u">지하</span>
               <input class="blank fl" id="f-floor" inputmode="numeric" maxlength="1"
                      placeholder="2" aria-label="지하 몇 층" />
@@ -701,14 +718,30 @@
        대신 1안은 자유 서술까지 펼치면 화면 아래가 빠듯해집니다.</p>
   </div>
   <div class="note">
-    <h3><i>1</i>값이 없으면 기사 화면에 아무것도 만들지 않는다</h3>
+    <h3><i>1</i>상단 구성 가 · 나</h3>
+    <p>둘 다 <b>제목을 하나로</b> 만듭니다. 내비의 &lsquo;상세 위치 입력&rsquo; 과 본문의 &lsquo;어디서 타세요?&rsquo; 가
+       같은 말을 두 번 했고, 아래쪽이 더 커서(15/700 대 17/700) 어디가 진입점인지 화면이 답을 못 했습니다.
+       질문을 지우고 안내문을 제목 바로 아래 부제 자리로 올렸습니다. 타입 사다리가
+       <b>15 → 13 → 22</b> 로 단조롭게 떨어집니다.</p>
+    <p><b>가 · 위치를 문장 안에</b>는 세그먼트를 없애고 지하/지상을 문장 첫 슬롯의 칩으로 옮깁니다.
+       화면에 남는 것이 문장 하나라, <b>입력하는 것이 곧 기사님이 받을 문장</b>이라는 주장이 끝까지 유지됩니다.
+       칩은 값이 아니라 선택지라서 같은 채움·높이·라운드를 쓰되 <b>⌄</b> 표식을 답니다.</p>
+    <p><b>나 · 세그먼트 유지</b>는 컨트롤을 그대로 두고 문장에 위치 단어를 되받게만 합니다.
+       변경 폭이 작지만, <b>지상을 고르면 세그먼트와 문장이 같은 말을 두 번</b> 합니다.
+       위치만 문장 밖에 있는 비대칭도 남습니다.</p>
+    <p>어느 쪽이든 <b>지상일 때 문장이 위치를 잃던 문제</b>는 없어집니다. 고치기 전에는
+       지하는 &lsquo;지하 2층 · 1012동…&rsquo; 인데 지상은 &lsquo;101동 앞에서 탈게요&rsquo; 로,
+       위치가 세그먼트에만 남았습니다.</p>
+  </div>
+  <div class="note">
+    <h3><i>2</i>값이 없으면 기사 화면에 아무것도 만들지 않는다</h3>
     <p>승객이 상세 위치를 넣지 않았을 때 기사 화면에 <b>&lsquo;위치 미전달&rsquo;</b> 같은 자리를 만들지 않습니다.
        기사가 할 일이 없는 정보이고, 거기 붙는 전화 버튼은 <b>안 해도 될 전화를 하게 만듭니다.</b></p>
     <p>상세 위치는 <b>선택 입력</b>입니다. 안 넣은 것은 결핍이 아니라 정상 상태입니다.
        그때의 올바른 기사 화면은 지금 운영 중인 화면 그대로입니다.</p>
   </div>
   <div class="note">
-    <h3><i>2</i>진입점은 둘 다 산다</h3>
+    <h3><i>3</i>진입점은 둘 다 산다</h3>
     <p>출발지 설정에서 넣으면 운행 화면에는 <b>채워진 필드</b>가 뜹니다. 건너뛰면 운행 화면에 <b>입력 전 필드</b>가 뜹니다.
        같은 컴포넌트의 두 상태이지 두 개의 안이 아닙니다.</p>
     <p>운행 화면에서는 <b>바꿀 수도</b> 있습니다. 그때는 기사가 이미 이동 중이라 값이 도중에 갱신됩니다.</p>
@@ -718,14 +751,14 @@
     <p class="src">Figma: 출발지 검색에서 상세 위치 입력 / Matched 화면에서 상세 위치 입력. 아이콘은 전부 원본 노드에서 SVG로 추출(ic_hail, ic_phone, ic_message, ic_passenger_28dp, btn_navigation, ic_checkbox_off, ic_startpoint, ic_safety_message, ic_btn_current_location), 차량 마커는 ic_car_basic 원본 이미지.</p>
   </div>
   <div class="note">
-    <h3><i>3</i>다음 화면은 비워 두었습니다</h3>
+    <h3><i>4</i>다음 화면은 비워 두었습니다</h3>
     <p>Figma에도 <b>상세 위치 입력 화면</b>이 흰 빈 프레임으로 두 군데 남아 있습니다. 프로토도 같은 상태로 두고,
        결과만 보기 위한 임시 값 셋을 넣었습니다.</p>
     <p>여기서 정해야 할 것은 <b>자유 텍스트 한 줄이냐, 구조화된 선택이냐</b>입니다.
        임시 값 중 <b>실제로 쓰는 길이</b>를 눌러 보면 라이더는 두 줄, 기사는 세 줄로 차오릅니다.</p>
   </div>
   <div class="note">
-    <h3><i>4</i>드라이버 표시 자리</h3>
+    <h3><i>5</i>드라이버 표시 자리</h3>
     <p>출발지 주소 바로 아래, 꼬리 달린 말풍선입니다. 배경 <b>#283873</b>, 라디우스 2, 안쪽 여백 12/16.
        본문 16sp에 <b>탑승</b>만 #32a2fa로 강조돼 있습니다.</p>
     <p>같은 배지가 <b>pickup-go, pickup-arrived, 예약 상세</b> 세 화면에 반복 배치돼 있어 운행 내내 남습니다.</p>
@@ -734,7 +767,7 @@
        말합니다. 항상 새 정보인 것은 층이고 동은 절반쯤 윗줄과 겹치므로 <b>지하 N층을 가장 크게</b> 둡니다.</p>
   </div>
   <div class="note">
-    <h3><i>5</i>실제 요청사항 1,727건이 말해준 것</h3>
+    <h3><i>6</i>실제 요청사항 1,727건이 말해준 것</h3>
     <p>상위 180개 단지 3년치 표본. <b>지하 82.3% 대 지상 0.8%</b>라 수직 위치를 묻는 것 자체가 낭비다.
        지하를 기본값으로 두고 바꿀 수 있게만 했다. 층은 <b>지하 1~5층에 전부 분포</b>하고 6층 이상은 0건이다.</p>
     <p>라인은 <b>36.2%</b>가 적고 표기가 제각각이다(구분자 <b>- 227, 쉼표 185, / 51</b>). 그래서 칩이 아니라
@@ -744,7 +777,7 @@
     <p class="src">아파트_요청사항_샘플_상위180단지.csv, 1,727건 / 174단지 / 1,040명</p>
   </div>
   <div class="note">
-    <h3><i>6</i>구조화가 흡수할 수 없는 것</h3>
+    <h3><i>7</i>구조화가 흡수할 수 없는 것</h3>
     <p>구조화로 완전히 담기는 건 <b>28.1%</b>뿐이다. 나머지에는 <b>짐과 동승자 32.9%</b>(캐리어만 272건),
        <b>경로 안내 20.3%</b>가 섞여 있다. 이건 픽업 필드가 흡수할 수 없고 요청사항이 계속 담아야 한다.</p>
     <p>그래서 <b>PRD의 성공 지표를 손봐야 한다.</b> 자유 텍스트 감소율을 그대로 KPI로 두면 구조적으로
@@ -754,7 +787,7 @@
     <p class="src">같은 표본. 강미래 PO: GPS 보정 없이는 결국 헤맨다</p>
   </div>
   <div class="note">
-    <h3><i>7</i>확인이 필요한 값</h3>
+    <h3><i>8</i>확인이 필요한 값</h3>
     <p><span class="mk warn"></span><b>탑승 라벨 대비 4.03대 1.</b> #32a2fa on #283873은 16sp 일반 텍스트 기준 AA(4.5대 1)에 못 미칩니다.
        운전 중 화면이라 굵기를 700으로 올리거나 밝기를 한 단계 올리는 편이 좋습니다.</p>
     <p><span class="mk warn"></span><b>용어가 셋입니다.</b> 화면 제목은 탑승 위치, 입력 필드는 픽업 위치, 드라이버 배지는 탑승입니다.</p>
@@ -778,7 +811,7 @@
     sending:false, sent:false, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:''},
-    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false
+    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline'
   };
 
   /* ── 문장 ── */
@@ -936,22 +969,28 @@
   function renderSentence(){
     const d=S.d, ok=ready(d);
 
+    /* 가 = 위치를 문장 첫 슬롯의 칩으로, 나 = 세그먼트를 남기고 문장에 위치 단어를 되받기 */
+    const inline = S.top==='inline';
+    el('f-seg').hidden = inline;
+    el('f-lvl').hidden = !inline;
+    el('f-w-u').hidden = inline || false;
+
     const seg=el('f-seg'); seg.innerHTML='';
     [['under','지하 주차장'],['ground','지상']].forEach(([v,t])=>{
       const b=document.createElement('button'); b.type='button';
       b.className='segb'+(d.lvl===v?' on':''); b.textContent=t;
-      b.addEventListener('click',()=>{
-        if(d.lvl===v) return;
-        d.lvl=v; if(v!=='under') d.floor=null;
-        renderSentence();
-        setTimeout(()=>el(v==='under'?'f-floor':'f-dong').focus(),40);
-      });
+      b.addEventListener('click',()=>{ setLvl(v); });
       seg.appendChild(b);
     });
 
-    /* 지상이면 층 빈칸을 문장에서 아예 뺀다. 비활성 필드를 남겨 두는 것보다 낫다 */
+    /* 지상이면 층 빈칸을 문장에서 아예 뺀다. 비활성 필드를 남겨 두는 것보다 낫다.
+       다만 위치 자체는 문장에 남아야 한다. 지상인데 문장이 '101동 앞에서 탈게요' 면
+       기사님이 받을 문장이 곧 입력 화면이라는 주장이 깨진다. */
     const und = d.lvl==='under';
-    el('f-w-u').hidden=!und; el('f-w-c').hidden=!und; el('f-floor').hidden=!und;
+    el('f-w-c').hidden=!und; el('f-floor').hidden=!und;
+    el('f-lvl-t').textContent = und ? '지하' : '지상';
+    el('f-w-u').textContent   = und ? '지하' : '지상';
+    if(!inline) el('f-w-u').hidden = false;
 
     const fl=el('f-floor'); fl.value = d.floor ? String(d.floor) : '';
     const dg=el('f-dong');  dg.value = d.dong;
@@ -973,6 +1012,12 @@
       paintFEtc();
     }
     paintFoot();
+  }
+  function setLvl(v){
+    if(S.d.lvl===v) return;
+    S.d.lvl=v; if(v!=='under') S.d.floor=null;
+    renderSentence();
+    setTimeout(()=>{ const t=el(v==='under'?'f-floor':'f-dong'); if(!t.hidden) t.focus(); },40);
   }
   function paintFEtc(){
     const p=el('f-etc-help'); if(!p) return;
@@ -1011,6 +1056,7 @@
       const v=ev.target.value.replace(/\s*라인\s*$/,'');
       ev.target.value=v; S.d.line=v; paintFoot();
     });
+    el('f-lvl').addEventListener('click',()=>setLvl(S.d.lvl==='under'?'ground':'under'));
     el('f-addetc').addEventListener('click',()=>{
       S.etcOpen=true; renderSentence(); setTimeout(()=>el('f-etc').focus(),40);
     });
@@ -1218,7 +1264,13 @@
   $$('.tab[data-form]').forEach(t=>t.addEventListener('click',()=>{
     S.form=t.dataset.form;
     $$('.tab[data-form]').forEach(x=>x.classList.toggle('on',x.dataset.form===S.form));
+    $('#toprow').classList.toggle('off', S.form!=='sform');
     if($('#phscr').classList.contains('on')) openForm(S.opened); else render();
+  }));
+  $$('.tab[data-top]').forEach(t=>t.addEventListener('click',()=>{
+    S.top=t.dataset.top;
+    $$('.tab[data-top]').forEach(x=>x.classList.toggle('on',x.dataset.top===S.top));
+    if($('#phscr').classList.contains('on')) renderSentence();
   }));
   $('#rst').addEventListener('click',()=>setMode(S.mode));
 
