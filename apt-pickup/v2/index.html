@@ -336,7 +336,10 @@
   /* 예시는 값과 확실히 갈라져야 한다. gray-500(3.82:1)까지 올리니 22px 에서는
      입력된 값처럼 읽혔다. gray-300 은 2.15:1 로 무게 400 과 함께 값(navy 700)과 구분된다. */
   .bv::placeholder{color:var(--gray-300);font-weight:400;}
-  .fld .u{flex:0 0 auto;font-size:22px;font-weight:600;color:var(--gray-950);}
+  /* 단위는 고정 문구다. 값보다 한 단계 작게 두면 상자 안에서 무엇이 내용인지 바로 보인다.
+     가운데 정렬만 하면 22px 과 16px 의 베이스라인이 어긋나 2px 내려 앉힌다. */
+  .fld .u{flex:0 0 auto;font-size:16px;font-weight:600;color:var(--gray-950);
+    transform:translateY(2px);}
   .bv.fl{width:26px;}
   .bv.dg{width:62px;}
   .bv.ln{width:74px;}
