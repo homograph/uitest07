@@ -511,7 +511,7 @@ body.screenonly .col{margin:0;}
 /* D안(Figma 10766:65699, 현재 상태 그대로): 방법+쿠폰을 한 블록으로 묶고, 다시 예약하기는
    고정폭 240px 카드를 가로 스크롤(NO_WRAP)한다. 색 블록 대신 얇은 회색 띠(divider)로 섹션을
    가르고, 후기 카드마다 예약 종류 태그를 붙인다. */
-.fgd-top{padding:32px 28px 20px;display:flex;flex-direction:column;align-items:center;gap:24px;
+.fgd-top{padding:32px 28px 28px;display:flex;flex-direction:column;align-items:center;gap:24px;
   background:linear-gradient(180deg,#e2f2fe 0%,#ffffff 100%);}
 .fgd-top .tt{width:100%;display:flex;flex-direction:column;gap:8px;}
 .fgd-top h1{margin:0;font-size:24px;line-height:32px;font-weight:700;color:#000000;letter-spacing:-.4px;}
@@ -525,11 +525,14 @@ body.screenonly .col{margin:0;}
   border-radius:6px;background:#32a2fa;color:#fff;text-align:center;
   font-size:8px;line-height:12px;font-weight:700;letter-spacing:0;}
 .fgd-methcoupon .fg-row .c span{color:#383d4f;}
-/* 쿠폰은 보조 넛지. 흰 면 + 옅은 테두리로 카드보다 한 단계 조용하게 둔다.
+/* 면은 #99a5c0 을 8% 로 얹은 값이라 흰 배경 위에서 #f7f8fa 로 합성된다.
+   ⚠ 테두리에 #c0c8d9 를 그대로 넣으면 안 된다. inspect 가 찍는 `stroke #c0c8d9/1` 의
+   /1 은 불투명도가 아니라 선 두께이고, stroke 에 낮은 불투명도가 걸려 있어 실제 렌더는
+   #f2f4f7 이다(2x 렌더 픽셀 실측). 원색을 넣으면 10배쯤 진한 선이 된다.
    ⚠ Figma stroke 가 INSIDE 라 border 를 쓰면 높이가 2px 늘어난다(54->56).
    inset box-shadow 로 그려 레이아웃 영향 없이 같은 1px 선을 만든다. */
-.fgd-coupon{display:flex;align-items:center;gap:14px;background:#f6f8fa;
-  box-shadow:inset 0 0 0 1px #f3f5f7;
+.fgd-coupon{display:flex;align-items:center;gap:14px;background:rgba(153,165,192,.08);
+  box-shadow:inset 0 0 0 1px #f2f4f7;
   border-radius:4px;padding:10px 18px;width:100%;box-sizing:border-box;}
 
 .fgd-sch{padding:20px 24px;display:flex;flex-direction:column;gap:16px;align-items:stretch;}
@@ -541,7 +544,8 @@ body.screenonly .col{margin:0;}
 .fgd-cardrow{display:flex;gap:10px;width:100%;overflow-x:auto;scrollbar-width:none;
   margin:-12px -24px -24px;padding:12px 24px 24px;}
 .fgd-cardrow::-webkit-scrollbar{display:none;}
-/* 카드만 흰 면 + elevation 으로 띄우고 나머지(쿠폰·후기·FAQ)는 회색 면으로 눕힌다.
+/* 카드만 흰 면 + elevation 으로 띄운다. 쿠폰·후기는 같은 회색 면에 #f2f4f7 테두리를
+   둘러 한 단계 눕히고, FAQ 는 테두리 없이 면만 둬 가장 조용하다(Figma 10883:123790).
    주변이 회색일 때 흰 면은 밝기 역전으로 오히려 튀고, 그림자가 깊이를 더한다.
    그림자는 무채색이 아니라 브랜드 블루 틴트(#32a2fa @6%).
    ⚠ 테두리는 Figma 가 전부 strokeAlign=INSIDE 라 border 대신 inset box-shadow 로 그린다.
@@ -564,8 +568,8 @@ body.screenonly .col{margin:0;}
 .fgd-testi{background:#fff;padding:20px 24px;display:flex;flex-direction:column;gap:24px;align-items:center;}
 .fgd-testi h3{margin:0;width:100%;font-size:18px;line-height:26px;font-weight:700;color:#262a38;}
 .fgd-tlist{display:flex;flex-direction:column;gap:10px;width:100%;}
-.fgd-tcard{display:flex;align-items:center;gap:18px;background:#f9f9f9;
-  box-shadow:inset 0 0 0 1px #f5f6f7;
+.fgd-tcard{display:flex;align-items:center;gap:18px;background:rgba(153,165,192,.08);
+  box-shadow:inset 0 0 0 1px #f2f4f7;
   border-radius:9999px;padding:20px 32px 20px 24px;}
 .fgd-tcard .av{flex:0 0 auto;width:44px;height:44px;border-radius:50%;overflow:hidden;}
 .fgd-tcard .av svg{display:block;width:100%;height:100%;}
@@ -575,8 +579,9 @@ body.screenonly .col{margin:0;}
 .fgd-tcard .tag svg{flex:0 0 auto;}
 .fgd-tcard p{margin:0;font-size:15px;line-height:22px;color:#383d4f;word-break:keep-all;}
 .fgd-faq .faq3{padding:20px 24px 150px;}
-/* 보조 정보 토큰 통일: FAQ 아코디언도 후기 카드와 같은 #e6e9ef@0.3 을 쓴다 */
-.fgd-faq .faq3 .q{background:#f9f9f9;box-shadow:inset 0 0 0 1px #f5f6f7;border-radius:4px;}
+/* FAQ 아코디언만 테두리가 없다. Figma 가 면(#f5f6f7)만 주고 stroke 를 안 준다.
+   쿠폰·후기와 묶어 같은 토큰을 쓰고 싶어지지만, 그러면 Figma 와 어긋난다. */
+.fgd-faq .faq3 .q{background:#f5f6f7;border-radius:4px;}
 
 /* ── 정기예약 플로우 오버레이 ─────────────────────────────────────
    .fwlayer 는 .phone 을 통째로 덮는다. 시트 단계(설명/요일)만 홈이 비치도록
