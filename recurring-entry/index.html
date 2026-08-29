@@ -1003,7 +1003,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
     <aside class="devdoc">
       <div class="dd-hd">
         <h2>개발 가이드</h2>
-        <p>Figma 에 안 담기는 타이밍과 상태 규칙을 여기 모읍니다. 값은 왼쪽 프로토타입에서 실측한 것입니다.</p>
+        <p>Figma 에 안 담기는 타이밍과 상태 규칙을 여기 모읍니다. 브릿지 값은 왼쪽 프로토타입에서 실측한 것이고, 카드 폭 규칙만 기기 대응을 위한 구현 권고입니다.</p>
       </div>
 
       <section class="dd-sec">
@@ -1046,6 +1046,8 @@ function goStep(step){
   clearFlowTimers();                 // 겹친 타이머부터 지운다
   S.step = step;
   renderFlow();                      // 확인 화면 + 브릿지를 한 번에 그린다
+                                     // (프로토타입 하네스용 2줄 생략:
+                                     //  오버레이 높이 맞춤 · 스크롤 리셋)
   if (step === 'bridge'){
     setTimeout(() =&gt; goStep('weekday'), FLOW_T.bridgeStay);
   }
@@ -1073,7 +1075,7 @@ goStep('confirm');</code></pre>
         </table>
         <p class="dd-n">⚠ 오버레이를 <code class="i">pointer-events:none</code> 으로 두면 안 됩니다.
           탭이 통과해서 <b>뒤 화면의 뒤로가기가 눌립니다.</b> 핸들러 없이 받아내기만 하면 됩니다.
-          모션 축소에서는 등장이 없으므로 정지 구간이 820ms 가 아니라 1300ms 전체가 됩니다.</p>
+          모션 축소에서는 등장이 없으므로 정지 구간이 1120ms 가 아니라 1900ms 전체가 됩니다.</p>
       </section>
 
       <section class="dd-sec">
@@ -1084,6 +1086,9 @@ goStep('confirm');</code></pre>
 카드 사이     10dp    고정
 좌우 인셋     24dp    고정
 안쪽 패딩     18dp    고정</code></pre>
+        <p class="dd-n">⚠ 이 폭 규칙만은 왼쪽 프로토타입과 다릅니다. 프로토타입은 393dp 고정 목업이라
+          Figma 값 <b>240dp 를 그대로</b> 씁니다. 위 규칙은 여러 기기에 대응하기 위한 <b>앱 구현 규칙</b>이고,
+          393dp 에서 60% = 236dp 라 둘이 사실상 겹칩니다(4dp 차이). 나머지 값은 프로토타입 실측치입니다.</p>
         <p class="dd-n">폭만 유동이고 나머지는 고정입니다. 최소 200dp 는 주소가 한글 약 10자에서 끊기는 지점이라
           그 아래로 가면 장소를 알아볼 수 없습니다(분할 화면에서만 걸립니다). 최대 280dp 는 폰에서는 안 걸리고,
           폴더블&middot;태블릿에서 넓어진 폭이 카드 크기가 아니라 <b>카드 개수</b>로 가도록 하는 가드입니다.</p>
