@@ -159,9 +159,9 @@
     color:#000;word-break:keep-all;}
   .asklab em{font-style:normal;font-size:14px;font-weight:400;color:var(--gray-500);margin-left:6px;}
 
-  .seg{display:flex;background:var(--gray-e6);border-radius:6px;padding:4px;}
-  .segb{flex:1 1 0;border:none;background:none;border-radius:4px;padding:13px 0;font:inherit;
-    font-size:15px;font-weight:500;color:var(--gray-500);cursor:pointer;}
+  .seg{display:flex;background:var(--gray-e6);border-radius:8px;padding:4px;}
+  .segb{flex:1 1 0;border:none;background:none;border-radius:6px;padding:10px 0;font:inherit;
+    font-size:15px;line-height:20px;font-weight:500;color:var(--gray-500);cursor:pointer;}
   .segb.on{background:#fff;color:var(--navy-800);font-weight:700;}
 
   .chips{display:flex;gap:6px;flex-wrap:wrap;}
@@ -170,8 +170,8 @@
   .chip2.on{border-color:#31487d;background:#31487d;color:#fff;font-weight:500;}
 
   .tinwrap{position:relative;width:100%;}
-  .tin{width:100%;border:none;border-radius:8px;background:var(--gray-30);padding:16px 58px 16px 16px;
-    font:inherit;font-size:16px;color:var(--gray-950);outline:none;}
+  .tin{width:100%;border:none;border-radius:8px;background:var(--gray-30);padding:15px 58px 15px 16px;
+    font:inherit;font-size:16px;line-height:18px;color:var(--gray-950);outline:none;}
   .tin::placeholder{color:var(--gray-500);}
   .tin:focus{box-shadow:inset 0 0 0 1.5px var(--navy-800);}
   .tcnt{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--gray-500);}
@@ -297,20 +297,22 @@
   .ph-body.sform{justify-content:flex-start;gap:0;}
   .ph-body.sform .phhint{margin:0 0 20px;}
   .fform{width:100%;}
-  .fform .flab{margin:0 0 12px;font-size:19px;line-height:27px;font-weight:700;
-    letter-spacing:-.3px;color:#000;word-break:keep-all;}
+  .fform .flab{margin:0 0 12px;font-size:17px;line-height:24px;font-weight:700;
+    letter-spacing:-.3px;color:var(--gray-950);word-break:keep-all;}
   .sent{display:flex;flex-wrap:wrap;align-items:center;margin:24px 0 0;
-    font-size:20px;line-height:48px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
+    font-size:22px;line-height:48px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
   .sent .w{flex:0 0 auto;}
   /* '앞에서 탈게요' 는 고정 문구다. 줄이 바뀌어도 값이 갈라지지 않도록 따로 떼어 두고,
      입력값이 아니라는 게 보이게 한 톤 낮춘다. */
   .sent .tail2{margin-left:5px;font-weight:500;color:var(--gray-500);}
-  .blank{flex:0 0 auto;border:none;outline:none;background:var(--gray-30);
-    border-bottom:2px solid var(--gray-100);border-radius:6px 6px 0 0;
-    height:48px;margin:0 5px;padding:0 6px;text-align:center;
-    font:inherit;font-size:20px;font-weight:700;color:var(--navy-800);}
-  .blank::placeholder{color:var(--gray-200);font-weight:500;}
-  .blank:focus{background:var(--blue-050);border-bottom-color:var(--navy-800);}
+  .blank{flex:0 0 auto;border:none;outline:none;background:var(--gray-30);border-radius:8px;
+    height:48px;margin:0 6px;padding:0 8px;text-align:center;
+    font:inherit;font-size:22px;font-weight:700;color:var(--navy-800);}
+  /* 예시는 값과 확실히 갈라져야 한다. gray-500(3.82:1)까지 올리니 22px 에서는
+     입력된 값처럼 읽혔다(빈 화면이 '지하 2층 101동'으로 보임). gray-300 은 2.08:1 로
+     이전 gray-200(1.46:1)보다 읽히면서, 무게 400 과 함께 값(navy 700)과 확실히 구분된다. */
+  .blank::placeholder{color:var(--gray-300);font-weight:400;}
+  .blank:focus{background:var(--blue-050);box-shadow:inset 0 0 0 1.5px var(--navy-800);}
   .blank.fl{width:48px;}
   .blank.dg{width:88px;}
   .blank.ln{width:96px;}
@@ -319,12 +321,12 @@
   .fform .kbswap[hidden]{display:none;}
   /* 필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면 문장을 쓰는 도중에 방해가 된다.
      한 줄짜리 링크만 조용히 나타나고, 필요한 사람(26.9%)이 눌렀을 때 필드를 연다. */
-  .addetc{width:100%;margin-top:22px;border:none;background:none;padding:12px 0;
+  .addetc{width:100%;margin-top:22px;border:none;background:none;padding:14px 0;
     font:inherit;font-size:15px;font-weight:600;color:var(--navy-800);text-align:left;cursor:pointer;
-    border-top:1px solid var(--gray-30);border-radius:0;
+    border-top:1px solid var(--gray-100);border-radius:0;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .addetc[hidden]{display:none;}
-  .fopt{width:100%;margin-top:24px;padding-top:22px;border-top:1px solid var(--gray-30);
+  .fopt{width:100%;margin-top:24px;padding-top:22px;border-top:1px solid var(--gray-100);
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .fopt .flab3{margin:0 0 9px;font-size:15px;line-height:22px;font-weight:700;color:var(--gray-900);}
   .fopt .flab3 em{font-style:normal;font-size:13px;font-weight:400;color:var(--gray-500);margin-left:5px;}
