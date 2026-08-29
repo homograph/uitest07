@@ -302,11 +302,15 @@
   .sent{display:flex;flex-wrap:wrap;align-items:center;margin:24px 0 0;
     font-size:22px;line-height:48px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
   .sent .w{flex:0 0 auto;}
+  /* 접히는 자리를 고정한다. 우연히 접히면 '1012동'과 '2-5호라인'처럼
+     한 덩어리인 주소가 두 줄로 갈라진다. */
+  .sent .br{flex:0 0 100%;height:0;}
+  .sent .br + .blank{margin-left:0;}
   /* '앞에서 탈게요' 는 고정 문구다. 줄이 바뀌어도 값이 갈라지지 않도록 따로 떼어 두고,
      입력값이 아니라는 게 보이게 한 톤 낮춘다. */
-  .sent .tail2{margin-left:5px;font-weight:500;color:var(--gray-500);}
+  .sent .tail2{font-weight:500;color:var(--gray-500);}
   .blank{flex:0 0 auto;border:none;outline:none;background:var(--gray-30);border-radius:8px;
-    height:48px;margin:0 6px;padding:0 8px;text-align:center;
+    height:48px;margin:0 8px;padding:0 8px;text-align:center;
     font:inherit;font-size:22px;font-weight:700;color:var(--navy-800);}
   /* 예시는 값과 확실히 갈라져야 한다. gray-500(3.82:1)까지 올리니 22px 에서는
      입력된 값처럼 읽혔다(빈 화면이 '지하 2층 101동'으로 보임). gray-300 은 2.08:1 로
@@ -321,7 +325,8 @@
   .fform .kbswap[hidden]{display:none;}
   /* 필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면 문장을 쓰는 도중에 방해가 된다.
      한 줄짜리 링크만 조용히 나타나고, 필요한 사람(26.9%)이 눌렀을 때 필드를 연다. */
-  .addetc{width:100%;margin-top:22px;border:none;background:none;padding:14px 0;
+  .addetc{display:flex;align-items:center;gap:8px;
+    width:100%;margin-top:22px;border:none;background:none;padding:14px 0;
     font:inherit;font-size:15px;font-weight:600;color:var(--navy-800);text-align:left;cursor:pointer;
     border-top:1px solid var(--gray-100);border-radius:0;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
@@ -561,19 +566,21 @@
               <input class="blank fl" id="f-floor" inputmode="numeric" maxlength="1"
                      placeholder="2" aria-label="지하 몇 층" />
               <span class="w" id="f-w-c">층</span>
+              <span class="br"></span>
               <input class="blank dg" id="f-dong" maxlength="5"
                      placeholder="101" aria-label="몇 동" />
               <span class="w">동</span>
               <input class="blank ln" id="f-line2" maxlength="8"
                      placeholder="2-5호" aria-label="호수 라인, 없으면 비워 두세요" />
               <span class="w">라인</span>
+              <span class="br"></span>
               <span class="w tail2">앞에서 탈게요</span>
             </div>
             <button type="button" class="kbswap" id="f-swap"></button>
             <p class="askhelp" id="f-lnhelp">라인은 <b>공동현관에 붙어 있는 그대로</b> 적으면 됩니다.
                1-2, 3,4호, 1/2 어떤 표기든 괜찮아요. <b>없으면 비워 두세요.</b></p>
 
-            <button type="button" class="addetc" id="f-addetc" hidden>＋ 찾아오는 길 적기</button>
+            <button type="button" class="addetc" id="f-addetc" hidden><svg class="ic" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 1.2V11.8M1.2 6.5H11.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>찾아오는 길 적기</button>
             <div class="fopt" id="fopt" hidden>
               <p class="flab3">찾아오는 길 <em>선택</em></p>
               <div class="tinwrap">
@@ -676,6 +683,10 @@
        &lsquo;몇 동이세요?&rsquo; 와 같은 어투여야 같은 종류의 정보로 읽힙니다.
        다만 라인이 없는 60%를 위해 <b>건너뛰기 버튼은 남깁니다.</b> 선택 뱃지를 떼는 것과
        빠져나갈 길을 막는 것은 다른 얘기입니다.</p>
+    <p>문장이 접히는 자리도 고정했습니다. 실제 요청사항의 덩어리는 <b>&lsquo;지하2층&rsquo;</b> 과
+       <b>&lsquo;117동 3,5호라인&rsquo;</b> 두 개인데, 우연에 맡기면 <b>1012동</b>과 <b>2-5호라인</b>이
+       두 줄로 갈라집니다. 한 덩어리인 주소를 갈라놓지 않도록 줄을
+       <b>층 / 동·라인 / 고정 문구</b> 세 덩어리로 끊었습니다.</p>
     <p>라인 칸이 처음부터 비어 보이는 대가로 <b>없으면 비워 두세요</b>를 문장 아래에 붙였습니다.
        라인이 없는 60%가 이 칸에서 멈추지 않게 하는 장치입니다.</p>
     <p>문장 밖에 남은 <b>찾아오는 길</b>은 필드가 아니라 <b>한 줄 링크</b>로 나타납니다.
