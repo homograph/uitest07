@@ -1008,7 +1008,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
     <aside class="devdoc">
       <div class="dd-hd">
         <h2>개발 가이드</h2>
-        <p>Figma 에 안 담기는 타이밍과 상태 규칙을 여기 모읍니다. 브릿지 값은 왼쪽 프로토타입에서 실측한 것이고, 카드 폭 규칙만 기기 대응을 위한 구현 권고입니다.</p>
+        <p>Figma 에 안 담기는 타이밍과 상태 규칙을 여기 모읍니다. 길이 단위는 전부 <b>dp</b>(iOS pt) 입니다. 브릿지 값은 왼쪽 프로토타입에서 실측한 것이고, 카드 폭 규칙만 기기 대응을 위한 구현 권고입니다.</p>
       </div>
 
       <section class="dd-sec">
@@ -1034,53 +1034,91 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
 헤드라인   rise   380ms  cubic(.45,0,.25,1)    delay  340ms
 서브       rise   380ms  cubic(.45,0,.25,1)    delay  400ms
 
-rise = opacity 0 -&gt; 1, translateY(12px) -&gt; 0</code></pre>
+rise = opacity 0 -&gt; 1, translateY(12dp) -&gt; 0</code></pre>
         <p class="dd-n">마지막 요소가 <b>400 + 380 = 780ms</b> 에 끝납니다. 남은 <b>1120ms</b> 가 정지 구간입니다.
-          아이콘은 등장 뒤 2초 주기로 8px 위아래 부유합니다(delay 640ms).
+          아이콘은 등장 뒤 2초 주기로 8dp 위아래 부유합니다(delay 640ms).
           ⚠ 등장 커브는 <b>양끝이 누운 cubic-bezier(.45,0,.25,1)</b> 입니다. 화면 전환용 감속 커브
           (.2,.8,.3,1)를 쓰면 시작부터 최고 속도라 급하게 보입니다. 커브만 바꾸고 지속시간을
           그대로 두면 중간이 빨라져 역효과이므로 380ms 와 한 쌍으로 보세요.
-          베일은 슬라이드 중인 화면 위에 와야 하므로 <b>z-index 가 그보다 높아야</b> 합니다.</p>
+          베일은 <b>슬라이드 중인 화면보다 뷰 계층에서 위</b>에 있어야 합니다(웹 z-index, iOS 서브뷰 순서, Android elevation).</p>
       </section>
 
       <section class="dd-sec">
         <h3>전환 로직</h3>
-        <pre><code>const FLOW_T = { bridgeStay: 1900 };
+        <p class="dd-n" style="margin:0 0 10px">웹 프로토타입 코드 대신 <b>상태 기계</b>로 적습니다. 아래 표가 계약이고,
+          구현은 플랫폼 관용구를 따르면 됩니다.</p>
+        <pre><code>상태  home · sheet · schedule · car · confirm · bridge · weekday · rconfirm
 
-function goStep(step){
-  clearFlowTimers();                 // 겹친 타이머부터 지운다
-  S.step = step;
-  renderFlow();                      // 확인 화면 + 브릿지를 한 번에 그린다
-                                     // (프로토타입 하네스용 2줄 생략:
-                                     //  오버레이 높이 맞춤 · 스크롤 리셋)
-  if (step === 'bridge'){
-    setTimeout(() =&gt; goStep('weekday'), FLOW_T.bridgeStay);
-  }
-}
+전이
+  car      --[다음]------------&gt;  bridge    confirm 과 한 번에 그림, 우-&gt;좌 push 320ms
+  bridge   --1900ms 경과-------&gt;  weekday   우-&gt;좌 push
+  bridge   --탭(어디든)--------&gt;  weekday   타이머 취소
+  bridge   --Android back-----&gt;  confirm   타이머 취소, 배너 promo, 자동 전환 없음
+  bridge   --화면 가려짐-------&gt;  bridge    타이머 취소, 다시 보일 때 처음부터 재생
+  confirm  --[설정]------------&gt;  weekday
+  weekday  --취소 / 뒤로-------&gt;  confirm   배너 warn, 자동 전환 없음
 
-// 차량 선택 [다음] 은 확인 화면이 아니라 브릿지로 바로 간다
-goStep('bridge');
-// 요일 선택에서 취소하면 확인 화면으로. 진입 훅이 없으니 거기서 멈춘다
-goStep('confirm');</code></pre>
+불변식
+  1. 모든 전이는 대기 타이머를 먼저 취소한다
+  2. confirm 에는 자동 전환 훅이 없다 (있으면 취소가 취소된다)
+  3. 자동 전환 타이머는 화면이 보이는 동안에만 흐른다</code></pre>
+        <p class="dd-n" style="margin-top:14px"><b>Android</b></p>
+        <pre><code>val BridgeEasing = CubicBezierEasing(0.45f, 0f, 0.25f, 1f)
+
+// 브릿지 중 back = 오버레이 닫기. 뒤로 가는 게 아니라 그 자리에 서는 것
+BackHandler(enabled = step == Step.Bridge) {
+    cancelAutoAdvance()
+    step = Step.Confirm          // 배너는 promo 유지
+}</code></pre>
+        <p class="dd-n" style="margin-top:14px"><b>iOS</b></p>
+        <pre><code>let bridgeEasing = UICubicTimingParameters(
+    controlPoint1: CGPoint(x: 0.45, y: 0),
+    controlPoint2: CGPoint(x: 0.25, y: 1))
+
+// 브릿지 구간에만 차단. 어떤 경로로 벗어나든 반드시 되돌린다
+navigationController?.interactivePopGestureRecognizer?.isEnabled = (step != .bridge)</code></pre>
         <ul class="dd-l">
           <li><b>타이머를 먼저 지웁니다.</b> 안 지우면 이전 단계의 예약분이 살아남아 단계를 건너뜁니다.</li>
           <li><b>확인 화면은 독립 단계가 아닙니다.</b> 정방향에서는 브릿지와 한 덩어리로 그려지고,
             취소로 되돌아올 때만 단독으로 뜹니다. 모든 화면 전환은 우&rarr;좌 push, 뒤로가기는 pop 입니다.</li>
           <li><b>확인 화면에 자동 전환 훅을 걸지 마세요.</b> 걸면 취소로 돌아왔을 때 다시
             브릿지 &rarr; 요일 선택으로 끌려가 <b>취소가 취소됩니다.</b></li>
+          <li>왼쪽 프로토타입에서는 <b>Esc</b> 가 Android back 자리입니다. 브릿지 중 눌러 보세요.</li>
         </ul>
       </section>
 
       <section class="dd-sec">
-        <h3>인터럽트</h3>
+        <h3>인터럽트 · 플랫폼 분기</h3>
+        <p class="dd-n" style="margin:0 0 12px">브릿지 <b>1900ms 그 창에서만</b> 두 플랫폼이 갈립니다. 앞뒤 구간은 동일합니다.</p>
         <table class="dd-t">
-          <tr><th>탭</th><td>어디를 눌러도 즉시 요일 선택으로. 대기 타이머는 취소</td></tr>
-          <tr><th>뒤로가기</th><td>불가. 오버레이가 화면 전체를 덮고 탭을 흡수</td></tr>
-          <tr><th>모션 축소</th><td>등장&middot;부유&middot;슬라이드 전부 off. <b>타이밍은 그대로</b></td></tr>
+          <tr><th>탭 (공통)</th><td>어디를 눌러도 즉시 요일 선택으로. 대기 타이머는 취소</td></tr>
+          <tr><th><b>Android</b> back</th><td>back 을 받아 <b>흰 베일만 걷고 확인 화면에 정지</b>.
+            타이머 취소, 배너는 promo(<code class="i">[설정]</code>) 유지, 자동 전환 없음.
+            뒤로 가는 게 아니라 <b>그 자리에 서는 것</b>입니다</td></tr>
+          <tr><th><b>iOS</b> edge swipe</th><td>브릿지 구간에만 <b>비활성</b>.
+            <code class="i">interactivePopGestureRecognizer.isEnabled = false</code></td></tr>
+          <tr><th>모션 축소</th><td>등장&middot;부유&middot;슬라이드 off. <b>총 1120ms</b> 로 단축</td></tr>
         </table>
-        <p class="dd-n">⚠ 오버레이를 <code class="i">pointer-events:none</code> 으로 두면 안 됩니다.
-          탭이 통과해서 <b>뒤 화면의 뒤로가기가 눌립니다.</b> 핸들러 없이 받아내기만 하면 됩니다.
-          모션 축소에서는 등장이 없으므로 정지 구간이 1120ms 가 아니라 1900ms 전체가 됩니다.</p>
+        <p class="dd-n">back 은 &ldquo;닫기&rdquo;, edge swipe 는 &ldquo;이전 화면으로&rdquo;라 의미가 다릅니다.
+          브릿지 같은 오버레이에서는 <b>같게 맞추는 쪽이 오히려 어색합니다.</b>
+          Android 는 back 을 소비하므로 <b>predictive back 프리뷰가 뜨면 안 됩니다.</b></p>
+        <p class="dd-n">★★ <b>iOS 회귀 위험</b>: 브릿지에서 끈 제스처를 다시 켜지 않는 결함이 가장 흔합니다.
+          <b>자동 전환&middot;탭 스킵&middot;백그라운드 복귀 후 재생, 어떤 경로로 브릿지를 벗어나든 반드시 복구</b>해야 합니다.</p>
+        <p class="dd-n">⚠ 오버레이를 터치 투과로 두면 안 됩니다(웹 <code class="i">pointer-events:none</code>,
+          iOS <code class="i">isUserInteractionEnabled=false</code>). 탭이 통과해 <b>뒤 화면의 뒤로가기가 눌립니다.</b>
+          핸들러 없이 받아내기만 하면 됩니다.</p>
+      </section>
+
+      <section class="dd-sec">
+        <h3>생명주기</h3>
+        <p class="dd-n" style="margin:0 0 10px"><b>자동 전환 타이머는 화면이 보이는 동안에만 흐릅니다.</b>
+          가려지면 취소하고, 다시 보일 때 브릿지를 <b>처음부터 재생</b>합니다.</p>
+        <table class="dd-t">
+          <tr><th>백그라운드&middot;전화 수신</th><td>타이머 취소 &rarr; 복귀 시 처음부터 재생</td></tr>
+          <tr><th>회전&middot;프로세스 사망</th><td>동일. 뷰의 resumed/visible 생명주기에 타이머를 묶으면 한 규칙으로 덮입니다</td></tr>
+        </table>
+        <p class="dd-n">브릿지의 임무는 <b>읽히는 것</b>입니다. 자리를 비운 사이 타이머만 흘려보내면 존재 이유가
+          사라집니다. 복귀했더니 요일 선택 화면이면, 브릿지가 막으려던 <b>바로 그 &ldquo;납치당한 느낌&rdquo;</b> 이 그대로 납니다.</p>
       </section>
 
       <section class="dd-sec">
@@ -1739,7 +1777,11 @@ function layout(){
    오히려 더 급해 보인다. 그래서 260 -> 380ms 로 같이 늘렸다.
    등장 지연은 CSS(.fw-breaker 계열 animation-delay)가 쥐고 있으므로 이 값만
    바꾸면 정지 구간이 늘고 준다. */
-const FLOW_T = { bridgeStay: 1900 };
+const FLOW_T = { bridgeStay: 1900, bridgeStayReduced: 1120 };
+/* 모션 축소는 '움직임'을 끄자는 설정이지 '읽는 속도'를 바꾸자는 게 아니다.
+   등장 780ms 가 사라지면 그만큼 총 시간도 줄여야 한다. 그대로 두면 애니메이션을
+   끈 사람에게 정지 화면을 780ms 더 보여주는 셈이 된다. 정지 구간 1120ms 는 동일. */
+const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let flowTimers = [];
 function clearFlowTimers(){ flowTimers.forEach(clearTimeout); flowTimers = []; }
 
@@ -1757,7 +1799,8 @@ function goStep(step){
   if (step) window.scrollTo(0, 0);
   renderFlow();
   if (step === 'bridge'){
-    flowTimers.push(setTimeout(() => goStep('weekday'), FLOW_T.bridgeStay));
+    flowTimers.push(setTimeout(() => goStep('weekday'),
+      prefersReduced() ? FLOW_T.bridgeStayReduced : FLOW_T.bridgeStay));
   }
 }
 
@@ -1892,6 +1935,23 @@ bind('segDraft', 'drafts', Number);
 bind('segPrev', 'prevCount', Number);
 bind('segCoupon', 'coupon', Number);
 bind('segMode', 'mode');
+
+/* Android back 의 웹 대응물로 Esc 를 둔다. 브릿지는 오버레이라, back/Esc 의 의미는
+   '뒤로 가기'가 아니라 '오버레이 닫기'다. 타이머를 끄고 베일만 걷어 확인 화면에 세운다.
+   ⚠ iOS edge swipe 는 '이전 화면으로'라 의미가 달라 브릿지 구간에만 비활성한다(앱 구현). */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && S.step === 'bridge'){ S.cfBanner = 'promo'; goStep('confirm'); }
+});
+
+/* 자동 전환 타이머는 화면이 보이는 동안에만 흐른다. 가려지면 취소하고, 다시 보일 때
+   처음부터 재생한다. 브릿지의 임무는 '읽히는 것'이라, 자리를 비운 사이 타이머만
+   흘려보내면 존재 이유가 사라진다(복귀했더니 요일 선택 = 브릿지가 막으려던 그 느낌).
+   앱에서는 백그라운드 전환·전화 수신·회전·프로세스 사망이 전부 이 한 규칙으로 덮인다. */
+document.addEventListener('visibilitychange', () => {
+  if (S.step !== 'bridge') return;
+  if (document.hidden) clearFlowTimers();
+  else goStep('bridge');
+});
 
 document.getElementById('playBridge').addEventListener('click', () => {
   S.cfBanner = 'promo'; panel(false); goStep('bridge');
