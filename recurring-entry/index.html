@@ -531,6 +531,12 @@ body.screenonly .col{margin:0;}
    #f2f4f7 이다(2x 렌더 픽셀 실측). 원색을 넣으면 10배쯤 진한 선이 된다.
    ⚠ Figma stroke 가 INSIDE 라 border 를 쓰면 높이가 2px 늘어난다(54->56).
    inset box-shadow 로 그려 레이아웃 영향 없이 같은 1px 선을 만든다. */
+/* [보기] 는 시각 크기가 34dp 라 최소 터치 영역(Android 48dp / iOS 44pt)에 못 미친다.
+   보이는 크기는 Figma 그대로 두고 ::after 로 히트 영역만 48dp 로 넓힌다.
+   네이티브는 Compose minimumInteractiveComponentSize / iOS hitTest 확장으로 같은 처리. */
+.fgd-coupon .b{position:relative;}
+.fgd-coupon .b::after{content:'';position:absolute;left:0;right:0;top:50%;
+  transform:translateY(-50%);height:48px;}
 .fgd-coupon{display:flex;align-items:center;gap:14px;background:rgba(153,165,192,.08);
   box-shadow:inset 0 0 0 1px #f2f4f7;
   border-radius:4px;padding:10px 18px;width:100%;box-sizing:border-box;}
@@ -1122,6 +1128,27 @@ navigationController?.interactivePopGestureRecognizer?.isEnabled = (step != .bri
       </section>
 
       <section class="dd-sec">
+        <h3>접근성 · 정책</h3>
+        <table class="dd-t">
+          <tr><th>스크린 리더 켜짐</th><td><b>자동 전환을 끕니다.</b> 사용자가 직접 눌러 진행<br>
+            Android <code class="i">AccessibilityManager.isTouchExplorationEnabled</code><br>
+            iOS <code class="i">UIAccessibility.isVoiceOverRunning</code></td></tr>
+          <tr><th>브릿지 오버레이</th><td>화면 전체가 탭 타깃이지만 <b>포커스 가능한 버튼</b>으로 노출.
+            진입 시 포커스를 옮겨 헤드라인이 읽히게 합니다</td></tr>
+          <tr><th>탭 스킵 가드</th><td>진입 후 <b>300ms</b> 는 탭 무시. 앞 화면 <code class="i">[다음]</code> 연타가
+            그대로 스킵으로 새는 걸 막습니다</td></tr>
+          <tr><th>최소 터치 영역</th><td>쿠폰 <code class="i">[보기]</code> 는 시각 34dp 라 <b>히트 영역만 48dp</b> 로 확장.
+            보이는 크기는 Figma 그대로</td></tr>
+        </table>
+        <p class="dd-n">정지 구간 1120ms 로는 TalkBack/VoiceOver 가 헤드라인 두 줄을 다 읽지 못합니다.
+          자동 전환을 그대로 두면 <b>읽는 도중 화면이 넘어갑니다.</b>
+          WCAG 2.2.1(Timing Adjustable) 관점에서도 자동 전환은 조정 가능해야 합니다.</p>
+        <p class="dd-n">⚠ 접근성 서비스 감지는 <b>실행 중에도 바뀝니다.</b> 브릿지 진입 시점에 한 번만 읽지 말고
+          변경 콜백을 구독하세요. 왼쪽 프로토타입은 웹이라 이 감지가 불가능해, 오버레이 시맨틱과
+          300ms 가드까지만 재현돼 있습니다.</p>
+      </section>
+
+      <section class="dd-sec">
         <h3>다시 예약하기 카드 폭</h3>
         <pre><code>카드 폭 = clamp(200dp, 화면 폭 × 60%, 280dp)
 
@@ -1135,6 +1162,11 @@ navigationController?.interactivePopGestureRecognizer?.isEnabled = (step != .bri
         <p class="dd-n">폭만 유동이고 나머지는 고정입니다. 최소 200dp 는 주소가 한글 약 10자에서 끊기는 지점이라
           그 아래로 가면 장소를 알아볼 수 없습니다(분할 화면에서만 걸립니다). 최대 280dp 는 폰에서는 안 걸리고,
           폴더블&middot;태블릿에서 넓어진 폭이 카드 크기가 아니라 <b>카드 개수</b>로 가도록 하는 가드입니다.</p>
+        <p class="dd-n"><b>스냅은 걸지 않습니다(자유 스크롤).</b> 카드가 화면의 60% 라 페이지가 아니라
+          목록에 가깝고, 여러 장을 훑어 고르는 게 목적입니다. 스냅을 걸면 탭하기 전에 정착
+          애니메이션을 기다려야 합니다. 굳이 넣는다면 <b>시작점 정렬</b>이어야 하고, 중앙 정렬 스냅
+          (<code class="i">LinearSnapHelper</code>, <code class="i">isPagingEnabled</code>)은
+          좌측 인셋 24dp 와 어긋나 쓰면 안 됩니다.</p>
         <p class="dd-n">가로 스크롤 컨테이너는 <b>화면 폭 전체</b>를 씁니다. 좌우 패딩 안쪽(345dp)으로 잡으면
           카드가 화면 가장자리에 닿지 못하고 24dp 안쪽에서 잘립니다.</p>
       </section>
@@ -1361,7 +1393,10 @@ function fConfirm(kind){
    진행바는 두지 않는다. 로딩이 없는 구간의 진행바는 가짜 로딩이고, 앱의 진짜
    진행바까지 신뢰를 깎는다. 정지감은 아이콘 부유로만 준다. */
 function fBridge(){
-  return `${fConfirm()}<div class="fw-breaker" data-flow="weekday">
+  /* 오버레이 전체가 탭 타깃이지만, 스크린 리더에는 '누를 수 있는 것'으로 보여야 한다.
+     그래서 role/label/tabindex 를 주고 진입 시 여기로 포커스를 옮긴다(wireFlow). */
+  return `${fConfirm()}<div class="fw-breaker" data-flow="weekday" role="button" tabindex="0"
+       aria-label="마지막으로, 반복할 날짜를 알려주세요. 요일 선택으로 이동하려면 누르세요">
     <img src="${A.icCal}" alt="">
     <div class="bk-tx"><b>마지막으로,<br>반복할 날짜를 알려주세요</b><span>탭하면 바로 이동</span></div>
   </div>`;
@@ -1799,6 +1834,7 @@ function goStep(step){
   if (step) window.scrollTo(0, 0);
   renderFlow();
   if (step === 'bridge'){
+    bridgeShownAt = performance.now();
     flowTimers.push(setTimeout(() => goStep('weekday'),
       prefersReduced() ? FLOW_T.bridgeStayReduced : FLOW_T.bridgeStay));
   }
@@ -1854,6 +1890,9 @@ function wireFlow(){
     node.addEventListener('click', e => {
       e.stopPropagation();
       const to = node.dataset.flow;
+      // 브릿지 등장 직후의 탭은 앞 화면 연타가 샌 것으로 보고 무시한다
+      if (S.step === 'bridge' && to === 'weekday'
+          && performance.now() - bridgeShownAt < TAP_GUARD) return;
       if (to === 'close')  return goStep('');
       if (to === 'back'){
         if (S.step === 'weekday'){ S.cfBanner = 'warn'; return goStep('confirm'); }
@@ -1867,6 +1906,14 @@ function wireFlow(){
       goStep(to);
     });
   });
+  // 브릿지는 스크린 리더가 읽을 수 있도록 포커스를 받고, 키보드로도 진행된다
+  const bk = stage.querySelector('.fwlayer .fw-breaker');
+  if (bk){
+    bk.focus({preventScroll:true});
+    bk.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); goStep('weekday'); }
+    });
+  }
   // 요일 칩 토글. 최소 하나는 남긴다.
   stage.querySelectorAll('.fwlayer [data-day]').forEach(chip => {
     chip.addEventListener('click', e => {
@@ -1935,6 +1982,12 @@ bind('segDraft', 'drafts', Number);
 bind('segPrev', 'prevCount', Number);
 bind('segCoupon', 'coupon', Number);
 bind('segMode', 'mode');
+
+/* 브릿지 진입 직후 300ms 는 탭을 무시한다. 앞 화면 [다음] 연타가 그대로 스킵으로
+   새는 걸 막는다. 이 구간은 베일이 아직 안 찼고(480ms 완성) 문구도 안 떠서,
+   여기 들어온 탭은 '건너뛰겠다'는 의도일 수 없다. */
+const TAP_GUARD = 300;
+let bridgeShownAt = 0;
 
 /* Android back 의 웹 대응물로 Esc 를 둔다. 브릿지는 오버레이라, back/Esc 의 의미는
    '뒤로 가기'가 아니라 '오버레이 닫기'다. 타이머를 끄고 베일만 걷어 확인 화면에 세운다.
