@@ -121,27 +121,38 @@
   .ttl2{display:flex;flex-direction:column;gap:4px;}
   .ttl2 b{font-size:18px;line-height:26px;font-weight:700;color:var(--gray-900);letter-spacing:-.3px;}
   .ttl2 span{font-size:14px;line-height:20px;color:var(--gray-900);}
-  .fields{display:flex;flex-direction:column;gap:12px;}
-  .addr{border:1px solid var(--gray-200);border-radius:2px;padding:14px 16px;
-    display:flex;align-items:center;gap:15px;background:#fff;}
-  .addr .sq{width:10px;height:10px;border:3px solid var(--navy-700);flex:0 0 auto;}
+  /* 주소 행과 픽업 행은 붙어서 한 블록이다(Figma hail_location2: col, gap 0) */
+  .fields{display:flex;flex-direction:column;gap:0;}
+  /* ── 2026-08-30 Figma(10476:126439) 새 안 반영 ──
+     빈 상태는 흰 배경 + '+' , 채워지면 blue-050 + 체크.
+     빈/찬 구분이 아이콘 색이 아니라 배경으로 넘어가면서
+     '찬 상태가 빈 상태보다 안 보이던'(2.11 < 2.32) 역전이 원천 소멸했다. */
+  .locblk{width:100%;}
+  .addr{background:#f9f9f9;border:none;border-radius:4px 4px 0 0;
+    padding:12px 10px;display:flex;align-items:center;gap:10px;}
+  .addr .ipw{}
   .addr span{font-size:14px;color:#000;}
-  .pkbox{width:100%;font:inherit;text-align:left;background:var(--blue-050);
-    border:1px solid var(--blue-200);border-radius:4px;
-    padding:12px;display:flex;align-items:center;gap:8px;cursor:pointer;min-height:44px;}
+  .ipw{width:24px;height:24px;display:grid;place-items:center;flex:0 0 auto;}
+  /* Figma 높이 48 = 12+24+12 로, 1px 스트로크가 높이에 더해지지 않는다(안쪽 정렬).
+     CSS 로는 border-box + 패딩에서 선 두께를 뺀 값이 같은 결과가 된다. */
+  .pkbox{box-sizing:border-box;width:100%;font:inherit;text-align:left;background:#fff;
+    border:1px solid #e3e4e8;border-radius:4px;
+    padding:11px 9px;display:flex;align-items:center;gap:10px;cursor:pointer;}
+  .pkbox.filled{background:var(--blue-050);border-color:#b9ddfd;}
   .pkbox:active{border-color:var(--blue-500);}
-  .pkbox .ph{font-size:14px;color:var(--gray-500);}
+  .pkbox .ipw.chk,.pkbox .ipw.load{display:none;}
+  .pkbox.filled .ipw.add{display:none;}
+  .pkbox.filled .ipw.chk{display:grid;}
+  .pkbox.sending .ipw.add,.pkbox.sending .ipw.chk{display:none;}
+  .pkbox.sending .ipw.load{display:grid;}
+  .ipw.load{font-size:15px;color:var(--gray-500);letter-spacing:1px;}
+  /* 제안값. Figma 원본 #32a2fa 는 흰 배경에서 2.73:1 로 AA(4.5:1) 미달이고
+     14sp 라 large-text 예외(3:1)도 못 받는다. #0074d7 = 4.40:1 */
+  .pkbox .ph{font-size:14px;color:#0074d7;}
   .pkbox .fill{font-size:14px;line-height:20px;color:var(--gray-950);flex:1 1 auto;min-width:0;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pkbox .ico{font-size:14px;flex:0 0 auto;}
   .pkbox[hidden],.confirm[hidden],.skipnote[hidden]{display:none;}
-  .pkbox .icp{flex:0 0 auto;}
-  .pkbox .icp.b{display:none;}
-  .pkbox.filled .icp.g{display:none;}
-  .pkbox.filled .icp.b{display:block;}
-  .pkbox .st{margin-left:auto;flex:0 0 auto;align-self:center;font-size:12px;line-height:20px;
-    color:var(--gray-500);}
-  .pkbox .st[hidden]{display:none;}
   .ic{display:block;flex:0 0 auto;}
     .was{flex:0 0 auto;font-size:11px;line-height:16px;font-weight:600;color:var(--blue-600);
     background:#fff;border:1px solid var(--blue-100);border-radius:4px;padding:1px 5px;}
@@ -575,11 +586,10 @@
               <span>차량이 도착하는 위치를 확인해주세요.</span>
             </div>
             <div class="fields">
-              <div class="addr"><svg class="ic" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg><span>래미안원베일리아파트</span></div>
-              <button type="button" class="pkbox" data-open="start" id="pk-start"
+              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리아파트</span></div><button type="button" class="pkbox" data-open="start" id="pk-start"
                       aria-label="자세한 픽업 위치 입력하기">
-                <svg class="ic icp g" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pg)"><path d="M21.3808 16.6889H19.7576V24.3231H21.3808C23.7649 24.3231 25.7939 22.5731 25.7939 20.4933C25.7939 18.4136 23.8157 16.6636 21.3808 16.6636V16.6889Z" fill="#99A5C0"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#99A5C0"/></g><defs><clipPath id="clip0_0_4_pg"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg><svg class="ic icp b" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pb)"><path d="M21.3794 16.6882H19.7561V24.3224H21.3794C23.7634 24.3224 25.7925 22.5723 25.7925 20.4926C25.7925 18.4129 23.8142 16.6628 21.3794 16.6628V16.6882Z" fill="#1F90EE"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#1F90EE"/></g><defs><clipPath id="clip0_0_4_pb"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg>
-                <span class="was" id="pk-start-tx-was" hidden></span><span class="ph" id="pk-start-tx">자세한 픽업 위치를 입력해주세요</span>
+                <span class="ipw add"><svg class="ic" width="14" height="14" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#283873"/></svg></span><span class="ipw chk"><svg class="ic" width="18" height="13" viewBox="0 0 54 38" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.26387 12.8971L0 18.2585L20.1072 37.9998L53.3507 5.36147L48.0868 0L20.1072 27.4702L5.26387 12.8971Z" fill="#32A2FA"/></svg></span><span class="ipw load" aria-hidden="true">···</span>
+                <span class="was" id="pk-start-tx-was" hidden></span><span class="ph" id="pk-start-tx">자세한 픽업 위치를 알려주세요</span>
               </button>
 
             </div>
@@ -607,9 +617,8 @@
           <div class="vpk">
             <button type="button" class="pkbox" data-open="voyage" id="pk-voy"
                     aria-label="자세한 픽업 위치 입력하기">
-              <svg class="ic icp g" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pg)"><path d="M21.3808 16.6889H19.7576V24.3231H21.3808C23.7649 24.3231 25.7939 22.5731 25.7939 20.4933C25.7939 18.4136 23.8157 16.6636 21.3808 16.6636V16.6889Z" fill="#99A5C0"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#99A5C0"/></g><defs><clipPath id="clip0_0_4_pg"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg><svg class="ic icp b" width="14.0" height="17" viewBox="0 0 42 51" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_pb)"><path d="M21.3794 16.6882H19.7561V24.3224H21.3794C23.7634 24.3224 25.7925 22.5723 25.7925 20.4926C25.7925 18.4129 23.8142 16.6628 21.3794 16.6628V16.6882Z" fill="#1F90EE"/><path d="M39.4643 0H2.53627C1.14132 0 0 1.14132 0 2.53627V48.392C0 49.7869 1.14132 50.9283 2.53627 50.9283H39.4643C40.8593 50.9283 42.0006 49.7869 42.0006 48.392V2.53627C42.0006 1.14132 40.8593 0 39.4643 0ZM21.3554 29.4207H19.7322V38.0187C19.7322 39.4136 18.5908 40.5549 17.1959 40.5549C15.8009 40.5549 14.6596 39.4136 14.6596 38.0187V14.1524C14.6596 12.7574 15.8009 11.6161 17.1959 11.6161H21.3554C26.5801 11.6161 30.841 15.598 30.841 20.5184C30.841 25.4388 26.5801 29.4207 21.3554 29.4207Z" fill="#1F90EE"/></g><defs><clipPath id="clip0_0_4_pb"><rect width="13.8" height="16.7333" fill="white" transform="scale(3.04352)"/></clipPath></defs></svg>
-              <span class="was" id="pk-voy-tx-was" hidden></span><span class="ph" id="pk-voy-tx">자세한 픽업 위치를 입력해주세요</span>
-              <span class="st" id="pk-voy-st" hidden aria-hidden="true"></span>
+              <span class="ipw add"><svg class="ic" width="14" height="14" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#283873"/></svg></span><span class="ipw chk"><svg class="ic" width="18" height="13" viewBox="0 0 54 38" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.26387 12.8971L0 18.2585L20.1072 37.9998L53.3507 5.36147L48.0868 0L20.1072 27.4702L5.26387 12.8971Z" fill="#32A2FA"/></svg></span><span class="ipw load" aria-hidden="true">···</span>
+              <span class="was" id="pk-voy-tx-was" hidden></span><span class="ph" id="pk-voy-tx">자세한 픽업 위치를 알려주세요</span>
               <span class="sr" id="pk-voy-sr"></span>
             </button>
 
@@ -952,14 +961,14 @@
   const el = id => document.getElementById(id);
 
   const FLOORS=[1,2,3,4,5];
-  const PH='자세한 픽업 위치를 입력해주세요';
+  const PH='자세한 픽업 위치를 알려주세요';
   const SENT_AT='12:46';
   const SAVED_FOR_ADDRESS={lvl:'under',floor:4,dong:'1901',line:'',etc:'엘리베이터 앞',noLine:true};
 
   const S={
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
-    sending:false, sent:false, justSent:false, opened:null,
+    sending:false, sent:false, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false}, focus:null,
     step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
@@ -1323,10 +1332,9 @@
     S.origin=S.opened;
     $('#phscr').classList.remove('on');
     if(S.origin==='start'){ S.sending=false; S.sent=true; S.confirmed=false; render(); return; }
-    S.confirmed=true; S.sending=true; S.sent=false; S.justSent=false; render();
+    S.confirmed=true; S.sending=true; S.sent=false; render();
     setTimeout(()=>{
-      S.sending=false; S.sent=true; S.justSent=true; render();
-      setTimeout(()=>{ S.justSent=false; render(); },3000);
+      S.sending=false; S.sent=true; render();
       toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
                      : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
     },2000);
@@ -1348,14 +1356,13 @@
     const has=!!S.value;
     paintField('pk-start-tx','pk-start-tx-was');
     paintField('pk-voy-tx','pk-voy-tx-was');
-    const st=el('pk-voy-st'), sr=el('pk-voy-sr');
-    /* 체크는 '방금 전달됐다'는 일시 신호다. 계속 남겨 두면 운행 내내 노이즈가 된다.
-       Figma 변형 구성도 같은 뜻이다 — 입력완료·Default 에는 체크 없이 파란 P 만 있다.
-       값이 들어 있다는 사실은 P 의 색 전환(회색→파랑)이 이미 말하고 있다. */
-    if(!has||!S.confirmed){ st.hidden=true; sr.textContent=''; }
-    else if(S.sending){ st.hidden=false; st.textContent='···'; sr.textContent='기사님에게 보내는 중'; }
-    else if(S.justSent){ st.hidden=false; st.textContent='✓'; sr.textContent='기사님에게 전달됨'; }
-    else { st.hidden=true; sr.textContent=''; }
+    /* 새 Figma 에서는 리딩 아이콘 자리가 곧 상태 슬롯이다 — + / 로딩 / 체크.
+       P 아이콘이 '주차장' 을 말하던 구조가 아니므로 자리를 교체하는 게 맞다.
+       (그래서 체크를 3초 뒤 걷어내던 이전 판단은 접었다.) */
+    const sr=el('pk-voy-sr');
+    el('pk-voy').classList.toggle('sending', !!(has && S.confirmed && S.sending));
+    sr.textContent = (has && S.confirmed)
+      ? (S.sending ? '기사님에게 보내는 중' : '기사님에게 전달됨') : '';
 
     const got=reached();
     /* 승객이 상세 위치를 넣지 않았으면 기사 화면에 아무것도 만들지 않는다.
