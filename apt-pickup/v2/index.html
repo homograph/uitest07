@@ -37,6 +37,9 @@
     font:inherit;font-size:13px;font-weight:500;color:var(--ink-2);cursor:pointer;}
   .tab.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600;}
   .tabs .sp{flex:1 1 auto;}
+  .note table{border-collapse:collapse;margin:8px 0;font-size:12.5px;}
+  .note td{padding:4px 12px 4px 0;color:var(--ink-2);vertical-align:top;white-space:nowrap;}
+  .note td:first-child{color:var(--ink);font-weight:600;}
   .tabs .tlab{font-size:12.5px;color:var(--ink-2);margin-right:2px;}
   .tabs.off{opacity:.35;pointer-events:none;}
   .tabs .rst{border:1px solid var(--line);background:#fff;border-radius:7px;padding:7px 12px;
@@ -56,7 +59,7 @@
   .dswb.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600;}
   .step{margin:10px 3px 0;font-size:12px;line-height:18px;color:var(--ink-3);}
 
-  .phone{width:360px;height:780px;background:#fff;border-radius:30px;border:1px solid #e2e6ee;
+  .phone{width:var(--pw,360px);height:780px;background:#fff;border-radius:30px;border:1px solid #e2e6ee;
     box-shadow:0 20px 46px rgba(20,30,55,.20);position:relative;overflow:hidden;flex:0 0 auto;}
   .scr{position:absolute;inset:0;display:none;flex-direction:column;}
   .scr.on{display:flex;}
@@ -280,7 +283,8 @@
     align-items:center;justify-content:center;gap:4px;}
 
   /* ══════ 입력 화면 placeholder ══════ */
-  .ph-scr{position:absolute;inset:0;z-index:40;background:#fff;transform:translateY(100%);
+  .ph-scr{container-type:inline-size;
+    position:absolute;inset:0;z-index:40;background:#fff;transform:translateY(100%);
     visibility:hidden;transition:transform var(--dur) cubic-bezier(.32,.72,.24,1),visibility 0s var(--dur);
     display:flex;flex-direction:column;}
   .ph-scr.on{transform:translateY(0);visibility:visible;transition:transform var(--dur) cubic-bezier(.32,.72,.24,1),visibility 0s 0s;}
@@ -312,7 +316,7 @@
   /* 위치는 값이 아니라 선택지다. 같은 채움·높이·라운드로 가족 안에 두되
      ⌄ 표식으로 '고르는 자리' 임을 표시한다. */
   /* 위치는 타이핑이 아니라 고르는 자리다. 같은 상자를 쓰되 ⌄ 로 구분한다 */
-  .fld.pick{gap:7px;padding:0 12px 0 14px;border:none;font:inherit;font-size:22px;font-weight:700;
+  .fld.pick{gap:7px;padding:0 12px 0 14px;border:none;font:inherit;font-weight:700;
     color:var(--navy-800);cursor:pointer;}
   .fld.pick svg{opacity:.5;}
   .fld.pick:hover{background:var(--gray-80);}
@@ -345,9 +349,12 @@
      가운데 정렬만 하면 22px 과 16px 의 베이스라인이 어긋나 2px 내려 앉힌다. */
   .fld .u{flex:0 0 auto;font-size:16px;font-weight:600;color:var(--gray-950);
     transform:translateY(2px);}
-  .bv.fl{width:26px;}
-  .bv.dg{width:62px;}
-  .bv.ln{width:74px;}
+  /* 기본 폭은 em 이라 글자 단계가 커지면 같이 커진다.
+     내용이 기본을 넘을 때만 --gw 로 늘어난다(고정 폭은 1012A·11-16호라 를 잘랐다). */
+  .bv{width:max(var(--bw), var(--gw, 0px));}
+  .bv.fl{--bw:1.2em;}
+  .bv.dg{--bw:2.85em;}
+  .bv.ln{--bw:3.4em;}
   /* 도움말은 지금 손대고 있는 칸의 것만, 한 자리에서.
      공용 자리에 쌓아 두면 어느 칸 얘기인지 화면이 말해 주지 못한다. */
   /* 슬롯은 내용이 있을 때만 자리를 차지한다. 사라진 요소의 자리를 지키는 건 데스크톱 습관이고,
@@ -376,6 +383,27 @@
   .fopt .flab3{margin:0 0 9px;font-size:15px;line-height:22px;font-weight:700;color:var(--gray-900);}
   .fopt .flab3 em{font-style:normal;font-size:13px;font-weight:400;color:var(--gray-500);margin-left:5px;}
   .fopt .sp2{height:22px;}
+
+  /* ── 폭 단계. 좁은 폰(320)은 한 단계 줄이고, 넓은 폰(414+)은 한 단계 키운다.
+     칩 높이·패딩·본문·단위가 한 벌로 움직여야 비율이 유지된다. */
+  @container (max-width: 344px){
+    .sent{font-size:20px;line-height:40px;}
+    .fld{height:42px;padding:0 12px;margin-right:6px;}
+    .fld.pick{padding:0 10px 0 12px;gap:6px;}
+    .fld .u{font-size:15px;}
+    .fld .nn{font-size:15px;}
+    .sent .br{height:12px;}
+    .ph-body.sform{padding-left:18px;padding-right:18px;}
+  }
+  @container (min-width: 400px){
+    .sent{font-size:24px;line-height:48px;}
+    .fld{height:48px;padding:0 16px;margin-right:10px;}
+    .fld.pick{padding:0 14px 0 16px;gap:8px;}
+    .fld .u{font-size:17px;}
+    .fld .nn{font-size:17px;}
+    .sent .br{height:16px;}
+    .ph-body.sform{padding-left:26px;padding-right:26px;}
+  }
 
   /* ══════ 드라이버 앱 ══════ */
   .dscr{background:var(--navy-900);}
@@ -474,16 +502,16 @@
   /* 이 도구의 유일한 기능이 두 폰을 나란히 보는 것이다. 좁아지면 프레임만 줄이지 않고
      통째로 축소한다. 프레임만 줄이면 안쪽 레이아웃이 깨진다.
      휴대폰 폭에서는 축소가 아니라 세로로 쌓는다. 250px 로 줄이면 어차피 못 읽는다. */
-  .phbox{width:360px;height:780px;}
+  .phbox{width:var(--pw,360px);height:780px;}
   @media (max-width:920px){
     .stage{gap:20px;}
-    .phbox{width:306px;height:663px;}
+    .phbox{width:calc(var(--pw,360px)*.85);height:663px;}
     .phone{transform:scale(.85);transform-origin:top left;}
     .hd h1{font-size:19px;line-height:27px;}
   }
   @media (max-width:760px){
     .stage{flex-direction:column;gap:26px;}
-    .phbox{width:360px;height:780px;}
+    .phbox{width:var(--pw,360px);height:780px;}
     .phone{transform:none;}
   }
 </style>
@@ -505,6 +533,12 @@
     <button class="tab on" data-form="sform">1안 · 한 화면 문장형</button>
     <button class="tab" data-form="seq">2안 · 순차 쌓기</button>
   </div>
+  <div class="tabs" id="wrow">
+    <span class="tlab">화면 너비</span>
+    <button class="tab" data-pw="320">좁게 320</button>
+    <button class="tab on" data-pw="360">기본 360</button>
+    <button class="tab" data-pw="414">넓게 414</button>
+  </div>
   <div class="tabs" id="toprow">
     <span class="tlab">상단 구성</span>
     <button class="tab on" data-top="inline">가 · 위치를 문장 안에</button>
@@ -516,8 +550,8 @@
 <h2 class="sech">화면</h2>
   <div class="stage">
   <div>
-    <div class="cap"><span class="dot"></span><b>라이더 앱</b><em>유저</em></div>
-    <div class="phbox"><div class="phone" id="rider">
+    <div class="cap"><span class="dot"></span><b>라이더 앱</b><em>유저</em><em id="pwlab">360</em></div>
+    <div class="phbox" id="riderbox"><div class="phone" id="rider">
 
       <!-- 출발지 설정 -->
       <div class="scr" id="s-start">
@@ -773,7 +807,27 @@
        위치가 세그먼트에만 남았습니다.</p>
   </div>
   <div class="note">
-    <h3><i>2</i>hail_location 컴포넌트 정밀 확인</h3>
+    <h3><i>2</i>화면 너비 대응</h3>
+    <p>상단 <b>화면 너비</b> 토글로 <b>320 · 360 · 414</b> 를 오갈 수 있습니다(라이더 폰만 바뀝니다).
+       실제 한국 시장은 아이폰 SE·미니의 <b>320~375</b>, 표준 <b>390~393</b>, Pro Max·울트라의 <b>414~440</b> 입니다.</p>
+    <p>대응은 <b>미디어 쿼리가 아니라 컨테이너 쿼리</b>로 했습니다. 시트가 <b>자기 폭</b>에 반응하므로,
+       이 프로토처럼 데스크톱 안의 360px 프레임에서도, 실제 앱의 진짜 뷰포트에서도 같은 코드가 동작합니다.</p>
+    <p>단계는 <b>세 개</b>이고, 본문·단위·칩 높이·좌우 패딩이 <b>한 벌로</b> 움직입니다. 하나만 바꾸면 비율이 깨집니다.</p>
+    <table><tbody>
+      <tr><td>≤344</td><td>문장 20 · 단위 15 · 칩 42 · 패딩 18</td></tr>
+      <tr><td>345–399</td><td>문장 22 · 단위 16 · 칩 44 · 패딩 24</td></tr>
+      <tr><td>≥400</td><td>문장 24 · 단위 17 · 칩 48 · 패딩 26</td></tr>
+    </tbody></table>
+    <p><b>줄 구조는 세 폭 모두 같습니다</b> — 위치·층 / 동·라인 / 고정 문구. 넓다고 한 줄로 합치지 않았습니다.
+       합치면 &lsquo;지하2층&rsquo; 과 &lsquo;1012동 2-5호라인&rsquo; 이라는 의미 덩어리가 깨집니다.
+       넓은 화면에서 남는 건 오른쪽 여백뿐이고, 그건 정상입니다.</p>
+    <p>여기서 <b>고정 폭이 값을 자르고 있던 것</b>도 같이 잡았습니다. 동 62px 에 <b>1012A</b>(65px),
+       라인 74px 에 <b>11-16호라</b>(94px) 가 들어가 잘렸습니다. 기본 폭을 em 으로 바꿔 단계에 따라 같이 커지게 하고,
+       <b>내용이 기본을 넘칠 때만</b> 그만큼 늘어나게 했습니다. 늘 내용에 딱 맞추면 한 글자마다 옆 칸이 밀립니다.</p>
+    <p>실측: 최악(긴 값 + 320)에서도 우측 <b>266 / 가용 282</b> 로 넘치지 않고, 세 폭 모두 잘림이 없습니다.</p>
+  </div>
+  <div class="note">
+    <h3><i>3</i>hail_location 컴포넌트 정밀 확인</h3>
     <p>Figma <b>10518:129597</b>(COMPONENT_SET, 6변형)을 audit 베이스라인으로 등록하고 값을 통째로 읽었습니다.
        공통값은 <b>bg #f1f9fe · stroke #e2f2fe/1 · r4 · gap8 · pad[12,12,12,12] · 14sp w400</b>.</p>
     <p><b>프로토가 틀렸던 것</b> — 좌측 패딩을 16 으로 두고 있었습니다. Figma 는 사방 12 입니다. 맞췄습니다.</p>
@@ -795,14 +849,14 @@
        현재 포맷은 <b>&lsquo;지하 2층 · 1012동 2-5호라인 앞에서 탈게요&rsquo;</b> 이고, 괄호는 찾아오는 길 자리입니다.</p>
   </div>
   <div class="note">
-    <h3><i>3</i>값이 없으면 기사 화면에 아무것도 만들지 않는다</h3>
+    <h3><i>4</i>값이 없으면 기사 화면에 아무것도 만들지 않는다</h3>
     <p>승객이 상세 위치를 넣지 않았을 때 기사 화면에 <b>&lsquo;위치 미전달&rsquo;</b> 같은 자리를 만들지 않습니다.
        기사가 할 일이 없는 정보이고, 거기 붙는 전화 버튼은 <b>안 해도 될 전화를 하게 만듭니다.</b></p>
     <p>상세 위치는 <b>선택 입력</b>입니다. 안 넣은 것은 결핍이 아니라 정상 상태입니다.
        그때의 올바른 기사 화면은 지금 운영 중인 화면 그대로입니다.</p>
   </div>
   <div class="note">
-    <h3><i>4</i>진입점은 둘 다 산다</h3>
+    <h3><i>5</i>진입점은 둘 다 산다</h3>
     <p>출발지 설정에서 넣으면 운행 화면에는 <b>채워진 필드</b>가 뜹니다. 건너뛰면 운행 화면에 <b>입력 전 필드</b>가 뜹니다.
        같은 컴포넌트의 두 상태이지 두 개의 안이 아닙니다.</p>
     <p>운행 화면에서는 <b>바꿀 수도</b> 있습니다. 그때는 기사가 이미 이동 중이라 값이 도중에 갱신됩니다.</p>
@@ -812,14 +866,14 @@
     <p class="src">Figma: 출발지 검색에서 상세 위치 입력 / Matched 화면에서 상세 위치 입력. 아이콘은 전부 원본 노드에서 SVG로 추출(ic_hail, ic_phone, ic_message, ic_passenger_28dp, btn_navigation, ic_checkbox_off, ic_startpoint, ic_safety_message, ic_btn_current_location), 차량 마커는 ic_car_basic 원본 이미지.</p>
   </div>
   <div class="note">
-    <h3><i>5</i>다음 화면은 비워 두었습니다</h3>
+    <h3><i>6</i>다음 화면은 비워 두었습니다</h3>
     <p>Figma에도 <b>상세 위치 입력 화면</b>이 흰 빈 프레임으로 두 군데 남아 있습니다. 프로토도 같은 상태로 두고,
        결과만 보기 위한 임시 값 셋을 넣었습니다.</p>
     <p>여기서 정해야 할 것은 <b>자유 텍스트 한 줄이냐, 구조화된 선택이냐</b>입니다.
        임시 값 중 <b>실제로 쓰는 길이</b>를 눌러 보면 라이더는 두 줄, 기사는 세 줄로 차오릅니다.</p>
   </div>
   <div class="note">
-    <h3><i>6</i>드라이버 표시 자리</h3>
+    <h3><i>7</i>드라이버 표시 자리</h3>
     <p>출발지 주소 바로 아래, 꼬리 달린 말풍선입니다. 배경 <b>#283873</b>, 라디우스 2, 안쪽 여백 12/16.
        본문 16sp에 <b>탑승</b>만 #32a2fa로 강조돼 있습니다.</p>
     <p>같은 배지가 <b>pickup-go, pickup-arrived, 예약 상세</b> 세 화면에 반복 배치돼 있어 운행 내내 남습니다.</p>
@@ -828,7 +882,7 @@
        말합니다. 항상 새 정보인 것은 층이고 동은 절반쯤 윗줄과 겹치므로 <b>지하 N층을 가장 크게</b> 둡니다.</p>
   </div>
   <div class="note">
-    <h3><i>7</i>실제 요청사항 1,727건이 말해준 것</h3>
+    <h3><i>8</i>실제 요청사항 1,727건이 말해준 것</h3>
     <p>상위 180개 단지 3년치 표본. <b>지하 82.3% 대 지상 0.8%</b>라 수직 위치를 묻는 것 자체가 낭비다.
        지하를 기본값으로 두고 바꿀 수 있게만 했다. 층은 <b>지하 1~5층에 전부 분포</b>하고 6층 이상은 0건이다.</p>
     <p>라인은 <b>36.2%</b>가 적고 표기가 제각각이다(구분자 <b>- 227, 쉼표 185, / 51</b>). 그래서 칩이 아니라
@@ -838,7 +892,7 @@
     <p class="src">아파트_요청사항_샘플_상위180단지.csv, 1,727건 / 174단지 / 1,040명</p>
   </div>
   <div class="note">
-    <h3><i>8</i>구조화가 흡수할 수 없는 것</h3>
+    <h3><i>9</i>구조화가 흡수할 수 없는 것</h3>
     <p>구조화로 완전히 담기는 건 <b>28.1%</b>뿐이다. 나머지에는 <b>짐과 동승자 32.9%</b>(캐리어만 272건),
        <b>경로 안내 20.3%</b>가 섞여 있다. 이건 픽업 필드가 흡수할 수 없고 요청사항이 계속 담아야 한다.</p>
     <p>그래서 <b>PRD의 성공 지표를 손봐야 한다.</b> 자유 텍스트 감소율을 그대로 KPI로 두면 구조적으로
@@ -848,7 +902,7 @@
     <p class="src">같은 표본. 강미래 PO: GPS 보정 없이는 결국 헤맨다</p>
   </div>
   <div class="note">
-    <h3><i>9</i>확인이 필요한 값</h3>
+    <h3><i>10</i>확인이 필요한 값</h3>
     <p><span class="mk warn"></span><b>탑승 라벨 대비 4.03대 1.</b> #32a2fa on #283873은 16sp 일반 텍스트 기준 AA(4.5대 1)에 못 미칩니다.
        운전 중 화면이라 굵기를 700으로 올리거나 밝기를 한 단계 올리는 편이 좋습니다.</p>
     <p><span class="mk warn"></span><b>용어가 셋입니다.</b> 화면 제목은 탑승 위치, 입력 필드는 픽업 위치, 드라이버 배지는 탑승입니다.</p>
@@ -872,7 +926,7 @@
     sending:false, sent:false, justSent:false, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false}, focus:null,
-    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline'
+    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
   };
 
   /* ── 문장 ── */
@@ -1067,6 +1121,7 @@
     const showEtc = ok && (S.etcOpen || !!d.etc.trim());
     el('f-addetc').hidden = !(ok && !showEtc);
     el('fopt').hidden = !showEtc;
+    fitAll();
     if(showEtc){
       const et=el('f-etc');
       et.value=d.etc;  el('f-etc-c').textContent=d.etc.length;
@@ -1090,6 +1145,20 @@
             a:()=>'우리 아파트는 라인이 없어요',
             go:()=>{ S.d.noLine=true; S.d.line=''; S.focus=null; renderSentence(); paintFoot(); } }
   };
+  /* 값이 기본 폭을 넘칠 때만 늘린다. 늘 내용에 딱 맞추면 한 글자마다 옆 칸이 밀린다 */
+  let MEAS=null;
+  function fitBv(i){
+    if(!MEAS){ MEAS=document.createElement('span');
+      MEAS.style.cssText='position:absolute;left:-9999px;top:0;white-space:pre;visibility:hidden;';
+      document.body.appendChild(MEAS); }
+    const cs=getComputedStyle(i), filled=!!i.value;
+    MEAS.style.font = cs.font;
+    MEAS.style.fontWeight = filled ? '700' : '400';
+    MEAS.textContent = filled ? i.value : i.placeholder;
+    i.style.setProperty('--gw', Math.ceil(MEAS.getBoundingClientRect().width)+2+'px');
+  }
+  function fitAll(){ ['f-floor','f-dong','f-line2'].forEach(id=>fitBv(el(id))); }
+
   function renderHint(){
     const k = S.focus, cfg = HINT[k];
     el('f-hint-t').innerHTML = cfg && cfg.t ? cfg.t : '';
@@ -1115,13 +1184,13 @@
     const fl=el('f-floor'), dg=el('f-dong');
     fl.addEventListener('input',ev=>{
       const v=ev.target.value.replace(/[^0-9]/g,'').slice(0,1);
-      ev.target.value=v; S.d.floor = v ? +v : null;
+      ev.target.value=v; S.d.floor = v ? +v : null; fitBv(ev.target);
       renderSentence();
       if(v) dg.focus();                       /* 층은 한 자리다. 채우면 바로 넘긴다 */
     });
     dg.addEventListener('input',ev=>{
       S.d.dong = ev.target.value.replace(/동\s*$/,'');
-      ev.target.value=S.d.dong;
+      ev.target.value=S.d.dong; fitBv(ev.target);
       const ok=ready(S.d), was=!el('f-addetc').hidden || !el('fopt').hidden;
       if(ok!==was) renderSentence(); else paintFoot();
     });
@@ -1143,7 +1212,7 @@
     const ln2=el('f-line2');
     ln2.addEventListener('input',ev=>{
       const v=ev.target.value.replace(/\s*라인\s*$/,'');
-      ev.target.value=v; S.d.line=v; paintFoot();
+      ev.target.value=v; S.d.line=v; fitBv(ev.target); paintFoot();
     });
     el('f-lvl').addEventListener('click',()=>setLvl(S.d.lvl==='under'?'ground':'under'));
     el('f-addetc').addEventListener('mousedown',ev=>ev.preventDefault());
@@ -1361,6 +1430,13 @@
     $$('.tab[data-form]').forEach(x=>x.classList.toggle('on',x.dataset.form===S.form));
     $('#toprow').classList.toggle('off', S.form!=='sform');
     if($('#phscr').classList.contains('on')) openForm(S.opened); else render();
+  }));
+  $$('.tab[data-pw]').forEach(t=>t.addEventListener('click',()=>{
+    S.pw=+t.dataset.pw;
+    $$('.tab[data-pw]').forEach(x=>x.classList.toggle('on',+x.dataset.pw===S.pw));
+    $('#riderbox').style.setProperty('--pw', S.pw+'px');
+    el('pwlab').textContent = S.pw;
+    if($('#phscr').classList.contains('on')) renderSentence();
   }));
   $$('.tab[data-top]').forEach(t=>t.addEventListener('click',()=>{
     S.top=t.dataset.top;
