@@ -218,6 +218,12 @@
   .prev2.ready{background:var(--blue-050);}
   .prev2 span{font-size:13.5px;line-height:20px;color:var(--gray-400);word-break:keep-all;}
   .prev2.ready span{color:var(--gray-950);font-weight:600;}
+  /* 상세 위치는 선택 입력이다. 넣을 수 있으면 뺄 수도 있어야 한다.
+     필수 칸을 비우는 방법으로는 못 뺀다 — 비우면 CTA 가 비활성이 되기 때문이다.
+     값이 이미 확정돼 있을 때만 나타나므로 처음 입력 중에는 보이지 않는다. */
+  .delbtn{display:block;margin:0 0 12px;border:none;background:none;padding:4px 0;font:inherit;
+    font-size:13.5px;color:var(--gray-500);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
+  .delbtn[hidden]{display:none;}
   .savechk{display:flex;align-items:center;gap:8px;margin-bottom:12px;cursor:pointer;}
   .savechk input{width:18px;height:18px;accent-color:var(--navy-800);}
   .savechk span{font-size:13.5px;color:var(--gray-800);}
@@ -696,6 +702,7 @@
         </div>
         <div class="ph-foot">
           <div class="prev2" id="prev2"><span id="prev2-tx">고르면 기사님께 갈 문장이 여기 만들어져요</span></div>
+          <button type="button" class="delbtn" id="ph-del" hidden>상세 위치 지우기</button>
           <label class="savechk" id="savewrap" hidden><input type="checkbox" id="chk-save" />
             <span>이 주소에서 항상 이렇게 보내기</span></label>
           <div class="footrow">
@@ -832,6 +839,14 @@
     <p>문장 밖에 남은 <b>찾아오는 길</b>은 필드가 아니라 <b>한 줄 링크</b>로 나타납니다.
        필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면, 아직 라인 칸이 비어 있는데 문장 쓰던 사람을
        가로막습니다. 링크는 조용히 한 줄만 늘어나고, 필요한 사람(요청사항의 <b>26.9%</b>)이 눌렀을 때 필드가 열립니다.</p>
+    <p><b>넣은 뒤에 빼는 길도 필요합니다.</b> 상세 위치는 선택 입력인데, 한 번 확정하면 되돌릴 방법이 없었습니다.
+       필수 칸을 비워서 빼는 건 안 됩니다 — 비우면 CTA 가 비활성이 되니까요.
+       시트 하단에 <b>상세 위치 지우기</b>를 뒀습니다. <b>이미 확정된 값을 고치러 들어왔을 때만</b> 나타나므로
+       처음 입력하는 중에는 보이지 않습니다.</p>
+    <p>지우면 <b>이번 호출의 값과 저장해 둔 값이 함께</b> 사라집니다. 둘을 따로 관리하게 하면
+       &lsquo;지웠는데 다음에 또 뜬다&rsquo; 가 됩니다. 진입점은 빈 상태(<b>＋ 자세한 픽업 위치를 알려주세요</b>)로 돌아갑니다.</p>
+    <p><b>운행 중에 지우면 기사 화면에서도 사라집니다.</b> 이미 이동 중일 수 있으므로
+       토스트로 <b>&lsquo;기사님 화면에서도 사라집니다&rsquo;</b> 라고 알립니다. 조용히 없어지면 안 됩니다.</p>
     <p>펼친 뒤에는 <b>접을 수 있어야 합니다.</b> 처음엔 라벨 오른쪽에 별도 <b>접기</b>를 뒀는데,
        <b>펼치는 지점(왼쪽 링크)과 접는 지점(오른쪽 버튼)이 달라</b> 어디를 눌러야 하는지 매번 다시 찾게 됐고,
        문구도 &lsquo;찾아오는 길 적기&rsquo; 에서 &lsquo;찾아오는 길&rsquo; 로 바뀌어 같은 것이 아닌 듯 보였습니다.</p>
@@ -1348,6 +1363,8 @@
     el('prev2').classList.toggle('ready', ok);
     el('prev2-tx').textContent = ok ? sentence(S.d) : '고르면 기사님께 갈 문장이 여기 만들어져요';
     el('savewrap').hidden = sf ? !ok : !done;
+    /* 이미 확정된 값을 고치러 들어온 경우에만 '지우기' 를 준다 */
+    el('ph-del').hidden = !S.value;
     el('chk-save').checked = S.always;
     if(sf){
       el('ph-skip').hidden = true;
@@ -1530,6 +1547,15 @@
   el('ph-next').addEventListener('click',()=>{ (S.form==='sform'||S.step===null) ? submitForm() : advance(); });
   el('ph-skip').addEventListener('click',()=>{ S.skipped[S.step]=true; S.d[S.step]=''; advance(); });
   el('chk-save').addEventListener('change',()=>{ S.always=el('chk-save').checked; });
+  el('ph-del').addEventListener('click',()=>{
+    const onVoyage = S.opened==='voyage' && S.confirmed;
+    S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
+    S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
+    $('#phscr').classList.remove('on');
+    render();
+    toast(onVoyage ? '상세 위치를 지웠어요. 기사님 화면에서도 사라집니다.'
+                   : '상세 위치를 지웠어요. 저장해 둔 값도 함께 지웠습니다.');
+  });
   $('#phclose').addEventListener('click',()=>$('#phscr').classList.remove('on'));
   $$('[data-open]').forEach(n=>n.addEventListener('click',()=>openForm(n.dataset.open)));
   $('#cta-start').addEventListener('click',()=>{ if(S.value) S.confirmed=true; S.screen='voyage'; render(); });
