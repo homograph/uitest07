@@ -357,7 +357,10 @@
     height:44px;margin:0 8px 0 0;padding:0 14px;
     background:var(--gray-30);border-radius:8px;cursor:text;}
   .fld:focus-within{background:var(--blue-050);box-shadow:inset 0 0 0 1.5px var(--navy-800);}
-  .bv{border:none;outline:none;background:none;padding:0;text-align:center;
+  /* 가운데 정렬이면 빈 칸의 커서가 플레이스홀더 한가운데(2-5|호)에 찍힌다.
+     왼쪽 정렬이면 커서가 플레이스홀더 앞에, 값이 있을 땐 글자 뒤에 놓인다.
+     칸이 이미 내용 폭으로 붙으므로 가운데/왼쪽의 시각차는 거의 없다. */
+  .bv{border:none;outline:none;background:none;padding:0;text-align:left;
     font:inherit;font-size:22px;font-weight:700;color:var(--navy-800);}
   /* 예시는 값과 확실히 갈라져야 한다. gray-500(3.82:1)까지 올리니 22px 에서는
      입력된 값처럼 읽혔다. gray-300 은 2.15:1 로 무게 400 과 함께 값(navy 700)과 구분된다. */
@@ -369,9 +372,11 @@
   /* 기본 폭은 em 이라 글자 단계가 커지면 같이 커진다.
      내용이 기본을 넘을 때만 --gw 로 늘어난다(고정 폭은 1012A·11-16호라 를 잘랐다). */
   .bv{width:max(var(--bw), var(--gw, 0px));}
+  /* 최소 폭은 플레이스홀더 폭에 맞춘다. 이보다 넓으면 왼쪽 정렬에서 오른쪽이 비고,
+     좁으면 첫 글자를 칠 때 칸이 줄어든다. */
   .bv.fl{--bw:1.2em;}
-  .bv.dg{--bw:2.85em;}
-  .bv.ln{--bw:3.4em;}
+  .bv.dg{--bw:1.9em;}
+  .bv.ln{--bw:2.4em;}
   /* 도움말은 지금 손대고 있는 칸의 것만, 한 자리에서.
      공용 자리에 쌓아 두면 어느 칸 얘기인지 화면이 말해 주지 못한다. */
   /* 슬롯은 내용이 있을 때만 자리를 차지한다. 사라진 요소의 자리를 지키는 건 데스크톱 습관이고,
@@ -1268,7 +1273,11 @@
     a.addEventListener('mousedown',ev=>ev.preventDefault());
     a.addEventListener('click',()=>{ const c=HINT[S.focus]; if(c) c.go(); });
     [['floor',fl],['dong',dg],['line',el('f-line2')],['etc',el('f-etc')]].forEach(([k,i])=>{
-      i.addEventListener('focus',()=>{ S.focus=k; renderHint(); });
+      i.addEventListener('focus',()=>{
+        S.focus=k; renderHint();
+        /* 다시 들어올 때 커서는 이미 친 글자 뒤에 */
+        const n=i.value.length; setTimeout(()=>{ try{ i.setSelectionRange(n,n); }catch(e){} },0);
+      });
       i.addEventListener('blur', ()=>{ if(S.focus===k){ S.focus=null; renderHint(); } });
     });
     /* '라인 없음' 을 눌러 되돌린다 */
