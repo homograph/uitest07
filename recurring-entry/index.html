@@ -1014,7 +1014,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
     <aside class="devdoc">
       <div class="dd-hd">
         <h2>개발 가이드</h2>
-        <p>Figma 에 안 담기는 타이밍과 상태 규칙을 여기 모읍니다. 길이 단위는 전부 <b>dp</b>(iOS pt) 입니다. 브릿지 값은 왼쪽 프로토타입에서 실측한 것이고, 카드 폭 규칙만 기기 대응을 위한 구현 권고입니다.</p>
+        <p>Figma 에 안 담기는 <b>타이밍 · 상태 전이 · 플랫폼 분기 · 접근성 정책</b>을 모읍니다. 길이 단위는 전부 <b>dp</b>(iOS pt). 타이밍과 레이아웃은 왼쪽 프로토타입 실측치이고, 플랫폼 분기 · 생명주기 · 접근성 · 카드 폭은 <b>앱 구현을 위해 정한 규칙</b>이라 프로토타입에 없거나 일부만 재현돼 있습니다.</p>
       </div>
 
       <section class="dd-sec">
@@ -1025,6 +1025,10 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
           <tr><th>문구까지 등장 완료</th><td><b>780ms</b></td></tr>
           <tr><th>요일 선택으로</th><td><b>1900ms</b> (정지 구간 1120ms)</td></tr>
         </table>
+        <p class="dd-n"><b>레이아웃</b> 아이콘 120dp &middot; 아이콘~텍스트 gap 32dp &middot;
+          헤드라인~서브 gap 16dp &middot; 좌우 패딩 24dp &middot; 세로 가운데 정렬.
+          <b>베일은 단색이 아니라 세로 그라디언트</b>입니다 (위 <code class="i">rgba(255,255,255,.5)</code>,
+          50% 지점부터 <code class="i">#ffffff</code> 불투명). 뒤 확인 화면이 위쪽에 비쳐야 합니다.</p>
         <p class="dd-n">확인 화면은 브릿지 뒤에 비치는 배경이지 읽으라고 두는 화면이 아닙니다.
           베일을 슬라이드가 끝난 뒤에 띄우지 말고 <b>도중(180ms)부터 겹치게</b> 하세요.
           ⚠ 확인 화면을 먼저 그린 뒤 나중에 브릿지를 덧그리는 방식은 피해야 합니다.
@@ -1053,16 +1057,18 @@ rise = opacity 0 -&gt; 1, translateY(12dp) -&gt; 0</code></pre>
         <h3>전환 로직</h3>
         <p class="dd-n" style="margin:0 0 10px">웹 프로토타입 코드 대신 <b>상태 기계</b>로 적습니다. 아래 표가 계약이고,
           구현은 플랫폼 관용구를 따르면 됩니다.</p>
-        <pre><code>상태  home · sheet · schedule · car · confirm · bridge · weekday · rconfirm
+        <pre><code>상태(브릿지 구간)  car · confirm · bridge · weekday · rconfirm
 
 전이
-  car      --[다음]------------&gt;  bridge    confirm 과 한 번에 그림, 우-&gt;좌 push 320ms
-  bridge   --1900ms 경과-------&gt;  weekday   우-&gt;좌 push
-  bridge   --탭(어디든)--------&gt;  weekday   타이머 취소
-  bridge   --Android back-----&gt;  confirm   타이머 취소, 배너 promo, 자동 전환 없음
-  bridge   --화면 가려짐-------&gt;  bridge    타이머 취소, 다시 보일 때 처음부터 재생
-  confirm  --[설정]------------&gt;  weekday
-  weekday  --취소 / 뒤로-------&gt;  confirm   배너 warn, 자동 전환 없음
+  car      --[다음]-----------&gt;  bridge    confirm 과 한 번에 그림, 우-&gt;좌 push 320ms
+  bridge   --자동------------&gt;  weekday   기본 1900ms · 모션 축소 1120ms
+                                         스크린 리더 켜짐이면 자동 전환 없음
+  bridge   --탭(어디든)------&gt;  weekday   진입 후 300ms 는 무시(가드)
+  bridge   --Android back---&gt;  confirm   배너 promo, 자동 전환 없음
+  bridge   --화면 가려짐-----&gt;  bridge    다시 보일 때 처음부터 재생
+  confirm  --[설정]----------&gt;  weekday
+  weekday  --[다음]----------&gt;  rconfirm
+  weekday  --취소 / 뒤로-----&gt;  confirm   배너 warn, 자동 전환 없음
 
 불변식
   1. 모든 전이는 대기 타이머를 먼저 취소한다
@@ -1083,24 +1089,19 @@ BackHandler(enabled = step == Step.Bridge) {
 
 // 브릿지 구간에만 차단. 어떤 경로로 벗어나든 반드시 되돌린다
 navigationController?.interactivePopGestureRecognizer?.isEnabled = (step != .bridge)</code></pre>
-        <ul class="dd-l">
-          <li><b>타이머를 먼저 지웁니다.</b> 안 지우면 이전 단계의 예약분이 살아남아 단계를 건너뜁니다.</li>
-          <li><b>확인 화면은 독립 단계가 아닙니다.</b> 정방향에서는 브릿지와 한 덩어리로 그려지고,
-            취소로 되돌아올 때만 단독으로 뜹니다. 모든 화면 전환은 우&rarr;좌 push, 뒤로가기는 pop 입니다.</li>
-          <li><b>확인 화면에 자동 전환 훅을 걸지 마세요.</b> 걸면 취소로 돌아왔을 때 다시
-            브릿지 &rarr; 요일 선택으로 끌려가 <b>취소가 취소됩니다.</b></li>
-          <li>왼쪽 프로토타입에서는 <b>Esc</b> 가 Android back 자리입니다. 브릿지 중 눌러 보세요.</li>
-        </ul>
+        <p class="dd-n">모든 화면 전환은 우&rarr;좌 push, 뒤로가기는 그 역방향 pop 입니다.
+          <b>확인 화면은 독립 단계가 아닙니다.</b> 정방향에서는 브릿지와 한 덩어리로 그려지고,
+          취소로 되돌아올 때만 단독으로 뜹니다.</p>
       </section>
 
       <section class="dd-sec">
         <h3>인터럽트 · 플랫폼 분기</h3>
-        <p class="dd-n" style="margin:0 0 12px">브릿지 <b>1900ms 그 창에서만</b> 두 플랫폼이 갈립니다. 앞뒤 구간은 동일합니다.</p>
+        <p class="dd-n" style="margin:0 0 12px"><b>브릿지 구간에서만</b> 두 플랫폼이 갈립니다. 앞뒤 구간은 동일합니다. 탭 동작은 공통이라 위 상태 기계에 있습니다.</p>
         <table class="dd-t">
-          <tr><th>탭 (공통)</th><td>어디를 눌러도 즉시 요일 선택으로. 대기 타이머는 취소</td></tr>
           <tr><th><b>Android</b> back</th><td>back 을 받아 <b>흰 베일만 걷고 확인 화면에 정지</b>.
             타이머 취소, 배너는 promo(<code class="i">[설정]</code>) 유지, 자동 전환 없음.
-            뒤로 가는 게 아니라 <b>그 자리에 서는 것</b>입니다</td></tr>
+            뒤로 가는 게 아니라 <b>그 자리에 서는 것</b>입니다.<br>
+            왼쪽 프로토타입에서는 <b>Esc</b> 가 이 자리입니다</td></tr>
           <tr><th><b>iOS</b> edge swipe</th><td>브릿지 구간에만 <b>비활성</b>.
             <code class="i">interactivePopGestureRecognizer.isEnabled = false</code></td></tr>
           <tr><th>모션 축소</th><td>등장&middot;부유&middot;슬라이드 off. <b>총 1120ms</b> 로 단축</td></tr>
@@ -1156,9 +1157,8 @@ navigationController?.interactivePopGestureRecognizer?.isEnabled = (step != .bri
 카드 사이     10dp    고정
 좌우 인셋     24dp    고정
 안쪽 패딩     18dp    고정</code></pre>
-        <p class="dd-n">⚠ 이 폭 규칙만은 왼쪽 프로토타입과 다릅니다. 프로토타입은 393dp 고정 목업이라
-          Figma 값 <b>240dp 를 그대로</b> 씁니다. 위 규칙은 여러 기기에 대응하기 위한 <b>앱 구현 규칙</b>이고,
-          393dp 에서 60% = 236dp 라 둘이 사실상 겹칩니다(4dp 차이). 나머지 값은 프로토타입 실측치입니다.</p>
+        <p class="dd-n">⚠ <b>폭만 이 규칙</b>을 따르고 나머지는 Figma 실측 고정값입니다.
+          (프로토타입은 393dp 고정 목업이라 Figma 값 240dp 를 그대로 씁니다. 393dp 에서 60% = 236dp 로 사실상 같습니다.)</p>
         <p class="dd-n">폭만 유동이고 나머지는 고정입니다. 최소 200dp 는 주소가 한글 약 10자에서 끊기는 지점이라
           그 아래로 가면 장소를 알아볼 수 없습니다(분할 화면에서만 걸립니다). 최대 280dp 는 폰에서는 안 걸리고,
           폴더블&middot;태블릿에서 넓어진 폭이 카드 크기가 아니라 <b>카드 개수</b>로 가도록 하는 가드입니다.</p>
