@@ -348,9 +348,17 @@
   .bv.fl{width:26px;}
   .bv.dg{width:62px;}
   .bv.ln{width:74px;}
-  .fform .kbswap{display:block;margin-top:6px;}
-  .fform #f-lnhelp{margin-top:10px;}
-  .fform .kbswap[hidden]{display:none;}
+  /* 도움말은 지금 손대고 있는 칸의 것만, 한 자리에서.
+     공용 자리에 쌓아 두면 어느 칸 얘기인지 화면이 말해 주지 못한다. */
+  .fhint{min-height:52px;margin-top:12px;}
+  .fhint .ft{margin:0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
+  .fhint .ft b{color:var(--gray-700);font-weight:600;}
+  .fhint .ft:empty{display:none;}
+  .fhint .fa{margin-top:6px;border:none;background:none;padding:4px 0;font:inherit;font-size:13px;
+    font-weight:600;color:var(--navy-800);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
+  .fhint .fa[hidden]{display:none;}
+  /* 빈칸이 '안 정했다' 인지 '없다' 인지 모르던 상태를, 고른 답으로 바꾼다 */
+  .fld .nn{flex:0 0 auto;font-size:16px;font-weight:600;color:var(--gray-500);}
   /* 필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면 문장을 쓰는 도중에 방해가 된다.
      한 줄짜리 링크만 조용히 나타나고, 필요한 사람(26.9%)이 눌렀을 때 필드를 연다. */
   .addetc{display:flex;align-items:center;gap:8px;
@@ -601,14 +609,15 @@
               <span class="br" id="f-br1"></span>
               <label class="fld"><input class="bv dg" id="f-dong" maxlength="5"
                      placeholder="101" aria-label="몇 동" /><span class="u">동</span></label>
-              <label class="fld"><input class="bv ln" id="f-line2" maxlength="8"
-                     placeholder="2-5호" aria-label="호수 라인, 없으면 비워 두세요" /><span class="u">라인</span></label>
+              <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" maxlength="8"
+                     placeholder="2-5호" aria-label="호수 라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label>
               <span class="br"></span>
               <span class="w tail2">앞에서 탈게요</span>
             </div>
-            <button type="button" class="kbswap" id="f-swap"></button>
-            <p class="askhelp" id="f-lnhelp">라인은 <b>공동현관에 붙어 있는 그대로</b> 적으면 됩니다.
-               1-2, 3,4호, 1/2 어떤 표기든 괜찮아요. <b>없으면 비워 두세요.</b></p>
+            <div class="fhint" id="f-hint">
+              <p class="ft" id="f-hint-t"></p>
+              <button type="button" class="fa" id="f-hint-a" hidden></button>
+            </div>
 
             <button type="button" class="addetc" id="f-addetc" hidden><svg class="ic" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 1.2V11.8M1.2 6.5H11.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>찾아오는 길 적기</button>
             <div class="fopt" id="fopt" hidden>
@@ -723,8 +732,15 @@
        <b>&lsquo;117동 3,5호라인&rsquo;</b> 두 개인데, 우연에 맡기면 <b>1012동</b>과 <b>2-5호라인</b>이
        두 줄로 갈라집니다. 한 덩어리인 주소를 갈라놓지 않도록 줄을
        <b>층 / 동·라인 / 고정 문구</b> 세 덩어리로 끊었습니다.</p>
-    <p>라인 칸이 처음부터 비어 보이는 대가로 <b>없으면 비워 두세요</b>를 문장 아래에 붙였습니다.
-       라인이 없는 60%가 이 칸에서 멈추지 않게 하는 장치입니다.</p>
+    <p>라인이 없으면 <b>&lsquo;라인 없음&rsquo;을 고릅니다.</b> 빈칸은 &lsquo;아직 안 정했다&rsquo; 인지 &lsquo;없다&rsquo; 인지
+       구분이 안 됩니다. 그래서 예전에는 <b>&lsquo;없으면 비워 두세요&rsquo;</b> 라는 설명이 필요했는데,
+       선택지가 그 설명을 없앱니다. <b>설명 대신 행동</b>입니다. 고르면 칸이 사라지고 답이 그 자리에 남아,
+       화면에 <b>안 채운 칸이 하나도 없는 상태</b>가 됩니다. 다시 누르면 되돌아옵니다.
+       (비워 둔 것과 &lsquo;없음&rsquo;은 결과가 같으므로 CTA 는 어느 쪽이든 막지 않습니다.)</p>
+    <p>도움말은 <b>지금 손대고 있는 칸의 것만</b> 문장 아래 한 자리에 띄웁니다. 예전에는
+       동에 대한 전환 링크와 라인에 대한 설명이 <b>공용 자리에 함께 쌓여</b> 어느 칸 얘기인지 알 수 없었고,
+       링크가 아래 문단의 제목처럼 보였습니다. 토글된 뒤의 라벨 <b>&lsquo;숫자로 입력&rsquo;</b> 은 주어까지 사라졌습니다.
+       슬롯 높이는 <b>52px 고정</b>이라 칸을 옮겨 다녀도 아래가 튀지 않습니다.</p>
     <p>문장 밖에 남은 <b>찾아오는 길</b>은 필드가 아니라 <b>한 줄 링크</b>로 나타납니다.
        필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면, 아직 라인 칸이 비어 있는데 문장 쓰던 사람을
        가로막습니다. 링크는 조용히 한 줄만 늘어나고, 필요한 사람(요청사항의 <b>26.9%</b>)이 눌렀을 때 필드가 열립니다.</p>
@@ -844,14 +860,14 @@
   const FLOORS=[1,2,3,4,5];
   const PH='자세한 픽업 위치를 입력해주세요';
   const SENT_AT='12:46';
-  const SAVED_FOR_ADDRESS={lvl:'under',floor:4,dong:'1901',line:'',etc:'엘리베이터 앞'};
+  const SAVED_FOR_ADDRESS={lvl:'under',floor:4,dong:'1901',line:'',etc:'엘리베이터 앞',noLine:true};
 
   const S={
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     sending:false, sent:false, justSent:false, opened:null,
     saved:null, current:null,
-    d:{lvl:'under',floor:null,dong:'',line:'',etc:''},
+    d:{lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false}, focus:null,
     step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline'
   };
 
@@ -1036,12 +1052,13 @@
     const fl=el('f-floor'); fl.value = d.floor ? String(d.floor) : '';
     const dg=el('f-dong');  dg.value = d.dong;
     el('f-line2').value = d.line;
+    /* '라인 없음' 은 빈칸이 아니라 고른 답이다. 칸을 지우고 답을 그 자리에 놓는다 */
+    el('f-line2').hidden = !!d.noLine;
+    el('f-fld-line').querySelector('.u').hidden = !!d.noLine;
+    el('f-line-nn').hidden = !d.noLine;
     dg.setAttribute('inputmode', S.dongMode==='text' ? 'text' : 'numeric');
 
-    /* 키패드 전환은 아직 안 쓴 사람에게만 필요하다. 동을 채우고 나면 치운다 */
-    const sw=el('f-swap');
-    sw.hidden = !!d.dong.trim();
-    sw.textContent = S.dongMode==='text' ? '숫자로 입력' : '가동·C동처럼 글자로 입력';
+    renderHint();
 
     const showEtc = ok && (S.etcOpen || !!d.etc.trim());
     el('f-addetc').hidden = !(ok && !showEtc);
@@ -1059,6 +1076,22 @@
     S.d.lvl=v; if(v!=='under') S.d.floor=null;
     renderSentence();
     setTimeout(()=>{ const t=el(v==='under'?'f-floor':'f-dong'); if(!t.hidden) t.focus(); },40);
+  }
+  /* 지금 포커스된 칸의 안내만 띄운다. 슬롯 높이는 고정이라 오갈 때 아래가 튀지 않는다 */
+  const HINT = {
+    dong: { t:'', a:()=>S.dongMode==='text' ? '숫자로 입력' : '가동·C동처럼 글자로 입력',
+            go:()=>{ S.dongMode = (S.dongMode==='text') ? 'num' : 'text'; renderSentence();
+                     setTimeout(()=>el('f-dong').focus(),20); } },
+    line: { t:'공동현관에 붙어 있는 <b>그대로</b> 적으면 됩니다.',
+            a:()=>'우리 아파트는 라인이 없어요',
+            go:()=>{ S.d.noLine=true; S.d.line=''; S.focus=null; renderSentence(); paintFoot(); } }
+  };
+  function renderHint(){
+    const k = S.focus, cfg = HINT[k];
+    el('f-hint-t').innerHTML = cfg && cfg.t ? cfg.t : '';
+    const a=el('f-hint-a');
+    a.hidden = !cfg;
+    if(cfg) a.textContent = cfg.a();
   }
   function paintFEtc(){
     const p=el('f-etc-help'); if(!p) return;
@@ -1087,9 +1120,19 @@
       const ok=ready(S.d), was=!el('f-addetc').hidden || !el('fopt').hidden;
       if(ok!==was) renderSentence(); else paintFoot();
     });
-    el('f-swap').addEventListener('click',()=>{
-      S.dongMode = (S.dongMode==='text') ? 'num' : 'text';
-      renderSentence(); setTimeout(()=>dg.focus(),20);
+    /* mousedown 을 막아야 링크를 누르는 순간 포커스가 빠져 슬롯이 먼저 사라지지 않는다 */
+    const a=el('f-hint-a');
+    a.addEventListener('mousedown',ev=>ev.preventDefault());
+    a.addEventListener('click',()=>{ const c=HINT[S.focus]; if(c) c.go(); });
+    [['floor',fl],['dong',dg],['line',el('f-line2')]].forEach(([k,i])=>{
+      i.addEventListener('focus',()=>{ S.focus=k; renderHint(); });
+      i.addEventListener('blur', ()=>{ if(S.focus===k){ S.focus=null; renderHint(); } });
+    });
+    /* '라인 없음' 을 눌러 되돌린다 */
+    el('f-fld-line').addEventListener('click',ev=>{
+      if(!S.d.noLine) return;
+      ev.preventDefault();
+      S.d.noLine=false; renderSentence(); setTimeout(()=>el('f-line2').focus(),20);
     });
     /* 문장에 '라인' 이라는 글자가 이미 찍혀 있다. 값에 또 적으면 '3,5호라인 라인' 이 된다 */
     const ln2=el('f-line2');
@@ -1143,7 +1186,7 @@
 
   function openForm(where){
     S.opened=where; S.skipped={}; S.etcOpen=false;
-    S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,dong:'',line:'',etc:''};
+    S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false};
     el('ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
     el('ph-hint').innerHTML = (where==='start')
       ? '배차되면 기사님께 함께 전달됩니다.'
