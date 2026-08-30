@@ -38,7 +38,10 @@
   .tab.on{background:var(--ink);border-color:var(--ink);color:#fff;font-weight:600;}
   .tabs .sp{flex:1 1 auto;}
   .note table{border-collapse:collapse;margin:8px 0;font-size:12.5px;}
-  .note td{padding:4px 12px 4px 0;color:var(--ink-2);vertical-align:top;white-space:nowrap;}
+  .note code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;
+    background:#eef1f6;border-radius:3px;padding:1px 4px;}
+  .note td{padding:4px 12px 4px 0;color:var(--ink-2);vertical-align:top;}
+  .note td:first-child{white-space:nowrap;}
   .note td:first-child{color:var(--ink);font-weight:600;}
   .tabs .tlab{font-size:12.5px;color:var(--ink-2);margin-right:2px;}
   .tabs.off{opacity:.35;pointer-events:none;}
@@ -145,7 +148,7 @@
 
   /* 토스식: 답한 것은 위로 쌓이고, 지금 묻는 것만 아래에서 크게 */
   .ph-body{display:flex;flex-direction:column;}
-  .phhint{margin:0 0 auto;width:100%;font-size:13px;line-height:20px;color:var(--gray-500);word-break:keep-all;}
+  .phhint{margin:0 0 auto;width:100%;font-size:calc(13px*var(--ts,1));line-height:calc(20px*var(--ts,1));color:var(--gray-500);word-break:keep-all;}
   .phhint b{color:var(--gray-700);font-weight:600;}
 
   .answers{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:auto;margin-bottom:18px;}
@@ -179,7 +182,7 @@
 
   .tinwrap{position:relative;width:100%;}
   .tin{width:100%;border:none;border-radius:8px;background:var(--gray-30);padding:15px 58px 15px 16px;
-    font:inherit;font-size:16px;line-height:18px;color:var(--gray-950);outline:none;}
+    font:inherit;font-size:calc(16px*var(--ts,1));line-height:18px;color:var(--gray-950);outline:none;}
   .tin::placeholder{color:var(--gray-500);}
   .tin:focus{box-shadow:inset 0 0 0 1.5px var(--navy-800);}
   .tcnt{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--gray-500);}
@@ -283,7 +286,7 @@
     align-items:center;justify-content:center;gap:4px;}
 
   /* ══════ 입력 화면 placeholder ══════ */
-  .ph-scr{container-type:inline-size;
+  .ph-scr{--ts:1;container-type:inline-size;
     position:absolute;inset:0;z-index:40;background:#fff;transform:translateY(100%);
     visibility:hidden;transition:transform var(--dur) cubic-bezier(.32,.72,.24,1),visibility 0s var(--dur);
     display:flex;flex-direction:column;}
@@ -322,13 +325,15 @@
   .fld.pick:hover{background:var(--gray-80);}
   .fld.pick:focus{background:var(--blue-050);box-shadow:inset 0 0 0 1.5px var(--navy-800);}
   .sent{display:flex;flex-wrap:wrap;align-items:center;margin:0;
-    font-size:22px;line-height:44px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
+    font-size:calc(22px*var(--ts));line-height:calc(44px*var(--ts));font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
   .sent .w{flex:0 0 auto;}
   .sent .w:not(.tail2){margin-right:8px;}
   /* 접히는 자리를 고정한다. 우연히 접히면 '1012동'과 '2-5호라인'처럼
      한 덩어리인 주소가 두 줄로 갈라진다. */
   /* 줄바꿈 자리에 실제 높이를 준다. line-height 만으로는 '지하 2층' 과 '87동' 줄이 붙어 보였다 */
   .sent .br{flex:0 0 100%;height:14px;}
+  /* 글꼴을 키우면 한 줄에 두 칸이 안 들어간다. 웹은 줄바꿈이 알아서 한 칸씩 내리지만
+     네이티브 HStack 은 안 넘어간다 — 구현할 때 flow 레이아웃이나 fontScale 분기가 필요하다. */
   .sent .br + .fld{margin-left:0;}
   /* '앞에서 탈게요' 는 고정 문구다. 줄이 바뀌어도 값이 갈라지지 않도록 따로 떼어 두고,
      입력값이 아니라는 게 보이게 한 톤 낮춘다. */
@@ -337,17 +342,17 @@
      조각이 여덟이지만, 묶으면 넷이 되고 줄마다 두 덩어리로 떨어진다.
      단위는 상자 안의 고정 문구라 회색으로 흐리지 않는다 — 흐린 것은 예시뿐이다. */
   .fld{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
-    height:44px;margin:0 8px 0 0;padding:0 14px;
+    height:calc(44px*var(--ts));margin:0 8px 0 0;padding:0 14px;
     background:var(--gray-30);border-radius:8px;cursor:text;}
   .fld:focus-within{background:var(--blue-050);box-shadow:inset 0 0 0 1.5px var(--navy-800);}
   .bv{border:none;outline:none;background:none;padding:0;text-align:center;
-    font:inherit;font-size:22px;font-weight:700;color:var(--navy-800);}
+    font:inherit;font-size:calc(22px*var(--ts));font-weight:700;color:var(--navy-800);}
   /* 예시는 값과 확실히 갈라져야 한다. gray-500(3.82:1)까지 올리니 22px 에서는
      입력된 값처럼 읽혔다. gray-300 은 2.15:1 로 무게 400 과 함께 값(navy 700)과 구분된다. */
   .bv::placeholder{color:var(--gray-300);font-weight:400;}
   /* 단위는 고정 문구다. 값보다 한 단계 작게 두면 상자 안에서 무엇이 내용인지 바로 보인다.
      가운데 정렬만 하면 22px 과 16px 의 베이스라인이 어긋나 2px 내려 앉힌다. */
-  .fld .u{flex:0 0 auto;font-size:16px;font-weight:600;color:var(--gray-950);
+  .fld .u{flex:0 0 auto;font-size:calc(16px*var(--ts));font-weight:600;color:var(--gray-950);
     transform:translateY(2px);}
   /* 기본 폭은 em 이라 글자 단계가 커지면 같이 커진다.
      내용이 기본을 넘을 때만 --gw 로 늘어난다(고정 폭은 1012A·11-16호라 를 잘랐다). */
@@ -362,45 +367,46 @@
      비어 있을 때 86px 을 남겨 두면 그 구멍이 상시 보인다 — 아래엔 이미 231px 이 남아 있다. */
   .fhint{min-height:0;margin-top:0;}
   .fhint.on{min-height:52px;margin-top:12px;}
-  .fhint .ft{margin:0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
+  .fhint .ft{margin:0;font-size:calc(13px*var(--ts));line-height:calc(19px*var(--ts));color:var(--gray-500);word-break:keep-all;}
   .fhint .ft b{color:var(--gray-700);font-weight:600;}
   .fhint .ft:empty{display:none;}
   .fhint .fa{margin-top:6px;border:none;background:none;padding:4px 0;font:inherit;font-size:13px;
     font-weight:600;color:var(--navy-800);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
+  .fhint .fa{font-size:calc(13px*var(--ts));}
   .fhint .fa[hidden]{display:none;}
   /* 빈칸이 '안 정했다' 인지 '없다' 인지 모르던 상태를, 고른 답으로 바꾼다 */
-  .fld .nn{flex:0 0 auto;font-size:16px;font-weight:600;color:var(--gray-500);}
+  .fld .nn{flex:0 0 auto;font-size:calc(16px*var(--ts));font-weight:600;color:var(--gray-500);}
   /* 필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면 문장을 쓰는 도중에 방해가 된다.
      한 줄짜리 링크만 조용히 나타나고, 필요한 사람(26.9%)이 눌렀을 때 필드를 연다. */
   .addetc{display:flex;align-items:center;gap:8px;
     width:100%;margin-top:22px;border:none;background:none;padding:14px 0;
-    font:inherit;font-size:15px;font-weight:600;color:var(--navy-800);text-align:left;cursor:pointer;
+    font:inherit;font-size:calc(15px*var(--ts));font-weight:600;color:var(--navy-800);text-align:left;cursor:pointer;
     border-top:1px solid var(--gray-100);border-radius:0;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .addetc[hidden]{display:none;}
   .fopt{width:100%;margin-top:24px;padding-top:22px;border-top:1px solid var(--gray-100);
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
-  .fopt .flab3{margin:0 0 9px;font-size:15px;line-height:22px;font-weight:700;color:var(--gray-900);}
+  .fopt .flab3{margin:0 0 9px;font-size:calc(15px*var(--ts));line-height:calc(22px*var(--ts));font-weight:700;color:var(--gray-900);}
   .fopt .flab3 em{font-style:normal;font-size:13px;font-weight:400;color:var(--gray-500);margin-left:5px;}
   .fopt .sp2{height:22px;}
 
   /* ── 폭 단계. 좁은 폰(320)은 한 단계 줄이고, 넓은 폰(414+)은 한 단계 키운다.
      칩 높이·패딩·본문·단위가 한 벌로 움직여야 비율이 유지된다. */
   @container (max-width: 344px){
-    .sent{font-size:20px;line-height:40px;}
-    .fld{height:42px;padding:0 12px;margin-right:6px;}
+    .sent{font-size:calc(20px*var(--ts));line-height:calc(40px*var(--ts));}
+    .fld{height:calc(42px*var(--ts));padding:0 12px;margin-right:6px;}
     .fld.pick{padding:0 10px 0 12px;gap:6px;}
-    .fld .u{font-size:15px;}
-    .fld .nn{font-size:15px;}
+    .fld .u{font-size:calc(15px*var(--ts));}
+    .fld .nn{font-size:calc(15px*var(--ts));}
     .sent .br{height:12px;}
     .ph-body.sform{padding-left:18px;padding-right:18px;}
   }
   @container (min-width: 400px){
-    .sent{font-size:24px;line-height:48px;}
-    .fld{height:48px;padding:0 16px;margin-right:10px;}
+    .sent{font-size:calc(24px*var(--ts));line-height:calc(48px*var(--ts));}
+    .fld{height:calc(48px*var(--ts));padding:0 16px;margin-right:10px;}
     .fld.pick{padding:0 14px 0 16px;gap:8px;}
-    .fld .u{font-size:17px;}
-    .fld .nn{font-size:17px;}
+    .fld .u{font-size:calc(17px*var(--ts));}
+    .fld .nn{font-size:calc(17px*var(--ts));}
     .sent .br{height:16px;}
     .ph-body.sform{padding-left:26px;padding-right:26px;}
   }
@@ -532,6 +538,12 @@
   <div class="tabs">
     <button class="tab on" data-form="sform">1안 · 한 화면 문장형</button>
     <button class="tab" data-form="seq">2안 · 순차 쌓기</button>
+  </div>
+  <div class="tabs" id="tsrow">
+    <span class="tlab">글꼴 크기</span>
+    <button class="tab on" data-ts="1">기본 100%</button>
+    <button class="tab" data-ts="1.3">크게 130%</button>
+    <button class="tab" data-ts="1.8">최대 180%</button>
   </div>
   <div class="tabs" id="wrow">
     <span class="tlab">화면 너비</span>
@@ -807,24 +819,40 @@
        위치가 세그먼트에만 남았습니다.</p>
   </div>
   <div class="note">
-    <h3><i>2</i>화면 너비 대응</h3>
-    <p>상단 <b>화면 너비</b> 토글로 <b>320 · 360 · 414</b> 를 오갈 수 있습니다(라이더 폰만 바뀝니다).
-       실제 한국 시장은 아이폰 SE·미니의 <b>320~375</b>, 표준 <b>390~393</b>, Pro Max·울트라의 <b>414~440</b> 입니다.</p>
-    <p>대응은 <b>미디어 쿼리가 아니라 컨테이너 쿼리</b>로 했습니다. 시트가 <b>자기 폭</b>에 반응하므로,
-       이 프로토처럼 데스크톱 안의 360px 프레임에서도, 실제 앱의 진짜 뷰포트에서도 같은 코드가 동작합니다.</p>
-    <p>단계는 <b>세 개</b>이고, 본문·단위·칩 높이·좌우 패딩이 <b>한 벌로</b> 움직입니다. 하나만 바꾸면 비율이 깨집니다.</p>
+    <h3><i>2</i>크기 대응 — 네이티브 기준</h3>
+    <p><b>이건 네이티브 앱입니다.</b> 아래 값은 스펙이고, 프로토의 CSS 는 그 스펙을 보여주는 수단일 뿐입니다.
+       구현은 이렇게 옮깁니다.</p>
+    <table><tbody>
+      <tr><td>프로토 컨테이너 쿼리</td><td>Compose <code>BoxWithConstraints.maxWidth</code> · SwiftUI <code>GeometryReader</code> 분기</td></tr>
+      <tr><td>프로토 <code>em</code> 기본 폭</td><td>단계별 <b>dp/pt 상수</b>. em 은 네이티브에 없습니다</td></tr>
+      <tr><td>프로토 <code>max()</code> + 측정</td><td>필드를 <b>내용 폭으로 hug</b> 하고 최소 폭만 준다 —
+        Compose <code>widthIn(min=)</code> + intrinsic, SwiftUI <code>fixedSize(horizontal:)</code>.
+        네이티브가 오히려 더 쉽습니다</td></tr>
+      <tr><td>프로토 줄바꿈(flex-wrap)</td><td><b>HStack 은 안 넘어갑니다.</b> flow 레이아웃이나 글꼴 배율 분기가 필요합니다</td></tr>
+    </tbody></table>
+    <p>줄바꿈 자리를 <b>고정해 둔 결정이 여기서 이득</b>이 됩니다. 자동 줄바꿈에 맡겼다면 네이티브에서 재현할 수
+       없었을 텐데, 세 덩어리로 끊어 두었으니 <b>VStack 안에 HStack 셋</b>이면 그대로 만들어집니다.</p>
+    <p><b>화면 너비</b>는 세 단계입니다. 한국 시장은 SE·미니 320~375, 표준 390~393, Pro Max·울트라 414~440 입니다.
+       본문·단위·칩 높이·좌우 패딩이 <b>한 벌로</b> 움직입니다.</p>
     <table><tbody>
       <tr><td>≤344</td><td>문장 20 · 단위 15 · 칩 42 · 패딩 18</td></tr>
       <tr><td>345–399</td><td>문장 22 · 단위 16 · 칩 44 · 패딩 24</td></tr>
       <tr><td>≥400</td><td>문장 24 · 단위 17 · 칩 48 · 패딩 26</td></tr>
     </tbody></table>
-    <p><b>줄 구조는 세 폭 모두 같습니다</b> — 위치·층 / 동·라인 / 고정 문구. 넓다고 한 줄로 합치지 않았습니다.
-       합치면 &lsquo;지하2층&rsquo; 과 &lsquo;1012동 2-5호라인&rsquo; 이라는 의미 덩어리가 깨집니다.
-       넓은 화면에서 남는 건 오른쪽 여백뿐이고, 그건 정상입니다.</p>
-    <p>여기서 <b>고정 폭이 값을 자르고 있던 것</b>도 같이 잡았습니다. 동 62px 에 <b>1012A</b>(65px),
-       라인 74px 에 <b>11-16호라</b>(94px) 가 들어가 잘렸습니다. 기본 폭을 em 으로 바꿔 단계에 따라 같이 커지게 하고,
-       <b>내용이 기본을 넘칠 때만</b> 그만큼 늘어나게 했습니다. 늘 내용에 딱 맞추면 한 글자마다 옆 칸이 밀립니다.</p>
-    <p>실측: 최악(긴 값 + 320)에서도 우측 <b>266 / 가용 282</b> 로 넘치지 않고, 세 폭 모두 잘림이 없습니다.</p>
+    <p>다만 네이티브에서 <b>더 크게 흔드는 축은 화면 폭이 아니라 글꼴 크기 설정</b>입니다(iOS Dynamic Type,
+       안드로이드 fontScale). 폭은 320~440 으로 <b>1.38배</b> 범위인데 글꼴은 <b>2배 이상</b> 갑니다.
+       상단 <b>글꼴 크기</b> 토글로 100 / 130 / 180% 를 볼 수 있습니다. 실측 결과:</p>
+    <table><tbody>
+      <tr><td>100%</td><td>3줄. 위치·층 / 동·라인 / 고정 문구 — 의미 덩어리 유지</td></tr>
+      <tr><td>130%</td><td>4줄. 동과 라인이 갈라집니다. 한 줄에 한 칸이 됩니다</td></tr>
+      <tr><td>180%</td><td>4줄 + 화면이 거의 참. 414 에서는 시트가 스크롤되기 시작합니다</td></tr>
+    </tbody></table>
+    <p>즉 <b>두 칸이 한 줄에 들어가는 건 기본 글꼴에서만</b>입니다. 구현할 때 한 줄에 두 칸을 하드코딩하면
+       글꼴을 키운 사용자에게 잘립니다. <b>안 들어가면 한 칸씩 내려간다</b>가 규칙입니다.</p>
+    <p>고정 폭이 값을 자르던 것도 같이 잡았습니다. 동 62px 에 <b>1012A</b>(65px), 라인 74px 에
+       <b>11-16호라</b>(94px) 가 잘렸습니다. 최소 폭만 두고 내용에 맞춰 늘리되, <b>기본을 넘을 때만</b> 늘립니다 —
+       늘 내용에 딱 맞추면 한 글자마다 옆 칸이 밀립니다.</p>
+    <p>실측: 폭 3 × 글꼴 3 <b>아홉 조합 전부</b> 잘림 없음. 최악(긴 값 + 320)에서 우측 266 / 가용 282.</p>
   </div>
   <div class="note">
     <h3><i>3</i>hail_location 컴포넌트 정밀 확인</h3>
@@ -926,7 +954,7 @@
     sending:false, sent:false, justSent:false, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false}, focus:null,
-    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
+    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360, ts:1
   };
 
   /* ── 문장 ── */
@@ -1430,6 +1458,12 @@
     $$('.tab[data-form]').forEach(x=>x.classList.toggle('on',x.dataset.form===S.form));
     $('#toprow').classList.toggle('off', S.form!=='sform');
     if($('#phscr').classList.contains('on')) openForm(S.opened); else render();
+  }));
+  $$('.tab[data-ts]').forEach(t=>t.addEventListener('click',()=>{
+    S.ts=+t.dataset.ts;
+    $$('.tab[data-ts]').forEach(x=>x.classList.toggle('on',+x.dataset.ts===S.ts));
+    $('#phscr').style.setProperty('--ts', S.ts);
+    if($('#phscr').classList.contains('on')) renderSentence();
   }));
   $$('.tab[data-pw]').forEach(t=>t.addEventListener('click',()=>{
     S.pw=+t.dataset.pw;
