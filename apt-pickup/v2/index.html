@@ -350,7 +350,11 @@
   .bv.ln{width:74px;}
   /* 도움말은 지금 손대고 있는 칸의 것만, 한 자리에서.
      공용 자리에 쌓아 두면 어느 칸 얘기인지 화면이 말해 주지 못한다. */
-  .fhint{min-height:52px;margin-top:12px;}
+  /* 슬롯은 내용이 있을 때만 자리를 차지한다. 사라진 요소의 자리를 지키는 건 데스크톱 습관이고,
+     모바일에선 포커스가 오갈 때 키보드가 이미 화면을 훨씬 크게 재배치한다.
+     비어 있을 때 86px 을 남겨 두면 그 구멍이 상시 보인다 — 아래엔 이미 231px 이 남아 있다. */
+  .fhint{min-height:0;margin-top:0;}
+  .fhint.on{min-height:52px;margin-top:12px;}
   .fhint .ft{margin:0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
   .fhint .ft b{color:var(--gray-700);font-weight:600;}
   .fhint .ft:empty{display:none;}
@@ -1092,6 +1096,7 @@
     const a=el('f-hint-a');
     a.hidden = !cfg;
     if(cfg) a.textContent = cfg.a();
+    el('f-hint').classList.toggle('on', !!cfg);
   }
   function paintFEtc(){
     const p=el('f-etc-help'); if(!p) return;
@@ -1124,7 +1129,7 @@
     const a=el('f-hint-a');
     a.addEventListener('mousedown',ev=>ev.preventDefault());
     a.addEventListener('click',()=>{ const c=HINT[S.focus]; if(c) c.go(); });
-    [['floor',fl],['dong',dg],['line',el('f-line2')]].forEach(([k,i])=>{
+    [['floor',fl],['dong',dg],['line',el('f-line2')],['etc',el('f-etc')]].forEach(([k,i])=>{
       i.addEventListener('focus',()=>{ S.focus=k; renderHint(); });
       i.addEventListener('blur', ()=>{ if(S.focus===k){ S.focus=null; renderHint(); } });
     });
@@ -1141,6 +1146,7 @@
       ev.target.value=v; S.d.line=v; paintFoot();
     });
     el('f-lvl').addEventListener('click',()=>setLvl(S.d.lvl==='under'?'ground':'under'));
+    el('f-addetc').addEventListener('mousedown',ev=>ev.preventDefault());
     el('f-addetc').addEventListener('click',()=>{
       S.etcOpen=true; renderSentence(); setTimeout(()=>el('f-etc').focus(),40);
     });
