@@ -401,16 +401,14 @@
     border-top:1px solid var(--gray-100);border-radius:0;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .addetc[hidden]{display:none;}
-  .fopt{width:100%;margin-top:24px;padding-top:22px;border-top:1px solid var(--gray-100);
+  /* 값이 있으면 접을 수 없다(눌러서 조용히 지워지면 안 된다). 그때 이 줄은 라벨이 된다. */
+  .addetc.lab{cursor:default;color:var(--gray-900);}
+  .addetc.lab .tg{display:none;}
+  .addetc.open #f-etc-v{display:none;}
+  .fopt{width:100%;margin-top:2px;padding-top:0;border-top:none;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .fopt .flab3{margin:0 0 9px;display:flex;align-items:center;font-size:15px;line-height:22px;
     font-weight:700;color:var(--gray-900);}
-  .fopt .flab3 .sp{flex:1 1 auto;}
-  /* 펼쳤다가 쓸 말이 없으면 되돌릴 수 있어야 한다.
-     쓴 내용이 있을 땐 숨긴다 — 눌러서 조용히 지워지는 일이 없게. */
-  .fclose{border:none;background:none;padding:4px 0 4px 12px;font:inherit;font-size:13px;
-    font-weight:400;color:var(--gray-500);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
-  .fclose[hidden]{display:none;}
   .fopt .flab3 em{font-style:normal;font-size:13px;font-weight:400;color:var(--gray-500);margin-left:5px;}
   .fopt .sp2{height:22px;}
 
@@ -685,10 +683,9 @@
               <button type="button" class="fa" id="f-hint-a" hidden></button>
             </div>
 
-            <button type="button" class="addetc" id="f-addetc" hidden><svg class="ic" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6.5 1.2V11.8M1.2 6.5H11.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>찾아오는 길 적기</button>
+            <button type="button" class="addetc" id="f-addetc" hidden><svg class="ic tg" id="f-etc-ic" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path id="f-etc-v" d="M6.5 1.2V11.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M1.2 6.5H11.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>찾아오는 길</button>
             <div class="fopt" id="fopt" hidden>
-              <p class="flab3">찾아오는 길 <em>선택</em><span class="sp"></span><button type="button"
-                 class="fclose" id="f-etc-close">접기</button></p>
+
               <div class="tinwrap">
                 <input class="tin" id="f-etc" maxlength="100" />
                 <span class="tcnt"><b id="f-etc-c">0</b>/100</span>
@@ -835,11 +832,14 @@
     <p>문장 밖에 남은 <b>찾아오는 길</b>은 필드가 아니라 <b>한 줄 링크</b>로 나타납니다.
        필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면, 아직 라인 칸이 비어 있는데 문장 쓰던 사람을
        가로막습니다. 링크는 조용히 한 줄만 늘어나고, 필요한 사람(요청사항의 <b>26.9%</b>)이 눌렀을 때 필드가 열립니다.</p>
-    <p>펼친 뒤에는 <b>접을 수 있어야 합니다.</b> 링크를 눌러 열었는데 쓸 말이 없으면 되돌릴 방법이 없었습니다.
-       라벨 오른쪽에 <b>접기</b>를 두되, <b>쓴 내용이 있으면 감춥니다</b> — 눌러서 조용히 지워지는 일이 없어야 합니다.
-       지우고 싶으면 글을 비우면 되고, 그러면 접기가 다시 나타납니다.
-       (다른 칸에 포커스가 있을 때 눌러도 슬롯이 먼저 접혀 버튼이 손가락 밑에서 올라가지 않도록
-       <code>mousedown</code> 을 막았습니다.)</p>
+    <p>펼친 뒤에는 <b>접을 수 있어야 합니다.</b> 처음엔 라벨 오른쪽에 별도 <b>접기</b>를 뒀는데,
+       <b>펼치는 지점(왼쪽 링크)과 접는 지점(오른쪽 버튼)이 달라</b> 어디를 눌러야 하는지 매번 다시 찾게 됐고,
+       문구도 &lsquo;찾아오는 길 적기&rsquo; 에서 &lsquo;찾아오는 길&rsquo; 로 바뀌어 같은 것이 아닌 듯 보였습니다.</p>
+    <p>그래서 <b>헤더 한 줄이 곧 토글</b>이 됐습니다. <b>자리도 문구(&lsquo;찾아오는 길&rsquo;)도 고정</b>이고
+       <b>아이콘만 ＋ / −</b> 로 바뀝니다. 여는 곳과 닫는 곳이 같습니다.</p>
+    <p>다만 <b>쓴 내용이 있으면 아이콘을 거둡니다.</b> 눌러서 글이 조용히 지워지면 안 되고,
+       눌러도 아무 일 없는 컨트롤을 남겨 둘 수도 없습니다. 그때 이 줄은 필드의 라벨이 됩니다.
+       지우고 싶으면 글을 비우면 되고, 그러면 <b>−</b> 가 다시 나타납니다.</p>
     <p>라인까지 채워야 뜨게 하는 방법도 있지만, 라인이 없는 <b>60%</b>는 찾아오는 길을 영영 못 보게 됩니다.
        조건을 조이는 대신 <b>등장 방식을 조용하게</b> 만든 이유입니다.</p>
     <p>긴 자유 입력을 첫 화면에 펼쳐 두면 길게 쓰게 되는데, 기사님은 운전 중에 그걸 못 읽습니다.
@@ -1215,14 +1215,18 @@
 
     renderHint();
 
+    /* 헤더 한 줄이 곧 토글이다 — 자리도 문구도 고정, 아이콘만 + / −.
+       펼치는 지점과 접는 지점이 다르면 어디를 눌러야 하는지 매번 다시 찾게 된다. */
     const showEtc = ok && (S.etcOpen || !!d.etc.trim());
-    el('f-addetc').hidden = !(ok && !showEtc);
+    const hd=el('f-addetc');
+    hd.hidden = !ok;
+    hd.classList.toggle('open', showEtc);
+    hd.classList.toggle('lab', !!d.etc.trim());
     el('fopt').hidden = !showEtc;
     fitAll();
     if(showEtc){
       const et=el('f-etc');
       et.value=d.etc;  el('f-etc-c').textContent=d.etc.length;
-      el('f-etc-close').hidden = !!d.etc.trim();
       et.placeholder = S.d.lvl==='ground'?'예: 정문으로 들어와서 우회전':'예: 게이트2로 들어와서 좌회전';
       paintFEtc();
     }
@@ -1319,17 +1323,17 @@
     el('f-lvl').addEventListener('click',()=>setLvl(S.d.lvl==='under'?'ground':'under'));
     el('f-addetc').addEventListener('mousedown',ev=>ev.preventDefault());
     el('f-addetc').addEventListener('click',()=>{
-      S.etcOpen=true; renderSentence(); setTimeout(()=>el('f-etc').focus(),40);
+      if(S.d.etc.trim()) return;              /* 쓴 내용이 있으면 접지 않는다 */
+      S.etcOpen = !S.etcOpen;
+      S.focus = S.etcOpen ? S.focus : null;
+      renderSentence(); paintFoot();
+      if(S.etcOpen) setTimeout(()=>el('f-etc').focus(),40);
     });
     el('f-etc').addEventListener('input',ev=>{
       S.d.etc=ev.target.value; el('f-etc-c').textContent=ev.target.value.length;
-      el('f-etc-close').hidden = !!ev.target.value.trim();
+      /* 쓴 내용이 생기면 접기 아이콘을 거둔다 — 눌러도 안 되는 컨트롤을 남기지 않는다 */
+      el('f-addetc').classList.toggle('lab', !!ev.target.value.trim());
       paintFEtc(); paintFoot();
-    });
-    /* 다른 칸에 포커스가 있을 때 눌러도 슬롯이 먼저 접혀 버튼이 올라가지 않게 */
-    el('f-etc-close').addEventListener('mousedown',ev=>ev.preventDefault());
-    el('f-etc-close').addEventListener('click',()=>{
-      S.etcOpen=false; S.d.etc=''; S.focus=null; renderSentence(); paintFoot();
     });
     [fl,dg,ln2,el('f-etc')].forEach(i=>i.addEventListener('keydown',ev=>{
       if(ev.key==='Enter' && !el('ph-next').disabled) el('ph-next').click();
