@@ -497,20 +497,25 @@
   .cnav .navb svg path{fill:#ffffff;}
   .dtop .ci b{font-size:24px;font-weight:700;color:#fff;line-height:31px;letter-spacing:-.4px;}
   .dtop .ci span{font-size:15px;color:var(--gray-200);line-height:20px;}
+  /* Figma "자세한 탑승 위치"(10684:12120 · 10663:21535 · 10476:126743 동일):
+     말풍선이 출발지 행 '위' 에 있고 꼬리가 아래를 향해 출발지를 가리킨다.
+     값은 한 흐름으로 흐르며 층·동만 20sp 볼드, 라인과 꼬리는 18sp 레귤러다. */
   .dtalk{display:flex;flex-direction:column;align-items:center;}
+  .dtalk .body{width:100%;background:var(--navy-700);border-radius:4px;padding:10px 16px;
+    display:flex;align-items:baseline;gap:16px;}
   .dtalk .tail{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;
-    border-bottom:9px solid var(--navy-700);}
-  .dtalk .body{width:100%;background:var(--navy-700);border-radius:2px;padding:12px 16px;}
-  .dtalk .brow{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap;}
-  /* 원본 #32a2fa 는 이 배경에서 4.03:1 로 AA 미달이라 한 단계 밝힌 제안값 */
-  .dtalk .blab{flex:0 0 auto;font-size:14px;font-weight:700;color:#5cb6ff;line-height:28px;}
-  .dtalk .bmain{font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-.4px;line-height:28px;
-    word-break:keep-all;}
+    border-top:9px solid var(--navy-700);}
+  /* Figma 원본. 이 배경에서 4.04:1 — 16sp 볼드는 large text 기준(18.66px)에 못 미쳐
+     본문 기준 4.5:1 을 살짝 밑돈다. 디자이너 확인 필요. */
+  .dtalk .blab{flex:0 0 auto;font-size:16px;font-weight:700;color:#32a2fa;line-height:26px;}
+  .dtalk .bflow{flex:1 1 auto;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px;}
+  .dtalk .bflow .v{font-size:20px;line-height:26px;font-weight:700;color:#f9f9f9;word-break:keep-all;}
+  .dtalk .bflow .d{font-size:18px;line-height:26px;font-weight:400;color:#f9f9f9;}
+  .dtalk .bflow .t{font-size:18px;line-height:26px;font-weight:400;color:#c0c2cc;word-break:keep-all;}
+  /* Figma 에는 없는 상태다. 운행 중에 값이 바뀌면 기사가 알아야 하므로 프로토에만 둔다. */
   .dtalk .bchg{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--navy-900);
     background:#eeff00;border-radius:3px;padding:2px 7px;line-height:17px;}
-  .dtalk .bsub{margin-top:3px;font-size:15px;line-height:22px;color:var(--gray-200);word-break:keep-all;}
   .dtalk[hidden]{display:none;}
-  .dtalk .body em{font-style:normal;color:var(--blue-500);}
   /* 순서가 있는 길 안내는 목적지와 분리한다. 운전 중엔 접혀 있고, 멈췄을 때 펼친다.
      3줄로 자른 길 안내는 없느니만 못하다. */
   .droute{position:relative;width:100%;margin-top:8px;border:1px solid var(--navy-600);
@@ -744,22 +749,19 @@
           <div class="rhead" id="rhead" hidden>고객 위치로 이동 중</div>
           <div class="dcard">
             <div class="dtop">
+              <div class="dtalk" id="dtalk" hidden>
+                <div class="body" id="dtalkbody">
+                  <span class="blab">상세</span>
+                  <span class="bflow" id="db-flow"></span>
+                  <span class="bchg" id="db-chg" hidden>변경됨</span>
+                </div>
+                <div class="tail"></div>
+              </div>
               <div class="row">
                 <span class="dbadge">출발지</span>
                 <div class="ci">
                   <div class="cnav"><b>래미안원베일리</b><span class="navb" id="cnav" hidden><svg class="ic" width="20" height="20" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_nav)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_nav"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg></span></div>
                   <span>서울 서초구 반포대로 333</span>
-                </div>
-              </div>
-              <div class="dtalk" id="dtalk" hidden>
-                <div class="tail"></div>
-                <div class="body" id="dtalkbody">
-                  <div class="brow">
-                    <span class="blab">탑승</span>
-                    <span class="bmain" id="db-main"></span>
-                    <span class="bchg" id="db-chg" hidden>변경됨</span>
-                  </div>
-                  <div class="bsub" id="db-sub" hidden></div>
                 </div>
               </div>
               <button type="button" class="droute" id="droute" hidden>
@@ -1480,25 +1482,18 @@
        '위치 미전달' 은 기사가 할 일이 없는 정보고, 전화 버튼은 안 물어봐도 될 전화를
        물어보게 만든다. 값이 없을 때의 올바른 화면은 지금 운영 중인 화면 그대로다. */
     $('#dtalk').hidden = !got;
-    /* 운전 중 읽는 화면이다. 말풍선엔 목적지만 두고, 순서가 있는 길 안내는 분리한다.
-       3줄로 자른 길 안내는 없느니만 못하다. */
+    /* Figma "자세한 탑승 위치" 그대로: 한 흐름으로 흐르되 층·동만 20sp 볼드,
+       라인과 꼬리는 18sp 레귤러이고 꼬리는 한 단계 더 흐리다.
+       꼬리를 남기되 무게로 낮추는 방식이라, 운전 중 스캔에서 값이 먼저 잡힌다. */
     const cur=S.current;
-    /* 승객이 쓴 '앞에서 탈게요'는 요청의 어조지 정보가 아니다. 운전 중 스캔에는
-       값만 필요하고, 기사가 찾는 순서는 동이 먼저다. 구조화로 받았으니
-       화면마다 다르게 조립할 수 있다. 그게 구조화의 배당금이다. */
     if(got){
-      /* 위계는 '기사가 POI 로 알 수 없는 것' 순이다.
-         출발지 POI 에 동은 41%가 이미 들어 있지만(예: 반포래미안원베일리아파트 101동),
-         지하·층 정보는 0.8% 뿐이다. 요청사항의 82.3%가 지하를 말한다.
-         즉 항상 새 정보인 것은 층이고, 동은 절반쯤 바로 윗줄과 겹친다. */
-      /* 층과 동은 한 줄로 합친다. 실측 조립 길이가 중앙 10자, 최대 17자라
-         라인만 빼면 한 줄에 들어간다. 어순은 실제 문장 어순을 따른다.
-         층·동이 함께 나온 899건 중 층이 먼저인 것이 64.4%다(지하2층 101동). */
-      el('db-main').textContent =
-        (cur.lvl==='under' ? '지하 '+cur.floor+'층' : '지상') + ' ' + cur.dong.trim()+'동';
-      const ln = cur.line.trim() ? lineText(cur.line) : '';
-      el('db-sub').textContent = ln;
-      el('db-sub').hidden = !ln;
+      const flow=el('db-flow'); flow.innerHTML='';
+      const add=(cls,tx)=>{ const s=document.createElement('span'); s.className=cls; s.textContent=tx; flow.appendChild(s); };
+      add('v', cur.lvl==='under' ? '지하 '+cur.floor+'층' : '지상');
+      add('d', '·');
+      add('v', cur.dong.trim()+'동');
+      if(cur.line.trim()) add('d', lineText(cur.line));
+      add('t', '앞에서 탈게요');
       el('db-chg').hidden = !(S.edited && S.origin==='voyage');
     }
     const dr=el('droute'), route=(got && cur && cur.etc.trim()) ? cur.etc.trim() : '';
