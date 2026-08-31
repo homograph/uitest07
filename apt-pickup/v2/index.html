@@ -855,6 +855,11 @@
        되돌리기는 <b>틀렸을 때만</b> 비용을 받습니다.</p>
     <p>지우면 <b>이번 호출의 값과 저장해 둔 값이 함께</b> 사라집니다. 둘을 따로 관리하게 하면
        &lsquo;지웠는데 다음에 또 뜬다&rsquo; 가 됩니다. 진입점은 빈 상태(<b>＋ 자세한 픽업 위치를 알려주세요</b>)로 돌아갑니다.</p>
+    <p><b>전송 중에 지우면 전송을 취소합니다.</b> 이 타이머를 안 끄면 2초 뒤
+       &lsquo;기사님에게 전달했어요&rsquo; 토스트가 <b>&lsquo;지웠어요&rsquo; 를 덮어씁니다</b> —
+       지웠는데 전달했다고 뜨고, <b>되돌리기 버튼까지 같이 사라집니다.</b>
+       그리고 그 상태에서 <b>되돌리기는 전송을 이어서</b> 합니다. 안 그러면
+       라이더 필드는 살아나는데 기사 화면은 빈 채로 남습니다.</p>
     <p><b>운행 중에 지우면 기사 화면에서도 사라집니다.</b> 이미 이동 중일 수 있으므로
        토스트로 <b>&lsquo;기사님 화면에서도 사라집니다&rsquo;</b> 라고 알립니다. 조용히 없어지면 안 됩니다.</p>
     <p>펼친 뒤에는 <b>접을 수 있어야 합니다.</b> 처음엔 라벨 오른쪽에 별도 <b>접기</b>를 뒀는데,
@@ -1059,7 +1064,7 @@
   const S={
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
-    sending:false, sent:false, opened:null,
+    sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false}, focus:null,
     step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
@@ -1441,8 +1446,11 @@
     $('#phscr').classList.remove('on');
     if(S.origin==='start'){ S.sending=false; S.sent=true; S.confirmed=false; render(); return; }
     S.confirmed=true; S.sending=true; S.sent=false; render();
-    setTimeout(()=>{
-      S.sending=false; S.sent=true; render();
+    /* 전송 중에 지우거나 다시 제출하면 이전 타이머가 살아 있다가
+       '전달했어요' 토스트로 '지웠어요' 를 덮어쓴다. 반드시 취소해야 한다. */
+    clearTimeout(S.tmr);
+    S.tmr=setTimeout(()=>{
+      S.tmr=null; S.sending=false; S.sent=true; render();
       toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
                      : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
     },2000);
@@ -1556,6 +1564,7 @@
 
   function setMode(m){
     S.mode=m; S.screen='start';
+    clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={};
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
@@ -1581,15 +1590,28 @@
      확인 다이얼로그로 막는 대신 즉시 지우고 되돌릴 수 있게 한다 — 마찰 없이 되돌아간다. */
   el('ph-del').addEventListener('click',()=>{
     const onVoyage = S.opened==='voyage' && S.confirmed;
+    clearTimeout(S.tmr); S.tmr=null;
     const undo = {value:S.value, current:S.current&&Object.assign({},S.current), saved:S.saved&&Object.assign({},S.saved),
-                  confirmed:S.confirmed, always:S.always, fromSaved:S.fromSaved, origin:S.origin, sent:S.sent};
+                  confirmed:S.confirmed, always:S.always, fromSaved:S.fromSaved, origin:S.origin,
+                  sending:S.sending, sent:S.sent, edited:S.edited};
     S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
     S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
     $('#phscr').classList.remove('on');
     render();
     toast(onVoyage ? '상세 위치를 지웠어요. 기사님 화면에서도 사라집니다.'
                    : '상세 위치를 지웠어요. 저장해 둔 값도 함께 지웠습니다.', ()=>{
-      Object.assign(S, undo); render();
+      Object.assign(S, undo);
+      /* 보내던 중에 지웠다면 되돌리기는 '전송을 이어서' 하는 것이다.
+         안 그러면 라이더 필드는 살아나는데 기사 화면은 비어 있는 상태로 남는다. */
+      if(S.sending){
+        clearTimeout(S.tmr);
+        S.tmr=setTimeout(()=>{
+          S.tmr=null; S.sending=false; S.sent=true; render();
+          toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
+                         : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
+        },1200);
+      }
+      render();
     });
   });
   $('#phclose').addEventListener('click',()=>$('#phscr').classList.remove('on'));
