@@ -800,8 +800,8 @@
         <div class="drover" id="drover" hidden>
           <div class="drcard">
             <div class="drinfo">
-              <div class="drtitle"><svg class="tdlogo" width="40" height="10" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M43.2016 3H47.9996V12.5985H57.599V17.4004H47.9996V27H43.2016V3Z" fill="white"/><path d="M9.60059 7.79815H33.6021V3.00004H9.60059V7.79815Z" fill="white"/><path d="M9.60059 26.9999H33.6021V22.1972H9.60059V26.9999Z" fill="white"/><path d="M9.60059 17.4005H33.6021V12.5985H9.60059V17.4005Z" fill="white"/><path d="M86.4255 7.79815H62.424V3.00004H86.4255V7.79815Z" fill="white"/><path d="M110.401 12.5985H100.825V3.00004H96.0234V26.9999H100.825V17.4005H110.401V12.5985Z" fill="white"/><path d="M86.4255 26.9999H62.424V22.1972H86.4255V26.9999Z" fill="white"/></svg><span>픽업 상세 변경됨</span></div>
-              <p class="drbody">고객이 상세 위치를 변경했습니다.</p>
+              <div class="drtitle"><svg class="tdlogo" width="40" height="10" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M43.2016 3H47.9996V12.5985H57.599V17.4004H47.9996V27H43.2016V3Z" fill="white"/><path d="M9.60059 7.79815H33.6021V3.00004H9.60059V7.79815Z" fill="white"/><path d="M9.60059 26.9999H33.6021V22.1972H9.60059V26.9999Z" fill="white"/><path d="M9.60059 17.4005H33.6021V12.5985H9.60059V17.4005Z" fill="white"/><path d="M86.4255 7.79815H62.424V3.00004H86.4255V7.79815Z" fill="white"/><path d="M110.401 12.5985H100.825V3.00004H96.0234V26.9999H100.825V17.4005H110.401V12.5985Z" fill="white"/><path d="M86.4255 26.9999H62.424V22.1972H86.4255V26.9999Z" fill="white"/></svg><span id="drover-t">픽업 상세 변경됨</span></div>
+              <p class="drbody" id="drover-b">고객이 상세 위치를 변경했습니다.</p>
             </div>
             <button type="button" class="drbtn" id="drover-ok">확인하기</button>
           </div>
@@ -1080,9 +1080,17 @@
        띄우는 시점은 <b>전송이 끝난 뒤</b>입니다 — 보내는 2초 동안 띄우면 아직 안 간 걸 갔다고 말하는 셈입니다.
        기존에 배지 옆에 달려 있던 노란 <code>변경됨</code> 칩은 뗐습니다. Figma 의
        <code>자세한 탑승 위치</code> 컴포넌트에 그런 칩이 없고, 이제 그 신호는 오버레이가 맡습니다.</p>
-    <p><span class="mk warn"></span><b>남는 질문</b> — 운행 중에 <b>처음</b> 입력한 경우엔 오버레이가 없습니다.
-       Figma 문구가 &lsquo;변경했습니다&rsquo; 하나뿐이라 그대로 뒀는데, 기사 입장에선 처음 받는 것도
-       똑같이 모르고 지나칠 수 있습니다. 첫 입력용 문구가 필요할지 확인이 필요합니다.</p>
+    <p><b>첫 입력에도 띄우되 문구를 가릅니다.</b> 기사에겐 처음 받는 것도 똑같이 모르고 지나칠 수 있는
+       정보이지만, <b>할 일이 다릅니다</b> — 변경은 이미 세운 계획을 고치라는 뜻이고, 첫 입력은
+       없던 정보가 생겼다는 뜻입니다. 그래서 본문뿐 아니라 <b>타이틀도</b> 나눕니다. 파란 타이틀이
+       먼저 읽히는 자리라 거기서 갈려야 한 번에 압니다.</p>
+    <table><tbody>
+      <tr><td><b>운행 중 첫 입력</b></td><td><b>픽업 상세 추가됨</b> · 고객이 상세 위치를 알려줬습니다.</td></tr>
+      <tr><td><b>운행 중 변경</b></td><td><b>픽업 상세 변경됨</b> · 고객이 상세 위치를 변경했습니다. (Figma 원본)</td></tr>
+      <tr><td><b>출발지에서 넣고 배차</b></td><td>오버레이 없음 — 배차 시 콜 정보에 이미 붙어 오므로 &lsquo;알림&rsquo; 이 아닙니다.</td></tr>
+    </tbody></table>
+    <p><span class="mk warn"></span><b>Figma 쪽 할 일</b> — <code>drawover_ride_chat</code> 은 지금 변경 문구
+       한 벌뿐입니다. <b>추가됨</b> 벌을 변형으로 하나 더 만들어 주셔야 핸드오프가 맞습니다.</p>
     <p><b>재편집은 취소 + 비활성 저장</b>입니다(Figma <code>상태=재편집</code>). 고치러 들어온 직후엔
        바꾼 게 없으니 저장할 것도 없고, 나가는 길은 취소가 맡습니다. 가르는 기준은 값의 유무가 아니라
        <b>그 값이 이미 상대에게 가 있느냐</b>입니다 — 출발지는 저장됨, 운행은 전달됨.
@@ -1188,7 +1196,8 @@
 
   const S={
     mode:'new', screen:'start',
-    value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false, drover:false,
+    value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
+    drover:false, droverEdit:false,
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false}, focus:null,
@@ -1580,9 +1589,12 @@
     clearTimeout(S.tmr);
     S.tmr=setTimeout(()=>{
       S.tmr=null; S.sending=false; S.sent=true;
-      /* 바뀐 값이 실제로 기사에게 닿은 순간에만 오버레이를 띄운다.
-         보내는 중(2초)에 띄우면 아직 안 간 걸 갔다고 말하는 셈이다. */
-      if(S.edited) S.drover=true;
+      /* 값이 실제로 기사에게 닿은 순간에 띄운다.
+         보내는 중(2초)에 띄우면 아직 안 간 걸 갔다고 말하는 셈이다.
+         첫 입력도 기사에겐 똑같이 '모르고 지나칠 수 있는' 정보라 함께 띄우되,
+         할 일이 다르므로 문구를 가른다 — 변경은 세운 계획을 고치는 것이고,
+         첫 입력은 없던 정보가 생긴 것이다. */
+      S.drover=true; S.droverEdit=S.edited;
       render();
       toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
                      : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
@@ -1651,6 +1663,9 @@
     $('#dtalk').hidden = !got;
     /* 값이 사라졌거나 아직 안 닿았으면 확인할 것도 없다. */
     el('drover').hidden = !(S.drover && got);
+    el('drover-t').textContent = S.droverEdit ? '픽업 상세 변경됨' : '픽업 상세 추가됨';
+    el('drover-b').textContent = S.droverEdit ? '고객이 상세 위치를 변경했습니다.'
+                                              : '고객이 상세 위치를 알려줬습니다.';
     /* Figma "자세한 탑승 위치" 그대로: 한 흐름으로 흐르되 층·동만 20sp 볼드,
        라인과 꼬리는 18sp 레귤러이고 꼬리는 한 단계 더 흐리다.
        꼬리를 남기되 무게로 낮추는 방식이라, 운전 중 스캔에서 값이 먼저 잡힌다. */
@@ -1774,7 +1789,7 @@
         clearTimeout(S.tmr);
         S.tmr=setTimeout(()=>{
           S.tmr=null; S.sending=false; S.sent=true;
-          if(S.edited) S.drover=true;
+          S.drover=true; S.droverEdit=S.edited;
           render();
           toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
                          : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
