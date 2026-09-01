@@ -184,8 +184,6 @@
 
   /* 토스식: 답한 것은 위로 쌓이고, 지금 묻는 것만 아래에서 크게 */
   .ph-body{display:flex;flex-direction:column;}
-  .phhint{margin:0 0 auto;width:100%;font-size:13px;line-height:20px;color:var(--gray-500);word-break:keep-all;}
-  .phhint b{color:var(--gray-700);font-weight:600;}
 
   .answers{width:100%;display:flex;flex-direction:column;gap:8px;margin-top:auto;margin-bottom:18px;}
   /* 완료된 항목도 같은 입력 필드다. 토스처럼 별도 수정 버튼을 두지 않고
@@ -284,8 +282,6 @@
   .curval[hidden]{display:none;}
   .curval b{display:block;font-size:11.5px;font-weight:600;color:var(--gray-500);margin-bottom:5px;}
   .curval p{margin:0;font-size:14px;line-height:21px;color:#000;word-break:keep-all;}
-  .phhint{margin:0;width:100%;font-size:13px;line-height:20px;color:var(--gray-700);
-    word-break:keep-all;}
   .ph-body .qbox .q{display:block;margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-30);
     font-size:13.5px;line-height:21px;color:var(--gray-900);font-weight:600;}
   .ctaw{padding:10px;}
@@ -368,14 +364,11 @@
      필수(위치·층·동)는 처음부터 전부 보이고, 선택 입력만 필수를 채운 뒤 나타난다.
      층·동은 라벨을 따로 두지 않는다. 문장 안의 '층' '동' 글자가 곧 라벨이다. */
   .ph-body.sform{justify-content:flex-start;gap:0;}
-  .ph-body.sform .phhint{margin:0 0 20px;}
   .fform{width:100%;}
-  /* 제목은 하나면 된다. 내비의 '상세 위치 입력' 이 이미 같은 말을 한다.
-     안내문은 그 제목의 부제 자리로 올려 붙인다. */
-  /* 안내문 위아래를 같은 값으로. 구분선이 이미 위를 끊어 주므로 이 줄은 제목의 부제가 아니라
-     폼 전체의 캡션이다. 13px/20 의 half-leading 이 위아래 대칭이라 raw 값을 같게 두면 광학도 같다. */
-  .ph-body.sform{padding-top:20px;}
-  .ph-body.sform .phhint{margin:0 0 20px;}
+  /* 안내문('배차되면 기사님께 함께 전달됩니다.')은 Figma 가 12개 변형에서 전부 뺐다.
+     내비 제목 '상세 위치 입력' 이 이미 같은 말을 하고, 전달 시점은 저장 버튼 문구가 말한다.
+     빠진 자리는 body pad-top 6 + sp 20 = 26 으로 실측해 맞췄다. */
+  .ph-body.sform{padding-top:26px;}
   .fform .seg{margin-bottom:24px;}
   /* 위치는 값이 아니라 선택지다. 같은 채움·높이·라운드로 가족 안에 두되
      ⌄ 표식으로 '고르는 자리' 임을 표시한다. */
@@ -512,6 +505,23 @@
   .dfwd i{width:10px;height:10px;border-radius:5px;background:var(--yellow);
     box-shadow:0 0 7px rgba(238,255,0,.5);display:block;}
   .dfwd span{font-size:16px;font-weight:700;color:var(--yellow);padding:0 8px 0 6px;}
+  /* Figma 11161:72775 "drawover_ride_chat" — 기사가 내비를 보고 있어도 위에 뜨는
+     안드로이드 오버레이 알림. 값이 바뀐 걸 기사 화면 안에서만 알리면
+     그 화면을 안 보고 있는 동안은 아무 신호도 아니다. 그래서 화면 위로 올라온다. */
+  .drover{position:absolute;top:64px;left:0;right:0;z-index:40;
+    padding:18px 10px 25px;display:flex;justify-content:center;}
+  .drover[hidden]{display:none;}
+  .drcard{width:100%;box-sizing:border-box;background:var(--navy-800);
+    border:2px solid var(--blue-500);border-radius:15px;padding:15px;
+    display:flex;flex-direction:column;gap:10px;
+    box-shadow:0 4px 18px 3px rgba(0,0,0,.12),0 10px 14px 1px rgba(0,0,0,.14),0 6px 6px -3px rgba(0,0,0,.2);}
+  .drinfo{display:flex;flex-direction:column;gap:10px;padding:5px;}
+  .drtitle{display:flex;align-items:center;gap:10px;}
+  .drtitle .tdlogo{display:block;flex:0 0 auto;}
+  .drtitle span{font-size:16px;line-height:24px;font-weight:700;color:var(--blue-500);}
+  .drbody{margin:0;font-size:24px;line-height:36px;font-weight:700;color:#fff;word-break:keep-all;}
+  .drbtn{width:100%;border:none;border-radius:8px;background:var(--blue-500);color:#fff;
+    padding:15px;font:inherit;font-size:20px;line-height:30px;font-weight:700;cursor:pointer;}
   .dbubs{position:absolute;top:76px;left:0;right:0;display:flex;justify-content:center;gap:8px;z-index:12;}
   .dbub{border:2px solid #fff;border-radius:15px;padding:7px 10px;font-size:19px;font-weight:700;
     color:#fff;display:flex;align-items:center;gap:6px;position:relative;line-height:23px;}
@@ -562,9 +572,6 @@
   .dtalk .bflow .v{font-size:20px;line-height:26px;font-weight:700;color:#f9f9f9;word-break:keep-all;}
   .dtalk .bflow .d{font-size:18px;line-height:26px;font-weight:400;color:#f9f9f9;}
   .dtalk .bflow .t{font-size:18px;line-height:26px;font-weight:400;color:#c0c2cc;word-break:keep-all;}
-  /* Figma 에는 없는 상태다. 운행 중에 값이 바뀌면 기사가 알아야 하므로 프로토에만 둔다. */
-  .dtalk .bchg{flex:0 0 auto;font-size:12px;font-weight:700;color:var(--navy-900);
-    background:#eeff00;border-radius:3px;padding:2px 7px;line-height:17px;}
   .dtalk[hidden]{display:none;}
   /* 순서가 있는 길 안내는 목적지와 분리한다. 운전 중엔 접혀 있고, 멈췄을 때 펼친다.
      3줄로 자른 길 안내는 없느니만 못하다. */
@@ -723,7 +730,6 @@
           <span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
         <div class="ph-bar"><button id="phclose"><svg class="ic" width="15.0" height="15" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M22.4999 26.7669L4.26702 44.9997L0 40.7327L18.2328 22.4999L1.79841e-07 4.26702L4.26702 1.25889e-06L22.4999 18.2328L40.7327 0L44.9997 4.26702L26.7669 22.4999L44.9997 40.7327L40.7327 44.9997L22.4999 26.7669Z" fill="black"/></svg></button><b id="ph-title">상세 위치 입력</b><span class="sp"></span><button type="button" class="phdel" id="ph-del" hidden>지우기</button></div>
         <div class="ph-body">
-          <p class="phhint" id="ph-hint"></p>
           <div class="answers" id="answers"></div>
           <div class="ask" id="ask">
             <p class="asklab" id="ask-lab"></p>
@@ -791,6 +797,15 @@
           <div class="dcarpin" style="left:196px;top:210px;"><svg class="ic" width="44" height="44" viewBox="0 0 108 108" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10684_12140_cp)"><circle cx="54" cy="54" r="53.5" fill="#384F85" stroke="#31487D"/><path d="M70.9395 30C71.8241 30.0003 72.5861 30.562 72.7588 31.3418L78.6094 45.7734H82.4971C83.3253 45.7734 83.9968 46.4453 83.9971 47.2734V49.2598C83.9963 50.0876 83.3251 50.7598 82.4971 50.7598H80.6074C80.6209 50.8415 80.6338 50.9234 80.6338 51.0059V64.0605C80.6554 64.1618 80.6689 64.2664 80.6689 64.374V73.1426C80.6686 73.9706 79.997 74.6424 79.1689 74.6426H71.6953C70.8674 74.6422 70.1956 73.9705 70.1953 73.1426V68.7627H37.8105V73.1426C37.8102 73.9707 37.1388 74.6426 36.3105 74.6426H28.8369C28.0093 74.6418 27.3372 73.9703 27.3369 73.1426V67.3945C27.3158 67.301 27.2996 67.2057 27.2988 67.1074V51.0176C27.2983 50.931 27.3141 50.8455 27.3281 50.7598H25.5C24.672 50.7598 24.0007 50.0876 24 49.2598V47.2734C24.0003 46.4453 24.6718 45.7734 25.5 45.7734H29.3203L35.1709 31.3271C35.3506 30.5547 36.1092 30.0002 36.9873 30H70.9395ZM34.749 53.7979C33.9208 53.798 33.249 54.4695 33.249 55.2979V57.2959C33.249 58.1242 33.9208 58.7957 34.749 58.7959H42.416C43.244 58.7953 43.916 58.124 43.916 57.2959V55.2979C43.916 54.4698 43.244 53.7984 42.416 53.7979H34.749ZM65.4521 53.7979C64.6241 53.7983 63.9521 54.4697 63.9521 55.2979V57.2959C63.9521 58.1241 64.6241 58.7955 65.4521 58.7959H73.1191C73.9476 58.7959 74.6191 58.1243 74.6191 57.2959V55.2979C74.6191 54.4694 73.9476 53.7979 73.1191 53.7979H65.4521ZM38.9385 34.4209C38.6938 34.4216 38.4728 34.5716 38.3818 34.7988L33.5596 46.8428C33.4029 47.2361 33.6929 47.6649 34.1162 47.666H73.7197C74.1429 47.6652 74.4326 47.2392 74.2764 46.8457L69.4805 34.7988C69.3895 34.5707 69.1665 34.4209 68.9209 34.4209H38.9385Z" fill="white"/></g><defs><clipPath id="clip0_10684_12140_cp"><rect width="36" height="36" fill="white" transform="scale(3)"/></clipPath></defs></svg></div>
           <div class="dpin" style="left:206px;top:96px;"><svg class="ic" width="52" height="52" viewBox="0 0 132 156" fill="none" xmlns="http://www.w3.org/2000/svg"><ellipse cx="66" cy="138" rx="48" ry="18" fill="url(#paint0_radial_10684_12159)" fill-opacity="0.3"/><ellipse cx="66" cy="139.5" rx="15" ry="7.5" fill="url(#paint1_radial_10684_12159)" fill-opacity="0.8"/><path d="M12 1.5H120C125.799 1.5 130.5 6.20101 130.5 12V81C130.5 86.799 125.799 91.5 120 91.5H69V135C69 136.657 67.6569 138 66 138C64.3431 138 63 136.657 63 135V91.5H12C6.20101 91.5 1.5 86.799 1.5 81V12C1.5 6.20101 6.20101 1.5 12 1.5Z" fill="#0074D7" stroke="#0063C5"/><g filter="url(#filter0_d_10684_12159)"><path d="M25.5389 38.9281C29.9869 38.7361 33.3469 38.1761 35.6189 37.2481C37.8909 36.2881 39.3309 35.1841 39.9389 33.9361H27.7469V29.3761H40.6589V25.8721H46.9949V29.3761H60.0029V33.9361H47.7149C48.0349 34.5761 48.5469 35.1841 49.2509 35.7601C49.9549 36.3041 50.8989 36.8001 52.0829 37.2481C53.2669 37.6641 54.6909 38.0321 56.3549 38.3521C58.0189 38.6401 59.9549 38.8321 62.1629 38.9281L60.3869 43.5841C56.2589 43.3601 52.8189 42.7681 50.0669 41.8081C47.3149 40.8161 45.2349 39.5041 43.8269 37.8721C42.4509 39.5041 40.3869 40.8161 37.6349 41.8081C34.8829 42.7681 31.4269 43.3601 27.2669 43.5841L25.5389 38.9281ZM47.0429 49.3441V51.9841H58.9949V62.9281H34.8029V65.2321H60.1469V69.7921H28.5149V58.6561H52.7549V56.5441H28.4669V51.9841H40.7069V49.3441H24.0029V44.6881H63.7949V49.3441H47.0429Z" fill="white"/><path d="M84.2872 37.8721H75.5992V42.2881H84.2872V37.8721ZM90.5272 47.2321H69.3592V27.8401H75.5992V33.1201H84.2872V27.8401H90.5272V47.2321ZM80.0152 64.8961H104.111V69.7921H73.7272V57.6001H96.6232V54.9121H73.6792V50.1121H102.863V62.1121H80.0152V64.8961ZM108.671 34.4641V39.6001H102.863V48.3841H96.5272V25.9201H102.863V34.4641H108.671Z" fill="white"/></g><defs><filter id="filter0_d_10684_12159" x="15.0029" y="16.8721" width="102.668" height="61.9197" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB"><feFlood flood-opacity="0" result="BackgroundImageFix"/><feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/><feOffset/><feGaussianBlur stdDeviation="1.5"/><feColorMatrix type="matrix" values="0 0 0 0 0.156863 0 0 0 0 0.219608 0 0 0 0 0.45098 0 0 0 0.8 0"/><feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_10684_12159"/><feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_10684_12159" result="shape"/></filter><radialGradient id="paint0_radial_10684_12159" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(102 378) rotate(90) scale(18 48)"><stop/><stop offset="1" stop-opacity="0"/></radialGradient><radialGradient id="paint1_radial_10684_12159" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(168 403.5) rotate(90) scale(7.5 15)"><stop/><stop offset="1" stop-opacity="0"/></radialGradient></defs></svg></div>
         </div>
+        <div class="drover" id="drover" hidden>
+          <div class="drcard">
+            <div class="drinfo">
+              <div class="drtitle"><svg class="tdlogo" width="40" height="10" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M43.2016 3H47.9996V12.5985H57.599V17.4004H47.9996V27H43.2016V3Z" fill="white"/><path d="M9.60059 7.79815H33.6021V3.00004H9.60059V7.79815Z" fill="white"/><path d="M9.60059 26.9999H33.6021V22.1972H9.60059V26.9999Z" fill="white"/><path d="M9.60059 17.4005H33.6021V12.5985H9.60059V17.4005Z" fill="white"/><path d="M86.4255 7.79815H62.424V3.00004H86.4255V7.79815Z" fill="white"/><path d="M110.401 12.5985H100.825V3.00004H96.0234V26.9999H100.825V17.4005H110.401V12.5985Z" fill="white"/><path d="M86.4255 26.9999H62.424V22.1972H86.4255V26.9999Z" fill="white"/></svg><span>픽업 상세 변경됨</span></div>
+              <p class="drbody">고객이 상세 위치를 변경했습니다.</p>
+            </div>
+            <button type="button" class="drbtn" id="drover-ok">확인하기</button>
+          </div>
+        </div>
         <div class="dbubs">
           <div class="dbub rsv">예약<span class="cnt">3</span></div>
           <div class="dbub rt">경로<br>검색</div>
@@ -807,7 +822,6 @@
                 <div class="body" id="dtalkbody">
                   <span class="blab">상세</span>
                   <span class="bflow" id="db-flow"></span>
-                  <span class="bchg" id="db-chg" hidden>변경됨</span>
                 </div>
                 <div class="tail"></div>
               </div>
@@ -958,8 +972,10 @@
     <h3><i>2</i>상단 구성 가 · 나</h3>
     <p>둘 다 <b>제목을 하나로</b> 만듭니다. 내비의 &lsquo;상세 위치 입력&rsquo; 과 본문의 &lsquo;어디서 타세요?&rsquo; 가
        같은 말을 두 번 했고, 아래쪽이 더 커서(15/700 대 17/700) 어디가 진입점인지 화면이 답을 못 했습니다.
-       질문을 지우고 안내문을 제목 바로 아래 부제 자리로 올렸습니다. 타입 사다리가
-       <b>15 → 13 → 22</b> 로 단조롭게 떨어집니다.</p>
+       질문을 지웠습니다. <b>안내문(&lsquo;배차되면 기사님께 함께 전달됩니다.&rsquo;)도 이제 없습니다</b> —
+       Figma 가 12개 변형 전부에서 뺐고, 눈으로는 안 보이는 변경이라 감사 diff 로 잡았습니다.
+       내비 제목이 이미 무엇을 하는 화면인지 말하고, 전달 시점은 저장 버튼 문구가 말합니다.
+       빠진 자리는 <code>body pad-top 6 + sp 20 = 26</code> 실측대로 맞췄습니다.</p>
     <p><b>가 · 위치를 문장 안에</b>는 세그먼트를 없애고 지하/지상을 문장 첫 슬롯의 칩으로 옮깁니다.
        화면에 남는 것이 문장 하나라, <b>입력하는 것이 곧 기사님이 받을 문장</b>이라는 주장이 끝까지 유지됩니다.
        칩은 값이 아니라 선택지라서 같은 채움·높이·라운드를 쓰되 <b>⌄</b> 표식을 답니다.</p>
@@ -1056,6 +1072,17 @@
        경로가 사라지며 말풍선이 <code>4:59 이내 탑승</code> 으로 바뀝니다.
        라이더 앱 머리에 붙은 <b>[이동 중 · 차량 도착]</b> 으로 전환해 볼 수 있고,
        드라이버 앱 쪽 스위치와 <b>같은 시점을 가리킵니다</b>(둘 중 아무거나 눌러도 함께 움직입니다).</p>
+    <p><b>고객이 운행 중에 값을 바꾸면 기사 화면 위로 오버레이가 뜹니다</b>
+       (Figma <code>11161:72775</code> · <code>drawover_ride_chat</code>). 안드로이드 drawover 라
+       기사가 내비를 보고 있어도 그 위로 올라옵니다 — 바뀐 걸 타다 앱 안에서만 알리면
+       그 화면을 안 보는 동안은 <b>아무 신호도 아니기</b> 때문입니다.
+       <code>픽업 상세 변경됨 / 고객이 상세 위치를 변경했습니다. / [확인하기]</code>.
+       띄우는 시점은 <b>전송이 끝난 뒤</b>입니다 — 보내는 2초 동안 띄우면 아직 안 간 걸 갔다고 말하는 셈입니다.
+       기존에 배지 옆에 달려 있던 노란 <code>변경됨</code> 칩은 뗐습니다. Figma 의
+       <code>자세한 탑승 위치</code> 컴포넌트에 그런 칩이 없고, 이제 그 신호는 오버레이가 맡습니다.</p>
+    <p><span class="mk warn"></span><b>남는 질문</b> — 운행 중에 <b>처음</b> 입력한 경우엔 오버레이가 없습니다.
+       Figma 문구가 &lsquo;변경했습니다&rsquo; 하나뿐이라 그대로 뒀는데, 기사 입장에선 처음 받는 것도
+       똑같이 모르고 지나칠 수 있습니다. 첫 입력용 문구가 필요할지 확인이 필요합니다.</p>
     <p><b>재편집은 취소 + 비활성 저장</b>입니다(Figma <code>상태=재편집</code>). 고치러 들어온 직후엔
        바꾼 게 없으니 저장할 것도 없고, 나가는 길은 취소가 맡습니다. 가르는 기준은 값의 유무가 아니라
        <b>그 값이 이미 상대에게 가 있느냐</b>입니다 — 출발지는 저장됨, 운행은 전달됨.
@@ -1161,7 +1188,7 @@
 
   const S={
     mode:'new', screen:'start',
-    value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
+    value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false, drover:false,
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false}, focus:null,
@@ -1526,9 +1553,6 @@
     S.opened=where; S.skipped={}; S.etcOpen=false;
     S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false};
     el('ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
-    el('ph-hint').innerHTML = (where==='start')
-      ? '배차되면 기사님께 함께 전달됩니다.'
-      : '<b>지금 이동 중인 기사님에게</b> 바로 전달됩니다.';
     /* 값이 이미 있으면 전부 답한 상태로 열어 요약만 보여준다 */
     if(S.current){ Object.keys(ASK).forEach(k=>{ if(ASK[k].skip && !S.d[k].trim()) S.skipped[k]=true; }); }
     advance();
@@ -1555,7 +1579,11 @@
        '전달했어요' 토스트로 '지웠어요' 를 덮어쓴다. 반드시 취소해야 한다. */
     clearTimeout(S.tmr);
     S.tmr=setTimeout(()=>{
-      S.tmr=null; S.sending=false; S.sent=true; render();
+      S.tmr=null; S.sending=false; S.sent=true;
+      /* 바뀐 값이 실제로 기사에게 닿은 순간에만 오버레이를 띄운다.
+         보내는 중(2초)에 띄우면 아직 안 간 걸 갔다고 말하는 셈이다. */
+      if(S.edited) S.drover=true;
+      render();
       toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
                      : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
     },2000);
@@ -1621,6 +1649,8 @@
        '위치 미전달' 은 기사가 할 일이 없는 정보고, 전화 버튼은 안 물어봐도 될 전화를
        물어보게 만든다. 값이 없을 때의 올바른 화면은 지금 운영 중인 화면 그대로다. */
     $('#dtalk').hidden = !got;
+    /* 값이 사라졌거나 아직 안 닿았으면 확인할 것도 없다. */
+    el('drover').hidden = !(S.drover && got);
     /* Figma "자세한 탑승 위치" 그대로: 한 흐름으로 흐르되 층·동만 20sp 볼드,
        라인과 꼬리는 18sp 레귤러이고 꼬리는 한 단계 더 흐리다.
        꼬리를 남기되 무게로 낮추는 방식이라, 운전 중 스캔에서 값이 먼저 잡힌다. */
@@ -1633,7 +1663,6 @@
       add('v', cur.dong.trim()+'동');
       if(cur.line.trim()) add('d', lineText(cur.line));
       add('t', '앞에서 탈게요');
-      el('db-chg').hidden = !(S.edited && S.origin==='voyage');
     }
     const dr=el('droute'), route=(got && cur && cur.etc.trim()) ? cur.etc.trim() : '';
     dr.hidden = !route;
@@ -1709,6 +1738,7 @@
     render();
   }
 
+  el('drover-ok').addEventListener('click',()=>{ S.drover=false; render(); });
   $$('.dswb').forEach(b=>b.addEventListener('click',()=>{
     S.dstate=b.dataset.ds;
     /* 열어 둔 채로 차가 도착하면 저장할 곳이 사라진다. 시트를 닫는다. */
@@ -1732,6 +1762,7 @@
                   sending:S.sending, sent:S.sent, edited:S.edited};
     S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
     S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
+    S.drover=false;
     $('#phscr').classList.remove('on');
     render();
     toast(onVoyage ? '상세 위치를 지웠어요. 기사님 화면에서도 사라집니다.'
@@ -1742,7 +1773,9 @@
       if(S.sending){
         clearTimeout(S.tmr);
         S.tmr=setTimeout(()=>{
-          S.tmr=null; S.sending=false; S.sent=true; render();
+          S.tmr=null; S.sending=false; S.sent=true;
+          if(S.edited) S.drover=true;
+          render();
           toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
                          : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
         },1200);
