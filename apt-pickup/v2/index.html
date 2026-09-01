@@ -172,6 +172,7 @@
   @keyframes spin{to{transform:rotate(360deg);}}
   @media (prefers-reduced-motion:reduce){ .spin::after{animation-duration:2.4s;} }
   .pkbox[hidden]{display:none;}
+  .pkbox.locked{cursor:default;}
   .ic{display:block;flex:0 0 auto;}
     .was{flex:0 0 auto;font-size:11px;line-height:16px;font-weight:600;color:var(--blue-600);
     background:#fff;border:1px solid var(--blue-100);border-radius:4px;padding:1px 5px;}
@@ -287,7 +288,15 @@
   button:focus-visible,.pkbox:focus-visible{outline:2px solid var(--blue-600);outline-offset:2px;}
   .cta{width:100%;border:none;border-radius:4px;background:var(--navy-800);color:#fff;
     padding:14px 18px;font:inherit;font-size:16px;line-height:24px;font-weight:700;cursor:pointer;letter-spacing:-.2px;}
-  .cta:disabled{background:var(--gray-80);color:var(--gray-500);cursor:default;}
+  /* Figma 11161:73048 "상태=재편집" 은 손으로 그렸던 CTA 프레임을 실제 DS 인스턴스로 교체했다.
+     Neutral Solid Button / Large 의 비활성은 gray-300 배경 · gray-200 글자다.
+     (대비 1.47:1 — 낮지만 WCAG 1.4.3 은 비활성 컨트롤을 제외하므로 DS 값을 그대로 따른다.) */
+  .cta:disabled{background:var(--gray-300);color:var(--gray-200);cursor:default;}
+  /* 취소 = Neutral Weak Solid Button / Large · 120×52 고정폭 */
+  .cancelb{flex:0 0 120px;border:none;border-radius:4px;background:var(--gray-e6);
+    color:var(--navy-700);padding:14px 18px;font:inherit;font-size:16px;line-height:24px;
+    font-weight:700;letter-spacing:-.2px;cursor:pointer;}
+  .cancelb[hidden]{display:none;}
 
   /* ══════ 라이더 : 매칭 후 운행 ══════ */
   .topbtns{position:absolute;top:34px;left:0;right:0;display:flex;justify-content:space-between;
@@ -745,6 +754,7 @@
             <span>이 주소에서 항상 이렇게 보내기</span></label>
           <div class="footrow">
             <button class="skipb" id="ph-skip" hidden>건너뛰기</button>
+            <button type="button" class="cancelb" id="ph-cancel" hidden>취소</button>
             <button class="cta" id="ph-next" disabled>다음</button>
           </div>
         </div>
@@ -1019,6 +1029,14 @@
        차가 도착하면 상세 위치는 이미 제 역할을 끝냈고, 그때까지 파랑을 붙들면
        <b>끝난 일이 계속 말을 겁니다.</b> 전송 중에 값까지 흐려지는 것도 같은 원리로,
        &lsquo;아직 확정 아님&rsquo; 을 스피너 하나가 아니라 <b>글자 무게로도</b> 말합니다.</p>
+    <p><b>도착하면 카드가 잠깁니다.</b> 기사가 이미 그 자리에 서 있으니 지금 위치를 바꿔도
+       받는 쪽이 없습니다. Figma 의 <code>차량 도착</code> 화면 <b>3개가 전부 값 있는 회색 카드</b> 하나뿐이고
+       <code>＋</code> 빈 상태가 한 번도 안 나오는 것도 같은 이유로 읽힙니다. 그래서
+       <b>값이 없는 채로 도착하면 카드를 아예 내립니다</b> — 눌러도 안 되는 질문을 남겨두는 것보다 낫습니다.</p>
+    <p><b>재편집은 취소 + 비활성 저장</b>입니다(Figma <code>상태=재편집</code>). 고치러 들어온 직후엔
+       바꾼 게 없으니 저장할 것도 없고, 나가는 길은 취소가 맡습니다. 가르는 기준은 값의 유무가 아니라
+       <b>그 값이 이미 상대에게 가 있느냐</b>입니다 — 출발지는 저장됨, 운행은 전달됨.
+       둘 다 아닌 <code>운행 중 진입</code> 은 값이 차 있어도 <b>[이대로 보내기] 가 활성</b>이고 취소가 없습니다.</p>
     <p><b>남는 지적 하나</b> — 출발지 화면에서는 빈/찬 구분이 <b>배지 색 하나</b>에 걸립니다
        (<code>#99a5c0</code> 2.47:1 ↔ <code>#32a2fa</code> 2.73:1, 차이 <b>0.26</b>). 배경도 테두리도 같습니다.
        운행 화면은 빈 상태가 안 나오므로 해당 없습니다. 출발지만 <b>찬 상태 배경을 <code>#f1f9fe</code></b> 로
@@ -1450,13 +1468,19 @@
     el('prev2').classList.toggle('ready', ok);
     el('prev2-tx').textContent = ok ? sentence(S.d) : '고르면 기사님께 갈 문장이 여기 만들어져요';
     el('savewrap').hidden = sf ? !ok : !done;
+    /* Figma 실측: "재편집"·"지상 재편집" 은 취소 + 비활성 저장인데,
+       "운행 중 진입" 은 필드가 똑같이 차 있는데도 [이대로 보내기] 가 활성이고 취소가 없다.
+       가르는 건 값의 유무가 아니라 '그 값이 이미 상대에게 가 있느냐' 다.
+       출발지 = 저장돼 있음, 운행 = 전달했음. 둘 다 아니면 아직 할 일이 남은 것이다. */
+    const reedit = S.opened==='start' ? !!S.value : !!(S.value && S.confirmed);
+    el('ph-cancel').hidden = !reedit;
     /* 이미 확정된 값을 고치러 들어온 경우에만 '지우기' 를 준다 */
     el('ph-del').hidden = !S.value;
     el('chk-save').checked = S.always;
     if(sf){
       el('ph-skip').hidden = true;
       const n=el('ph-next');
-      n.disabled = !ok;
+      n.disabled = !ok || (reedit && !dirty());
       n.textContent = S.opened==='start' ? '이 위치로 저장' : '이대로 보내기';
       return;
     }
@@ -1464,7 +1488,7 @@
     const skip=el('ph-skip'), next=el('ph-next');
     skip.hidden = done || !ASK[S.step].skip;
     if(done){
-      next.disabled=false;
+      next.disabled = reedit && !dirty();
       next.textContent = S.opened==='start' ? '이 위치로 저장' : '이대로 보내기';
     } else if(S.step==='lvl' || S.step==='floor'){
       next.disabled=true; next.textContent='다음';
@@ -1520,6 +1544,14 @@
      Figma 실측(출발지): 값 22자가 여백 4dp 로 겨우 들어가고,
      라인이 '2-5호' 형태면 28자 ≈ 302dp 로 한계 241dp 를 넘겨 잘렸다.
      꼬리를 떼면 라인이 있어도 여유가 남는다. */
+  /* 재편집 진입값과 지금 값을 같은 규칙으로 납작하게 만들어 비교한다.
+     지하가 아니면 층은 비교에서 뺀다 — 지상으로 바꾸면 층 칸이 접히기 때문이다. */
+  const flat = d => !d ? '' : [
+    d.lvl, d.lvl==='under' ? (d.floor==null?'':String(d.floor)) : '',
+    (d.dong||'').trim(), d.noLine ? '\u0000' : (d.line||'').trim(), (d.etc||'').trim()
+  ].join('|');
+  const dirty = () => flat(S.d) !== flat(S.current);
+
   function paintField(txId,wasId){
     const has=!!S.value;
     el(txId).textContent = has ? (S.current ? core(S.current) : S.value) : PH;
@@ -1541,8 +1573,17 @@
     const sr=el('pk-voy-sr');
     el('pk-voy').classList.toggle('sending', !!(has && S.confirmed && S.sending));
     /* 차량이 도착하면 상세 위치는 제 역할을 끝냈다. Figma "차량 도착 후" 는
-       배지를 파랑에서 회색으로 내린다 — 값은 그대로 진하게 남는다. */
-    el('pk-voy').classList.toggle('arrived', !!(has && S.dstate==='arrived' && !S.sending));
+       배지를 파랑에서 회색으로 내린다 — 값은 그대로 진하게 남는다.
+       그리고 도착 뒤에는 더 이상 고칠 수 없다. 기사가 이미 그 자리에 와 있으니
+       지금 위치를 바꾸면 받는 쪽이 없다. Figma 의 세 '차량 도착' 화면이 전부
+       값 있는 회색 카드 하나뿐이고 ＋ 가 한 번도 안 나오는 것도 같은 이유다. */
+    const atCar = S.dstate==='arrived';
+    el('pk-voy').classList.toggle('arrived', !!(has && atCar && !S.sending));
+    el('pk-voy').classList.toggle('locked', atCar);
+    el('pk-voy').disabled = atCar;
+    /* 값도 없이 도착했다면 눌리지도 않는 '＋ 픽업 위치를 알려주세요' 만 남는다.
+       물어볼 시점이 지난 질문은 지우는 게 맞다. */
+    el('pk-voy').hidden = atCar && !has;
     sr.textContent = (has && S.confirmed)
       ? (S.sending ? '기사님에게 보내는 중' : '기사님에게 전달됨') : '';
 
@@ -1639,7 +1680,12 @@
     render();
   }
 
-  $$('.dswb').forEach(b=>b.addEventListener('click',()=>{ S.dstate=b.dataset.ds; render(); }));
+  $$('.dswb').forEach(b=>b.addEventListener('click',()=>{
+    S.dstate=b.dataset.ds;
+    /* 열어 둔 채로 차가 도착하면 저장할 곳이 사라진다. 시트를 닫는다. */
+    if(S.dstate==='arrived' && S.opened==='voyage') $('#phscr').classList.remove('on');
+    render();
+  }));
   el('droute').addEventListener('click',()=>{
     S.routeOpen = !el('droute').classList.contains('open');
     render();
@@ -1676,7 +1722,12 @@
     });
   });
   $('#phclose').addEventListener('click',()=>$('#phscr').classList.remove('on'));
-  $$('[data-open]').forEach(n=>n.addEventListener('click',()=>openForm(n.dataset.open)));
+  /* 값은 '저장' 에서만 커밋된다. 그래서 취소는 그냥 닫으면 편집분이 버려진다. */
+  el('ph-cancel').addEventListener('click',()=>$('#phscr').classList.remove('on'));
+  $$('[data-open]').forEach(n=>n.addEventListener('click',()=>{
+    if(n.dataset.open==='voyage' && S.dstate==='arrived') return;
+    openForm(n.dataset.open);
+  }));
   $('#cta-start').addEventListener('click',()=>{ if(S.value) S.confirmed=true; S.screen='voyage'; render(); });
   bindSentence();
   $$('.tab[data-mode]').forEach(t=>t.addEventListener('click',()=>setMode(t.dataset.mode)));
