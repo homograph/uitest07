@@ -311,6 +311,12 @@
     border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid var(--navy-900);}
   .vsheet{flex:0 0 auto;background:#fff;border-radius:12px 12px 0 0;box-shadow:0 -10px 50px rgba(0,0,0,.10);
     position:relative;z-index:10;}
+  /* Figma 11161:72262 "Message" — 도착 화면에만 뜨는 파란 배너.
+     도착 전(11161:71869)은 같은 자리가 #ebc1a3 '서버 배경색' 플레이스홀더라 문구가 없다. */
+  .vban{flex:0 0 auto;margin:0 10px 10px;background:var(--blue-500);border-radius:4px;
+    box-shadow:0 5px 20px rgba(0,0,0,.2);padding:15px 20px;
+    font-size:16px;line-height:24px;font-weight:700;color:#fff;letter-spacing:-.2px;}
+  .vban[hidden]{display:none;}
   .handle{display:flex;justify-content:center;padding:10px;}
   .handle i{display:block;width:36px;height:4px;border-radius:2px;background:var(--gray-300);}
   .vrow1{display:flex;gap:12px;align-items:flex-start;padding:18px 24px;}
@@ -677,10 +683,11 @@
           <div class="rpill">✕ 호출 취소</div>
         </div>
         <div class="rtoast" id="rtoast"></div>
+        <div class="vban" id="vban" hidden>대기시간이 4분 59초 남았어요</div>
         <div class="vsheet">
           <div class="handle"><i></i></div>
           <div class="vrow1">
-            <div class="l"><b>약 5분 후 도착</b><span>출발지로 이동 중</span></div>
+            <div class="l"><b id="vh1">약 5분 후 도착</b><span id="vh2">출발지로 이동 중</span></div>
             <button class="obtn">경로 변경</button>
           </div>
           <div class="vpk">
@@ -1033,6 +1040,13 @@
        받는 쪽이 없습니다. Figma 의 <code>차량 도착</code> 화면 <b>3개가 전부 값 있는 회색 카드</b> 하나뿐이고
        <code>＋</code> 빈 상태가 한 번도 안 나오는 것도 같은 이유로 읽힙니다. 그래서
        <b>값이 없는 채로 도착하면 카드를 아예 내립니다</b> — 눌러도 안 되는 질문을 남겨두는 것보다 낫습니다.</p>
+    <p>카드만 잠그면 헤더가 &lsquo;출발지로 이동 중&rsquo; 이라 화면이 서로 다른 말을 합니다. 그래서
+       <b>헤더도 <code>차량 도착 · 출발지에서 대기 중</code></b> 으로 바뀌고 파란 배너
+       <b>&lsquo;대기시간이 4분 59초 남았어요&rsquo;</b> 가 붙습니다(Figma <code>11161:72262</code>).
+       도착 전(<code>11161:71869</code>)은 같은 자리가 <code>#ebc1a3</code> &lsquo;서버 배경색&rsquo; 플레이스홀더라
+       문구가 정해져 있지 않아 비워 뒀습니다.
+       <span class="mk warn"></span>지도 말풍선만 배경 이미지에 구워져 있어
+       도착 뒤에도 <code>약 5분 후 차량 도착</code> 으로 남습니다(Figma 는 <code>4:59 이내 탑승</code>).</p>
     <p><b>재편집은 취소 + 비활성 저장</b>입니다(Figma <code>상태=재편집</code>). 고치러 들어온 직후엔
        바꾼 게 없으니 저장할 것도 없고, 나가는 길은 취소가 맡습니다. 가르는 기준은 값의 유무가 아니라
        <b>그 값이 이미 상대에게 가 있느냐</b>입니다 — 출발지는 저장됨, 운행은 전달됨.
@@ -1584,6 +1598,11 @@
     /* 값도 없이 도착했다면 눌리지도 않는 '＋ 픽업 위치를 알려주세요' 만 남는다.
        물어볼 시점이 지난 질문은 지우는 게 맞다. */
     el('pk-voy').hidden = atCar && !has;
+    /* 카드만 잠그고 헤더가 '출발지로 이동 중' 이면 화면이 서로 다른 말을 한다.
+       Figma 11161:71869(도착 전) ↔ 11161:72262(도착) 의 차이를 그대로 옮긴다. */
+    el('vh1').textContent = atCar ? '차량 도착' : '약 5분 후 도착';
+    el('vh2').textContent = atCar ? '출발지에서 대기 중' : '출발지로 이동 중';
+    el('vban').hidden = !atCar;
     sr.textContent = (has && S.confirmed)
       ? (S.sending ? '기사님에게 보내는 중' : '기사님에게 전달됨') : '';
 
