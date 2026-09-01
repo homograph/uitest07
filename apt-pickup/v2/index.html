@@ -351,8 +351,22 @@
     color:var(--navy-800);cursor:pointer;}
   /* 이 칩은 두 값 사이 토글이다. 화살표는 '누르면 어디로 가는지' 를 가리킨다 —
      지하일 땐 위(지상)로, 지상일 땐 아래(지하)로. */
-  .fld.pick svg{opacity:.5;transition:transform .18s ease;}
+  .fld.pick svg{opacity:.5;transition:transform .2s cubic-bezier(.22,.61,.36,1);}
   .fld.pick.up svg{transform:rotate(180deg);}
+  /* 값이 둘뿐인 토글이라 롤링 픽커처럼 굴린다. 지하가 위, 지상이 아래에 쌓여 있어
+     지하→지상은 위로, 지상→지하는 아래로 움직인다 — 화살표가 가리키는 방향 그대로다. */
+  .fld.pick .roll{display:block;height:26px;overflow:hidden;}
+  .fld.pick .roll .rw{display:flex;flex-direction:column;
+    transition:transform .2s cubic-bezier(.22,.61,.36,1);}
+  .fld.pick .roll .rw>span{flex:0 0 26px;height:26px;line-height:26px;}
+  .fld.pick:not(.up) .roll .rw{transform:translateY(-26px);}
+  /* 옆의 층 칸도 같은 박자로 접혔다 펴진다. 한쪽만 툭 사라지면 줄이 튄다. */
+  #f-fld-floor{transition:max-width .2s cubic-bezier(.22,.61,.36,1),opacity .16s ease,
+    margin-right .2s ease,padding .2s ease;max-width:200px;overflow:hidden;}
+  #f-fld-floor.gone{max-width:0;opacity:0;margin-right:0;padding-left:0;padding-right:0;pointer-events:none;}
+  @media (prefers-reduced-motion:reduce){
+    .fld.pick .roll .rw,.fld.pick svg,#f-fld-floor{transition:none;}
+  }
   .fld.pick:hover{background:var(--gray-80);}
   .fld.pick:focus{background:var(--blue-050);box-shadow:inset 0 0 0 1.5px var(--navy-800);}
   .sent{display:flex;flex-wrap:wrap;align-items:center;margin:0;
@@ -683,7 +697,7 @@
           <div class="fform" id="fform" hidden>
             <div class="seg" id="f-seg"></div>
             <div class="sent" id="f-sent">
-              <button type="button" class="fld pick" id="f-lvl" hidden><span id="f-lvl-t">지하</span><svg class="ic" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.2 1.4L5.5 5.6L9.8 1.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button type="button" class="fld pick" id="f-lvl" hidden><span class="roll" id="f-lvl-t"><span class="rw"><span>지하</span><span>지상</span></span></span><svg class="ic" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.2 1.4L5.5 5.6L9.8 1.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               <span class="w" id="f-w-u">지하</span>
               <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="numeric"
                      maxlength="1" placeholder="2" aria-label="지하 몇 층" /><span class="u">층</span></label>
@@ -894,6 +908,11 @@
        <b>누르면 어디로 가는지</b>를 가리키게 했습니다 — <b>지하일 땐 ⌃(위·지상으로), 지상일 땐 ⌄(아래·지하로)</b>.</p>
     <p>고정 ⌄ 는 &lsquo;선택지가 여럿인 드롭다운&rsquo; 으로 읽힙니다. 실제로는 값이 둘뿐이라
        한 번 누르면 바로 바뀌는데, 그 사실이 아이콘에 드러나지 않았습니다.</p>
+    <p>전환은 <b>롤링 픽커처럼 굴립니다.</b> 지하가 위, 지상이 아래에 쌓여 있어
+       <b>지하→지상은 텍스트가 위로, 지상→지하는 아래로</b> 움직입니다 —
+       화살표가 가리키던 방향 그대로라, 화살표가 <b>비유가 아니라 예고</b>가 됩니다.
+       옆의 층 칸도 같은 0.2초에 맞춰 접혔다 펴집니다(한쪽만 툭 사라지면 줄이 튑니다).
+       <code>prefers-reduced-motion</code> 이면 움직임 없이 값만 바뀝니다.</p>
     <p><b>남는 위험</b> — 값 옆의 ⌃ 는 &lsquo;이미 펼쳐짐&rsquo; 으로 오독될 수 있습니다.
        그게 걸리면 디자인 시스템의 <code>ic_sync_alt</code>(⇄) 같은 <b>교체 아이콘</b>이 방향 모호함 없이
        &lsquo;둘을 맞바꾼다&rsquo; 를 말합니다. 지금은 요청하신 방향 표시로 두었습니다.</p>
@@ -1260,8 +1279,8 @@
        다만 위치 자체는 문장에 남아야 한다. 지상인데 문장이 '101동 앞에서 탈게요' 면
        기사님이 받을 문장이 곧 입력 화면이라는 주장이 깨진다. */
     const und = d.lvl==='under';
-    el('f-fld-floor').hidden=!und;
-    el('f-lvl-t').textContent = und ? '지하' : '지상';
+    el('f-fld-floor').classList.toggle('gone', !und);
+    el('f-floor').disabled = !und;   /* 접힌 칸이 탭 순서에 남지 않게 */
     el('f-lvl').classList.toggle('up', und);   /* 지하 ⌃ · 지상 ⌄ */
     el('f-w-u').textContent   = und ? '지하' : '지상';
     if(!inline) el('f-w-u').hidden = false;
