@@ -156,7 +156,21 @@
   .pkbox.filled .ipw.add{display:none;}
   .pkbox.sending .ipw.add{display:none;}
   .pkbox.sending .ipw.load{display:grid;}
-  .ipw.load{font-size:15px;color:var(--gray-500);letter-spacing:1px;}
+  /* Figma 11161:76389 "Section 2" 상태 4종 실측:
+     입력 전   배지 gray-300 · 안내 #73788b · ic_add #c0c2cc
+     입력 완료 배지 blue-500 · 값 #262a38 · 아이콘 없음
+     변경 직후 배지 gray-300 · 값 #73788b · loading/circle   ← 전송 중엔 강조를 거둔다
+     도착 후   배지 gray-300 · 값 #262a38 · 아이콘 없음      ← 역할이 끝나면 파랑을 내린다 */
+  .pkbox.sending .sqlab,.pkbox.arrived .sqlab{background:var(--gray-300);}
+  .pkbox.sending .fill{color:var(--gray-500);}
+  /* loading/circle: 20×20 자리에 16×16 원 · 흰 트랙 3.33 · 파란 호 4.44 */
+  .spin{position:relative;width:16px;height:16px;box-sizing:border-box;
+    border:3.33px solid #fff;border-radius:50%;}
+  .spin::after{content:'';position:absolute;inset:-3.33px;box-sizing:border-box;
+    border:4.44px solid transparent;border-top-color:var(--blue-500);border-radius:50%;
+    animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  @media (prefers-reduced-motion:reduce){ .spin::after{animation-duration:2.4s;} }
   .pkbox[hidden]{display:none;}
   .ic{display:block;flex:0 0 auto;}
     .was{flex:0 0 auto;font-size:11px;line-height:16px;font-weight:600;color:var(--blue-600);
@@ -636,7 +650,7 @@
               <span>차량이 도착하는 위치를 확인해주세요.</span>
             </div>
             <div class="fields">
-              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="자세한 픽업 위치 입력하기"><span class="pkq" id="pk-start-q">지상·지하 주차장</span><span class="pkrow"><span class="sqlab">픽업</span><span class="was" id="pk-start-tx-was" hidden></span><span class="ph" id="pk-start-tx">자세한 위치를 알려주세요</span><span class="ipw add"><svg class="ic" width="12" height="12" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#262a38"/></svg></span><span class="ipw load" aria-hidden="true">···</span></span></button>
+              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="픽업 위치 입력하기"><span class="pkq" id="pk-start-q">지상·지하 주차장 입력</span><span class="pkrow"><span class="sqlab">상세</span><span class="was" id="pk-start-tx-was" hidden></span><span class="ph" id="pk-start-tx">픽업 위치를 알려주세요</span><span class="ipw add"><svg class="ic" width="12" height="12" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#c0c2cc"/></svg></span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></span></button>
 
             </div>
           </div>
@@ -661,7 +675,7 @@
             <button class="obtn">경로 변경</button>
           </div>
           <div class="vpk">
-            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="자세한 픽업 위치 입력하기"><span class="pkq" id="pk-voy-q">지상·지하 주차장</span><span class="pkrow"><span class="sqlab">픽업</span><span class="was" id="pk-voy-tx-was" hidden></span><span class="ph" id="pk-voy-tx">자세한 위치를 알려주세요</span><span class="ipw add"><svg class="ic" width="12" height="12" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#262a38"/></svg></span><span class="ipw load" aria-hidden="true">···</span></span><span class="sr" id="pk-voy-sr"></span></button>
+            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="픽업 위치 입력하기"><span class="pkq" id="pk-voy-q">지상·지하 주차장 입력</span><span class="pkrow"><span class="sqlab">상세</span><span class="was" id="pk-voy-tx-was" hidden></span><span class="ph" id="pk-voy-tx">픽업 위치를 알려주세요</span><span class="ipw add"><svg class="ic" width="12" height="12" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#c0c2cc"/></svg></span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></span><span class="sr" id="pk-voy-sr"></span></button>
 
           </div>
           <div class="vdiv"></div>
@@ -871,7 +885,7 @@
        <b>즉시 지우고 토스트에 &lsquo;되돌리기&rsquo;</b> 를 답니다(5초). 다이얼로그는 매번 한 번 더 묻지만
        되돌리기는 <b>틀렸을 때만</b> 비용을 받습니다.</p>
     <p>지우면 <b>이번 호출의 값과 저장해 둔 값이 함께</b> 사라집니다. 둘을 따로 관리하게 하면
-       &lsquo;지웠는데 다음에 또 뜬다&rsquo; 가 됩니다. 진입점은 빈 상태(<b>＋ 자세한 위치를 알려주세요</b>)로 돌아갑니다.</p>
+       &lsquo;지웠는데 다음에 또 뜬다&rsquo; 가 됩니다. 진입점은 빈 상태(<b>＋ 픽업 위치를 알려주세요</b>)로 돌아갑니다.</p>
     <p><b>전송 중에 지우면 전송을 취소합니다.</b> 이 타이머를 안 끄면 2초 뒤
        &lsquo;기사님에게 전달했어요&rsquo; 토스트가 <b>&lsquo;지웠어요&rsquo; 를 덮어씁니다</b> —
        지웠는데 전달했다고 뜨고, <b>되돌리기 버튼까지 같이 사라집니다.</b>
@@ -971,7 +985,7 @@
   <div class="note">
     <h3><i>4</i>8/30 Figma 수정안 반영</h3>
     <p>진입점이 <b>테두리 없는 회색 블록</b>(<code>#f5f6f7</code>)이 되고, 상태는 <b>[상세] 배지 색</b>으로 가릅니다.
-       빈 상태에 라벨 줄이 생겼습니다(현재 문구 <b>&lsquo;지상·지하 주차장&rsquo;</b>).</p>
+       빈 상태에 라벨 줄이 생겼습니다(현재 문구 <b>&lsquo;지상·지하 주차장 입력&rsquo;</b>).</p>
     <p>빈 상태 제목은 <b>&lsquo;아파트 단지 내&rsquo;</b>(14sp w700)입니다. 한때 질문형
        &lsquo;아파트 단지 내로 부르시나요?&rsquo; 가 낫다고 봤지만, <b>이 카드는 지정된 아파트 단지에서만 뜹니다.</b>
        그러면 질문은 <b>시스템이 이미 아는 것을 되묻는 셈</b>이고, 오히려 &lsquo;아닐 수도 있나?&rsquo; 하는
@@ -994,10 +1008,17 @@
        실제 요청사항의 <b>38.6%</b> 가 라인을 가집니다.
        꼬리를 떼니 가장 긴 조합(<code>1012A동 2-5호라인</code>)도 320·360·414 세 폭 전부
        <b>177~217px</b> 로 잘림이 없습니다.</p>
-    <p><b>[상세] 배지는 두 화면 모두 파랑</b>입니다. 한때 운행 화면만 회색으로 낮췄었는데,
-       <b>체크 아이콘을 없앤 뒤로는 배지 색이 &lsquo;전달됨&rsquo; 의 유일한 신호</b>가 됩니다. 회색으로 두면
-       운행 중에 &lsquo;이게 보내진 건가&rsquo; 가 모호해집니다. 차량번호와의 시선 경합을 걱정했지만,
-       배지는 35×24dp 이고 차량번호는 22sp 볼드라 실제 경합은 크지 않습니다.</p>
+    <p><b>[상세] 배지 색은 네 상태로 갈립니다</b>
+       (Figma <code>11161:76389</code> 실측).
+       <b>입력 전</b> 회색 <code>#99a5c0</code> · 안내 <code>#73788b</code> · <code>＋</code> <code>#c0c2cc</code>,
+       <b>입력 완료</b> 파랑 <code>#32a2fa</code> · 값 <code>#262a38</code>,
+       <b>변경 직후</b> 회색 + 값 <code>#73788b</code> + 로딩 원,
+       <b>차량 도착 후</b> 회색 + 값 <code>#262a38</code>.</p>
+    <p>이 규칙은 제가 한때 반대했던 &lsquo;운행 화면 배지 회색화&rsquo; 를 <b>시점으로 나눠</b> 해결합니다.
+       파랑이 &lsquo;전달됨&rsquo; 의 유일한 신호라는 지적은 <b>도착 전까지</b>만 유효합니다.
+       차가 도착하면 상세 위치는 이미 제 역할을 끝냈고, 그때까지 파랑을 붙들면
+       <b>끝난 일이 계속 말을 겁니다.</b> 전송 중에 값까지 흐려지는 것도 같은 원리로,
+       &lsquo;아직 확정 아님&rsquo; 을 스피너 하나가 아니라 <b>글자 무게로도</b> 말합니다.</p>
     <p><b>남는 지적 하나</b> — 출발지 화면에서는 빈/찬 구분이 <b>배지 색 하나</b>에 걸립니다
        (<code>#99a5c0</code> 2.47:1 ↔ <code>#32a2fa</code> 2.73:1, 차이 <b>0.26</b>). 배경도 테두리도 같습니다.
        운행 화면은 빈 상태가 안 나오므로 해당 없습니다. 출발지만 <b>찬 상태 배경을 <code>#f1f9fe</code></b> 로
@@ -1093,7 +1114,7 @@
   const el = id => document.getElementById(id);
 
   const FLOORS=[1,2,3,4,5];
-  const PH='자세한 위치를 알려주세요';
+  const PH='픽업 위치를 알려주세요';
   const SENT_AT='12:46';
   const SAVED_FOR_ADDRESS={lvl:'under',floor:4,dong:'1901',line:'',etc:'엘리베이터 앞',noLine:true};
 
@@ -1519,6 +1540,9 @@
        (그래서 체크를 3초 뒤 걷어내던 이전 판단은 접었다.) */
     const sr=el('pk-voy-sr');
     el('pk-voy').classList.toggle('sending', !!(has && S.confirmed && S.sending));
+    /* 차량이 도착하면 상세 위치는 제 역할을 끝냈다. Figma "차량 도착 후" 는
+       배지를 파랑에서 회색으로 내린다 — 값은 그대로 진하게 남는다. */
+    el('pk-voy').classList.toggle('arrived', !!(has && S.dstate==='arrived' && !S.sending));
     sr.textContent = (has && S.confirmed)
       ? (S.sending ? '기사님에게 보내는 중' : '기사님에게 전달됨') : '';
 
