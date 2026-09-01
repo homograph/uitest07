@@ -562,7 +562,20 @@
      값은 한 흐름으로 흐르며 층·동만 20sp 볼드, 라인과 꼬리는 18sp 레귤러다. */
   .dtalk{display:flex;flex-direction:column;align-items:center;}
   .dtalk .body{width:100%;background:var(--navy-700);border-radius:4px;padding:10px 16px;
-    display:flex;align-items:baseline;gap:16px;}
+    display:flex;align-items:baseline;gap:16px;position:relative;}
+  /* 오버레이의 [확인하기] 는 강조 트리거가 아니라 앱 전환이다. 기사는 내비를 보고 있었다.
+     그래서 순간 애니메이션만 쓰면 전환되는 동안 다 타버리고, 도착했을 땐 이미 끝나 있다.
+     게다가 운전 중이라 화면은 흘긋 본다 — 그 흘긋이 펄스 700ms 와 겹칠 확률은 낮다.
+     그러므로 남는 것이 본체고 펄스는 보조다. 같은 파란 테두리가 두 역할을 한다. */
+  .dtalk .body.hl{box-shadow:inset 0 0 0 1.5px var(--blue-500);}
+  .dtalk .body.hl::after{content:'';position:absolute;inset:0;border-radius:4px;pointer-events:none;
+    animation:hlring .7s cubic-bezier(.22,.61,.36,1) 1;}
+  @keyframes hlring{
+    from{box-shadow:0 0 0 0 rgba(50,162,250,.55);}
+    to{box-shadow:0 0 0 12px rgba(50,162,250,0);}
+  }
+  /* 움직임을 줄이는 설정이면 펄스는 빼고 테두리만 남긴다 — 신호는 그대로다. */
+  @media (prefers-reduced-motion:reduce){ .dtalk .body.hl::after{animation:none;} }
   .dtalk .tail{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;
     border-top:9px solid var(--navy-700);}
   /* Figma 원본. 이 배경에서 4.04:1 — 16sp 볼드는 large text 기준(18.66px)에 못 미쳐
@@ -1089,8 +1102,25 @@
       <tr><td><b>운행 중 변경</b></td><td><b>픽업 상세 변경됨</b> · 고객이 상세 위치를 변경했습니다. (Figma 원본)</td></tr>
       <tr><td><b>출발지에서 넣고 배차</b></td><td>오버레이 없음 — 배차 시 콜 정보에 이미 붙어 오므로 &lsquo;알림&rsquo; 이 아닙니다.</td></tr>
     </tbody></table>
-    <p><span class="mk warn"></span><b>Figma 쪽 할 일</b> — <code>drawover_ride_chat</code> 은 지금 변경 문구
-       한 벌뿐입니다. <b>추가됨</b> 벌을 변형으로 하나 더 만들어 주셔야 핸드오프가 맞습니다.</p>
+    <p><b>[확인하기] 를 누르면 배지에 파란 테두리가 남습니다</b>(<code>#32a2fa</code> 1.5px, inset).
+       켜지는 순간 그 테두리가 <b>한 번만</b> 퍼졌다 모입니다(700ms).</p>
+    <p>여기서 중요한 건 <b>확인하기가 강조 트리거가 아니라 앱 전환</b>이라는 점입니다. 기사는 내비를
+       보고 있었고, drawover 가 있는 이유가 그것입니다. 그래서 순간 애니메이션만 쓰면
+       <b>전환되는 동안 다 타버리고</b> 기사가 화면에 도착했을 땐 이미 끝나 있습니다. 게다가 운전 중이라
+       화면은 흘긋 봅니다 — 그 흘긋이 펄스 700ms 와 겹칠 확률은 낮습니다. 그래서
+       <b>남는 것이 본체고 펄스는 보조</b>이며, 같은 테두리가 두 역할을 합니다.
+       프로토타입에서는 전환 시간을 <code>350ms</code> 로 두고 그 뒤에 강조를 켭니다.</p>
+    <p><b>거두는 시점은 시간이 아니라 행동</b>입니다 — <code>고객 위치로 출발하기</code> 를 누르거나 도착했을 때.
+       &lsquo;3초 뒤&rsquo; 로 끊으면 신호등에 서서 그 뒤에 보는 기사에겐 아무것도 안 남습니다.
+       움직임 축소 설정이면 펄스만 빼고 테두리는 그대로 둡니다.</p>
+    <p>이건 사실 제가 앞서 뗀 노란 <code>변경됨</code> 칩과 <b>같은 요구</b>였습니다. 뗄 때 이유는
+       &lsquo;오버레이가 그 역할을 맡는다&rsquo; 였는데 절반만 맞았습니다 — 오버레이는 <b>한 번 지나가는 신호</b>이고
+       &lsquo;방금 바뀌었다&rsquo; 는 <b>지속되는 사실</b>이라, 순간 신호로는 담기지 않습니다. 다만 원래 칩의
+       노랑(<code>#eeff00</code>)은 <code>미리배차 켜짐</code> 과 같은 색이라 충돌했고, 파란 테두리는
+       그 문제 없이 같은 일을 하면서 <b>대상을 정확히 감쌉니다</b>(추가 요소도, 레이아웃 흔들림도 없음).</p>
+    <p><span class="mk warn"></span><b>Figma 쪽 할 일 둘</b> — ① <code>drawover_ride_chat</code> 은 지금 변경 문구
+       한 벌뿐이라 <b>추가됨</b> 벌이 필요하고, ② <code>자세한 탑승 위치</code> 에
+       <b>변경 강조</b> 변형(파란 테두리)이 있어야 핸드오프가 맞습니다.</p>
     <p><b>재편집은 취소 + 비활성 저장</b>입니다(Figma <code>상태=재편집</code>). 고치러 들어온 직후엔
        바꾼 게 없으니 저장할 것도 없고, 나가는 길은 취소가 맡습니다. 가르는 기준은 값의 유무가 아니라
        <b>그 값이 이미 상대에게 가 있느냐</b>입니다 — 출발지는 저장됨, 운행은 전달됨.
@@ -1197,7 +1227,7 @@
   const S={
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
-    drover:false, droverEdit:false,
+    drover:false, droverEdit:false, hilite:false,
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false}, focus:null,
@@ -1663,6 +1693,7 @@
     $('#dtalk').hidden = !got;
     /* 값이 사라졌거나 아직 안 닿았으면 확인할 것도 없다. */
     el('drover').hidden = !(S.drover && got);
+    el('dtalkbody').classList.toggle('hl', !!(S.hilite && got));
     el('drover-t').textContent = S.droverEdit ? '픽업 상세 변경됨' : '픽업 상세 추가됨';
     el('drover-b').textContent = S.droverEdit ? '고객이 상세 위치를 변경했습니다.'
                                               : '고객이 상세 위치를 알려줬습니다.';
@@ -1741,6 +1772,7 @@
     S.mode=m; S.screen='start';
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={};
+    S.drover=false; S.hilite=false;
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
       S.value=sentence(SAVED_FOR_ADDRESS); S.origin='start';
@@ -1753,9 +1785,18 @@
     render();
   }
 
-  el('drover-ok').addEventListener('click',()=>{ S.drover=false; render(); });
+  el('drover-ok').addEventListener('click',()=>{
+    S.drover=false; S.hilite=false; render();
+    /* 실제로는 여기서 타다 앱이 내비 위로 올라온다. 그 전환이 끝난 뒤에 강조가 시작돼야
+       기사가 화면에 도착했을 때 펄스가 남아 있다. 클래스를 한 번 뗐다 붙여 재생도 되돌린다. */
+    setTimeout(()=>{ S.hilite=true; render(); }, 350);
+  });
+  /* 시간으로 끊지 않는다 — 신호등에 서서 3초 뒤에 볼 수도 있다.
+     기사가 그 값을 실제로 쓴 시점(출발 누름 · 도착)에 거둔다. */
+  el('dgo').addEventListener('click',()=>{ S.hilite=false; render(); });
   $$('.dswb').forEach(b=>b.addEventListener('click',()=>{
     S.dstate=b.dataset.ds;
+    if(b.dataset.ds==='arrived') S.hilite=false;
     /* 열어 둔 채로 차가 도착하면 저장할 곳이 사라진다. 시트를 닫는다. */
     if(S.dstate==='arrived' && S.opened==='voyage') $('#phscr').classList.remove('on');
     render();
@@ -1777,7 +1818,7 @@
                   sending:S.sending, sent:S.sent, edited:S.edited};
     S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
     S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
-    S.drover=false;
+    S.drover=false; S.hilite=false;
     $('#phscr').classList.remove('on');
     render();
     toast(onVoyage ? '상세 위치를 지웠어요. 기사님 화면에서도 사라집니다.'
