@@ -11,7 +11,7 @@
     --navy-900:#101a3d; --navy-800:#19254d; --navy-700:#283873; --navy-600:#233565;
     --blue-600:#0074d7; --blue-500:#32a2fa; --blue-050:#f1f9fe; --blue-100:#e2f2fe;
     /* 제안값: Figma 보더 #e2f2fe 는 카드 배경 위에서 1.07:1 이라 선이 없는 것과 같다 */
-    --blue-200:#a9d8f8;
+    --blue-200:#a9d8f8; --blue-150:#b9ddfd;
     --gray-950:#171a24; --gray-900:#262a38; --gray-800:#383d4f; --gray-700:#4b5064;
     --gray-500:#73788b; --gray-300:#99a5c0; --gray-200:#c0c8d9; --gray-100:#d5d7dc;
     --gray-80:#e3e4e8; --gray-50:#efeff1; --gray-30:#f5f6f7; --gray-e6:#e6e9ef;
@@ -136,17 +136,24 @@
   .addr span{font-size:14px;line-height:20px;color:#000;}
   .ipw{width:20px;height:20px;display:grid;place-items:center;flex:0 0 auto;}
   .addr .ipw{width:8px;height:8px;}
-  .pkbox{box-sizing:border-box;width:100%;font:inherit;text-align:left;background:#f5f6f7;
-    border:none;border-radius:4px;padding:12px;
+  /* Figma 11263:46162 재설계 — 상태를 배지 색이 아니라 카드의 겉모습이 말한다.
+     테두리만 있는 카드는 누를 수 있고, 회색으로 채워진 카드는 누를 수 없다.
+     전송 중과 도착 후가 같은 '못 누름' 무리로 묶인 것도 이 규칙 하나로 설명된다. */
+  .pkbox{box-sizing:border-box;width:100%;font:inherit;text-align:left;background:transparent;
+    border:1px solid var(--navy-700);border-radius:4px;padding:12px;
     display:flex;flex-direction:column;gap:10px;cursor:pointer;}
+  .pkbox.sending,.pkbox.arrived{background:var(--gray-50);border-color:#fff;cursor:default;}
   /* 이 카드는 지정된 아파트 단지에서만 뜬다. 그러면 '아파트 단지 내로 부르시나요?' 는
      시스템이 이미 아는 걸 되묻는 셈이라, 분류 라벨이 맞다. */
   .pkq{font-size:14px;line-height:20px;font-weight:700;color:#000;}
   .pkbox.filled .pkq{color:var(--gray-500);}
   .pkrow{display:flex;align-items:center;gap:8px;width:100%;}
-  .sqlab{flex:0 0 auto;background:var(--gray-300);border-radius:2px;padding:4px 6px;
-    font-size:12px;line-height:16px;font-weight:700;color:#fff;}
-  .pkbox.filled .sqlab{background:var(--blue-500);}
+  /* 배지도 solid 에서 outline 으로. 이제 배지는 '전달됨' 을 말하지 않는다 —
+     그 일은 카드 겉모습이 맡고, 배지는 '무엇에 대한 값인지' 만 말한다.
+     전송 중만 회색 solid 로 남아 '지금 확정 아님' 을 표시한다. */
+  .sqlab{flex:0 0 auto;background:var(--blue-050);border:1px solid var(--blue-150);
+    border-radius:2px;padding:4px 6px;
+    font-size:12px;line-height:16px;font-weight:700;color:var(--blue-500);}
   .pkbox .ph,.pkbox .fill{font-size:14px;line-height:20px;flex:1 1 auto;min-width:0;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pkbox .ph{color:var(--gray-500);}
@@ -157,15 +164,13 @@
      대비 차 0.26 에 상태 구분이 걸려 있던 문제가 구조로 해결된다. */
   .pkbox .ipw.load{display:none;}
   .pkbox.filled .pkq{display:none;}
-  .pkbox.filled .ipw.add{display:none;}
-  .pkbox.sending .ipw.add{display:none;}
   .pkbox.sending .ipw.load{display:grid;}
   /* Figma 11161:76389 "Section 2" 상태 4종 실측:
      입력 전   배지 gray-300 · 안내 #73788b · ic_add #c0c2cc
      입력 완료 배지 blue-500 · 값 #262a38 · 아이콘 없음
      변경 직후 배지 gray-300 · 값 #73788b · loading/circle   ← 전송 중엔 강조를 거둔다
      도착 후   배지 gray-300 · 값 #262a38 · 아이콘 없음      ← 역할이 끝나면 파랑을 내린다 */
-  .pkbox.sending .sqlab,.pkbox.arrived .sqlab{background:var(--gray-300);}
+  .pkbox.sending .sqlab{background:var(--gray-300);border-color:transparent;color:#fff;}
   .pkbox.sending .fill{color:var(--gray-500);}
   /* loading/circle: 20×20 자리에 16×16 원 · 흰 트랙 3.33 · 파란 호 4.44 */
   .spin{position:relative;width:16px;height:16px;box-sizing:border-box;
@@ -690,7 +695,7 @@
               <span>차량이 도착하는 위치를 확인해주세요.</span>
             </div>
             <div class="fields">
-              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="픽업 위치 입력하기"><span class="pkq" id="pk-start-q">지상·지하 주차장 입력</span><span class="pkrow"><span class="sqlab">상세</span><span class="ph" id="pk-start-tx">픽업 위치를 알려주세요</span><span class="ipw add"><svg class="ic" width="12" height="12" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#c0c2cc"/></svg></span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></span></button>
+              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="픽업 위치 입력하기"><span class="pkq" id="pk-start-q">지상·지하 주차장 입력</span><span class="pkrow"><span class="sqlab">상세</span><span class="ph" id="pk-start-tx">픽업 위치를 알려주세요</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></span></button>
 
             </div>
           </div>
@@ -716,7 +721,7 @@
             <button class="obtn">경로 변경</button>
           </div>
           <div class="vpk">
-            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="픽업 위치 입력하기"><span class="pkq" id="pk-voy-q">지상·지하 주차장 입력</span><span class="pkrow"><span class="sqlab">상세</span><span class="ph" id="pk-voy-tx">픽업 위치를 알려주세요</span><span class="ipw add"><svg class="ic" width="12" height="12" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#c0c2cc"/></svg></span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></span><span class="sr" id="pk-voy-sr"></span></button>
+            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="픽업 위치 입력하기"><span class="pkq" id="pk-voy-q">지상·지하 주차장 입력</span><span class="pkrow"><span class="sqlab">상세</span><span class="ph" id="pk-voy-tx">픽업 위치를 알려주세요</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></span><span class="sr" id="pk-voy-sr"></span></button>
 
           </div>
           <div class="vdiv"></div>
@@ -1038,8 +1043,8 @@
   </div>
   <div class="note">
     <h3><i>5</i>8/30 Figma 수정안 반영</h3>
-    <p>진입점이 <b>테두리 없는 회색 블록</b>(<code>#f5f6f7</code>)이 되고, 상태는 <b>[상세] 배지 색</b>으로 가릅니다.
-       빈 상태에 라벨 줄이 생겼습니다(현재 문구 <b>&lsquo;지상·지하 주차장 입력&rsquo;</b>).</p>
+    <p>진입점은 이제 <b>테두리 카드</b>입니다. 빈 상태에 라벨 줄이 있습니다(<b>&lsquo;지상·지하 주차장 입력&rsquo;</b>).
+       한때 회색 블록(<code>#f5f6f7</code>)에 배지 색으로 상태를 가르던 안이었는데, 아래 항목에서 다시 바뀌었습니다.</p>
     <p>빈 상태 제목은 <b>&lsquo;아파트 단지 내&rsquo;</b>(14sp w700)입니다. 한때 질문형
        &lsquo;아파트 단지 내로 부르시나요?&rsquo; 가 낫다고 봤지만, <b>이 카드는 지정된 아파트 단지에서만 뜹니다.</b>
        그러면 질문은 <b>시스템이 이미 아는 것을 되묻는 셈</b>이고, 오히려 &lsquo;아닐 수도 있나?&rsquo; 하는
@@ -1062,17 +1067,25 @@
        실제 요청사항의 <b>38.6%</b> 가 라인을 가집니다.
        꼬리를 떼니 가장 긴 조합(<code>1012A동 2-5호라인</code>)도 320·360·414 세 폭 전부
        <b>177~217px</b> 로 잘림이 없습니다.</p>
-    <p><b>[상세] 배지 색은 네 상태로 갈립니다</b>
-       (Figma <code>11161:76389</code> 실측).
-       <b>입력 전</b> 회색 <code>#99a5c0</code> · 안내 <code>#73788b</code> · <code>＋</code> <code>#c0c2cc</code>,
-       <b>입력 완료</b> 파랑 <code>#32a2fa</code> · 값 <code>#262a38</code>,
-       <b>변경 직후</b> 회색 + 값 <code>#73788b</code> + 로딩 원,
-       <b>차량 도착 후</b> 회색 + 값 <code>#262a38</code>.</p>
-    <p>이 규칙은 제가 한때 반대했던 &lsquo;운행 화면 배지 회색화&rsquo; 를 <b>시점으로 나눠</b> 해결합니다.
-       파랑이 &lsquo;전달됨&rsquo; 의 유일한 신호라는 지적은 <b>도착 전까지</b>만 유효합니다.
-       차가 도착하면 상세 위치는 이미 제 역할을 끝냈고, 그때까지 파랑을 붙들면
-       <b>끝난 일이 계속 말을 겁니다.</b> 전송 중에 값까지 흐려지는 것도 같은 원리로,
-       &lsquo;아직 확정 아님&rsquo; 을 스피너 하나가 아니라 <b>글자 무게로도</b> 말합니다.</p>
+    <p><b>상태를 말하는 것이 배지에서 카드 겉모습으로 넘어갔습니다</b>
+       (Figma <code>11263:46162</code> 실측). 규칙은 한 줄입니다 —
+       <b>테두리만 있는 카드는 누를 수 있고, 회색으로 채워진 카드는 누를 수 없습니다.</b></p>
+    <table><tbody>
+      <tr><td><b>입력 전</b></td><td>투명 + <code>#283873</code> 1px · 안내 <code>#73788b</code> · <b>아이콘 없음</b></td></tr>
+      <tr><td><b>입력 완료</b></td><td>투명 + <code>#283873</code> 1px · 값 <code>#262a38</code></td></tr>
+      <tr><td><b>변경 직후</b></td><td><code>#efeff1</code> + <code>#fff</code> 1px · 값 <code>#73788b</code> · 로딩 원 · <b>못 누름</b></td></tr>
+      <tr><td><b>차량 도착 후</b></td><td><code>#efeff1</code> + <code>#fff</code> 1px · 값 <code>#262a38</code> · <b>못 누름</b></td></tr>
+    </tbody></table>
+    <p>배지는 <b>solid 에서 outline</b> 으로 바뀌었습니다(<code>#f1f9fe</code> 바탕 · <code>#b9ddfd</code> 테두리 ·
+       <code>#32a2fa</code> 글자). 네 상태 중 셋이 같은 배지를 쓰고 <b>전송 중만 회색 solid</b> 입니다 —
+       즉 배지는 더 이상 &lsquo;전달됨&rsquo; 을 말하지 않고 <b>&lsquo;무엇에 대한 값인지&rsquo; 만</b> 말합니다.</p>
+    <p>이게 이전 안보다 낫다고 봅니다. 예전에는 상태 신호가 <b>배지 색 하나</b>에 걸려 있었고,
+       그 색이 <code>#99a5c0</code>(2.47:1)와 <code>#32a2fa</code>(2.73:1)로 <b>대비 차 0.26</b> 이라
+       빈/찬 구분이 사실상 안 됐습니다. 지금은 <b>카드 전체의 면과 선</b>이 그 일을 하므로
+       흘긋 봐도 갈립니다. 게다가 &lsquo;누를 수 있나&rsquo; 라는 <b>행동 가능성</b>과 신호가 일치합니다 —
+       전송 중과 도착 후가 같은 모습인 이유가 &lsquo;둘 다 지금은 손댈 수 없다&rsquo; 하나로 설명됩니다.</p>
+    <p><code>＋</code> 아이콘은 없어졌습니다. 테두리가 이미 &lsquo;누를 수 있다&rsquo; 를 말하므로
+       같은 말을 두 번 하던 셈입니다.</p>
     <p><b>도착하면 카드가 잠깁니다.</b> 기사가 이미 그 자리에 서 있으니 지금 위치를 바꿔도
        받는 쪽이 없습니다. Figma 의 <code>차량 도착</code> 화면 <b>3개가 전부 값 있는 회색 카드</b> 하나뿐이고
        <code>＋</code> 빈 상태가 한 번도 안 나오는 것도 같은 이유로 읽힙니다. 그래서
@@ -1729,8 +1742,11 @@
        값 있는 회색 카드 하나뿐이고 ＋ 가 한 번도 안 나오는 것도 같은 이유다. */
     const atCar = S.dstate==='arrived';
     el('pk-voy').classList.toggle('arrived', !!(has && atCar && !S.sending));
-    el('pk-voy').classList.toggle('locked', atCar);
-    el('pk-voy').disabled = atCar;
+    /* Figma: 전송 중과 도착 후가 같은 '채워진 카드' 무리다 — 둘 다 못 누른다.
+       보내는 2초 동안 다시 열면 타이머가 겹치는데, 애초에 못 열게 하는 편이 낫다. */
+    const shut = atCar || (has && S.confirmed && S.sending);
+    el('pk-voy').classList.toggle('locked', shut);
+    el('pk-voy').disabled = shut;
     /* 값도 없이 도착했다면 눌리지도 않는 '＋ 픽업 위치를 알려주세요' 만 남는다.
        물어볼 시점이 지난 질문은 지우는 게 맞다. */
     el('pk-voy').hidden = atCar && !has;
@@ -1900,7 +1916,7 @@
   /* 값은 '저장' 에서만 커밋된다. 그래서 취소는 그냥 닫으면 편집분이 버려진다. */
   el('ph-cancel').addEventListener('click',()=>$('#phscr').classList.remove('on'));
   $$('[data-open]').forEach(n=>n.addEventListener('click',()=>{
-    if(n.dataset.open==='voyage' && S.dstate==='arrived') return;
+    if(n.dataset.open==='voyage' && (S.dstate==='arrived' || S.sending)) return;
     openForm(n.dataset.open);
   }));
   $('#cta-start').addEventListener('click',()=>{ if(S.value) S.confirmed=true; S.screen='voyage'; render(); });
