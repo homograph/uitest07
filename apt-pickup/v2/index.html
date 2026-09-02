@@ -126,13 +126,18 @@
   .ttl2 b{font-size:18px;line-height:27px;font-weight:700;color:var(--gray-900);letter-spacing:-.3px;}
   .ttl2 span{font-size:14px;line-height:20px;color:var(--gray-900);}
   /* 주소 행과 픽업 행은 붙어서 한 블록이다(Figma hail_location2: col, gap 0) */
-  .fields{display:flex;flex-direction:column;gap:20px;}
+  .fields{display:flex;flex-direction:column;gap:10px;}
   /* ── Figma 10476:126439 (8/30 수정) ──
      테두리 없는 회색 블록. 실측: 카드 4px 테두리 밴드에 파란 픽셀 0개 —
      inspect 의 stroke #32a2fa/1 은 불투명도 0 이었고 디자이너가 이후 제거했다.
      상태는 [상세] 배지 색으로 가른다. */
-  .addr{background:none;border:none;border-radius:0;padding:0;
-    display:flex;align-items:center;gap:12px;}
+  /* Figma 11263:45547 실측 — POI 줄도 테두리 카드다. 진입점 카드와 같은 문법이라
+     '출발지 이름'과 '상세 위치'가 한 가족으로 읽힌다.
+     stroke 는 안쪽으로 그려져 전체 48 을 유지하므로 padding 은 14/16 에서 1 을 뺀다.
+     (렌더 배율 4.0 에서 테두리 4px·박스 192px 를 실측해 1px·48 로 확인했다 —
+      stroke 불투명도는 REST 에 안 찍히므로 픽셀로 재야 한다.) */
+  .addr{background:#fff;box-shadow:inset 0 0 0 1px var(--gray-80);border:none;border-radius:4px;
+    padding:14px 16px;display:flex;align-items:center;gap:15px;}
   .addr span{font-size:14px;line-height:20px;color:#000;}
   .ipw{width:20px;height:20px;display:grid;place-items:center;flex:0 0 auto;}
   .addr .ipw{width:8px;height:8px;}
@@ -140,9 +145,9 @@
      테두리만 있는 카드는 누를 수 있고, 회색으로 채워진 카드는 누를 수 없다.
      전송 중과 도착 후가 같은 '못 누름' 무리로 묶인 것도 이 규칙 하나로 설명된다. */
   .pkbox{box-sizing:border-box;width:100%;font:inherit;text-align:left;background:transparent;
-    border:1px solid var(--navy-700);border-radius:4px;padding:12px;
+    box-shadow:inset 0 0 0 1px var(--navy-700);border:none;border-radius:4px;padding:12px;
     display:flex;flex-direction:column;gap:10px;cursor:pointer;}
-  .pkbox.sending,.pkbox.arrived{background:var(--gray-50);border-color:#fff;cursor:default;}
+  .pkbox.sending,.pkbox.arrived{background:var(--gray-50);box-shadow:inset 0 0 0 1px #fff;cursor:default;}
   /* 이 카드는 지정된 아파트 단지에서만 뜬다. 그러면 '아파트 단지 내로 부르시나요?' 는
      시스템이 이미 아는 걸 되묻는 셈이라, 분류 라벨이 맞다. */
   .pkq{font-size:14px;line-height:20px;font-weight:700;color:#000;}
@@ -151,8 +156,8 @@
   /* 배지도 solid 에서 outline 으로. 이제 배지는 '전달됨' 을 말하지 않는다 —
      그 일은 카드 겉모습이 맡고, 배지는 '무엇에 대한 값인지' 만 말한다.
      전송 중만 회색 solid 로 남아 '지금 확정 아님' 을 표시한다. */
-  .sqlab{flex:0 0 auto;background:var(--blue-050);border:1px solid var(--blue-150);
-    border-radius:2px;padding:4px 6px;
+  .sqlab{flex:0 0 auto;background:var(--blue-050);box-shadow:inset 0 0 0 1px var(--blue-150);
+    border-radius:2px;padding:4px 6px;min-width:35px;box-sizing:border-box;text-align:center;
     font-size:12px;line-height:16px;font-weight:700;color:var(--blue-500);}
   .pkbox .ph,.pkbox .fill{font-size:14px;line-height:20px;flex:1 1 auto;min-width:0;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -170,7 +175,7 @@
      입력 완료 배지 blue-500 · 값 #262a38 · 아이콘 없음
      변경 직후 배지 gray-300 · 값 #73788b · loading/circle   ← 전송 중엔 강조를 거둔다
      도착 후   배지 gray-300 · 값 #262a38 · 아이콘 없음      ← 역할이 끝나면 파랑을 내린다 */
-  .pkbox.sending .sqlab{background:var(--gray-300);border-color:transparent;color:#fff;}
+  .pkbox.sending .sqlab{background:var(--gray-300);box-shadow:none;color:#fff;}
   .pkbox.sending .fill{color:var(--gray-500);}
   /* loading/circle: 20×20 자리에 16×16 원 · 흰 트랙 3.33 · 파란 호 4.44 */
   .spin{position:relative;width:16px;height:16px;box-sizing:border-box;
@@ -1086,6 +1091,16 @@
        전송 중과 도착 후가 같은 모습인 이유가 &lsquo;둘 다 지금은 손댈 수 없다&rsquo; 하나로 설명됩니다.</p>
     <p><code>＋</code> 아이콘은 없어졌습니다. 테두리가 이미 &lsquo;누를 수 있다&rsquo; 를 말하므로
        같은 말을 두 번 하던 셈입니다.</p>
+    <p><b>POI 줄도 테두리 카드입니다</b>(<code>#e3e4e8</code> 1px · <code>11263:45547</code> 실측).
+       놓치고 있던 것을 짚어 주셔서 넣었습니다. 넣고 보니 이유가 분명한데 —
+       <b>출발지 이름과 상세 위치가 같은 문법의 카드 둘로 나란히</b> 서면서 한 가족으로 읽힙니다.
+       테두리 색이 다른 것(<code>#e3e4e8</code> ↔ <code>#283873</code>)이 곧 무게 차이라,
+       무엇이 확정된 정보이고 무엇이 지금 할 일인지가 선 굵기 하나로 갈립니다.</p>
+    <p>이 김에 <b>테두리를 전부 <code>inset box-shadow</code> 로 바꿨습니다.</b> Figma 의 stroke 는
+       안쪽으로 그려져 크기를 먹지 않는데 CSS <code>border</code> 는 자리를 차지합니다.
+       그대로 두면 카드가 78 대신 80, POI 줄이 48 대신 50 이 되고, padding 에서 1 씩 빼는
+       땜질이 세 군데 생깁니다. <code>inset</code> 은 Figma 의 stroke 와 의미가 같아서
+       <b>padding 을 Figma 값 그대로</b>(12 · 14/16 · 4/6) 적어도 높이가 저절로 맞습니다.</p>
     <p><b>도착하면 카드가 잠깁니다.</b> 기사가 이미 그 자리에 서 있으니 지금 위치를 바꿔도
        받는 쪽이 없습니다. Figma 의 <code>차량 도착</code> 화면 <b>3개가 전부 값 있는 회색 카드</b> 하나뿐이고
        <code>＋</code> 빈 상태가 한 번도 안 나오는 것도 같은 이유로 읽힙니다. 그래서
