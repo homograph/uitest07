@@ -12,6 +12,8 @@
     --blue-600:#0074d7; --blue-500:#32a2fa; --blue-050:#f1f9fe; --blue-100:#e2f2fe;
     /* 제안값: Figma 보더 #e2f2fe 는 카드 배경 위에서 1.07:1 이라 선이 없는 것과 같다 */
     --blue-200:#a9d8f8; --blue-150:#b9ddfd;
+    --navy-line:#31487d;   /* 진입점 카드 테두리 (navy-700 보다 한 톤 밝다) */
+    --gray-450:#868b9c;    /* 전송 중 값 (gray-500 보다 한 톤 밝다) */
     --gray-950:#171a24; --gray-900:#262a38; --gray-800:#383d4f; --gray-700:#4b5064;
     --gray-500:#73788b; --gray-300:#99a5c0; --gray-200:#c0c8d9; --gray-100:#d5d7dc;
     --gray-80:#e3e4e8; --gray-50:#efeff1; --gray-30:#f5f6f7; --gray-e6:#e6e9ef;
@@ -145,7 +147,7 @@
      테두리만 있는 카드는 누를 수 있고, 회색으로 채워진 카드는 누를 수 없다.
      전송 중과 도착 후가 같은 '못 누름' 무리로 묶인 것도 이 규칙 하나로 설명된다. */
   .pkbox{box-sizing:border-box;width:100%;font:inherit;text-align:left;background:transparent;
-    box-shadow:inset 0 0 0 1px var(--navy-700);border:none;border-radius:4px;padding:12px;
+    box-shadow:inset 0 0 0 1px var(--navy-line);border:none;border-radius:4px;padding:12px;
     display:flex;flex-direction:column;gap:10px;cursor:pointer;}
   .pkbox.sending,.pkbox.arrived{background:var(--gray-50);box-shadow:inset 0 0 0 1px #fff;cursor:default;}
   /* 이 카드는 지정된 아파트 단지에서만 뜬다. 그러면 '아파트 단지 내로 부르시나요?' 는
@@ -176,7 +178,7 @@
      변경 직후 배지 gray-300 · 값 #73788b · loading/circle   ← 전송 중엔 강조를 거둔다
      도착 후   배지 gray-300 · 값 #262a38 · 아이콘 없음      ← 역할이 끝나면 파랑을 내린다 */
   .pkbox.sending .sqlab{background:var(--gray-300);box-shadow:none;color:#fff;}
-  .pkbox.sending .fill{color:var(--gray-500);}
+  .pkbox.sending .fill{color:var(--gray-450);}
   /* loading/circle: 20×20 자리에 16×16 원 · 흰 트랙 3.33 · 파란 호 4.44 */
   .spin{position:relative;width:16px;height:16px;box-sizing:border-box;
     border:3.33px solid #fff;border-radius:50%;}
@@ -1076,9 +1078,9 @@
        (Figma <code>11263:46162</code> 실측). 규칙은 한 줄입니다 —
        <b>테두리만 있는 카드는 누를 수 있고, 회색으로 채워진 카드는 누를 수 없습니다.</b></p>
     <table><tbody>
-      <tr><td><b>입력 전</b></td><td>투명 + <code>#283873</code> 1px · 안내 <code>#73788b</code> · <b>아이콘 없음</b></td></tr>
-      <tr><td><b>입력 완료</b></td><td>투명 + <code>#283873</code> 1px · 값 <code>#262a38</code></td></tr>
-      <tr><td><b>변경 직후</b></td><td><code>#efeff1</code> + <code>#fff</code> 1px · 값 <code>#73788b</code> · 로딩 원 · <b>못 누름</b></td></tr>
+      <tr><td><b>입력 전</b></td><td>투명 + <code>#31487d</code> 1px · 안내 <code>#73788b</code> · <b>아이콘 없음</b></td></tr>
+      <tr><td><b>입력 완료</b></td><td>투명 + <code>#31487d</code> 1px · 값 <code>#262a38</code></td></tr>
+      <tr><td><b>변경 직후</b></td><td><code>#efeff1</code> + <code>#fff</code> 1px · 값 <code>#868b9c</code> · 로딩 원 · <b>못 누름</b></td></tr>
       <tr><td><b>차량 도착 후</b></td><td><code>#efeff1</code> + <code>#fff</code> 1px · 값 <code>#262a38</code> · <b>못 누름</b></td></tr>
     </tbody></table>
     <p>배지는 <b>solid 에서 outline</b> 으로 바뀌었습니다(<code>#f1f9fe</code> 바탕 · <code>#b9ddfd</code> 테두리 ·
@@ -1089,6 +1091,9 @@
        빈/찬 구분이 사실상 안 됐습니다. 지금은 <b>카드 전체의 면과 선</b>이 그 일을 하므로
        흘긋 봐도 갈립니다. 게다가 &lsquo;누를 수 있나&rsquo; 라는 <b>행동 가능성</b>과 신호가 일치합니다 —
        전송 중과 도착 후가 같은 모습인 이유가 &lsquo;둘 다 지금은 손댈 수 없다&rsquo; 하나로 설명됩니다.</p>
+    <p>테두리와 전송 중 값 색은 한 톤씩 밝아졌습니다(<code>#283873</code> → <code>#31487d</code>,
+       <code>#73788b</code> → <code>#868b9c</code>). 카드가 남색 테두리로 바뀌면서 원래 값이
+       화면에서 다소 무거웠는데, 그만큼을 덜어낸 것으로 읽힙니다.</p>
     <p><code>＋</code> 아이콘은 없어졌습니다. 테두리가 이미 &lsquo;누를 수 있다&rsquo; 를 말하므로
        같은 말을 두 번 하던 셈입니다.</p>
     <p><b>POI 줄도 테두리 카드입니다</b>(<code>#e3e4e8</code> 1px · <code>11263:45547</code> 실측).
