@@ -178,9 +178,6 @@
   .pkbox[hidden]{display:none;}
   .pkbox.locked{cursor:default;}
   .ic{display:block;flex:0 0 auto;}
-    .was{flex:0 0 auto;font-size:11px;line-height:16px;font-weight:600;color:var(--blue-600);
-    background:#fff;border:1px solid var(--blue-100);border-radius:4px;padding:1px 5px;}
-  .was[hidden]{display:none;}
 
   /* 토스식: 답한 것은 위로 쌓이고, 지금 묻는 것만 아래에서 크게 */
   .ph-body{display:flex;flex-direction:column;}
@@ -693,7 +690,7 @@
               <span>차량이 도착하는 위치를 확인해주세요.</span>
             </div>
             <div class="fields">
-              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="픽업 위치 입력하기"><span class="pkq" id="pk-start-q">지상·지하 주차장 입력</span><span class="pkrow"><span class="sqlab">상세</span><span class="was" id="pk-start-tx-was" hidden></span><span class="ph" id="pk-start-tx">픽업 위치를 알려주세요</span><span class="ipw add"><svg class="ic" width="12" height="12" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#c0c2cc"/></svg></span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></span></button>
+              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="픽업 위치 입력하기"><span class="pkq" id="pk-start-q">지상·지하 주차장 입력</span><span class="pkrow"><span class="sqlab">상세</span><span class="ph" id="pk-start-tx">픽업 위치를 알려주세요</span><span class="ipw add"><svg class="ic" width="12" height="12" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#c0c2cc"/></svg></span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></span></button>
 
             </div>
           </div>
@@ -719,7 +716,7 @@
             <button class="obtn">경로 변경</button>
           </div>
           <div class="vpk">
-            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="픽업 위치 입력하기"><span class="pkq" id="pk-voy-q">지상·지하 주차장 입력</span><span class="pkrow"><span class="sqlab">상세</span><span class="was" id="pk-voy-tx-was" hidden></span><span class="ph" id="pk-voy-tx">픽업 위치를 알려주세요</span><span class="ipw add"><svg class="ic" width="12" height="12" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#c0c2cc"/></svg></span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></span><span class="sr" id="pk-voy-sr"></span></button>
+            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="픽업 위치 입력하기"><span class="pkq" id="pk-voy-q">지상·지하 주차장 입력</span><span class="pkrow"><span class="sqlab">상세</span><span class="ph" id="pk-voy-tx">픽업 위치를 알려주세요</span><span class="ipw add"><svg class="ic" width="12" height="12" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M24 18V0H18V18H0V24H18V42H24V24H42V18H24Z" fill="#c0c2cc"/></svg></span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></span><span class="sr" id="pk-voy-sr"></span></button>
 
           </div>
           <div class="vdiv"></div>
@@ -1132,18 +1129,22 @@
     <table><tbody>
       <tr><td><b>층</b></td><td>숫자만 · 1자리<br>웹 <code>numeric</code> · iOS <code>.numberPad</code> · AOS <code>number</code></td></tr>
       <tr><td><b>동</b></td><td>숫자 98.2% · 영문 1.8%(<code>C동</code>)<br>웹 <code>numeric</code> 으로 열고, 힌트 슬롯의 <b>&lsquo;A동·C동처럼 글자로 입력&rsquo;</b> 으로 <code>text</code> 전환<br>iOS <code>.numberPad</code> ↔ <code>.default</code> · AOS <code>number</code> ↔ <code>text</code></td></tr>
-      <tr><td><b>라인</b></td><td>숫자 + <code>-</code>/<code>~</code> + <code>호</code><br><b>숫자로 열고</b> 힌트의 <b>&lsquo;글자로 입력&rsquo;</b> 으로 전환 — 동과 같은 방식<br>iOS <code>.numberPad</code> ↔ <code>.default</code> · AOS <code>number</code> ↔ <code>text</code></td></tr>
+      <tr><td><b>라인</b></td><td>숫자 + <code>-</code>/<code>~</code> + <code>호</code><br><b>숫자로 열고</b> 힌트의 <b>&lsquo;글자로 입력&rsquo;</b> 으로 전환 — 동과 같은 방식<br>iOS <b><code>.numbersAndPunctuation</code></b> ↔ <code>.default</code> · AOS <code>number</code> ↔ <code>text</code></td></tr>
     </tbody></table>
     <p>라인은 <b>첫 글자가 항상 숫자</b>라 숫자판을 먼저 띄웁니다. 동과 같은 자리, 같은 방식이라
        한 번 배우면 둘 다 압니다. 라인 힌트에는 액션이 둘(<b>글자로 입력</b> · <b>라인이 없어요</b>) 붙습니다.</p>
     <p><span class="mk warn"></span><b>대신 이 값은 알고 가야 합니다.</b> 라인 값 614건 중
        <b>숫자만으로 끝나는 것은 20.4%</b> 뿐입니다. 나머지 <b>79.6%</b> 는 <code>-</code>/<code>~</code> 나 <code>호</code> 를 쓰므로,
        숫자로 열면 <b>5명 중 4명이 전환을 한 번 눌러야</b> 합니다. 동(영문 1.8%)과는 상황이 정반대입니다.</p>
-    <p>줄이는 방법이 둘 있습니다. ① <b>단위를 <code>라인</code> → <code>호라인</code></b> 으로 바꿔 <code>호</code> 를 흡수하면
-       숫자만으로 끝나는 비율이 <b>60.6%</b> 로 오르고 전환이 필요한 사람은 <code>-</code>/<code>~</code> 쓰는
-       <b>39.4%</b> 로 줄어듭니다(다만 <code>호</code> 없이 <code>2라인</code> 이라 쓰는 36.5% 에게는 <code>2호라인</code> 이 되므로 카피 판단이 필요).
-       ② iOS 만이라도 <b><code>.numbersAndPunctuation</code></b> 을 쓰면 <code>-</code> 가 숫자 화면에 같이 있어
-       그 39.4% 의 전환도 사라집니다. 둘을 같이 쓰면 iOS 에서 전환이 필요한 사람은 거의 없어집니다.</p>
+    <p><b>그래서 iOS 는 <code>.numberPad</code> 가 아니라 <code>.numbersAndPunctuation</code> 으로 갑니다.</b>
+       <code>-</code> 와 <code>~</code> 가 숫자와 <b>같은 화면</b>에 있어서, <code>-</code>/<code>~</code> 를 쓰는 <b>39.4%</b> 는
+       전환 없이 그대로 칩니다. 남는 건 <code>호</code> 를 치는 사람인데 그건 키보드 자체의 <code>ABC</code> 로 넘어갑니다.</p>
+    <p>앱 안의 <b>&lsquo;글자로 입력&rsquo; 은 그대로 둡니다.</b> 안드로이드에는 <code>.numbersAndPunctuation</code> 에
+       해당하는 <code>inputType</code> 이 없어서 — <code>number</code> 는 글자를 아예 막습니다 — 전환 장치가 필요합니다.
+       iOS 에서는 다소 겹치지만, 동과 같은 자리에 같은 동작으로 있는 편이 플랫폼마다 다른 것보다 낫습니다.</p>
+    <p>남은 선택 하나 — <b>단위를 <code>라인</code> → <code>호라인</code></b> 으로 바꾸면 숫자만으로 끝나는 비율이
+       <b>60.6%</b> 로 오릅니다. 다만 <code>호</code> 없이 <code>2라인</code> 이라 쓰는 <b>36.5%</b> 에게는 <code>2호라인</code> 이 되므로
+       카피 판단이 필요해 손대지 않았습니다.</p>
     <p><span class="mk warn"></span>네이티브 키패드가 실제로 어떻게 뜨는지는 <b>이 환경에서 확인하지 못했습니다</b>
        (Xcode 미설치로 iOS 시뮬레이터를 못 띄웠습니다). 위 표의 <code>keyboardType</code>/<code>inputType</code> 는
        <b>검증한 값이 아니라 스펙 제안</b>입니다. 웹 <code>inputmode</code> 가 실제로 걸리는 것까지만 실측했습니다.</p>
@@ -1688,21 +1689,21 @@
   ].join('|');
   const dirty = () => flat(S.d) !== flat(S.current);
 
-  function paintField(txId,wasId){
+  /* 지난번 값이라는 표시는 뗐다. [상세] 옆에 배지가 하나 더 붙으면 배지가 둘이 되는데,
+     '지난번' 은 사용자가 할 일을 바꾸지 않는다 — 맞으면 그냥 두고 틀리면 고친다.
+     값이 이미 들어와 있다는 사실 자체가 이미 그 말을 하고 있다. Figma 에도 이 배지는 없다. */
+  function paintField(txId){
     const has=!!S.value;
     el(txId).textContent = has ? (S.current ? core(S.current) : S.value) : PH;
     el(txId).className   = has ? 'fill' : 'ph';
     el(txId).closest('.pkbox').classList.toggle('filled', has);
-    const w=el(wasId);
-    w.hidden = !(has && S.fromSaved);
-    if(!w.hidden) w.textContent = S.always ? '항상' : '지난번';
   }
   function render(){
     $$('.tab[data-mode]').forEach(t=>t.classList.toggle('on',t.dataset.mode===S.mode));
     $$('#rider .scr').forEach(x=>x.classList.toggle('on',x.id===(S.screen==='start'?'s-start':'s-voyage')));
     const has=!!S.value;
-    paintField('pk-start-tx','pk-start-tx-was');
-    paintField('pk-voy-tx','pk-voy-tx-was');
+    paintField('pk-start-tx');
+    paintField('pk-voy-tx');
     /* 새 Figma 에서는 리딩 아이콘 자리가 곧 상태 슬롯이다 — + / 로딩 / 체크.
        P 아이콘이 '주차장' 을 말하던 구조가 아니므로 자리를 교체하는 게 맞다.
        (그래서 체크를 3초 뒤 걷어내던 이전 판단은 접었다.) */
