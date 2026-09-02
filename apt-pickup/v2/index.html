@@ -813,8 +813,8 @@
         <div class="drover" id="drover" hidden>
           <div class="drcard">
             <div class="drinfo">
-              <div class="drtitle"><svg class="tdlogo" width="40" height="10" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M43.2016 3H47.9996V12.5985H57.599V17.4004H47.9996V27H43.2016V3Z" fill="white"/><path d="M9.60059 7.79815H33.6021V3.00004H9.60059V7.79815Z" fill="white"/><path d="M9.60059 26.9999H33.6021V22.1972H9.60059V26.9999Z" fill="white"/><path d="M9.60059 17.4005H33.6021V12.5985H9.60059V17.4005Z" fill="white"/><path d="M86.4255 7.79815H62.424V3.00004H86.4255V7.79815Z" fill="white"/><path d="M110.401 12.5985H100.825V3.00004H96.0234V26.9999H100.825V17.4005H110.401V12.5985Z" fill="white"/><path d="M86.4255 26.9999H62.424V22.1972H86.4255V26.9999Z" fill="white"/></svg><span id="drover-t">픽업 상세 변경됨</span></div>
-              <p class="drbody" id="drover-b">고객이 상세 위치를 변경했습니다.</p>
+              <div class="drtitle"><svg class="tdlogo" width="40" height="10" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M43.2016 3H47.9996V12.5985H57.599V17.4004H47.9996V27H43.2016V3Z" fill="white"/><path d="M9.60059 7.79815H33.6021V3.00004H9.60059V7.79815Z" fill="white"/><path d="M9.60059 26.9999H33.6021V22.1972H9.60059V26.9999Z" fill="white"/><path d="M9.60059 17.4005H33.6021V12.5985H9.60059V17.4005Z" fill="white"/><path d="M86.4255 7.79815H62.424V3.00004H86.4255V7.79815Z" fill="white"/><path d="M110.401 12.5985H100.825V3.00004H96.0234V26.9999H100.825V17.4005H110.401V12.5985Z" fill="white"/><path d="M86.4255 26.9999H62.424V22.1972H86.4255V26.9999Z" fill="white"/></svg><span>픽업 상세</span></div>
+              <p class="drbody" id="drover-b">고객이 상세 위치를 변경했습니다</p>
             </div>
             <button type="button" class="drbtn" id="drover-ok">확인하기</button>
           </div>
@@ -985,10 +985,12 @@
     <h3><i>3</i>상단 구성 가 · 나</h3>
     <p>둘 다 <b>제목을 하나로</b> 만듭니다. 내비의 &lsquo;상세 위치 입력&rsquo; 과 본문의 &lsquo;어디서 타세요?&rsquo; 가
        같은 말을 두 번 했고, 아래쪽이 더 커서(15/700 대 17/700) 어디가 진입점인지 화면이 답을 못 했습니다.
-       질문을 지웠습니다. <b>안내문(&lsquo;배차되면 기사님께 함께 전달됩니다.&rsquo;)도 이제 없습니다</b> —
-       Figma 가 12개 변형 전부에서 뺐고, 눈으로는 안 보이는 변경이라 감사 diff 로 잡았습니다.
-       내비 제목이 이미 무엇을 하는 화면인지 말하고, 전달 시점은 저장 버튼 문구가 말합니다.
-       빠진 자리는 <code>body pad-top 6 + sp 20 = 26</code> 실측대로 맞췄습니다.</p>
+       질문을 지웠습니다. <b>안내문은 한 번 빠졌다가 다시 돌아왔습니다</b> — 문구는
+       <code>배차되면 기사님께 함께 전달됩니다.</code> → <b><code>배차된 기사님에게 전달됩니다.</code></b> 로,
+       자리는 <b>제목 아래 캡션 → 힌트 슬롯의 쉬는 상태</b>로 바뀌었습니다.
+       포커스가 없으면 이 문장이 있고, 필드를 짚으면 그 필드의 힌트가 자리를 넘겨받습니다
+       (Figma <code>11161:72778</code> · 12개 변형 중 10개에 이 문장, 나머지 둘은 <code>동</code>·<code>라인</code> 포커스라 힌트가 대신 들어감).
+       &lsquo;빈 자리가 커 보인다&rsquo; 던 문제를 슬롯을 접는 대신 <b>쓸모 있는 기본값으로 채워</b> 푼 셈입니다.</p>
     <p><b>가 · 위치를 문장 안에</b>는 세그먼트를 없애고 지하/지상을 문장 첫 슬롯의 칩으로 옮깁니다.
        화면에 남는 것이 문장 하나라, <b>입력하는 것이 곧 기사님이 받을 문장</b>이라는 주장이 끝까지 유지됩니다.
        칩은 값이 아니라 선택지라서 같은 채움·높이·라운드를 쓰되 <b>⌄</b> 표식을 답니다.</p>
@@ -1098,10 +1100,13 @@
        없던 정보가 생겼다는 뜻입니다. 그래서 본문뿐 아니라 <b>타이틀도</b> 나눕니다. 파란 타이틀이
        먼저 읽히는 자리라 거기서 갈려야 한 번에 압니다.</p>
     <table><tbody>
-      <tr><td><b>운행 중 첫 입력</b></td><td><b>픽업 상세 추가됨</b> · 고객이 상세 위치를 알려줬습니다.</td></tr>
-      <tr><td><b>운행 중 변경</b></td><td><b>픽업 상세 변경됨</b> · 고객이 상세 위치를 변경했습니다. (Figma 원본)</td></tr>
+      <tr><td><b>운행 중 첫 입력</b></td><td>픽업 상세 · <b>고객이 상세 위치를 입력했습니다</b></td></tr>
+      <tr><td><b>운행 중 변경</b></td><td>픽업 상세 · <b>고객이 상세 위치를 변경했습니다</b></td></tr>
       <tr><td><b>출발지에서 넣고 배차</b></td><td>오버레이 없음 — 배차 시 콜 정보에 이미 붙어 오므로 &lsquo;알림&rsquo; 이 아닙니다.</td></tr>
     </tbody></table>
+    <p><b>타이틀은 <code>픽업 상세</code> 로 고정</b>이고 본문만 갈립니다. 제가 타이틀까지
+       (<code>변경됨</code>/<code>추가됨</code>) 갈랐던 것을 디자이너가 되돌렸습니다 — 처음에 물으셨던
+       &lsquo;문구만 첫 입력에 맞게&rsquo; 가 맞았고, 제가 한 겹 더 얹었던 셈입니다.</p>
     <p><b>[확인하기] 를 누르면 배지에 파란 테두리가 남습니다</b>(<code>#32a2fa</code> 1.5px, inset).
        켜지는 순간 그 테두리가 <b>한 번만</b> 퍼졌다 모입니다(700ms).</p>
     <p>여기서 중요한 건 <b>확인하기가 강조 트리거가 아니라 앱 전환</b>이라는 점입니다. 기사는 내비를
@@ -1154,7 +1159,10 @@
     <p><b>재편집은 취소 + 비활성 저장</b>입니다(Figma <code>상태=재편집</code>). 고치러 들어온 직후엔
        바꾼 게 없으니 저장할 것도 없고, 나가는 길은 취소가 맡습니다. 가르는 기준은 값의 유무가 아니라
        <b>그 값이 이미 상대에게 가 있느냐</b>입니다 — 출발지는 저장됨, 운행은 전달됨.
-       둘 다 아닌 <code>운행 중 진입</code> 은 값이 차 있어도 <b>[이대로 보내기] 가 활성</b>이고 취소가 없습니다.</p>
+       둘 다 아닌 <code>운행 중 진입</code> 은 값이 차 있어도 <b>버튼이 활성</b>이고 취소가 없습니다.
+       버튼 문구는 이번에 <b><code>이 위치로 저장</code> 하나로 통일</b>됐습니다 — 예전엔 운행 화면만
+       <code>이대로 보내기</code> 였는데, 안내문이 두 상황 모두 <code>배차된 기사님에게</code> 로 합쳐지면서
+       버튼도 같이 합쳐졌습니다.</p>
     <p><b>남는 지적 하나</b> — 출발지 화면에서는 빈/찬 구분이 <b>배지 색 하나</b>에 걸립니다
        (<code>#99a5c0</code> 2.47:1 ↔ <code>#32a2fa</code> 2.73:1, 차이 <b>0.26</b>). 배경도 테두리도 같습니다.
        운행 화면은 빈 상태가 안 나오므로 해당 없습니다. 출발지만 <b>찬 상태 배경을 <code>#f1f9fe</code></b> 로
@@ -1504,16 +1512,21 @@
   }
   function fitAll(){ ['f-floor','f-dong','f-line2'].forEach(id=>fitBv(el(id))); }
 
+  /* Figma 가 안내문을 되살렸다. 지난번엔 지웠다가 이번엔 문구를 바꿔 다시 넣었는데,
+     자리가 달라졌다 — 예전처럼 제목 아래 캡션이 아니라 힌트 슬롯의 '쉬는 상태' 다.
+     포커스가 없으면 이 문장이 있고, 필드를 짚으면 그 필드의 힌트가 자리를 넘겨받는다.
+     '빈 자리가 커 보인다' 던 문제를 슬롯을 접는 대신 쓸모 있는 기본값으로 채워 푼 셈이다. */
+  const REST = '배차된 기사님에게 전달됩니다.';
   function renderHint(){
     const k = S.focus, cfg = HINT[k];
-    el('f-hint-t').innerHTML = cfg && cfg.t ? cfg.t : '';
+    el('f-hint-t').innerHTML = cfg ? (cfg.t || '') : REST;
     const a=el('f-hint-a');
     a.hidden = !(cfg && cfg.a);
     if(cfg && cfg.a) a.textContent = cfg.a();
     const a2=el('f-hint-a2');
     a2.hidden = !(cfg && cfg.a2);
     if(cfg && cfg.a2) a2.textContent = cfg.a2();
-    el('f-hint').classList.toggle('on', !!cfg);
+    el('f-hint').classList.add('on');
   }
   function paintFEtc(){
     const p=el('f-etc-help'); if(!p) return;
@@ -1614,7 +1627,7 @@
       el('ph-skip').hidden = true;
       const n=el('ph-next');
       n.disabled = !ok || (reedit && !dirty());
-      n.textContent = S.opened==='start' ? '이 위치로 저장' : '이대로 보내기';
+      n.textContent = '이 위치로 저장';   /* Figma: 운행 중 진입도 같은 문구로 통일됐다 */
       return;
     }
 
@@ -1622,7 +1635,7 @@
     skip.hidden = done || !ASK[S.step].skip;
     if(done){
       next.disabled = reedit && !dirty();
-      next.textContent = S.opened==='start' ? '이 위치로 저장' : '이대로 보내기';
+      next.textContent = '이 위치로 저장';
     } else if(S.step==='lvl' || S.step==='floor'){
       next.disabled=true; next.textContent='다음';
     } else {
@@ -1738,9 +1751,9 @@
     /* 값이 사라졌거나 아직 안 닿았으면 확인할 것도 없다. */
     el('drover').hidden = !(S.drover && got);
     el('dtalkbody').classList.toggle('hl', !!(S.hilite && got));
-    el('drover-t').textContent = S.droverEdit ? '픽업 상세 변경됨' : '픽업 상세 추가됨';
-    el('drover-b').textContent = S.droverEdit ? '고객이 상세 위치를 변경했습니다.'
-                                              : '고객이 상세 위치를 알려줬습니다.';
+    /* 타이틀은 고정, 본문만 갈린다 — 제가 타이틀까지 갈랐던 걸 디자이너가 되돌렸다. */
+    el('drover-b').textContent = S.droverEdit ? '고객이 상세 위치를 변경했습니다'
+                                              : '고객이 상세 위치를 입력했습니다';
     /* Figma "자세한 탑승 위치" 그대로: 한 흐름으로 흐르되 층·동만 20sp 볼드,
        라인과 꼬리는 18sp 레귤러이고 꼬리는 한 단계 더 흐리다.
        꼬리를 남기되 무게로 낮추는 방식이라, 운전 중 스캔에서 값이 먼저 잡힌다. */
