@@ -450,6 +450,8 @@
     font-weight:600;color:var(--navy-800);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
   .fhint .fa{font-size:13px;}
   .fhint .fa[hidden]{display:none;}
+  .fhint .fas{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
+  .fhint .fas .fa+.fa:not([hidden])::before{content:'·';margin-right:10px;color:var(--gray-100);}
   /* 빈칸이 '안 정했다' 인지 '없다' 인지 모르던 상태를, 고른 답으로 바꾼다 */
   .fld .nn{flex:0 0 auto;font-size:16px;font-weight:600;color:var(--gray-500);}
   /* 필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면 문장을 쓰는 도중에 방해가 된다.
@@ -759,14 +761,15 @@
               <span class="br" id="f-br1"></span>
               <label class="fld"><input class="bv dg" id="f-dong" maxlength="5"
                      placeholder="101" aria-label="몇 동" /><span class="u">동</span></label>
-              <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="text" maxlength="5"
+              <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" maxlength="5"
                      placeholder="2-5호" aria-label="호수 라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label>
               <span class="br"></span>
               <span class="w tail2">앞에서 탈게요</span>
             </div>
             <div class="fhint" id="f-hint">
               <p class="ft" id="f-hint-t"></p>
-              <button type="button" class="fa" id="f-hint-a" hidden></button>
+              <span class="fas"><button type="button" class="fa" id="f-hint-a" hidden></button><button
+                type="button" class="fa" id="f-hint-a2" hidden></button></span>
             </div>
 
             <button type="button" class="addetc" id="f-addetc" hidden><span>찾아오는 길</span><svg class="ic tg" id="f-etc-ic" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path id="f-etc-v" d="M6.5 1.2V11.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M1.2 6.5H11.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
@@ -1129,13 +1132,18 @@
     <table><tbody>
       <tr><td><b>층</b></td><td>숫자만 · 1자리<br>웹 <code>numeric</code> · iOS <code>.numberPad</code> · AOS <code>number</code></td></tr>
       <tr><td><b>동</b></td><td>숫자 98.2% · 영문 1.8%(<code>C동</code>)<br>웹 <code>numeric</code> 으로 열고, 힌트 슬롯의 <b>&lsquo;A동·C동처럼 글자로 입력&rsquo;</b> 으로 <code>text</code> 전환<br>iOS <code>.numberPad</code> ↔ <code>.default</code> · AOS <code>number</code> ↔ <code>text</code></td></tr>
-      <tr><td><b>라인</b></td><td>숫자 + <code>-</code>/<code>~</code> + <code>호</code><br>웹 <code>text</code> · iOS <code>.default</code> · AOS <code>text</code></td></tr>
+      <tr><td><b>라인</b></td><td>숫자 + <code>-</code>/<code>~</code> + <code>호</code><br><b>숫자로 열고</b> 힌트의 <b>&lsquo;글자로 입력&rsquo;</b> 으로 전환 — 동과 같은 방식<br>iOS <code>.numberPad</code> ↔ <code>.default</code> · AOS <code>number</code> ↔ <code>text</code></td></tr>
     </tbody></table>
-    <p><span class="mk warn"></span><b>따로 결정할 것</b> — 라인은 <b>첫 글자가 항상 숫자</b>인데 전체 키보드는
-       글자판이 먼저 뜹니다. 매번 <code>123</code> 한 번이 손해입니다. <b>단위를 <code>라인</code> → <code>호라인</code></b> 으로 바꿔
-       <code>호</code> 를 흡수하면 사용자가 칠 것은 숫자와 <code>-</code> 뿐이 되고, 그러면
-       iOS <code>.numbersAndPunctuation</code>(숫자판이 먼저, <code>-</code> 도 같은 화면)이 성립합니다.
-       다만 <code>호</code> 없이 <code>2라인</code> 이라 쓰는 <b>36.5%</b> 에게는 <code>2호라인</code> 이 되므로 카피 판단이 필요합니다.</p>
+    <p>라인은 <b>첫 글자가 항상 숫자</b>라 숫자판을 먼저 띄웁니다. 동과 같은 자리, 같은 방식이라
+       한 번 배우면 둘 다 압니다. 라인 힌트에는 액션이 둘(<b>글자로 입력</b> · <b>라인이 없어요</b>) 붙습니다.</p>
+    <p><span class="mk warn"></span><b>대신 이 값은 알고 가야 합니다.</b> 라인 값 614건 중
+       <b>숫자만으로 끝나는 것은 20.4%</b> 뿐입니다. 나머지 <b>79.6%</b> 는 <code>-</code>/<code>~</code> 나 <code>호</code> 를 쓰므로,
+       숫자로 열면 <b>5명 중 4명이 전환을 한 번 눌러야</b> 합니다. 동(영문 1.8%)과는 상황이 정반대입니다.</p>
+    <p>줄이는 방법이 둘 있습니다. ① <b>단위를 <code>라인</code> → <code>호라인</code></b> 으로 바꿔 <code>호</code> 를 흡수하면
+       숫자만으로 끝나는 비율이 <b>60.6%</b> 로 오르고 전환이 필요한 사람은 <code>-</code>/<code>~</code> 쓰는
+       <b>39.4%</b> 로 줄어듭니다(다만 <code>호</code> 없이 <code>2라인</code> 이라 쓰는 36.5% 에게는 <code>2호라인</code> 이 되므로 카피 판단이 필요).
+       ② iOS 만이라도 <b><code>.numbersAndPunctuation</code></b> 을 쓰면 <code>-</code> 가 숫자 화면에 같이 있어
+       그 39.4% 의 전환도 사라집니다. 둘을 같이 쓰면 iOS 에서 전환이 필요한 사람은 거의 없어집니다.</p>
     <p><span class="mk warn"></span>네이티브 키패드가 실제로 어떻게 뜨는지는 <b>이 환경에서 확인하지 못했습니다</b>
        (Xcode 미설치로 iOS 시뮬레이터를 못 띄웠습니다). 위 표의 <code>keyboardType</code>/<code>inputType</code> 는
        <b>검증한 값이 아니라 스펙 제안</b>입니다. 웹 <code>inputmode</code> 가 실제로 걸리는 것까지만 실측했습니다.</p>
@@ -1252,7 +1260,7 @@
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false}, focus:null,
-    step:null, skipped:{}, routeOpen:null, dongMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
+    step:null, skipped:{}, routeOpen:null, dongMode:'num', lineMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
   };
 
   /* ── 문장 ── */
@@ -1442,6 +1450,7 @@
     el('f-fld-line').querySelector('.u').hidden = !!d.noLine;
     el('f-line-nn').hidden = !d.noLine;
     dg.setAttribute('inputmode', S.dongMode==='text' ? 'text' : 'numeric');
+    el('f-line2').setAttribute('inputmode', S.lineMode==='text' ? 'text' : 'numeric');
 
     renderHint();
 
@@ -1474,8 +1483,11 @@
             go:()=>{ S.dongMode = (S.dongMode==='text') ? 'num' : 'text'; renderSentence();
                      setTimeout(()=>el('f-dong').focus(),20); } },
     line: { t:'공동현관에 붙어 있는 <b>그대로</b> 적으면 됩니다.',
-            a:()=>'우리 아파트는 라인이 없어요',
-            go:()=>{ S.d.noLine=true; S.d.line=''; S.focus=null; renderSentence(); paintFoot(); } }
+            a:()=>S.lineMode==='text' ? '숫자로 입력' : '글자로 입력',
+            go:()=>{ S.lineMode = (S.lineMode==='text') ? 'num' : 'text'; renderSentence();
+                     setTimeout(()=>el('f-line2').focus(),20); },
+            a2:()=>'우리 아파트는 라인이 없어요',
+            go2:()=>{ S.d.noLine=true; S.d.line=''; S.focus=null; renderSentence(); paintFoot(); } }
   };
   /* 값이 기본 폭을 넘칠 때만 늘린다. 늘 내용에 딱 맞추면 한 글자마다 옆 칸이 밀린다 */
   let MEAS=null;
@@ -1495,8 +1507,11 @@
     const k = S.focus, cfg = HINT[k];
     el('f-hint-t').innerHTML = cfg && cfg.t ? cfg.t : '';
     const a=el('f-hint-a');
-    a.hidden = !cfg;
-    if(cfg) a.textContent = cfg.a();
+    a.hidden = !(cfg && cfg.a);
+    if(cfg && cfg.a) a.textContent = cfg.a();
+    const a2=el('f-hint-a2');
+    a2.hidden = !(cfg && cfg.a2);
+    if(cfg && cfg.a2) a2.textContent = cfg.a2();
     el('f-hint').classList.toggle('on', !!cfg);
   }
   function paintFEtc(){
@@ -1533,7 +1548,10 @@
     /* mousedown 을 막아야 링크를 누르는 순간 포커스가 빠져 슬롯이 먼저 사라지지 않는다 */
     const a=el('f-hint-a');
     a.addEventListener('mousedown',ev=>ev.preventDefault());
-    a.addEventListener('click',()=>{ const c=HINT[S.focus]; if(c) c.go(); });
+    a.addEventListener('click',()=>{ const c=HINT[S.focus]; if(c && c.go) c.go(); });
+    const a2=el('f-hint-a2');
+    a2.addEventListener('mousedown',ev=>ev.preventDefault());
+    a2.addEventListener('click',()=>{ const c=HINT[S.focus]; if(c && c.go2) c.go2(); });
     [['floor',fl],['dong',dg],['line',el('f-line2')],['etc',el('f-etc')]].forEach(([k,i])=>{
       i.addEventListener('focus',()=>{
         S.focus=k; renderHint();
