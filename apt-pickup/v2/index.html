@@ -373,7 +373,7 @@
      필수(위치·층·동)는 처음부터 전부 보이고, 선택 입력만 필수를 채운 뒤 나타난다.
      층·동은 라벨을 따로 두지 않는다. 문장 안의 '층' '동' 글자가 곧 라벨이다. */
   .ph-body.sform{justify-content:flex-start;gap:0;}
-  .fform{width:100%;}
+  .fform{width:100%;display:flex;flex-direction:column;gap:20px;}
   /* 안내문('배차되면 기사님께 함께 전달됩니다.')은 Figma 가 12개 변형에서 전부 뺐다.
      내비 제목 '상세 위치 입력' 이 이미 같은 말을 하고, 전달 시점은 저장 버튼 문구가 말한다.
      빠진 자리는 body pad-top 6 + sp 20 = 26 으로 실측해 맞췄다. */
@@ -469,10 +469,12 @@
      한 줄짜리 링크만 조용히 나타나고, 필요한 사람(26.9%)이 눌렀을 때 필드를 연다. */
   /* 토글은 오른쪽 끝. 펼침 컨트롤이 관습적으로 있는 자리이기도 하고,
      아이콘이 사라질 때(값이 있을 때) 라벨이 밀리지 않는다 — 왼쪽에 두면 21px 왼쪽으로 튄다. */
+  /* Figma etc-header: 312×50 · 위쪽 stroke #e3e4e8 · gap8.
+     위 선은 inset 으로 그려 50 을 지킨다(테두리가 자리를 먹으면 51 이 된다). */
   .addetc{display:flex;align-items:center;gap:8px;
-    width:100%;margin-top:22px;border:none;background:none;padding:14px 0;
-    font:inherit;font-size:15px;font-weight:600;color:var(--navy-800);text-align:left;cursor:pointer;
-    border-top:1px solid var(--gray-100);border-radius:0;
+    width:100%;margin-top:0;border:none;background:none;padding:15px 0;
+    font:inherit;font-size:15px;line-height:20px;font-weight:500;color:var(--navy-800);text-align:left;cursor:pointer;
+    box-shadow:inset 0 1px 0 0 var(--gray-80);border-radius:0;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .addetc>span:first-child{flex:1 1 auto;min-width:0;}
   .addetc[hidden]{display:none;}
@@ -480,7 +482,7 @@
      접기와 지우기를 나누면 '접었는데 값은 남아 있는' 상태가 생기는데,
      그 값은 화면에 안 보이면서 기사에게는 가므로 사용자가 통제를 잃는다. */
   .addetc.open #f-etc-v{display:none;}
-  .fopt{width:100%;margin-top:2px;padding-top:0;border-top:none;
+  .fopt{width:100%;margin-top:0;padding-top:0;border-top:none;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .fopt .flab3{margin:0 0 9px;display:flex;align-items:center;font-size:15px;line-height:22px;
     font-weight:700;color:var(--gray-900);}
@@ -1114,8 +1116,12 @@
        <b>동이 필수에서 빠진다</b>는 뜻이라 저장 버튼 활성 조건도 함께 고쳤습니다(동 92.9% 사용 → 7.1% 를 위한 탈출구).
        라인 쪽 문구도 <code>우리 아파트는 라인이 없어요</code> → <b><code>라인이 없어요</code></b> 로 짧아졌습니다.</p>
     <p>여백은 <code>body pad 24 사방 · gap 20</code> 으로 정리됐습니다. 예전엔 높이 0 짜리
-       <code>sp</code> 프레임을 사이사이 끼워 간격을 만들었는데, 그게 전부 auto-layout gap 으로 바뀌었습니다.</p>
-    <p><b>확정된 것</b> — <code>라인 입력 중</code> 은 <b>활성</b>이 맞습니다(Figma 변형 쪽이 어긋난 것).
+       <code>sp</code> 프레임을 사이사이 끼워 간격을 만들었는데, 그게 전부 auto-layout gap 으로 바뀌었습니다.
+       프로토타입도 <b>gap 을 실제 형제들이 있는 <code>.fform</code> 으로 옮겼습니다</b> —
+       <code>.ph-body</code> 에 걸어 두었더니 자식이 하나뿐이라 아무 데도 안 먹었고,
+       그래서 <b>문장과 칩이 0px 로 붙어 있었습니다.</b> 지금은 문장 102 · 간격 20 ·
+       슬롯 12/38 · 간격 20 · 헤더 50 으로 Figma 와 같습니다.</p>
+    <p><b>확정된 것</b> — <code>라인 입력 중</code> 은 <b>활성</b>이 맞습니다(Figma 변형도 이후 활성으로 고쳐졌습니다).
        <code>동 없음</code> 은 <code>라인 없음</code> 과 <b>같은 규칙</b>입니다. 둘 다 프로토타입이 이미 그렇게 동작합니다.</p>
     <p><b>지상을 고르면 층은 <code>1</code> 로 채워집니다.</b> 지상 주차장은 곧 1층이라,
        층 칸은 접히지만 <b>값은 비워 두지 않습니다</b> — 비우면 저장되는 데이터에 층이 빈 구멍으로 남습니다.
