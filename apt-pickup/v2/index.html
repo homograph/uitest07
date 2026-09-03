@@ -12,7 +12,7 @@
     --blue-600:#0074d7; --blue-500:#32a2fa; --blue-050:#f1f9fe; --blue-100:#e2f2fe;
     /* 제안값: Figma 보더 #e2f2fe 는 카드 배경 위에서 1.07:1 이라 선이 없는 것과 같다 */
     --blue-200:#a9d8f8; --blue-150:#b9ddfd;
-    --navy-line:#31487d;   /* 진입점 카드 테두리 (navy-700 보다 한 톤 밝다) */
+    --navy-line:#60667a;   /* 진입점 카드 테두리 — #283873 → #31487d → #60667a 로 두 번 밝아졌다 */
     --gray-450:#868b9c;    /* 전송 중 값 (gray-500 보다 한 톤 밝다) */
     --gray-950:#171a24; --gray-900:#262a38; --gray-800:#383d4f; --gray-700:#4b5064;
     --gray-500:#73788b; --gray-300:#99a5c0; --gray-200:#c0c8d9; --gray-100:#d5d7dc;
@@ -179,6 +179,8 @@
      도착 후   배지 gray-300 · 값 #262a38 · 아이콘 없음      ← 역할이 끝나면 파랑을 내린다 */
   .pkbox.sending .sqlab{background:var(--gray-300);box-shadow:none;color:#fff;}
   .pkbox.sending .fill{color:var(--gray-450);}
+  /* 도착 후에도 값이 흐려진다 — 못 누르는 카드는 값까지 물러난다. */
+  .pkbox.arrived .fill{color:var(--gray-500);}
   /* loading/circle: 20×20 자리에 16×16 원 · 흰 트랙 3.33 · 파란 호 4.44 */
   .spin{position:relative;width:16px;height:16px;box-sizing:border-box;
     border:3.33px solid #fff;border-radius:50%;}
@@ -250,7 +252,7 @@
   .prev2.ready span{color:var(--gray-950);font-weight:600;}
   /* 상세 위치는 선택 입력이다. 넣을 수 있으면 뺄 수도 있어야 한다.
      필수 칸을 비우는 방법으로는 못 뺀다 — 비우면 CTA 가 비활성이 되기 때문이다.
-     하단에 두면 '이 위치로 저장' 바로 위라 정반대 결과의 두 버튼이 12px 간격이 된다.
+     하단에 두면 '이 위치로 보내기' 바로 위라 정반대 결과의 두 버튼이 붙는다.
      헤더 우측은 스크롤과 무관하게 늘 보이고, 확정 액션에서 물리적으로 가장 멀다. */
   .ph-bar .sp{flex:1 1 auto;}
   .phdel{font-size:14px !important;color:var(--gray-700) !important;}
@@ -941,7 +943,7 @@
     <p><b>넣은 뒤에 빼는 길도 필요합니다.</b> 상세 위치는 선택 입력인데, 한 번 확정하면 되돌릴 방법이 없었습니다.
        필수 칸을 비워서 빼는 건 안 됩니다 — 비우면 CTA 가 비활성이 되니까요.
        <b>헤더 우측</b>에 <b>지우기</b>를 뒀습니다. 처음엔 시트 하단에 뒀는데,
-       거기는 <b>&lsquo;이 위치로 저장&rsquo; 바로 위</b>라 <b>정반대 결과의 두 버튼이 12px 간격</b>이 됩니다.
+       거기는 <b>&lsquo;이 위치로 보내기&rsquo; 바로 위</b>라 <b>정반대 결과의 두 버튼이 붙습니다.</b>
        헤더 우측은 스크롤과 무관하게 늘 보이고, 확정 액션에서 물리적으로 가장 멉니다.
        좌측 <b>×</b>(고치던 걸 취소)와 우측 <b>지우기</b>(값 자체를 삭제)로 성격도 갈립니다.
        <b>이미 확정된 값을 고치러 들어왔을 때만</b> 나타나므로 처음 입력 중에는 보이지 않습니다.</p>
@@ -1083,10 +1085,10 @@
        (Figma <code>11263:46162</code> 실측). 규칙은 한 줄입니다 —
        <b>테두리만 있는 카드는 누를 수 있고, 회색으로 채워진 카드는 누를 수 없습니다.</b></p>
     <table><tbody>
-      <tr><td><b>입력 전</b></td><td>투명 + <code>#31487d</code> 1px · 안내 <code>#73788b</code> · <b>아이콘 없음</b></td></tr>
-      <tr><td><b>입력 완료</b></td><td>투명 + <code>#31487d</code> 1px · 값 <code>#262a38</code></td></tr>
+      <tr><td><b>입력 전</b></td><td>투명 + <code>#60667a</code> 1px · 안내 <code>#73788b</code> · <b>아이콘 없음</b></td></tr>
+      <tr><td><b>입력 완료</b></td><td>투명 + <code>#60667a</code> 1px · 값 <code>#262a38</code></td></tr>
       <tr><td><b>변경 직후</b></td><td><code>#efeff1</code> + <code>#fff</code> 1px · 값 <code>#868b9c</code> · 로딩 원 · <b>못 누름</b></td></tr>
-      <tr><td><b>차량 도착 후</b></td><td><code>#efeff1</code> + <code>#fff</code> 1px · 값 <code>#262a38</code> · <b>못 누름</b></td></tr>
+      <tr><td><b>차량 도착 후</b></td><td><code>#efeff1</code> + <code>#fff</code> 1px · 값 <code>#73788b</code> · <b>못 누름</b></td></tr>
     </tbody></table>
     <p>배지는 <b>solid 에서 outline</b> 으로 바뀌었습니다(<code>#f1f9fe</code> 바탕 · <code>#b9ddfd</code> 테두리 ·
        <code>#32a2fa</code> 글자). 네 상태 중 셋이 같은 배지를 쓰고 <b>전송 중만 회색 solid</b> 입니다 —
@@ -1096,9 +1098,11 @@
        빈/찬 구분이 사실상 안 됐습니다. 지금은 <b>카드 전체의 면과 선</b>이 그 일을 하므로
        흘긋 봐도 갈립니다. 게다가 &lsquo;누를 수 있나&rsquo; 라는 <b>행동 가능성</b>과 신호가 일치합니다 —
        전송 중과 도착 후가 같은 모습인 이유가 &lsquo;둘 다 지금은 손댈 수 없다&rsquo; 하나로 설명됩니다.</p>
-    <p>테두리와 전송 중 값 색은 한 톤씩 밝아졌습니다(<code>#283873</code> → <code>#31487d</code>,
-       <code>#73788b</code> → <code>#868b9c</code>). 카드가 남색 테두리로 바뀌면서 원래 값이
-       화면에서 다소 무거웠는데, 그만큼을 덜어낸 것으로 읽힙니다.</p>
+    <p>테두리는 두 번에 걸쳐 밝아졌습니다 — <code>#283873</code> → <code>#31487d</code> → <b><code>#60667a</code></b>.
+       카드가 남색 테두리로 바뀌면서 화면에서 다소 무거웠던 것을 계속 덜어낸 것으로 읽힙니다.</p>
+    <p><b>도착 후에는 값까지 흐려집니다</b>(<code>#262a38</code> → <code>#73788b</code>).
+       못 누르는 카드는 테두리만이 아니라 <b>값도 물러납니다</b> — 전송 중(<code>#868b9c</code>)과 같은 방향이고,
+       &lsquo;지금 손댈 수 없다&rsquo; 는 신호가 카드 전체에서 일관되게 나옵니다.</p>
     <p><code>＋</code> 아이콘은 없어졌습니다. 테두리가 이미 &lsquo;누를 수 있다&rsquo; 를 말하므로
        같은 말을 두 번 하던 셈입니다.</p>
     <h3><i>13</i>입력 화면 재정비 (Figma <code>11161:72778</code>)</h3>
@@ -1226,15 +1230,19 @@
     <p><span class="mk warn"></span><b>Figma 쪽 할 일 둘</b> — ① <code>drawover_ride_chat</code> 은 지금 변경 문구
        한 벌뿐이라 <b>추가됨</b> 벌이 필요하고, ② <code>자세한 탑승 위치</code> 에
        <b>변경 강조</b> 변형(파란 테두리)이 있어야 핸드오프가 맞습니다.</p>
-    <p><b>푸터는 이제 12개 변형이 모두 같습니다</b> — <code>취소</code> + <code>이 위치로 저장</code>.
+    <p><b>푸터는 이제 12개 변형이 모두 같습니다</b> — <code>취소</code> + <code>이 위치로 보내기</code>.
        예전엔 재편집에만 취소를 뒀는데, Figma 가 <code>button_group</code> 을 전 변형에 넣으면서
        <b>빈 상태에서도 &lsquo;안 쓸래&rsquo; 로 나갈 길</b>이 생겼습니다. 헤더의 <code>×</code> 와 겹치지만,
        엄지가 닿는 아래쪽에 나갈 길이 하나 더 있는 건 손해가 아닙니다.</p>
     <p>실측: <code>foot</code> pad 10 사방 · gap 16 · 위 선 <code>#efeff1</code> 1px(inset) ·
        버튼줄 52 · <b>취소 120 고정 · 저장 grow</b> · 체크박스 줄 20.
        높이는 필수 미완 <b>72</b>, 완료 이후 <b>108</b>(체크박스 줄이 붙어서) 입니다.</p>
-    <p><b>저장 문구는 다시 <code>이 위치로 저장</code> 하나</b>입니다. 운행 화면도 같습니다 —
-       <code>이대로 보내기</code> 와 통일 사이를 오갔는데, 이번 Figma 는 통일 쪽입니다.</p>
+    <p><b>버튼 문구는 <code>이 위치로 보내기</code> 로 확정됐습니다</b> —
+       차량 도착 전·후, 처음 입력, 변경까지 <b>네 경우 모두 같은 문구</b>입니다.
+       <code>저장</code> 과 <code>이대로 보내기</code> 사이를 오갔는데, 결론은 그 둘의 절충입니다 —
+       <b><code>보내기</code> 가 &lsquo;누르면 기사에게 간다&rsquo; 를 말하고</b>,
+       <code>이 위치로</code> 가 <b>출발지·운행 어느 쪽에서도 어색하지 않게</b> 만듭니다.
+       제가 &lsquo;저장은 즉시성을 숨긴다&rsquo; 고 지적했던 부분이 이 문구로 해소됩니다.</p>
     <p><b>비활성 조건은 그대로</b>입니다. 재편집으로 들어와 바꾼 게 없으면 저장이 비활성이고,
        가르는 기준은 값의 유무가 아니라 <b>그 값이 이미 상대에게 가 있느냐</b>입니다 —
        출발지는 저장됨, 운행은 전달됨. 둘 다 아닌 <code>운행 중 진입</code> 은 값이 차 있어도 활성입니다.</p>
@@ -1745,7 +1753,7 @@
       el('ph-skip').hidden = true;
       const n=el('ph-next');
       n.disabled = !ok || (reedit && !dirty());
-      n.textContent = '이 위치로 저장';
+      n.textContent = '이 위치로 보내기';
       return;
     }
 
@@ -1753,7 +1761,7 @@
     skip.hidden = done || !ASK[S.step].skip;
     if(done){
       next.disabled = reedit && !dirty();
-      next.textContent = '이 위치로 저장';
+      next.textContent = '이 위치로 보내기';
     } else if(S.step==='lvl' || S.step==='floor'){
       next.disabled=true; next.textContent='다음';
     } else {
