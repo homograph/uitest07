@@ -377,7 +377,7 @@
   /* 안내문('배차되면 기사님께 함께 전달됩니다.')은 Figma 가 12개 변형에서 전부 뺐다.
      내비 제목 '상세 위치 입력' 이 이미 같은 말을 하고, 전달 시점은 저장 버튼 문구가 말한다.
      빠진 자리는 body pad-top 6 + sp 20 = 26 으로 실측해 맞췄다. */
-  .ph-body.sform{padding-top:26px;}
+  .ph-body.sform{padding:24px;gap:20px;}
   .fform .seg{margin-bottom:24px;}
   /* 위치는 값이 아니라 선택지다. 같은 채움·높이·라운드로 가족 안에 두되
      ⌄ 표식으로 '고르는 자리' 임을 표시한다. */
@@ -450,28 +450,31 @@
   /* 슬롯은 내용이 있을 때만 자리를 차지한다. 사라진 요소의 자리를 지키는 건 데스크톱 습관이고,
      모바일에선 포커스가 오갈 때 키보드가 이미 화면을 훨씬 크게 재배치한다.
      비어 있을 때 86px 을 남겨 두면 그 구멍이 상시 보인다 — 아래엔 이미 231px 이 남아 있다. */
-  .fhint{min-height:0;margin-top:0;}
-  .fhint.on{min-height:52px;margin-top:12px;}
+  /* Figma: 쉴 때 12, 포커스 시 38(칩 한 줄). body gap 20 이 위아래 간격을 맡으므로
+     여기서 margin 을 또 주지 않는다. 예전의 min-height 52 는 안내문이 있던 시절의 값이다. */
+  .fhint{min-height:12px;margin-top:0;}
   .fhint .ft{margin:0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
   .fhint .ft b{color:var(--gray-700);font-weight:600;}
   .fhint .ft:empty{display:none;}
-  .fhint .fa{margin-top:6px;border:none;background:none;padding:4px 0;font:inherit;font-size:13px;
-    font-weight:600;color:var(--navy-800);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
-  .fhint .fa{font-size:13px;}
+  .fhint .fa{margin-top:0;border:none;box-shadow:inset 0 0 0 1px var(--gray-80);background:#fff;border-radius:9999px;
+    padding:10px 14px;font:inherit;font-size:13px;line-height:18px;font-weight:400;
+    color:var(--gray-800);text-decoration:none;cursor:pointer;}
   .fhint .fa[hidden]{display:none;}
-  .fhint .fas{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;}
-  .fhint .fas .fa+.fa:not([hidden])::before{content:'·';margin-right:10px;color:var(--gray-100);}
+  /* Figma: 힌트 액션이 밑줄 링크에서 DS chip_button / Neutral Weak Outline 으로 바뀌었다.
+     설명문이 빠지고 액션만 남으면서, 누를 수 있다는 것을 밑줄 대신 알약 모양이 말한다. */
+  .fhint .fas{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   /* 빈칸이 '안 정했다' 인지 '없다' 인지 모르던 상태를, 고른 답으로 바꾼다 */
   .fld .nn{flex:0 0 auto;font-size:16px;font-weight:600;color:var(--gray-500);}
   /* 필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면 문장을 쓰는 도중에 방해가 된다.
      한 줄짜리 링크만 조용히 나타나고, 필요한 사람(26.9%)이 눌렀을 때 필드를 연다. */
   /* 토글은 오른쪽 끝. 펼침 컨트롤이 관습적으로 있는 자리이기도 하고,
      아이콘이 사라질 때(값이 있을 때) 라벨이 밀리지 않는다 — 왼쪽에 두면 21px 왼쪽으로 튄다. */
-  .addetc{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  .addetc{display:flex;align-items:center;gap:8px;
     width:100%;margin-top:22px;border:none;background:none;padding:14px 0;
     font:inherit;font-size:15px;font-weight:600;color:var(--navy-800);text-align:left;cursor:pointer;
     border-top:1px solid var(--gray-100);border-radius:0;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
+  .addetc>span:first-child{flex:1 1 auto;min-width:0;}
   .addetc[hidden]{display:none;}
   /* − 는 '안 쓸래' 다. 쓴 내용이 있어도 살아 있고, 누르면 접히면서 내용을 비운다.
      접기와 지우기를 나누면 '접었는데 값은 남아 있는' 상태가 생기는데,
@@ -768,12 +771,10 @@
               <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="numeric"
                      maxlength="1" placeholder="2" aria-label="지하 몇 층" /><span class="u">층</span></label>
               <span class="br" id="f-br1"></span>
-              <label class="fld"><input class="bv dg" id="f-dong" maxlength="5"
-                     placeholder="101" aria-label="몇 동" /><span class="u">동</span></label>
+              <label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" maxlength="5"
+                     placeholder="101" aria-label="몇 동" /><span class="u">동</span><span class="nn" id="f-dong-nn" hidden>동 없음</span></label>
               <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" maxlength="5"
                      placeholder="2-5호" aria-label="호수 라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label>
-              <span class="br"></span>
-              <span class="w tail2">앞에서 탈게요</span>
             </div>
             <div class="fhint" id="f-hint">
               <p class="ft" id="f-hint-t"></p>
@@ -1004,12 +1005,8 @@
     <h3><i>3</i>상단 구성 가 · 나</h3>
     <p>둘 다 <b>제목을 하나로</b> 만듭니다. 내비의 &lsquo;상세 위치 입력&rsquo; 과 본문의 &lsquo;어디서 타세요?&rsquo; 가
        같은 말을 두 번 했고, 아래쪽이 더 커서(15/700 대 17/700) 어디가 진입점인지 화면이 답을 못 했습니다.
-       질문을 지웠습니다. <b>안내문은 한 번 빠졌다가 다시 돌아왔습니다</b> — 문구는
-       <code>배차되면 기사님께 함께 전달됩니다.</code> → <b><code>배차된 기사님에게 전달됩니다.</code></b> 로,
-       자리는 <b>제목 아래 캡션 → 힌트 슬롯의 쉬는 상태</b>로 바뀌었습니다.
-       포커스가 없으면 이 문장이 있고, 필드를 짚으면 그 필드의 힌트가 자리를 넘겨받습니다
-       (Figma <code>11161:72778</code> · 12개 변형 중 10개에 이 문장, 나머지 둘은 <code>동</code>·<code>라인</code> 포커스라 힌트가 대신 들어감).
-       &lsquo;빈 자리가 커 보인다&rsquo; 던 문제를 슬롯을 접는 대신 <b>쓸모 있는 기본값으로 채워</b> 푼 셈입니다.</p>
+       질문을 지웠습니다. <b>안내문은 빠졌다 돌아왔다 다시 빠졌습니다.</b> 지금은 없습니다 —
+       힌트 슬롯은 포커스가 없으면 <b>12px 빈 자리</b>로 쉬고, 필드를 짚으면 <b>38px 칩 한 줄</b>이 됩니다.</p>
     <p><b>가 · 위치를 문장 안에</b>는 세그먼트를 없애고 지하/지상을 문장 첫 슬롯의 칩으로 옮깁니다.
        화면에 남는 것이 문장 하나라, <b>입력하는 것이 곧 기사님이 받을 문장</b>이라는 주장이 끝까지 유지됩니다.
        칩은 값이 아니라 선택지라서 같은 채움·높이·라운드를 쓰되 <b>⌄</b> 표식을 답니다.</p>
@@ -1103,6 +1100,25 @@
        화면에서 다소 무거웠는데, 그만큼을 덜어낸 것으로 읽힙니다.</p>
     <p><code>＋</code> 아이콘은 없어졌습니다. 테두리가 이미 &lsquo;누를 수 있다&rsquo; 를 말하므로
        같은 말을 두 번 하던 셈입니다.</p>
+    <h3><i>13</i>입력 화면 재정비 (Figma <code>11161:72778</code>)</h3>
+    <p><b>문장 꼬리 <code>앞에서 탈게요</code> 가 입력 화면에서 빠졌습니다</b>(12개 변형 전부).
+       기사에게 가는 문장에는 남지만, <b>입력하는 자리에서는 값만 남습니다</b> —
+       고칠 수 없는 글자가 고칠 수 있는 칸들 사이에 섞여 있던 것이 정리됩니다.
+       문장 높이가 <code>142 → 102</code> 로 줄었습니다.</p>
+    <p><b>힌트가 밑줄 링크에서 알약 칩으로 바뀌었습니다</b>
+       (DS <code>chip_button / Neutral Weak Outline</code> · <code>#fff</code> + <code>#e3e4e8</code> 1px · r9999 ·
+       pad 10/14 · 13sp <code>#383d4f</code> · 38 높이). 설명문(<code>공동현관에 붙어 있는 그대로…</code>)은
+       빠지고 <b>액션만</b> 남았습니다 — 누를 수 있다는 것을 밑줄 대신 모양이 말합니다.</p>
+    <p><b><code>동이 없어요</code> 가 새로 생겼습니다.</b> 라인과 같은 얼개로 붙였습니다 —
+       누르면 동 칸이 <code>동 없음</code> 으로 접히고, 다시 누르면 돌아옵니다.
+       <b>동이 필수에서 빠진다</b>는 뜻이라 저장 버튼 활성 조건도 함께 고쳤습니다(동 92.9% 사용 → 7.1% 를 위한 탈출구).
+       라인 쪽 문구도 <code>우리 아파트는 라인이 없어요</code> → <b><code>라인이 없어요</code></b> 로 짧아졌습니다.</p>
+    <p>여백은 <code>body pad 24 사방 · gap 20</code> 으로 정리됐습니다. 예전엔 높이 0 짜리
+       <code>sp</code> 프레임을 사이사이 끼워 간격을 만들었는데, 그게 전부 auto-layout gap 으로 바뀌었습니다.</p>
+    <p><span class="mk warn"></span><b>남는 모순</b> — <code>라인 입력 중</code> 변형의 저장 버튼이 비활성인데
+       층·동이 이미 다 차 있습니다. 같은 값을 가진 <code>필수 완료</code> 는 활성입니다.
+       라인은 선택이므로 활성이 맞다고 보고 프로토타입은 활성으로 뒀습니다.
+       <code>동 없음</code> 을 고른 뒤의 결과 화면도 Figma 에 아직 없습니다.</p>
     <p><b>POI 줄도 테두리 카드입니다</b>(<code>#e3e4e8</code> 1px · <code>11263:45547</code> 실측).
        놓치고 있던 것을 짚어 주셔서 넣었습니다. 넣고 보니 이유가 분명한데 —
        <b>출발지 이름과 상세 위치가 같은 문법의 카드 둘로 나란히</b> 서면서 한 가족으로 읽힙니다.
@@ -1200,9 +1216,9 @@
        바꾼 게 없으니 저장할 것도 없고, 나가는 길은 취소가 맡습니다. 가르는 기준은 값의 유무가 아니라
        <b>그 값이 이미 상대에게 가 있느냐</b>입니다 — 출발지는 저장됨, 운행은 전달됨.
        둘 다 아닌 <code>운행 중 진입</code> 은 값이 차 있어도 <b>버튼이 활성</b>이고 취소가 없습니다.
-       버튼 문구는 이번에 <b><code>이 위치로 저장</code> 하나로 통일</b>됐습니다 — 예전엔 운행 화면만
-       <code>이대로 보내기</code> 였는데, 안내문이 두 상황 모두 <code>배차된 기사님에게</code> 로 합쳐지면서
-       버튼도 같이 합쳐졌습니다.</p>
+       버튼 문구는 <b>출발지 <code>이 위치로 저장</code> · 운행 <code>이대로 보내기</code></b> 입니다.
+       한때 하나로 합쳤다가 이번에 다시 갈랐습니다 — 두 상황이 실제로 다른 일이라는 쪽으로 돌아온 셈입니다
+       (저장은 아직 아무도 안 봄, 전송은 누르는 즉시 기사에게 감).</p>
     <p><b>남는 지적 하나</b> — 출발지 화면에서는 빈/찬 구분이 <b>배지 색 하나</b>에 걸립니다
        (<code>#99a5c0</code> 2.47:1 ↔ <code>#32a2fa</code> 2.73:1, 차이 <b>0.26</b>). 배경도 테두리도 같습니다.
        운행 화면은 빈 상태가 안 나오므로 해당 없습니다. 출발지만 <b>찬 상태 배경을 <code>#f1f9fe</code></b> 로
@@ -1308,16 +1324,18 @@
     drover:false, droverEdit:false, hilite:false,
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
-    d:{lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false}, focus:null,
+    d:{lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
     step:null, skipped:{}, routeOpen:null, dongMode:'num', lineMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
   };
 
   /* ── 문장 ── */
   const lineText = v => { v=(v||'').trim(); return !v?'':(/라인|현관/.test(v)?v:v+'라인'); };
-  const core = d => (d.lvl==='under' ? '지하 '+d.floor+'층' : '지상')
-                  + ' · ' + d.dong.trim() + '동' + (d.line ? ' '+lineText(d.line) : '');
+  const core = d => [(d.lvl==='under' ? '지하 '+d.floor+'층' : '지상'),
+                     (d.noDong ? '' : d.dong.trim()+'동')].filter(Boolean).join(' · ')
+                  + (d.line ? ' '+lineText(d.line) : '');
   const sentence = d => !d ? '' : core(d)+' 앞에서 탈게요'+(d.etc.trim()?' ('+d.etc.trim()+')':'');
-  const ready = d => !!d.dong.trim() && (d.lvl==='ground' || (d.lvl==='under' && !!d.floor));
+  const ready = d => (!!d.dong.trim() || !!d.noDong)
+                  && (d.lvl==='ground' || (d.lvl==='under' && !!d.floor));
   const reached = () => (!S.value||!S.confirmed) ? false : (S.origin==='start' ? true : S.sent);
 
   /* ── 단계 정의. 탭으로 끝나는 것 먼저, 키보드는 뒤로 몰아 한 번만 열리게 ── */
@@ -1495,6 +1513,9 @@
     const dg=el('f-dong');  dg.value = d.dong;
     el('f-line2').value = d.line;
     /* '라인 없음' 은 빈칸이 아니라 고른 답이다. 칸을 지우고 답을 그 자리에 놓는다 */
+    el('f-dong').hidden = !!d.noDong;
+    el('f-fld-dong').querySelector('.u').hidden = !!d.noDong;
+    el('f-dong-nn').hidden = !d.noDong;
     el('f-line2').hidden = !!d.noLine;
     el('f-fld-line').querySelector('.u').hidden = !!d.noLine;
     el('f-line-nn').hidden = !d.noLine;
@@ -1530,12 +1551,14 @@
   const HINT = {
     dong: { t:'', a:()=>S.dongMode==='text' ? '숫자로 입력' : 'A동·C동처럼 글자로 입력',
             go:()=>{ S.dongMode = (S.dongMode==='text') ? 'num' : 'text'; renderSentence();
-                     setTimeout(()=>el('f-dong').focus(),20); } },
-    line: { t:'공동현관에 붙어 있는 <b>그대로</b> 적으면 됩니다.',
+                     setTimeout(()=>el('f-dong').focus(),20); },
+            a2:()=>'동이 없어요',
+            go2:()=>{ S.d.noDong=true; S.d.dong=''; S.focus=null; renderSentence(); paintFoot(); } },
+    line: { t:'',
             a:()=>S.lineMode==='text' ? '숫자로 입력' : '글자로 입력',
             go:()=>{ S.lineMode = (S.lineMode==='text') ? 'num' : 'text'; renderSentence();
                      setTimeout(()=>el('f-line2').focus(),20); },
-            a2:()=>'우리 아파트는 라인이 없어요',
+            a2:()=>'라인이 없어요',
             go2:()=>{ S.d.noLine=true; S.d.line=''; S.focus=null; renderSentence(); paintFoot(); } }
   };
   /* 값이 기본 폭을 넘칠 때만 늘린다. 늘 내용에 딱 맞추면 한 글자마다 옆 칸이 밀린다 */
@@ -1556,7 +1579,7 @@
      자리가 달라졌다 — 예전처럼 제목 아래 캡션이 아니라 힌트 슬롯의 '쉬는 상태' 다.
      포커스가 없으면 이 문장이 있고, 필드를 짚으면 그 필드의 힌트가 자리를 넘겨받는다.
      '빈 자리가 커 보인다' 던 문제를 슬롯을 접는 대신 쓸모 있는 기본값으로 채워 푼 셈이다. */
-  const REST = '배차된 기사님에게 전달됩니다.';
+  const REST = '';   /* Figma 가 다시 뺐다 — 쉬는 슬롯은 비운다 */
   function renderHint(){
     const k = S.focus, cfg = HINT[k];
     el('f-hint-t').innerHTML = cfg ? (cfg.t || '') : REST;
@@ -1614,6 +1637,12 @@
       });
       i.addEventListener('blur', ()=>{ if(S.focus===k){ S.focus=null; renderHint(); } });
     });
+    /* '동 없음' 을 눌러 되돌린다 */
+    el('f-fld-dong').addEventListener('click',ev=>{
+      if(!S.d.noDong) return;
+      ev.preventDefault();
+      S.d.noDong=false; renderSentence(); setTimeout(()=>el('f-dong').focus(),20);
+    });
     /* '라인 없음' 을 눌러 되돌린다 */
     el('f-fld-line').addEventListener('click',ev=>{
       if(!S.d.noLine) return;
@@ -1668,7 +1697,7 @@
       el('ph-skip').hidden = true;
       const n=el('ph-next');
       n.disabled = !ok || (reedit && !dirty());
-      n.textContent = '이 위치로 저장';   /* Figma: 운행 중 진입도 같은 문구로 통일됐다 */
+      n.textContent = S.opened==='start' ? '이 위치로 저장' : '이대로 보내기';
       return;
     }
 
@@ -1676,7 +1705,7 @@
     skip.hidden = done || !ASK[S.step].skip;
     if(done){
       next.disabled = reedit && !dirty();
-      next.textContent = '이 위치로 저장';
+      next.textContent = S.opened==='start' ? '이 위치로 저장' : '이대로 보내기';
     } else if(S.step==='lvl' || S.step==='floor'){
       next.disabled=true; next.textContent='다음';
     } else {
@@ -1690,7 +1719,7 @@
     S.opened=where; S.skipped={};
     /* 이미 쓴 길 안내가 있으면 펼친 채로 연다 — 접힌 채 열면 안 보이는 값이 된다 */
     S.etcOpen = !!(S.current && S.current.etc && S.current.etc.trim());
-    S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false};
+    S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,dong:'',line:'',etc:'',noLine:false,noDong:false};
     el('ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
     /* 값이 이미 있으면 전부 답한 상태로 열어 요약만 보여준다 */
     if(S.current){ Object.keys(ASK).forEach(k=>{ if(ASK[k].skip && !S.d[k].trim()) S.skipped[k]=true; }); }
@@ -1741,7 +1770,8 @@
      지하가 아니면 층은 비교에서 뺀다 — 지상으로 바꾸면 층 칸이 접히기 때문이다. */
   const flat = d => !d ? '' : [
     d.lvl, d.lvl==='under' ? (d.floor==null?'':String(d.floor)) : '',
-    (d.dong||'').trim(), d.noLine ? '\u0000' : (d.line||'').trim(), (d.etc||'').trim()
+    d.noDong ? '\u0001' : (d.dong||'').trim(),
+    d.noLine ? '\u0000' : (d.line||'').trim(), (d.etc||'').trim()
   ].join('|');
   const dirty = () => flat(S.d) !== flat(S.current);
 
