@@ -259,7 +259,7 @@
   .phdel[hidden]{display:none;}
   .savechk{display:flex;align-items:center;gap:8px;cursor:pointer;line-height:20px;}
   .savechk input{width:18px;height:18px;margin:0;flex:0 0 auto;accent-color:var(--navy-800);}
-  .savechk span{font-size:14px;color:var(--gray-900);}   /* Figma 14sp #262a38 */
+  .savechk span{font-size:13px;color:var(--gray-900);}   /* Figma 13sp #262a38 */
   .sr{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
     clip:rect(0 0 0 0);white-space:nowrap;border:0;}
   .confirm{display:flex;align-items:flex-start;gap:8px;background:var(--gray-30);border-radius:4px;
@@ -383,7 +383,7 @@
   /* 위치는 값이 아니라 선택지다. 같은 채움·높이·라운드로 가족 안에 두되
      ⌄ 표식으로 '고르는 자리' 임을 표시한다. */
   /* 위치는 타이핑이 아니라 고르는 자리다. 같은 상자를 쓰되 ⌄ 로 구분한다 */
-  .fld.pick{gap:7px;padding:0 12px 0 14px;border:none;font:inherit;font-weight:700;
+  .fld.pick{gap:6px;padding:6px 12px 6px 14px;border:none;font:inherit;font-weight:700;
     color:var(--navy-800);cursor:pointer;}
   /* 이 칩은 두 값 사이 토글이다. 화살표는 '누르면 어디로 가는지' 를 가리킨다 —
      지하일 땐 위(지상)로, 지상일 땐 아래(지하)로. */
@@ -406,7 +406,7 @@
   .fld.pick:hover{background:var(--gray-80);}
   .fld.pick:focus{background:var(--blue-050);box-shadow:inset 0 0 0 1.5px var(--navy-800);}
   .sent{display:flex;flex-wrap:wrap;align-items:center;margin:0;
-    font-size:22px;line-height:44px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
+    font-size:22px;line-height:42px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
   .sent .w{flex:0 0 auto;}
   .sent .w:not(.tail2){margin-right:8px;}
   /* 접히는 자리를 고정한다. 우연히 접히면 '1012동'과 '2-5호라인'처럼
@@ -422,8 +422,10 @@
   /* 값과 단위를 한 덩어리로 묶는다. '값 · 단위 · 값 · 단위' 로 흩어져 있으면
      조각이 여덟이지만, 묶으면 넷이 되고 줄마다 두 덩어리로 떨어진다.
      단위는 상자 안의 고정 문구라 회색으로 흐리지 않는다 — 흐린 것은 예시뿐이다. */
-  .fld{display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;
-    height:44px;margin:0 8px 0 0;padding:0 14px;
+  /* Figma 가 '입력 필드 / 값' DS 컴포넌트로 갈아끼우면서 값이 바뀌었다:
+     pad[0,14] → [6,14] · 높이 44 → 42 · 안쪽 gap 5 → 4. */
+  .fld{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;
+    height:42px;margin:0 8px 0 0;padding:6px 14px;box-sizing:border-box;
     background:var(--gray-30);border-radius:8px;cursor:text;}
   .fld:focus-within{background:var(--blue-050);box-shadow:inset 0 0 0 1.5px var(--navy-800);}
   /* 가운데 정렬이면 빈 칸의 커서가 플레이스홀더 한가운데(2-5|호)에 찍힌다.
@@ -474,7 +476,7 @@
      위 선은 inset 으로 그려 50 을 지킨다(테두리가 자리를 먹으면 51 이 된다). */
   .addetc{display:flex;align-items:center;gap:8px;
     width:100%;margin-top:0;border:none;background:none;padding:15px 0;
-    font:inherit;font-size:15px;line-height:20px;font-weight:500;color:var(--navy-800);text-align:left;cursor:pointer;
+    font:inherit;font-size:15px;line-height:20px;font-weight:500;color:var(--gray-800);text-align:left;cursor:pointer;
     box-shadow:inset 0 1px 0 0 var(--gray-80);border-radius:0;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .addetc>span:first-child{flex:1 1 auto;min-width:0;}
@@ -1134,6 +1136,15 @@
        <code>지하 1층 · 1902동 23라인 · 3번 게이트로 들어와주세요</code>.
        꼬리(<code>앞에서 탈게요</code>)가 빠지고 <b>찾아오는 길이 같은 문장에 <code>·</code> 로 이어집니다.</b>
        입력 화면에서 꼬리를 뗀 것과 짝이 맞고, 기사가 볼 정보가 카드 한 줄에 다 모입니다.</p>
+    <p><b>Figma 가 DS 컴포넌트로 갈아끼우면서 필드 치수가 바뀌었습니다</b> —
+       <code>pad[0,14] → [6,14]</code> · 높이 <b>44 → 42</b> · 안쪽 <code>gap 5 → 4</code>,
+       위치 칩은 <code>gap 7 → 6</code>. <code>찾아오는 길</code> 제목 색도
+       <code>#19254d</code> → <b><code>#383d4f</code></b>, 체크박스 글자는 <b>13sp</b> 입니다.
+       폰트는 Noto Sans KR → Spoqa Han Sans Neo 로 바뀌었는데, 프로토타입은 웹 폰트 스택이라
+       <b>치수만 따라가고 글꼴은 그대로</b>입니다.</p>
+    <p><span class="mk warn"></span>Figma 쪽은 아직 <b>교체가 절반</b>입니다 —
+       <code>라인 입력 중</code>·<code>필수 완료</code> 의 <b>row1(지하·층)</b> 은 옛 프레임(44)이고
+       row2 만 새 컴포넌트(42)입니다. 프로토타입은 <b>전부 42</b> 로 맞췄습니다.</p>
     <p><b>지상의 층도 자유롭게 고칠 수 있습니다.</b> 칸이 접히던 시절의 코드가 남아
        지상일 때 층 입력을 <code>disabled</code> 로 만들고 있었는데, 그게 &lsquo;1 이 박혀서 못 고치는&rsquo;
        원인이었습니다. 그리고 지상으로 바꿀 때 <b>포커스가 동으로 가던 것도 층으로</b> 돌렸습니다 —
