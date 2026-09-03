@@ -1123,10 +1123,16 @@
        슬롯 12/38 · 간격 20 · 헤더 50 으로 Figma 와 같습니다.</p>
     <p><b>확정된 것</b> — <code>라인 입력 중</code> 은 <b>활성</b>이 맞습니다(Figma 변형도 이후 활성으로 고쳐졌습니다).
        <code>동 없음</code> 은 <code>라인 없음</code> 과 <b>같은 규칙</b>입니다. 둘 다 프로토타입이 이미 그렇게 동작합니다.</p>
-    <p><b>지상을 고르면 층은 <code>1</code> 로 채워집니다.</b> 지상 주차장은 곧 1층이라,
-       층 칸은 접히지만 <b>값은 비워 두지 않습니다</b> — 비우면 저장되는 데이터에 층이 빈 구멍으로 남습니다.
-       화면에 보이는 문장은 <code>지상 · 1902동</code> 그대로입니다(Figma 도착 카드와 같음).</p>
-    <p>대신 <b>지하로 되돌아오면 그 1 은 거둡니다.</b> 자동으로 넣은 값이 남아 있으면
+    <p><b>지상에도 층 칸이 있습니다.</b> 처음엔 지상을 고르면 층 칸을 접고 값만 <code>1</code> 로
+       채워 뒀는데, Figma 가 <code>지상</code> 변형에 <b><code>1 층</code> 칸을 실제로 넣으면서</b> 바로잡았습니다 —
+       지상 주차장도 2·3층이 있으므로 <b>접어 버리면 고칠 방법이 없어집니다.</b>
+       칸은 늘 두고 기본값만 <code>1</code> 로 채웁니다. 층은 이제 지상·지하 모두 필수입니다.</p>
+    <p><b>진입점 카드 문장도 바뀌었습니다</b> —
+       <code>지하 1층 · 1902동 23라인 · 3번 게이트로 들어와주세요</code>.
+       꼬리(<code>앞에서 탈게요</code>)가 빠지고 <b>찾아오는 길이 같은 문장에 <code>·</code> 로 이어집니다.</b>
+       입력 화면에서 꼬리를 뗀 것과 짝이 맞고, 기사가 볼 정보가 카드 한 줄에 다 모입니다.</p>
+    <p>지상으로 바꿀 때 층이 비어 있으면 <code>1</code> 을 채우고,
+       <b>지하로 되돌아오면 그 1 은 거둡니다.</b> 자동으로 넣은 값이 남아 있으면
        고르지도 않은 <code>지하 1층</code> 이 그대로 저장됩니다 — 실제로 가장 많은 건 <b>지하 2층</b>이라
        조용히 틀린 값을 보내게 됩니다. 사용자가 <b>직접 친 층은 왕복해도 보존</b>합니다.</p>
     <p><b>POI 줄도 테두리 카드입니다</b>(<code>#e3e4e8</code> 1px · <code>11263:45547</code> 실측).
@@ -1340,12 +1346,16 @@
 
   /* ── 문장 ── */
   const lineText = v => { v=(v||'').trim(); return !v?'':(/라인|현관/.test(v)?v:v+'라인'); };
-  const core = d => [(d.lvl==='under' ? '지하 '+d.floor+'층' : '지상'),
-                     (d.noDong ? '' : d.dong.trim()+'동')].filter(Boolean).join(' · ')
-                  + (d.line ? ' '+lineText(d.line) : '');
-  const sentence = d => !d ? '' : core(d)+' 앞에서 탈게요'+(d.etc.trim()?' ('+d.etc.trim()+')':'');
-  const ready = d => (!!d.dong.trim() || !!d.noDong)
-                  && (d.lvl==='ground' || (d.lvl==='under' && !!d.floor));
+  /* Figma 진입점 카드 실측: '지하 1층 · 1902동 23라인 · 3번 게이트로 들어와주세요'.
+     꼬리('앞에서 탈게요')는 빠지고 찾아오는 길이 같은 문장에 · 로 이어진다. */
+  const core = d => [
+      (d.lvl==='under' ? '지하 ' : '지상 ') + d.floor + '층',
+      (d.noDong ? '' : d.dong.trim()+'동') + (d.line ? ' '+lineText(d.line) : ''),
+      (d.etc||'').trim()
+    ].filter(x=>x && x.trim()).join(' · ');
+  const sentence = d => !d ? '' : core(d);
+  /* 지상에도 층 칸이 생겼으므로 층은 두 경우 모두 필수다(지상은 1 이 미리 채워진다). */
+  const ready = d => (!!d.dong.trim() || !!d.noDong) && !!d.floor;
   const reached = () => (!S.value||!S.confirmed) ? false : (S.origin==='start' ? true : S.sent);
 
   /* ── 단계 정의. 탭으로 끝나는 것 먼저, 키보드는 뒤로 몰아 한 번만 열리게 ── */
@@ -1517,7 +1527,9 @@
        다만 위치 자체는 문장에 남아야 한다. 지상인데 문장이 '101동 앞에서 탈게요' 면
        기사님이 받을 문장이 곧 입력 화면이라는 주장이 깨진다. */
     const und = d.lvl==='under';
-    el('f-fld-floor').classList.toggle('gone', !und);
+    /* Figma 가 지상 변형에도 '1 층' 칸을 넣었다. 지상 주차장도 2·3층이 있으므로
+       접어 버리면 고칠 방법이 없어진다. 칸은 늘 두고 기본값만 1 로 채운다. */
+    el('f-fld-floor').classList.remove('gone');
     el('f-floor').disabled = !und;   /* 접힌 칸이 탭 순서에 남지 않게 */
     el('f-lvl').classList.toggle('up', und);   /* 지하 ⌃ · 지상 ⌄ */
     el('f-w-u').textContent   = und ? '지하' : '지상';
@@ -1861,7 +1873,7 @@
     if(got){
       const flow=el('db-flow'); flow.innerHTML='';
       const add=(cls,tx)=>{ const s=document.createElement('span'); s.className=cls; s.textContent=tx; flow.appendChild(s); };
-      add('v', cur.lvl==='under' ? '지하 '+cur.floor+'층' : '지상');
+      add('v', (cur.lvl==='under' ? '지하 ' : '지상 ')+cur.floor+'층');
       add('d', '·');
       add('v', cur.dong.trim()+'동');
       if(cur.line.trim()) add('d', lineText(cur.line));
