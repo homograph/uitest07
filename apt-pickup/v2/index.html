@@ -232,8 +232,6 @@
   .tcnt b{font-weight:700;}
   .askhelp{margin:9px 0 0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
   .askhelp b{color:var(--gray-700);font-weight:600;}
-  .kbswap{margin-top:9px;border:none;background:none;padding:4px 0;font:inherit;font-size:13px;
-    color:var(--navy-800);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
   .askhelp.warn{color:#a8620a;}
   .askhelp.warn b{color:#8a4f08;}
 
@@ -770,12 +768,12 @@
             <div class="sent" id="f-sent">
               <button type="button" class="fld pick" id="f-lvl" hidden><span class="roll" id="f-lvl-t"><span class="rw"><span>지하</span><span>지상</span></span></span><svg class="ic" width="11" height="7" viewBox="0 0 11 7" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M1.2 1.4L5.5 5.6L9.8 1.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
               <span class="w" id="f-w-u">지하</span>
-              <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="numeric"
-                     maxlength="1" placeholder="2" aria-label="지하 몇 층" /><span class="u">층</span></label>
+              <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="text"
+                     maxlength="3" placeholder="2" aria-label="몇 층" /><span class="u">층</span></label>
               <span class="br" id="f-br1"></span>
-              <label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" maxlength="5"
+              <label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="text" maxlength="5"
                      placeholder="101" aria-label="몇 동" /><span class="u">동</span><span class="nn" id="f-dong-nn" hidden>동 없음</span></label>
-              <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" maxlength="5"
+              <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="text" maxlength="5"
                      placeholder="2-5호" aria-label="호수 라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label>
             </div>
             <div class="fhint" id="f-hint">
@@ -934,8 +932,8 @@
        <b>포커스 해제보다 버튼 액션이 먼저 실행되도록</b> 순서를 잡아야 합니다.</p>
     <p>도움말은 <b>지금 손대고 있는 칸의 것만</b> 문장 아래 한 자리에 띄웁니다. 예전에는
        동에 대한 전환 링크와 라인에 대한 설명이 <b>공용 자리에 함께 쌓여</b> 어느 칸 얘기인지 알 수 없었고,
-       링크가 아래 문단의 제목처럼 보였습니다. 토글된 뒤의 라벨 <b>&lsquo;숫자로 입력&rsquo;</b> 은 주어까지 사라졌습니다.
-       슬롯 높이는 <b>52px 고정</b>이라 칸을 옮겨 다녀도 아래가 튀지 않습니다.</p>
+       링크가 아래 문단의 제목처럼 보였습니다. 지금은 <b>키패드 전환 자체가 없어져</b> 이 자리에 남은 것은
+       <code>동이 없어요</code>·<code>라인이 없어요</code> 칩 하나뿐입니다.</p>
     <p>문장 밖에 남은 <b>찾아오는 길</b>은 필드가 아니라 <b>한 줄 링크</b>로 나타납니다.
        필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면, 아직 라인 칸이 비어 있는데 문장 쓰던 사람을
        가로막습니다. 링크는 조용히 한 줄만 늘어나고, 필요한 사람(요청사항의 <b>26.9%</b>)이 눌렀을 때 필드가 열립니다.</p>
@@ -1196,46 +1194,33 @@
        노랑(<code>#eeff00</code>)은 <code>미리배차 켜짐</code> 과 같은 색이라 충돌했고, 파란 테두리는
        그 문제 없이 같은 일을 하면서 <b>대상을 정확히 감쌉니다</b>(추가 요소도, 레이아웃 흔들림도 없음).</p>
     <h3><i>6</i>필드별 키보드</h3>
-    <p><b>&lsquo;숫자와 문자를 같이 치는 키패드&rsquo; 는 네이티브에 없습니다.</b> iOS·Android 모두
-       <b>숫자 키패드냐 전체 키보드냐</b> 둘 중 하나이고, 전환 키(<code>123</code> / <code>ABC</code>)로 오갑니다.
-       그래서 결정은 &lsquo;둘 다&rsquo; 가 아니라 <b>어느 쪽을 먼저 띄울 것인가</b>입니다.</p>
-    <p>요청사항 1,727건에서 라인 토큰 <b>614건</b>을 뽑아 문자 구성을 셌습니다 —
-       숫자 <b>100%</b> · <code>-</code>/<code>~</code> <b>39.4%</b> · 한글 <code>호</code> <b>63.5%</b> ·
-       <b>영문 0건</b>. 라인 자리에 영문은 한 건도 없습니다
-       (영문 1글자 31건은 전부 <code>C동</code>·<code>B동</code> 같은 <b>동</b> 자리이거나 구역 표기입니다).</p>
-    <table><tbody>
-      <tr><td><b>층</b></td><td>숫자만 · 1자리<br>웹 <code>numeric</code> · iOS <code>.numberPad</code> · AOS <code>number</code></td></tr>
-      <tr><td><b>동</b></td><td>숫자 98.2% · 영문 1.8%(<code>C동</code>)<br>웹 <code>numeric</code> 으로 열고, 힌트 슬롯의 <b>&lsquo;A동·C동처럼 글자로 입력&rsquo;</b> 으로 <code>text</code> 전환<br>iOS <code>.numberPad</code> ↔ <code>.default</code> · AOS <code>number</code> ↔ <code>text</code></td></tr>
-      <tr><td><b>라인</b></td><td>숫자 + <code>-</code>/<code>~</code> + <code>호</code><br><b>숫자로 열고</b> 힌트의 <b>&lsquo;글자로 입력&rsquo;</b> 으로 전환 — 동과 같은 방식<br>iOS <b><code>.numbersAndPunctuation</code></b> ↔ <code>.default</code> · AOS <code>number</code> ↔ <code>text</code></td></tr>
-    </tbody></table>
-    <p>라인은 <b>첫 글자가 항상 숫자</b>라 숫자판을 먼저 띄웁니다. 동과 같은 자리, 같은 방식이라
-       한 번 배우면 둘 다 압니다. 라인 힌트에는 액션이 둘(<b>글자로 입력</b> · <b>라인이 없어요</b>) 붙습니다.</p>
-    <p><span class="mk warn"></span><b>대신 이 값은 알고 가야 합니다.</b> 라인 값 614건 중
-       <b>숫자만으로 끝나는 것은 20.4%</b> 뿐입니다. 나머지 <b>79.6%</b> 는 <code>-</code>/<code>~</code> 나 <code>호</code> 를 쓰므로,
-       숫자로 열면 <b>5명 중 4명이 전환을 한 번 눌러야</b> 합니다. 동(영문 1.8%)과는 상황이 정반대입니다.</p>
-    <p><b>기본값이 뒤집혔습니다 — 이제 문자 키패드가 먼저 뜹니다.</b>
-       동·라인 모두 <code>text</code> 로 열고, 칩은 <code>숫자로 입력</code> 이 됩니다.
-       라인 값 중 <b>숫자만으로 끝나는 것이 20.4%</b> 뿐이라(나머지는 <code>-</code>/<code>~</code>/<code>호</code>),
-       숫자로 열면 5명 중 4명이 전환을 눌러야 했습니다. 아래 iOS 논의는 숫자로 열던 때의 기록입니다.
-       <span class="mk warn"></span>Figma 칩은 아직 <code>글자로 입력</code>(=숫자로 열림)이라
-       그쪽을 <code>숫자로 입력</code> 으로 바꿔야 맞습니다.</p>
+    <p><b>세 칸 모두 문자 키패드로 엽니다.</b> 웹 <code>inputmode="text"</code> ·
+       iOS <code>.default</code> · AOS <code>text</code>. <b>키패드를 바꾸는 버튼은 없앴습니다</b> —
+       숫자가 필요하면 키보드의 <code>123</code> 을 누르는 것이 사용자 몫입니다.</p>
+    <p>이렇게 간 이유는 <b>어느 칸도 숫자만은 아니기 때문</b>입니다.
+       층에는 <code>L층</code>, 동에는 <code>관리동</code>·<code>타운하우스동</code>,
+       라인에는 <code>-</code>/<code>~</code>/<code>호</code> 가 실제로 들어갑니다.
+       숫자로 열어 두면 그런 값을 넣으려는 사람이 <b>매번 전환을 눌러야</b> 하고,
+       더 나쁘게는 <b>&lsquo;여기는 숫자만 되나 보다&rsquo; 하고 포기</b>합니다.</p>
+    <p>데이터도 같은 쪽입니다. 라인 값 <b>614건</b> 중 숫자만으로 끝나는 것은
+       <b>20.4%</b> 뿐이고 나머지 79.6% 가 <code>-</code>/<code>~</code>/<code>호</code> 를 씁니다.
+       숫자로 열면 <b>5명 중 4명</b>이 전환을 눌렀어야 했습니다.</p>
+    <p>층 칸도 숫자 필터와 <b>1자리 제한을 걷어</b> 3자리까지 글자를 받습니다
+       (<code>L</code>, <code>B1</code>, <code>10</code>). 저장되는 층 값도 숫자가 아니라 <b>문자열</b>입니다.</p>
+    <p>이상적인 건 <b>숫자와 문자가 한 화면에 있는 키패드</b>인데, iOS·Android 모두 그런 표준 키패드가 없습니다.
+       iOS <code>.numbersAndPunctuation</code> 이 그나마 가깝지만(숫자 + <code>-</code>·<code>~</code> 가 같은 화면,
+       한글은 <code>ABC</code> 전환) 안드로이드에는 대응이 없어, 플랫폼마다 다르게 두는 대신
+       <b>양쪽 다 문자로 통일</b>했습니다.</p>
     <p><b>엔터는 제출이 아니라 &lsquo;다음 빈 칸으로&rsquo; 입니다.</b> 층 → 동 → 라인 순으로 다음 빈 칸을 찾아
        포커스를 옮기고, 다 찼으면 <b>키패드만 내립니다.</b> 마지막 칸에서 엔터로 곧장 저장되면
        확인할 새도 없이 기사에게 가 버립니다. 현재 칸 뒤에 빈 칸이 없으면 <b>앞으로 돌아가</b> 찾고
        (라인에서 엔터쳤는데 동이 비어 있을 수 있습니다), <code>동 없음</code>·<code>라인 없음</code> 으로
        접은 칸은 건너뜁니다.</p>
-    <p>아래는 숫자로 열던 시절의 검토입니다 —
-       <b>iOS 는 <code>.numberPad</code> 가 아니라 <code>.numbersAndPunctuation</code> 으로 갑니다.</b>
-       <code>-</code> 와 <code>~</code> 가 숫자와 <b>같은 화면</b>에 있어서, <code>-</code>/<code>~</code> 를 쓰는 <b>39.4%</b> 는
-       전환 없이 그대로 칩니다. 남는 건 <code>호</code> 를 치는 사람인데 그건 키보드 자체의 <code>ABC</code> 로 넘어갑니다.</p>
-    <p>앱 안의 <b>&lsquo;글자로 입력&rsquo; 은 그대로 둡니다.</b> 안드로이드에는 <code>.numbersAndPunctuation</code> 에
-       해당하는 <code>inputType</code> 이 없어서 — <code>number</code> 는 글자를 아예 막습니다 — 전환 장치가 필요합니다.
-       iOS 에서는 다소 겹치지만, 동과 같은 자리에 같은 동작으로 있는 편이 플랫폼마다 다른 것보다 낫습니다.</p>
-    <p>남은 선택 하나 — <b>단위를 <code>라인</code> → <code>호라인</code></b> 으로 바꾸면 숫자만으로 끝나는 비율이
-       <b>60.6%</b> 로 오릅니다. 다만 <code>호</code> 없이 <code>2라인</code> 이라 쓰는 <b>36.5%</b> 에게는 <code>2호라인</code> 이 되므로
+    <p>남은 선택 하나 — <b>단위를 <code>라인</code> → <code>호라인</code></b> 으로 바꾸면 사용자가 칠 글자가 줄어듭니다.
+       다만 <code>호</code> 없이 <code>2라인</code> 이라 쓰는 <b>36.5%</b> 에게는 <code>2호라인</code> 이 되므로
        카피 판단이 필요해 손대지 않았습니다.</p>
     <p><span class="mk warn"></span>네이티브 키패드가 실제로 어떻게 뜨는지는 <b>이 환경에서 확인하지 못했습니다</b>
-       (Xcode 미설치로 iOS 시뮬레이터를 못 띄웠습니다). 위 표의 <code>keyboardType</code>/<code>inputType</code> 는
+       (Xcode 미설치로 iOS 시뮬레이터를 못 띄웠습니다). <code>keyboardType</code>/<code>inputType</code> 값은
        <b>검증한 값이 아니라 스펙 제안</b>입니다. 웹 <code>inputmode</code> 가 실제로 걸리는 것까지만 실측했습니다.</p>
     <p><span class="mk warn"></span><b>Figma 쪽 할 일 둘</b> — ① <code>drawover_ride_chat</code> 은 지금 변경 문구
        한 벌뿐이라 <b>추가됨</b> 벌이 필요하고, ② <code>자세한 탑승 위치</code> 에
@@ -1344,7 +1329,7 @@
   const FLOORS=[1,2,3,4,5];
   const PH='픽업 위치를 알려주세요';
   const SENT_AT='12:46';
-  const SAVED_FOR_ADDRESS={lvl:'under',floor:4,dong:'1901',line:'',etc:'엘리베이터 앞',noLine:true};
+  const SAVED_FOR_ADDRESS={lvl:'under',floor:'4',dong:'1901',line:'',etc:'엘리베이터 앞',noLine:true};
 
   const S={
     mode:'new', screen:'start',
@@ -1353,7 +1338,7 @@
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
-    step:null, skipped:{}, routeOpen:null, dongMode:'text', lineMode:'text', dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
+    step:null, skipped:{}, routeOpen:null, dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
   };
 
   /* ── 문장 ── */
@@ -1395,7 +1380,7 @@
   };
   function ansText(k){
     if(k==='lvl')   return S.d.lvl==='under' ? '지하 주차장' : '지상';
-    if(k==='floor') return '지하 '+S.d.floor+'층';
+    if(k==='floor') return (S.d.lvl==='under'?'지하 ':'지상 ')+S.d.floor+'층';
     if(k==='dong')  return S.d.dong.trim()+'동';
     if(k==='line')  return S.d.line.trim() ? lineText(S.d.line) : '없음';
     return S.d.etc.trim() || '없음';
@@ -1438,7 +1423,7 @@
           b.textContent=t;
           b.addEventListener('click',()=>{
             const wasAuto=S.d.floorAuto; S.d.lvl=v;
-            if(v==='ground'){ if(!S.d.floor){ S.d.floor=1; S.d.floorAuto=true; } }
+            if(v==='ground'){ if(!S.d.floor){ S.d.floor='1'; S.d.floorAuto=true; } }
             else if(wasAuto){ S.d.floor=null; S.d.floorAuto=false; }
             advance(); });
           seg.appendChild(b);
@@ -1447,9 +1432,9 @@
       } else if(S.step==='floor'){
         const w=document.createElement('div'); w.className='chips';
         FLOORS.forEach(f=>{
-          const b=document.createElement('button'); b.type='button'; b.className='chip2'+(S.d.floor===f?' on':'');
+          const b=document.createElement('button'); b.type='button'; b.className='chip2'+(S.d.floor===String(f)?' on':'');
           b.textContent='지하 '+f+'층';
-          b.addEventListener('click',()=>{ S.d.floor=f; S.d.floorAuto=false; advance(); });
+          b.addEventListener('click',()=>{ S.d.floor=String(f); S.d.floorAuto=false; advance(); });
           w.appendChild(b);
         });
         ctl.appendChild(w);
@@ -1459,25 +1444,12 @@
                    etc:{max:100,ph:S.d.lvl==='ground'?'예: 정문으로 들어와서 우회전'
                                                      :'예: 게이트2로 들어와서 좌회전'}}[S.step];
         const w=document.createElement('div'); w.className='tinwrap';
-        const im = (S.step==='dong' && S.dongMode!=='text') ? ' inputmode="numeric"' : '';
-        w.innerHTML='<input class="tin" id="tin"'+im+' maxlength="'+cfg.max+'" placeholder="'+cfg.ph+'" />'
+        w.innerHTML='<input class="tin" id="tin" inputmode="text" maxlength="'+cfg.max+'" placeholder="'+cfg.ph+'" />'
                    +'<span class="tcnt"><b id="tcnt">0</b>/'+cfg.max+'</span>';
         ctl.appendChild(w);
         if(S.step==='etc'){
           const p=document.createElement('p'); p.className='askhelp'; p.id='etc-help';
           ctl.appendChild(p);
-        }
-        if(S.step==='dong'){
-          /* 동 값 1,685건 중 98.2%가 숫자다. 숫자 키패드를 먼저 띄우고,
-             A동·C동 같은 나머지 1.8%는 한 번 눌러 전환한다. 한글 동은 0건이었다. */
-          const b=document.createElement('button');
-          b.type='button'; b.className='kbswap';
-          b.textContent = S.dongMode==='text' ? '숫자로 입력' : 'A동·C동처럼 글자로 입력';
-          b.addEventListener('click',()=>{
-            S.dongMode = (S.dongMode==='text') ? 'num' : 'text';
-            renderForm();
-          });
-          ctl.appendChild(b);
         }
         if(S.step==='line'){
           const p=document.createElement('p'); p.className='askhelp';
@@ -1557,8 +1529,6 @@
     el('f-line2').hidden = !!d.noLine;
     el('f-fld-line').querySelector('.u').hidden = !!d.noLine;
     el('f-line-nn').hidden = !d.noLine;
-    dg.setAttribute('inputmode', S.dongMode==='text' ? 'text' : 'numeric');
-    el('f-line2').setAttribute('inputmode', S.lineMode==='text' ? 'text' : 'numeric');
 
     renderHint();
 
@@ -1586,7 +1556,7 @@
     if(v==='ground'){
       /* 지상 주차장은 곧 1층이다. 층 칸은 접히지만 값은 1 로 채워 둔다 —
          비워 두면 저장되는 데이터에 층이 빈 구멍으로 남는다. */
-      if(!S.d.floor){ S.d.floor=1; S.d.floorAuto=true; }
+      if(!S.d.floor){ S.d.floor='1'; S.d.floorAuto=true; }
     } else if(wasAuto){
       /* 지상이 자동으로 넣어 준 1 은 지하로 돌아올 때 거둔다. 실제로 가장 많은 건 지하 2층이라,
          고르지도 않은 '지하 1층' 이 채워져 있으면 그대로 저장돼 버린다. */
@@ -1597,17 +1567,13 @@
   }
   /* 지금 포커스된 칸의 안내만 띄운다. 슬롯 높이는 고정이라 오갈 때 아래가 튀지 않는다 */
   const HINT = {
-    dong: { t:'', a:()=>S.dongMode==='text' ? '숫자로 입력' : 'A동·C동처럼 글자로 입력',
-            go:()=>{ S.dongMode = (S.dongMode==='text') ? 'num' : 'text'; renderSentence();
-                     setTimeout(()=>el('f-dong').focus(),20); },
-            a2:()=>'동이 없어요',
-            go2:()=>{ S.d.noDong=true; S.d.dong=''; S.focus=null; renderSentence(); paintFoot(); } },
-    line: { t:'',
-            a:()=>S.lineMode==='text' ? '숫자로 입력' : '글자로 입력',
-            go:()=>{ S.lineMode = (S.lineMode==='text') ? 'num' : 'text'; renderSentence();
-                     setTimeout(()=>el('f-line2').focus(),20); },
-            a2:()=>'라인이 없어요',
-            go2:()=>{ S.d.noLine=true; S.d.line=''; S.focus=null; renderSentence(); paintFoot(); } }
+    /* 키패드 전환 칩은 없앴다. 모든 칸이 문자로 열린다 —
+       동에는 '관리동'·'타운하우스동', 층에는 'L' 같은 값이 실제로 있다.
+       숫자·문자가 한 화면에 있는 키패드가 최선이지만 없는 플랫폼에서는 전환이 사용자 몫이다. */
+    dong: { t:'', a:()=>'동이 없어요',
+            go:()=>{ S.d.noDong=true; S.d.dong=''; S.focus=null; renderSentence(); paintFoot(); } },
+    line: { t:'', a:()=>'라인이 없어요',
+            go:()=>{ S.d.noLine=true; S.d.line=''; S.focus=null; renderSentence(); paintFoot(); } }
   };
   /* 값이 기본 폭을 넘칠 때만 늘린다. 늘 내용에 딱 맞추면 한 글자마다 옆 칸이 밀린다 */
   let MEAS=null;
@@ -1653,14 +1619,15 @@
   }
   /* 문장형 빈칸은 한 번만 묶어 둔다. 매 렌더마다 다시 그리면 포커스가 날아간다 */
   function bindSentence(){
-    /* 키보드는 필드마다 다르다. 요청사항 1,727건에서 뽑은 라인 토큰 614건 기준:
-       숫자 100% · '-'/'~' 39.4% · 한글 '호' 63.5% · 영문 0건.
-       그래서 라인은 text(마크업 고정), 층은 numeric, 동은 숫자 98.2%/영문 1.8% 라
-       numeric 으로 열고 힌트 슬롯의 'A동·C동처럼 글자로 입력' 으로 넘어간다. */
+    /* 세 칸 모두 문자로 연다. 어느 칸도 숫자만은 아니기 때문이다 —
+       층 'L층', 동 '관리동'·'타운하우스동', 라인 '-'/'~'/'호'.
+       숫자로 열어 두면 그런 값을 넣으려는 사람이 매번 전환을 눌러야 하고,
+       더 나쁘게는 '여기는 숫자만 되나 보다' 하고 포기한다. */
     const fl=el('f-floor'), dg=el('f-dong');
     fl.addEventListener('input',ev=>{
-      const v=ev.target.value.replace(/[^0-9]/g,'').slice(0,1);
-      ev.target.value=v; S.d.floor = v ? +v : null; S.d.floorAuto=false; fitBv(ev.target);
+      /* 숫자만 남기던 필터를 걷었다. 'L층' 처럼 글자로 된 층이 실제로 있다. */
+      const v=ev.target.value.slice(0,3);
+      ev.target.value=v; S.d.floor = v ? v : null; S.d.floorAuto=false; fitBv(ev.target);
       renderSentence();
       if(v) dg.focus();                       /* 층은 한 자리다. 채우면 바로 넘긴다 */
     });
@@ -1788,7 +1755,7 @@
   }
 
   function openForm(where){
-    S.opened=where; S.skipped={}; S.dongMode='text'; S.lineMode='text';
+    S.opened=where; S.skipped={};
     /* 이미 쓴 길 안내가 있으면 펼친 채로 연다 — 접힌 채 열면 안 보이는 값이 된다 */
     S.etcOpen = !!(S.current && S.current.etc && S.current.etc.trim());
     S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false};
