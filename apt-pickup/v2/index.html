@@ -1213,7 +1213,19 @@
     <p><span class="mk warn"></span><b>대신 이 값은 알고 가야 합니다.</b> 라인 값 614건 중
        <b>숫자만으로 끝나는 것은 20.4%</b> 뿐입니다. 나머지 <b>79.6%</b> 는 <code>-</code>/<code>~</code> 나 <code>호</code> 를 쓰므로,
        숫자로 열면 <b>5명 중 4명이 전환을 한 번 눌러야</b> 합니다. 동(영문 1.8%)과는 상황이 정반대입니다.</p>
-    <p><b>그래서 iOS 는 <code>.numberPad</code> 가 아니라 <code>.numbersAndPunctuation</code> 으로 갑니다.</b>
+    <p><b>기본값이 뒤집혔습니다 — 이제 문자 키패드가 먼저 뜹니다.</b>
+       동·라인 모두 <code>text</code> 로 열고, 칩은 <code>숫자로 입력</code> 이 됩니다.
+       라인 값 중 <b>숫자만으로 끝나는 것이 20.4%</b> 뿐이라(나머지는 <code>-</code>/<code>~</code>/<code>호</code>),
+       숫자로 열면 5명 중 4명이 전환을 눌러야 했습니다. 아래 iOS 논의는 숫자로 열던 때의 기록입니다.
+       <span class="mk warn"></span>Figma 칩은 아직 <code>글자로 입력</code>(=숫자로 열림)이라
+       그쪽을 <code>숫자로 입력</code> 으로 바꿔야 맞습니다.</p>
+    <p><b>엔터는 제출이 아니라 &lsquo;다음 빈 칸으로&rsquo; 입니다.</b> 층 → 동 → 라인 순으로 다음 빈 칸을 찾아
+       포커스를 옮기고, 다 찼으면 <b>키패드만 내립니다.</b> 마지막 칸에서 엔터로 곧장 저장되면
+       확인할 새도 없이 기사에게 가 버립니다. 현재 칸 뒤에 빈 칸이 없으면 <b>앞으로 돌아가</b> 찾고
+       (라인에서 엔터쳤는데 동이 비어 있을 수 있습니다), <code>동 없음</code>·<code>라인 없음</code> 으로
+       접은 칸은 건너뜁니다.</p>
+    <p>아래는 숫자로 열던 시절의 검토입니다 —
+       <b>iOS 는 <code>.numberPad</code> 가 아니라 <code>.numbersAndPunctuation</code> 으로 갑니다.</b>
        <code>-</code> 와 <code>~</code> 가 숫자와 <b>같은 화면</b>에 있어서, <code>-</code>/<code>~</code> 를 쓰는 <b>39.4%</b> 는
        전환 없이 그대로 칩니다. 남는 건 <code>호</code> 를 치는 사람인데 그건 키보드 자체의 <code>ABC</code> 로 넘어갑니다.</p>
     <p>앱 안의 <b>&lsquo;글자로 입력&rsquo; 은 그대로 둡니다.</b> 안드로이드에는 <code>.numbersAndPunctuation</code> 에
@@ -1341,7 +1353,7 @@
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
-    step:null, skipped:{}, routeOpen:null, dongMode:'num', lineMode:'num', dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
+    step:null, skipped:{}, routeOpen:null, dongMode:'text', lineMode:'text', dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
   };
 
   /* ── 문장 ── */
@@ -1707,9 +1719,33 @@
       el('f-addetc').classList.toggle('lab', !!ev.target.value.trim());
       paintFEtc(); paintFoot();
     });
-    [fl,dg,ln2,el('f-etc')].forEach(i=>i.addEventListener('keydown',ev=>{
-      if(ev.key==='Enter' && !el('ph-next').disabled) el('ph-next').click();
+    /* 엔터는 제출이 아니라 '다음 빈 칸으로' 다. 다 찼으면 키패드만 내린다 —
+       마지막 칸에서 엔터로 곧장 저장되면, 확인할 새도 없이 기사에게 가 버린다.
+       현재 칸 다음부터 찾고 끝까지 없으면 앞으로 돌아간다(라인에서 엔터쳤는데 동이 비어 있을 수 있다). */
+    const ORDER = [
+      { id:'f-floor', empty:()=>!S.d.floor },
+      { id:'f-dong',  empty:()=>!S.d.dong.trim(), off:()=>S.d.noDong },
+      { id:'f-line2', empty:()=>!S.d.line.trim(), off:()=>S.d.noLine }
+    ];
+    function nextEmpty(fromId){
+      const live = ORDER.filter(f => !(f.off && f.off()));
+      const i = Math.max(0, live.findIndex(f => f.id===fromId));
+      for(let k=1; k<=live.length; k++){
+        const f = live[(i+k) % live.length];
+        if(f.id!==fromId && f.empty()) return f.id;
+      }
+      return null;
+    }
+    [fl,dg,ln2].forEach(i=>i.addEventListener('keydown',ev=>{
+      if(ev.key!=='Enter') return;
+      ev.preventDefault();
+      const nx = nextEmpty(ev.target.id);
+      if(nx){ const t=el(nx); if(!t.hidden) t.focus(); }
+      else ev.target.blur();
     }));
+    el('f-etc').addEventListener('keydown',ev=>{
+      if(ev.key==='Enter'){ ev.preventDefault(); ev.target.blur(); }
+    });
   }
 
   function paintFoot(){
@@ -1752,7 +1788,7 @@
   }
 
   function openForm(where){
-    S.opened=where; S.skipped={};
+    S.opened=where; S.skipped={}; S.dongMode='text'; S.lineMode='text';
     /* 이미 쓴 길 안내가 있으면 펼친 채로 연다 — 접힌 채 열면 안 보이는 값이 된다 */
     S.etcOpen = !!(S.current && S.current.etc && S.current.etc.trim());
     S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false};
