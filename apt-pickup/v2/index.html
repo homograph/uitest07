@@ -149,7 +149,7 @@
      못 누르는 상태(도착 후)는 그 액션 글자가 사라지는 것으로 표시된다 — 면이 아니라
      '할 수 있는 일' 의 유무가 신호가 되므로, 카드 배경은 네 상태가 모두 같다. */
   .pkbox{box-sizing:border-box;width:100%;height:48px;font:inherit;text-align:left;
-    background:#f9f9f9;box-shadow:inset 0 0 0 1px var(--gray-50);border:none;border-radius:4px;
+    background:#f9f9f9;box-shadow:inset 0 0 0 1px var(--gray-80);border:none;border-radius:4px;
     padding:14px;display:flex;flex-direction:row;align-items:center;gap:8px;cursor:pointer;}
   /* 아이콘 배지: 빈/전송 중은 gray-100 바탕에 #60667a P, 찬/도착은 blue-500 바탕에 흰 P */
   .pico{flex:0 0 auto;width:20px;height:20px;border-radius:4px;display:grid;place-items:center;
@@ -158,8 +158,13 @@
   .pico svg path{fill:#60667a;}
   .pkbox.filled .pico{background:var(--blue-500);}
   .pkbox.filled .pico svg path{fill:#fff;}
-  .pkbox.sending .pico{background:var(--gray-100);}
-  .pkbox.sending .pico svg path{fill:#60667a;}
+  /* 못 누르는 두 상태(전송 중 · 도착 후)는 이제 겉모습이 완전히 같다 —
+     테두리가 한 톤 연해지고(#e3e4e8 → #efeff1) 아이콘도 값도 물러난다.
+     '지금 손댈 수 없다' 를 한 요소가 아니라 카드 전체가 말한다. */
+  .pkbox.sending,.pkbox.arrived{box-shadow:inset 0 0 0 1px var(--gray-50);}
+  .pkbox.sending .pico,.pkbox.arrived .pico{background:var(--gray-100);}
+  .pkbox.sending .pico svg path,.pkbox.arrived .pico svg path{fill:#60667a;}
+  .pkbox.arrived .fill{color:var(--gray-500);}
   .pkbox .ph,.pkbox .fill{font-size:14px;line-height:20px;flex:1 1 auto;min-width:0;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pkbox .ph{color:var(--gray-500);}
@@ -1102,11 +1107,16 @@
     <p>제목 줄도, 텍스트 배지도 없어지고 <b>네 상태가 모두 48dp 한 줄</b>로 통일됐습니다.
        카드 배경도 <code>#f9f9f9</code> + <code>#efeff1</code> 로 전 상태가 같습니다.</p>
     <table><tbody>
-      <tr><td><b>입력 전</b></td><td>아이콘 <code>#d5d7dc</code>/<code>#60667a</code> · <code>지상·지하 주차장에서 타시나요?</code> · <b>입력</b></td></tr>
-      <tr><td><b>입력 완료</b></td><td>아이콘 <code>#32a2fa</code>/흰색 · 값 <code>#262a38</code> · <b>수정</b></td></tr>
-      <tr><td><b>변경 직후</b></td><td>아이콘 <code>#d5d7dc</code> · 값 <code>#73788b</code> · <b>스피너</b></td></tr>
-      <tr><td><b>차량 도착 후</b></td><td>아이콘 <code>#32a2fa</code>/흰색 · 값 <code>#262a38</code> · <b>오른쪽 비어 있음</b></td></tr>
+      <tr><td><b>입력 전</b></td><td>테두리 <code>#e3e4e8</code> · 아이콘 <code>#d5d7dc</code>/<code>#60667a</code> · 값 <code>#73788b</code> · <b>입력</b></td></tr>
+      <tr><td><b>입력 완료</b></td><td>테두리 <code>#e3e4e8</code> · 아이콘 <code>#32a2fa</code>/흰색 · 값 <code>#262a38</code> · <b>수정</b></td></tr>
+      <tr><td><b>변경 직후</b></td><td>테두리 <code>#efeff1</code> · 아이콘 <code>#d5d7dc</code>/<code>#60667a</code> · 값 <code>#73788b</code> · <b>스피너</b></td></tr>
+      <tr><td><b>차량 도착 후</b></td><td>테두리 <code>#efeff1</code> · 아이콘 <code>#d5d7dc</code>/<code>#60667a</code> · 값 <code>#73788b</code> · <b>비어 있음</b></td></tr>
     </tbody></table>
+    <p><b>못 누르는 두 상태는 이제 겉모습이 완전히 같습니다.</b> 전송 중과 도착 후가
+       테두리(<code>#efeff1</code>) · 아이콘(회색) · 값(<code>#73788b</code>)까지 전부 같고,
+       <b>구분되는 것은 스피너 하나</b>뿐입니다. 누를 수 있는 두 상태는 테두리가 한 톤 진하고
+       (<code>#e3e4e8</code>) 오른쪽에 <code>입력</code>·<code>수정</code> 이 있습니다.
+       &lsquo;지금 손댈 수 있나&rsquo; 가 <b>한 요소가 아니라 카드 전체</b>로 갈립니다.</p>
     <p><b>신호를 나르는 것이 면에서 &lsquo;할 수 있는 일&rsquo; 로 옮겨갔습니다.</b> 직전 안은
        카드 배경·테두리로 &lsquo;누를 수 있나&rsquo; 를 말했는데, 이제는 <b>오른쪽 글자의 유무</b>가 말합니다 —
        <code>입력</code> · <code>수정</code> 이 있으면 누를 수 있고, 도착 후엔 그 글자가 사라집니다.</p>
