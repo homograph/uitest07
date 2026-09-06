@@ -644,9 +644,13 @@
   .dpass .pic{display:flex;}
   .dpass b{flex:1 1 auto;min-width:0;font-size:22px;font-weight:700;color:var(--ef);letter-spacing:-.3px;}
   .dpass .tel{display:flex;padding:0 8px 0 25px;color:var(--e6);}
-  /* v2 그대로 — 실제 앱의 승객 카드에는 요청사항 행이 이미 있다. 이 프로토타입에서는
-     동작을 걸지 않는다(v2 에서도 아직 안 걸려 있다). 주차장 상세 위치는 이 행이 아니라
-     아래 운행 카드의 말풍선에 있다는 것이 이 화면에서 보여야 한다. */
+  /* v2 그대로 — 실제 앱의 승객 카드에는 요청사항 행이 이미 있다.
+     ── 결정(9/6): 주차장 상세 위치는 이 행에 넣지 않고 분리한다.
+     둘은 성격이 다르다. 요청사항은 '승객이 부탁한 것'(짐·경유·조용히)이고 기사가 읽고
+     판단할 문장이다. 주차장 상세 위치는 '어디로 갈지'라 경로의 일부이고, 목적지·주소와
+     같은 줄에 있어야 운전 중에 한 번에 읽힌다. 요청사항 안에 넣으면 한 번 더 열어야 하고,
+     그 한 번이 운전 중에는 안 일어난다.
+     동작은 걸지 않는다(v2 에서도 아직 안 걸려 있다). */
   .dpass .preq{width:100%;background:rgba(255,255,255,.06);border-radius:8px;
     padding:8px 10px;display:flex;align-items:center;justify-content:center;gap:8px;
     font-size:16px;color:var(--dim);}
@@ -981,7 +985,7 @@
                 <div class="tail"></div>
               </div>
               <div class="row">
-                <span class="dbadge">출발지</span>
+                <span class="dbadge">출발</span>
                 <div class="ci">
                   <div class="cnav"><b>래미안원베일리</b><span class="navb" id="cnav" hidden><svg class="ic" width="20" height="20" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_nav)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_nav"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg></span></div>
                   <span>서울 서초구 반포대로 333</span>
@@ -1491,6 +1495,10 @@
     <p>출발지 주소 바로 아래, 꼬리 달린 말풍선입니다. 배경 <b>#283873</b>, 라디우스 2, 안쪽 여백 12/16.
        본문 16sp에 <b>탑승</b>만 #32a2fa로 강조돼 있습니다.</p>
     <p>같은 배지가 <b>pickup-go, pickup-arrived, 예약 상세</b> 세 화면에 반복 배치돼 있어 운행 내내 남습니다.</p>
+    <p><b>요청사항과는 분리합니다(9/6 결정).</b> 승객 카드에는 이미 <code>고객 요청사항 보기</code> 행이 있지만,
+       주차장 상세 위치는 그 안에 넣지 않습니다. 요청사항은 <b>승객이 부탁한 것</b>이라 기사가 읽고 판단할 문장이고,
+       상세 위치는 <b>어디로 갈지</b>라 경로의 일부입니다. 목적지·주소와 같은 줄에 있어야 운전 중 한 번에 읽히고,
+       요청사항 안에 넣으면 한 번 더 열어야 하는데 <b>그 한 번이 운전 중에는 일어나지 않습니다.</b></p>
     <p>위계는 <b>기사가 POI로 알 수 없는 것</b> 순입니다. 출발지 POI에 동은 <b>41.0%</b>가 이미 들어 있지만
        (예: 반포래미안원베일리아파트 101동) 지하와 층 정보는 <b>0.8%</b>뿐입니다. 요청사항의 82.3%가 지하를
        말합니다. 항상 새 정보인 것은 층이고 동은 절반쯤 윗줄과 겹치므로 <b>지하 N층을 가장 크게</b> 둡니다.</p>
