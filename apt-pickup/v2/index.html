@@ -827,8 +827,8 @@
             <div class="fopt" id="fopt" hidden>
 
               <div class="tinwrap">
-                <input class="tin" id="f-etc" maxlength="100" />
-                <span class="tcnt"><b id="f-etc-c">0</b>/100</span>
+                <input class="tin" id="f-etc" maxlength="20" />
+                <span class="tcnt"><b id="f-etc-c">0</b>/20</span>
               </div>
               <p class="askhelp" id="f-etc-help"></p>
             </div>
@@ -1466,8 +1466,8 @@
       (d.etc||'').trim()
     ].filter(x=>x && x.trim()).join(' · ');
   const sentence = d => !d ? '' : core(d);
-  /* 오버레이 본문에는 위치만 쓴다. 찾아오는 길은 최대 100자라 24sp 두 줄을 넘긴다 —
-     그건 기사가 '멈췄을 때' 펼쳐 보는 정보고, 오버레이는 흘긋 보는 자리다. */
+  /* 오버레이 본문에는 위치만 쓴다. 찾아오는 길(20자)은 기사가 '멈췄을 때' 펼쳐 보는
+     정보고, 오버레이는 운전 중 흘긋 보는 자리라 위치 한 줄이 들어가야 한다. */
   const loc = d => !d ? '' : [
       (d.lvl==='under' ? '지하 ' : '지상 ') + d.floor + '층',
       (d.noDong ? '' : d.dong.trim()+'동') + (d.line ? ' '+lineText(d.line) : '')
@@ -1915,7 +1915,10 @@
     /* 이미 쓴 길 안내가 있으면 펼친 채로 연다 — 접힌 채 열면 안 보이는 값이 된다 */
     S.etcOpen = !!(S.current && S.current.etc && S.current.etc.trim());
     S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false};
-    el('ph-title').textContent = S.value ? '상세 위치 변경' : '상세 위치 입력';
+    /* Figma 는 12개 변형 모두 제목을 '상세 위치 입력' 으로 두었다 — 즉 제목을 변형별로
+       정하지 않았다. 읽기 전용에서 '입력'/'변경' 은 둘 다 못 하는 일을 가리키므로
+       동작 없는 '상세 위치' 로 둔다. (한 단어짜리 결정, 디자이너 확인 필요) */
+    el('ph-title').textContent = S.ro ? '상세 위치' : (S.value ? '상세 위치 변경' : '상세 위치 입력');
     /* 값이 이미 있으면 전부 답한 상태로 열어 요약만 보여준다 */
     if(S.current){ Object.keys(ASK).forEach(k=>{ if(ASK[k].skip && !S.d[k].trim()) S.skipped[k]=true; }); }
     advance();
