@@ -2533,7 +2533,7 @@
   /* 알약을 눌러도 타다로 돌아온다 — tovb.tada 와 같은 동작이라 따로 배울 게 없다. */
   el('tovb-loc').addEventListener('click', backFromTmap);
   /* 메시지는 타다 앱에 들어가면 읽은 것으로 본다 — 대화는 거기 있다. */
-  el('drover-ok').addEventListener('click',()=>{ if(S.drKind==='msg') S.msgUnread=false; });
+  el('drover-ok').addEventListener('click',()=>{ if(S.drKind==='msg'){ S.msgUnread=false; render(); } });
   /* 타다 앱 → 내비. driver-v2 의 cnavrow(이름 + 내비 아이콘)가 그 길이다. */
   $('.cnav').addEventListener('click',()=>{ S.dview='tmap'; render(); });
   /* 지도 위 '내비' 버블도 같은 길이다 — 기사가 내비로 돌아가는 자리는 둘 다 살아 있어야 한다. */
