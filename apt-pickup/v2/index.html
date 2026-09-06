@@ -740,6 +740,9 @@
      v2 쪽도 같이 바꾸는 게 맞다고 봅니다. */
   .dgo.arrived{background:var(--blue700);color:#fff;}
   .dgo.arrived svg path{fill:#ffffff;}
+  /* v2 cbtn.ok — 이미 한 일은 버튼이 아니라 상태다. 눌리지 않는다. */
+  .dgo.ok{background:#2fa76a;color:#fff;cursor:default;}
+  .dgo.ok:active{filter:none;}
 
   /* ══════ 노트 ══════ */
   .sech{max-width:1000px;margin:26px auto 0;padding:0 20px;font-size:13px;font-weight:700;
@@ -812,9 +815,9 @@
   <div class="stage">
   <div>
     <div class="cap"><span class="dot"></span><b>라이더 앱</b><em>유저</em><em id="pwlab">360</em>
-      <span class="dsw"><button type="button" class="dswb on" data-ds="go">이동 중</button><button
-        type="button" class="dswb" data-ds="near">접근 중</button><button
-        type="button" class="dswb" data-ds="arrived">차량 도착</button></span></div>
+      <span class="dsw"><button type="button" class="dswb on" data-side="r" data-ds="go">이동 중</button><button
+        type="button" class="dswb" data-side="r" data-ds="near">접근 중</button><button
+        type="button" class="dswb" data-side="r" data-ds="notified">차량 도착</button></span></div>
     <div class="phbox" id="riderbox"><div class="phone" id="rider">
 
       <!-- 출발지 설정 -->
@@ -938,9 +941,9 @@
 
   <div>
     <div class="cap"><span class="dot d"></span><b>드라이버 앱</b><em>기사님</em>
-      <span class="dsw"><button type="button" class="dswb on" data-ds="go">이동 중</button><button
-        type="button" class="dswb" data-ds="near">접근 중</button><button
-        type="button" class="dswb" data-ds="arrived">픽업지 도착</button></span></div>
+      <span class="dsw"><button type="button" class="dswb on" data-side="d" data-ds="go">이동 중</button><button
+        type="button" class="dswb" data-side="d" data-ds="near">접근 중</button><button
+        type="button" class="dswb" data-side="d" data-ds="arrived">픽업지 도착</button></span></div>
     <div class="phbox"><div class="phone">
       <div class="scr on dscr">
         <div class="sb dark"><span class="ic"><i class="wifi"></i><i class="sig"></i><i class="bat"></i></span><span>12:30</span></div>
@@ -1550,7 +1553,11 @@
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
-    step:null, skipped:{}, routeOpen:null, dstate:'go', form:'sform', etcOpen:false, top:'inline', pw:360
+    /* dstate = 기사가 지금 어디 있나(go · near · arrived).
+       notified = 기사가 '고객에게 도착 알리기' 를 눌렀나.
+       ── 둘은 다른 사건이다. 기사가 픽업지에 서 있어도 승객은 아직 모른다.
+       승객 화면(차량 도착 · 배너 · 수정 불가)은 dstate 가 아니라 notified 를 따른다. */
+    step:null, skipped:{}, routeOpen:null, dstate:'go', notified:false, form:'sform', etcOpen:false, top:'inline', pw:360
   };
 
   /* ── 문장 ── */
@@ -2106,7 +2113,7 @@
        그리고 도착 뒤에는 더 이상 고칠 수 없다. 기사가 이미 그 자리에 와 있으니
        지금 위치를 바꾸면 받는 쪽이 없다. Figma 의 세 '차량 도착' 화면이 전부
        값 있는 회색 카드 하나뿐이고 ＋ 가 한 번도 안 나오는 것도 같은 이유다. */
-    const atCar = S.dstate==='arrived';
+    const atCar = S.notified;
     el('pk-voy').classList.toggle('arrived', !!(has && atCar && !S.sending));
     /* 오른쪽 슬롯이 비는 것(= 할 수 있는 일이 없다)과 아예 못 누르는 것은 다르다.
        9/6 Figma 에 '차량 도착(수정 불가)' 화면이 생기면서 도착 후에도 카드는 열린다 —
@@ -2122,7 +2129,8 @@
     el('pk-voy').hidden = atCar && !has;
     /* 카드만 잠그고 헤더가 '출발지로 이동 중' 이면 화면이 서로 다른 말을 한다.
        Figma 11161:71869(도착 전) ↔ 11161:72262(도착) 의 차이를 그대로 옮긴다. */
-    const nearing = S.dstate==='near';
+    /* 기사가 픽업지에 도착했지만 아직 안 눌렀으면, 승객에겐 여전히 '곧 도착' 이다. */
+    const nearing = !S.notified && (S.dstate==='near' || S.dstate==='arrived');
     el('vh1').textContent = atCar ? '차량 도착' : (nearing ? '약 1분 후 도착' : '약 5분 후 도착');
     el('vh2').textContent = atCar ? '출발지에서 대기 중' : (nearing ? '출발지 근처 이동 중' : '출발지로 이동 중');
     /* 게이트를 없앤 대가로 책임이 승객에게 넘어갔다. 막지는 않되, 알려는 준다. */
@@ -2216,17 +2224,24 @@
        RouteHeader, 주소 옆 내비 버튼, CTA 색과 문구다. 상태마다 배지를 바꾸면
        기사가 다시 학습해야 한다. 같은 자리 같은 모양이 맞다. */
     const arrived = S.dstate==='arrived';
+    const told = arrived && S.notified;
     /* 마지막 관문. 기사가 반드시 누르는 버튼 바로 위라 못 본 값을 여기서 놓칠 수 없다. */
-    const unseen = arrived && got && !S.ack;
+    const unseen = arrived && !told && got && !S.ack;
     el('dunseen').hidden = !unseen;
     if(unseen) el('dunseen-tx').textContent = loc(S.current);
     el('rhead').hidden = !arrived;
     el('cnav').hidden = !arrived;
-    el('dgo').className = 'dgo'+(arrived?' arrived':'');
-    el('dgo').innerHTML = arrived
-      ? '<svg class="ic" width="20" height="20" viewBox="0 0 71 68" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.74022 0.391808C3.07348 -0.871381 0 1.07361 0 4.0244V25.8094L44.2147 33.8484L0 41.8874V63.6724C0 66.6232 3.07348 68.5682 5.74021 67.305L68.702 37.481C71.7671 36.0291 71.7671 31.6677 68.702 30.2158L5.74022 0.391808Z" fill="white"/></svg>고객에게 도착 알리기'
-      : '<svg class="ic" width="22" height="22" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_go)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_go"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>고객 위치로 출발하기';
-    $$('.dswb').forEach(b=>b.classList.toggle('on', b.dataset.ds===S.dstate));
+    /* 누르기 전 = '고객에게 도착 알리기', 누른 뒤 = 완료 표시(v2 의 cbtn.ok 와 같은 문법).
+       한 번 알린 것은 되돌릴 수 없으므로 버튼이 아니라 상태로 남는다. */
+    el('dgo').className = 'dgo'+(told?' ok':(arrived?' arrived':''));
+    el('dgo').disabled = told;
+    el('dgo').innerHTML = told ? '✓ 고객에게 알렸어요'
+      : (arrived ? '<svg class="ic" width="20" height="20" viewBox="0 0 71 68" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.74022 0.391808C3.07348 -0.871381 0 1.07361 0 4.0244V25.8094L44.2147 33.8484L0 41.8874V63.6724C0 66.6232 3.07348 68.5682 5.74021 67.305L68.702 37.481C71.7671 36.0291 71.7671 31.6677 68.702 30.2158L5.74022 0.391808Z" fill="white"/></svg>고객에게 도착 알리기'
+      : '<svg class="ic" width="22" height="22" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_go)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_go"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>고객 위치로 출발하기');
+    /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해도 안 눌렀으면 '접근 중' 이다. */
+    const rk = S.notified ? 'notified' : (S.dstate==='arrived' ? 'near' : S.dstate);
+    $$('.dswb').forEach(b=>b.classList.toggle('on',
+      b.dataset.ds === (b.dataset.side==='r' ? rk : S.dstate)));
 
     el('fdesc').innerHTML = S.screen==='start'
       ? (S.mode==='repeat' ? '출발지 설정 화면. 이 주소에 저장된 값이 <b>미리 채워져</b> 있습니다.'
@@ -2283,7 +2298,7 @@
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={};
     S.drover=false; S.hilite=false; S.before=null;
-    S.drpill=false; S.drKind=null; S.ack=true; clearTimeout(S.drTmr);
+    S.drpill=false; S.drKind=null; S.ack=true; S.notified=false; clearTimeout(S.drTmr);
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
       S.value=sentence(SAVED_FOR_ADDRESS); S.origin='start';
@@ -2316,18 +2331,29 @@
     if(!S.tts && window.speechSynthesis) speechSynthesis.cancel();
   });
   /* 출발/도착을 누른 건 그 값을 실제로 썼다는 뜻이다. 강조도 미확인도 여기서 거둔다. */
-  el('dgo').addEventListener('click',()=>{ S.hilite=false; S.ack=true; render(); });
+  el('dgo').addEventListener('click',()=>{
+    S.hilite=false; S.ack=true;
+    /* 여기가 승객이 '차량 도착' 을 알게 되는 유일한 지점이다. 기사가 픽업지에 서 있는 것과
+       승객이 그 사실을 아는 것은 다른 사건이고, 상세 위치가 잠기는 것도 이 순간이다. */
+    if(S.dstate==='arrived' && !S.notified){
+      S.notified=true;
+      if(S.opened==='voyage' && $('#phscr').classList.contains('on') && S.value) openForm('voyage', true);
+    }
+    render();
+  });
   $$('.dswb').forEach(b=>b.addEventListener('click',()=>{
     const prev=S.dstate;
-    S.dstate=b.dataset.ds;
-    if(b.dataset.ds==='arrived'){ S.hilite=false; S.drover=false; S.drpill=false; clearTimeout(S.drTmr); }
+    /* 라이더 컨트롤러의 '차량 도착' 은 기사가 버튼을 누른 것과 같은 사건이다. */
+    if(b.dataset.ds==='notified'){ S.dstate='arrived'; S.notified=true; }
+    else { S.dstate=b.dataset.ds; S.notified=false; }
+    if(S.dstate==='arrived'){ S.hilite=false; S.drover=false; S.drpill=false; clearTimeout(S.drTmr); }
     /* 접근 구간에 들어서면 변경 여부·확인 여부와 무관하게 값을 한 번 더 앞으로 끌어낸다.
        어떤 시점의 확인도 최종이 아니므로, 최종인 순간에 다시 보여주는 것 말고는 방법이 없다.
        이게 기억에 의존하는 구간을 없앤다. */
     if(S.dstate==='near' && prev!=='near' && reached()) raiseDrover('near');
     /* 열어 둔 채로 차가 도착하면 저장은 못 하지만 화면을 뺏을 이유도 없다.
        읽기 전용으로 바꿔서, 쓰던 화면 그대로 값만 확인하게 둔다. */
-    if(S.dstate==='arrived' && S.opened==='voyage' && $('#phscr').classList.contains('on')){
+    if(S.notified && S.opened==='voyage' && $('#phscr').classList.contains('on')){
       if(S.value) openForm('voyage', true); else $('#phscr').classList.remove('on');
     }
     render();
@@ -2350,7 +2376,7 @@
     S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
     S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
     S.drover=false; S.hilite=false;
-    S.drpill=false; S.drKind=null; S.ack=true; clearTimeout(S.drTmr);
+    S.drpill=false; S.drKind=null; S.ack=true; S.notified=false; clearTimeout(S.drTmr);
     $('#phscr').classList.remove('on');
     render();
     toast(onVoyage ? '상세 위치를 지웠어요. 기사님 화면에서도 사라집니다.'
@@ -2387,7 +2413,7 @@
        못 여는 것과 열리되 못 고치는 것은 다르다: 승객은 차 앞에 서서 자기가 보낸 값을
        확인하고 싶고, 그때가 그 값이 가장 필요한 순간이다. 대신 왜 못 고치는지와
        그럼 어떻게 하는지(전화)를 토스트가 말한다. */
-    if(n.dataset.open==='voyage' && S.dstate==='arrived'){
+    if(n.dataset.open==='voyage' && S.notified){
       if(!S.value) return;
       openForm('voyage', true);
       return;
