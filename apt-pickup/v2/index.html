@@ -311,11 +311,15 @@
   .nearnote[hidden]{display:none;}
   /* 고객 메시지 — Figma 에 '메시지 보내기' 버튼은 있지만 내용·화면은 아직 미정의라
      이 아래는 제안이다. 기사 쪽 표시 방식을 보이려면 보내는 쪽이 하나 필요했다. */
+  /* 닫힘 상태를 transform 만으로 두면 컨테이닝 블록에 따라 화면 안에 남는다.
+     이 파일에서 이미 검증된 .ph-scr 패턴(visibility 를 함께 끄기)을 그대로 쓴다. */
   .msgsheet{position:absolute;left:0;right:0;bottom:0;z-index:35;background:#fff;
     border-radius:12px 12px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.16);
     padding:20px;display:flex;flex-direction:column;gap:14px;
-    transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,.24,1);}
-  .msgsheet.on{transform:translateY(0);}
+    transform:translateY(100%);visibility:hidden;
+    transition:transform .28s cubic-bezier(.32,.72,.24,1),visibility 0s .28s;}
+  .msgsheet.on{transform:translateY(0);visibility:visible;
+    transition:transform .28s cubic-bezier(.32,.72,.24,1),visibility 0s 0s;}
   .msgsheet b{font-size:17px;line-height:24px;font-weight:700;color:var(--gray-950);}
   .msgsheet .row{display:flex;gap:8px;}
   .msgsheet .row .cta{flex:0 0 96px;}
