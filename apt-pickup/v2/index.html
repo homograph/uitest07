@@ -670,7 +670,7 @@
   .dtop .ci{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px;}
   /* cnavrow — 이름과 내비 버튼이 한 덩어리로 눌린다 */
   .cnav{display:flex;align-items:flex-start;gap:15px;border-radius:8px;padding:2px 6px;margin:-2px -6px;
-    transition:background .1s ease;}
+    cursor:pointer;transition:background .1s ease;}
   .cnav .navb{flex:0 0 auto;width:40px;height:40px;margin-top:2px;border-radius:50%;
     background:rgba(255,255,255,.1);display:grid;place-items:center;
     transition:transform .1s ease,filter .1s ease;}
@@ -1029,8 +1029,8 @@
 
   <div>
     <div class="cap"><span class="dot d"></span><b>드라이버 앱</b><em>기사님</em>
-      <span class="dsw"><button type="button" class="dswb on" data-side="d" data-ds="app">타다 앱</button><button
-        type="button" class="dswb" data-side="d" data-ds="tmap">T맵</button></span></div>
+      <span class="dsw"><button type="button" class="dswb on" data-side="d" data-ds="tmap">T맵 내비</button><button
+        type="button" class="dswb" data-side="d" data-ds="app">타다 앱</button></span></div>
     <div class="phbox"><div class="phone">
       <div class="scr on dscr">
         <div class="sb dark"><span class="ic"><i class="wifi"></i><i class="sig"></i><i class="bat"></i></span><span>12:30</span></div>
@@ -1652,7 +1652,7 @@
        ── 둘은 다른 사건이다. 기사가 픽업지에 서 있어도 승객은 아직 모른다.
        승객 화면(차량 도착 · 배너 · 수정 불가)은 dstate 가 아니라 notified 를 따른다. */
     /* rphase = 승객이 아는 것(하네스가 움직인다) · dview = 기사 화면(타다 앱 / T맵). */
-    step:null, skipped:{}, routeOpen:null, rphase:'matched', dview:'app', form:'sform', etcOpen:false, top:'inline', pw:360
+    step:null, skipped:{}, routeOpen:null, rphase:'matched', dview:'tmap', form:'sform', etcOpen:false, top:'inline', pw:360
   };
 
   /* ── 문장 ── */
@@ -1688,6 +1688,8 @@
   /* 드라이버 화면은 '고객에게 도착 알리기가 있는 시점' 하나만 쓴다(03 pickup-arrived).
      T맵은 같은 시점의 다른 화면이라 view 토글이지 상태가 아니다 —
      기사 앱의 상태 변화까지 모사하면 이 프로토타입의 주제(상세 위치)가 묻힌다. */
+  /* 기사가 실제로 보고 있는 건 내비다. 타다 앱은 플로팅 버튼을 눌렀을 때만 올라온다 —
+     그래서 T맵이 기본 화면이고, 타다 화면이 '들어갔다 나오는' 쪽이다. */
   const onTmap = () => S.dview==='tmap';
   const dep  = () => S.rphase!=='matched';   /* 승객이 ETA 를 보는가 */
   const told = () => S.rphase==='arrived';   /* 승객이 도착을 통보받았는가 */
@@ -2420,7 +2422,7 @@
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={};
     S.drover=false; S.hilite=false; S.before=null;
-    S.drKind=null; S.ack=true; S.rphase='matched'; S.dview='app'; clearTimeout(S.drTmr);
+    S.drKind=null; S.ack=true; S.rphase='matched'; S.dview='tmap'; clearTimeout(S.drTmr);
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
       S.value=sentence(SAVED_FOR_ADDRESS); S.origin='start';
@@ -2469,6 +2471,8 @@
   el('tovb-back').addEventListener('click', backFromTmap);
   /* 알약을 눌러도 타다로 돌아온다 — tovb.tada 와 같은 동작이라 따로 배울 게 없다. */
   el('tovb-loc').addEventListener('click', backFromTmap);
+  /* 타다 앱 → 내비. driver-v2 의 cnavrow(이름 + 내비 아이콘)가 그 길이다. */
+  $('.cnav').addEventListener('click',()=>{ S.dview='tmap'; render(); });
   el('tb-x').addEventListener('click', backFromTmap);
   $$('.dswb').forEach(b=>b.addEventListener('click',()=>{
     const prev=S.rphase;
@@ -2509,7 +2513,7 @@
     S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
     S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
     S.drover=false; S.hilite=false;
-    S.drKind=null; S.ack=true; S.rphase='matched'; S.dview='app'; clearTimeout(S.drTmr);
+    S.drKind=null; S.ack=true; S.rphase='matched'; S.dview='tmap'; clearTimeout(S.drTmr);
     $('#phscr').classList.remove('on');
     render();
     toast(onVoyage ? '상세 위치를 지웠어요. 기사님 화면에서도 사라집니다.'
