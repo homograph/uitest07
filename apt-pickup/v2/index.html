@@ -802,12 +802,12 @@
   .tovb.loc.open .hd{display:flex;align-items:center;gap:8px;}
   .tovb.loc .hd .lb{display:none;}
   .tovb.loc.open .hd .lb{display:block;font-size:13px;line-height:18px;font-weight:700;color:#5CB4FA;}
-  .tovb.loc.open .tx{white-space:normal;font-size:20px;line-height:28px;
-    word-break:keep-all;overflow-wrap:normal;line-break:strict;}
+  .tovb.loc.open .tx{display:block;width:100%;white-space:normal;font-size:20px;line-height:28px;
+    word-break:keep-all;overflow-wrap:normal;line-break:strict;text-align:left;}
   .tovb.loc .rt{display:none;}
   /* 찾아오는 길은 펼쳤을 때만 — 접힌 알약은 흘긋 보는 것이고, 편 것은 멈춰서 보는 것이다. */
-  .tovb.loc.open .rt{display:block;font-size:15px;line-height:21px;font-weight:400;color:#C0C8D9;
-    white-space:normal;word-break:keep-all;}
+  .tovb.loc.open .rt{display:block;width:100%;font-size:15px;line-height:21px;font-weight:400;
+    color:#C0C8D9;white-space:normal;word-break:keep-all;text-align:left;}
   /* 펼친 카드에 무엇을 담을지는 실제 요청사항 1,727건이 정해 준다:
        · 구조화(층·동·라인)로 담기는 건 28.1% 뿐 — 나머지엔 짐·동승자 32.9%(캐리어만 272건),
          경로 안내 20.3% 가 섞여 있다. 그래서 요청사항 줄이 없으면 5명 중 3명 이상은
@@ -817,11 +817,13 @@
          내비에 있으므로 전화가 여기 있어야 앱을 바꾸지 않는다. */
   .tovb.loc .ex{display:none;}
   .tovb.loc.open .ex{display:block;width:100%;}
-  .tovb.loc.open .sep{height:1px;background:rgba(255,255,255,.14);margin:10px 0;}
-  .tovb.loc.open .k{font-size:13px;line-height:18px;font-weight:700;color:#5CB4FA;margin-bottom:2px;}
-  .tovb.loc.open .v2{font-size:15px;line-height:21px;font-weight:400;color:#fff;
-    white-space:normal;word-break:keep-all;}
-  .tovb.loc.open .who{display:flex;align-items:center;gap:10px;}
+  /* 전부 span 이라 명시적으로 블록을 줘야 한다(안 그러면 라벨과 값이 한 줄로 붙는다) */
+  .tovb.loc.open .sep{display:block;height:1px;background:rgba(255,255,255,.14);margin:10px 0;}
+  .tovb.loc.open .k{display:block;font-size:13px;line-height:18px;font-weight:700;color:#5CB4FA;
+    margin-bottom:2px;text-align:left;}
+  .tovb.loc.open .v2{display:block;font-size:15px;line-height:21px;font-weight:400;color:#fff;
+    white-space:normal;word-break:keep-all;text-align:left;}
+  .tovb.loc.open .who{display:flex;align-items:center;gap:10px;width:100%;}
   .tovb.loc.open .who b{flex:1 1 auto;font-size:16px;line-height:22px;font-weight:700;color:#fff;
     text-align:left;}
   .tovb.loc .call{flex:0 0 auto;width:40px;height:40px;border-radius:50%;background:var(--blue700);
