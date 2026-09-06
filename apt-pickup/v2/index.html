@@ -585,23 +585,10 @@
     padding:15px;font:inherit;font-size:20px;line-height:30px;font-weight:700;cursor:pointer;
     transition:transform .1s ease,filter .1s ease;-webkit-tap-highlight-color:transparent;}
   .drbtn:active{transform:scale(.95);filter:brightness(.89);}
-  /* 값이 언제든 바뀔 수 있다는 건 어떤 시점의 확인도 최종이 아니라는 뜻이다.
-     그래서 오버레이는 '탭할 때까지 내비를 덮는' 물건이면 안 된다 — 운전 중엔 위험하고,
-     기사는 신호에 걸릴 때까지 못 누른다. 8초 뒤 스스로 접히되 사라지지는 않는다:
-     알약으로 남아 값을 계속 들고 있다가, 누르면 다시 펼쳐진다. */
-  .drpill{position:absolute;top:72px;right:10px;z-index:40;max-width:calc(100% - 20px);
-    display:flex;align-items:center;gap:8px;border:1.5px solid var(--b300);
-    background:var(--navy2);border-radius:9999px;padding:7px 14px 7px 7px;
-    font:inherit;font-size:15px;line-height:20px;font-weight:700;color:#fff;cursor:pointer;
-    box-shadow:0 6px 18px rgba(0,0,0,.28);animation:pillIn .22s ease;}
-  .drpill[hidden]{display:none;}
-  @keyframes pillIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
-  .drpill .pic2{flex:0 0 auto;width:24px;height:24px;border-radius:5px;display:grid;place-items:center;
-    background:rgba(185,221,253,.22);}
-  .drpill .pic2 svg{display:block;width:14px;height:14px;}
-  .drpill .pic2 svg path{fill:var(--b300);}
-  .drpill:active{transform:scale(.95);filter:brightness(.89);}
-  .drpill .tx{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+  /* 오버레이는 자동 퇴장한다(driver-v2 핸드오프 §오버레이):
+       · 경로 변경 = 음성 + 8초 → 자동 퇴장
+       · 도착 임박 = 반경 500m 진입 → 3초 자동 퇴장 (확인 탭·영역 터치도 닫힘)
+     이전에 두었던 '알약으로 접힘' 은 스펙에 없어 걷어냈다. */
   /* 운전자에게서 눈을 뺏지 않는 유일한 채널. 실제 구현은 TTS 이고,
      여기서는 무엇이 읽히는지 보이게만 둔다(하네스에서 실제 발화도 켤 수 있다). */
   .drvoice{margin:0;display:flex;align-items:flex-start;gap:8px;
@@ -743,6 +730,71 @@
   /* v2 cbtn.ok — 이미 한 일은 버튼이 아니라 상태다. 눌리지 않는다. */
   .dgo.ok{background:#2fa76a;color:#fff;cursor:default;}
   .dgo.ok:active{filter:none;}
+
+
+  /* ══════ T맵 화면 (ptmap) — driver-v2 에서 그대로 ══════
+     기사는 픽업 구간 내내 여기 있다. 드로오버 오버레이가 존재하는 이유가 이 화면이다 —
+     타다 앱 위에 뜨는 게 아니라 T맵 위에 뜬다. */
+  .dtmap{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;background:#ECEFF2;}
+  .dtmap[hidden]{display:none;}
+  .tbt{flex:none;display:flex;align-items:center;gap:13px;padding:16px 18px 15px;background:#0B6E4E;color:#fff;}
+  .tbt-a{flex:none;width:37px;height:37px;}
+  .tbt-a svg{width:100%;height:100%;display:block;}
+  .tbt-m{flex:1;min-width:0;}
+  .tbt-d{font-size:32px;font-weight:800;line-height:1;}
+  .tbt-d em{font-size:18px;font-weight:600;font-style:normal;margin-left:2px;}
+  .tbt-r{font-size:15px;opacity:.92;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tbt-n{flex:none;display:flex;flex-direction:column;align-items:center;gap:1px;padding-left:13px;
+    margin-left:2px;border-left:1px solid rgba(255,255,255,.28);}
+  .tbt-ni{font-size:16px;line-height:1;opacity:.9;}
+  .tbt-n b{font-size:14px;font-weight:700;opacity:.95;}
+  .tmapmap{flex:1 1 auto;min-height:0;position:relative;background:#ECEFF2;}
+  .tpin{position:absolute;transform:translate(-50%,-88%);z-index:1;}
+  .tmk{width:34px;height:42.5px;display:block;filter:drop-shadow(0 2px 3px rgba(10,16,36,.35));}
+  .navp{position:absolute;transform:translate(-50%,-50%);z-index:2;}
+  .navp .nv{display:block;transform:rotate(16deg);}
+  .navarr{width:36px;height:36px;display:block;filter:drop-shadow(0 2px 5px rgba(10,16,36,.4));}
+  .tspeed{position:absolute;left:14px;bottom:14px;z-index:3;display:flex;align-items:center;gap:8px;}
+  .tsl{width:44px;height:44px;border-radius:50%;background:#fff;border:4px solid #E4002B;color:#1a1a1a;
+    font-size:19px;font-weight:800;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 2px 8px rgba(0,0,0,.22);}
+  .tcur{background:rgba(20,24,33,.82);color:#fff;border-radius:11px;padding:5px 10px;font-size:17px;
+    font-weight:800;line-height:1;display:flex;align-items:baseline;gap:3px;}
+  .tcur em{font-size:10px;font-weight:600;font-style:normal;opacity:.85;}
+  .tbar{flex:none;display:flex;align-items:center;gap:12px;padding:14px 18px;background:#fff;color:#191c22;
+    box-shadow:0 -2px 12px rgba(0,0,0,.08);}
+  .tb-info{flex:1;min-width:0;display:flex;align-items:baseline;gap:8px;}
+  .tb-info b{font-size:20px;font-weight:800;color:#0B6E4E;}
+  .tb-info span{font-size:13px;color:#8a8f9c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tb-x{flex:none;width:34px;height:34px;border-radius:50%;background:#F1F2F4;color:#5a5f6a;
+    display:flex;align-items:center;justify-content:center;font-size:15px;border:none;font:inherit;cursor:pointer;}
+  /* 타다로 돌아오는 버튼. T맵 위에 떠 있는 타다 표면은 전부 이 한 벌(navy2 + b300 2px)이다 */
+  .tovr{position:absolute;right:10px;top:12px;display:flex;flex-direction:column;gap:8px;z-index:4;
+    align-items:flex-end;}
+  .tovb{width:62px;height:62px;border-radius:15px;box-sizing:border-box;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;text-align:center;cursor:pointer;border:none;font:inherit;
+    box-shadow:0 4px 13px rgba(10,16,36,.3);transition:transform .1s ease,filter .1s ease;}
+  .tovb:active{transform:scale(.91);filter:brightness(.88);}
+  .tovb.tada{background:#19254D;border:2px solid #5CB4FA;gap:5px;}
+  .tovb.tada .tlogo{font-size:17px;font-weight:800;letter-spacing:-.5px;color:#fff;line-height:1;}
+  .tovb.tada .trun{font-size:12px;font-weight:500;color:#E6E9EF;letter-spacing:.4px;line-height:1;}
+  .tovb.chg{background:#283873;border:2px solid #fff;font-size:18px;font-weight:700;color:#fff;line-height:1.16;}
+  /* v2 toast — 도착 알림 등 기사 화면 안내 */
+  .dtoast{position:absolute;left:50%;bottom:16%;transform:translate(-50%,10px);max-width:90%;
+    white-space:nowrap;background:rgba(13,20,44,.96);color:#fff;font-size:15px;font-weight:600;
+    line-height:1.35;text-align:center;padding:11px 22px;border-radius:24px;
+    box-shadow:0 12px 32px rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.1);z-index:45;
+    opacity:0;transition:opacity .2s ease,transform .24s ease;pointer-events:none;}
+  .dtoast.on{opacity:1;transform:translate(-50%,0);}
+  /* v2 preview — 도착을 알리면 넘어가는 화면. 픽업 스톱이 '완료' 로 물러난다. */
+  .irow{display:flex;align-items:flex-start;gap:14px;padding:14px 20px;border-bottom:1px solid #233565;}
+  .irow .nm{flex:1;min-width:0;font-size:20px;font-weight:700;line-height:30px;color:var(--dim);}
+  .irow .dn{font-size:16px;font-weight:700;color:#30a234;white-space:nowrap;}
+  .barfull{display:flex;align-items:center;justify-content:center;gap:10px;width:auto;
+    min-height:clamp(68px,calc(48px + 20px),78px);margin:14px 14px 0;border:none;border-radius:4px;
+    padding:10px 16px;background:var(--blue700);color:#fff;font:inherit;font-size:20px;font-weight:700;
+    cursor:pointer;transition:transform .11s ease,filter .11s ease;}
+  .barfull:active{transform:scale(.98);filter:brightness(.9);}
 
   /* ══════ 노트 ══════ */
   .sech{max-width:1000px;margin:26px auto 0;padding:0 20px;font-size:13px;font-weight:700;
@@ -942,8 +994,9 @@
 
   <div>
     <div class="cap"><span class="dot d"></span><b>드라이버 앱</b><em>기사님</em>
-      <span class="dsw"><button type="button" class="dswb on" data-side="d" data-ds="go">이동 중</button><button
-        type="button" class="dswb" data-side="d" data-ds="near">접근 중</button><button
+      <span class="dsw"><button type="button" class="dswb on" data-side="d" data-ds="go">픽업 대기</button><button
+        type="button" class="dswb" data-side="d" data-ds="nav">T맵 안내</button><button
+        type="button" class="dswb" data-side="d" data-ds="near">500m 진입</button><button
         type="button" class="dswb" data-side="d" data-ds="arrived">픽업지 도착</button></span></div>
     <div class="phbox"><div class="phone">
       <div class="scr on dscr">
@@ -967,7 +1020,15 @@
             <button type="button" class="drbtn" id="drover-ok">확인하기</button>
           </div>
         </div>
-        <button type="button" class="drpill" id="drpill" hidden aria-label="픽업 상세 다시 보기"><span class="pic2"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="tx" id="drpill-tx"></span></button>
+
+        <!-- T맵 안내 화면(ptmap). driver-v2 ptmap() 을 그대로 옮겼다. -->
+        <div class="dtmap" id="dtmap" hidden>
+          <div class="sb light"><span>12:30</span><span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
+          <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
+          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tovr"><button type="button" class="tovb tada" id="tovb-back"><span class="tlogo">tada</span><span class="trun">운행중</span></button><button type="button" class="tovb chg">경로<br>변경</button></div></div>
+          <div class="tbar"><div class="tb-info"><b>9분</b><span>1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
+        </div>
+        <div class="dtoast" id="dtoast"></div>
         <div class="dbubs">
           <div class="dbub rsv">예약<span class="cnt">3</span></div>
           <div class="dbub rt">경로<br>검색</div>
@@ -1003,6 +1064,12 @@
             </div>
             <div class="dunseen" id="dunseen" hidden><span class="lb">픽업 상세</span><b id="dunseen-tx"></b></div>
           <button class="dgo" id="dgo"></button>
+          </div>
+          <!-- 04 preview — 도착을 알리면 넘어가는 화면. 픽업 스톱이 '완료' 로 물러난다.
+               이후 경유·도착 구간은 이 프로토타입 범위 밖이다. -->
+          <div id="dpreview" hidden>
+            <div class="irow"><span class="dbadge">출발</span><div class="nm">래미안원베일리</div><span class="dn">완료</span></div>
+            <button type="button" class="barfull" id="dstart">운행 시작하기</button>
           </div>
         </div>
       </div>
@@ -1550,7 +1617,7 @@
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     drover:false, droverEdit:false, hilite:false, before:null, ro:false,
-    drpill:false, drKind:null, ack:true, drTmr:null, tts:false,
+    drKind:null, ack:true, drTmr:null, tts:false, dtTmr:null,
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
@@ -1558,9 +1625,15 @@
        notified = 기사가 '고객에게 도착 알리기' 를 눌렀나.
        ── 둘은 다른 사건이다. 기사가 픽업지에 서 있어도 승객은 아직 모른다.
        승객 화면(차량 도착 · 배너 · 수정 불가)은 dstate 가 아니라 notified 를 따른다. */
-    /* departed = 기사가 '고객 위치로 출발하기' 를 눌렀나. notified 와 같은 성격이다 —
-       기사가 버튼을 눌러야 승객이 알게 되는 사건. 누르기 전 승객은 ETA 를 못 본다. */
-    step:null, skipped:{}, routeOpen:null, dstate:'go', departed:false, notified:false, form:'sform', etcOpen:false, top:'inline', pw:360
+    /* dphase = driver-v2 상태머신의 픽업 구간 화면 그대로.
+         go      01 pickup-go      타다 앱 · [경로 안내받기]
+         nav     ptmap             T맵 안내 화면 (기사는 여기 있다)
+         near    ptmap + 반경 500m 진입 오버레이
+         arrived 03 pickup-arrived 타다 앱 · [고객에게 도착 알리기]
+         preview 04 preview        도착을 알린 뒤
+       "버튼 탭이 곧 전진 확정" — T맵의 안내 완료를 기다리지 않는다.
+       승객이 아는 것은 여기서 파생된다: 출발 = phase!=='go', 도착 = phase==='preview'. */
+    step:null, skipped:{}, routeOpen:null, dphase:'go', form:'sform', etcOpen:false, top:'inline', pw:360
   };
 
   /* ── 문장 ── */
@@ -1593,6 +1666,9 @@
   };
   /* 지상에도 층 칸이 생겼으므로 층은 두 경우 모두 필수다(지상은 1 이 미리 채워진다). */
   const ready = d => (!!d.dong.trim() || !!d.noDong) && !!d.floor;
+  const dep  = () => S.dphase!=='go';        /* 기사가 출발을 눌렀나 */
+  const told = () => S.dphase==='preview';   /* 기사가 도착을 알렸나 */
+  const onTmap = () => S.dphase==='nav' || S.dphase==='near';
   const reached = () => (!S.value||!S.confirmed) ? false : (S.origin==='start' ? true : S.sent);
 
   /* ── 단계 정의. 탭으로 끝나는 것 먼저, 키보드는 뒤로 몰아 한 번만 열리게 ── */
@@ -2116,7 +2192,7 @@
        그리고 도착 뒤에는 더 이상 고칠 수 없다. 기사가 이미 그 자리에 와 있으니
        지금 위치를 바꾸면 받는 쪽이 없다. Figma 의 세 '차량 도착' 화면이 전부
        값 있는 회색 카드 하나뿐이고 ＋ 가 한 번도 안 나오는 것도 같은 이유다. */
-    const atCar = S.notified;
+    const atCar = told();
     el('pk-voy').classList.toggle('arrived', !!(has && atCar && !S.sending));
     /* 오른쪽 슬롯이 비는 것(= 할 수 있는 일이 없다)과 아예 못 누르는 것은 다르다.
        9/6 Figma 에 '차량 도착(수정 불가)' 화면이 생기면서 도착 후에도 카드는 열린다 —
@@ -2133,10 +2209,10 @@
     /* 카드만 잠그고 헤더가 '출발지로 이동 중' 이면 화면이 서로 다른 말을 한다.
        Figma 11161:71869(도착 전) ↔ 11161:72262(도착) 의 차이를 그대로 옮긴다. */
     /* 기사가 픽업지에 도착했지만 아직 안 눌렀으면, 승객에겐 여전히 '곧 도착' 이다. */
-    const nearing = !S.notified && (S.dstate==='near' || S.dstate==='arrived');
+    const nearing = !told() && (S.dphase==='near' || S.dphase==='arrived');
     /* 기사가 출발을 누르기 전에는 ETA 가 없다 — 아직 아무 데도 안 갔으므로 '약 5분' 이 거짓말이다. */
-    el('vh1').textContent = atCar ? '차량 도착' : (!S.departed ? '배차 완료' : (nearing ? '약 1분 후 도착' : '약 5분 후 도착'));
-    el('vh2').textContent = atCar ? '출발지에서 대기 중' : (!S.departed ? '기사님이 곧 출발해요' : (nearing ? '출발지 근처 이동 중' : '출발지로 이동 중'));
+    el('vh1').textContent = atCar ? '차량 도착' : (!dep() ? '배차 완료' : (nearing ? '약 1분 후 도착' : '약 5분 후 도착'));
+    el('vh2').textContent = atCar ? '출발지에서 대기 중' : (!dep() ? '기사님이 곧 출발해요' : (nearing ? '출발지 근처 이동 중' : '출발지로 이동 중'));
     /* 게이트를 없앤 대가로 책임이 승객에게 넘어갔다. 막지는 않되, 알려는 준다. */
     el('nearnote').hidden = !(nearing && !S.ro);
     el('vban').hidden = !atCar;
@@ -2151,8 +2227,6 @@
     $('#dtalk').hidden = !got;
     /* 값이 사라졌거나 아직 안 닿았으면 확인할 것도 없다. */
     el('drover').hidden = !(S.drover && got);
-    el('drpill').hidden = !(S.drpill && got);
-    if(got) el('drpill-tx').textContent = loc(S.current);
     const near = S.drKind==='near';
     /* 도착 직전 안내는 '바뀌었다' 가 아니라 '이걸 보고 들어가세요' 다 — 델타를 쓰지 않는다. */
     const dl = (!near && S.droverEdit) ? deltaOf(S.before, S.current) : [];
@@ -2227,27 +2301,31 @@
     /* Figma 실측: 세 드라이버 화면 모두 탑승 배지는 동일하다. 달라지는 것은
        RouteHeader, 주소 옆 내비 버튼, CTA 색과 문구다. 상태마다 배지를 바꾸면
        기사가 다시 학습해야 한다. 같은 자리 같은 모양이 맞다. */
-    const arrived = S.dstate==='arrived';
-    const told = arrived && S.notified;
+    /* 화면 자체가 갈린다 — 기사는 nav/near 동안 타다 앱이 아니라 T맵에 있다. */
+    el('dtmap').hidden = !onTmap();
+    el('dpreview').hidden = S.dphase!=='preview';
+    $('.dcard').hidden = S.dphase==='preview';
+    const arrived = S.dphase==='arrived';
     /* 마지막 관문. 기사가 반드시 누르는 버튼 바로 위라 못 본 값을 여기서 놓칠 수 없다. */
-    const unseen = arrived && !told && got && !S.ack;
+    const unseen = arrived && got && !S.ack;
     el('dunseen').hidden = !unseen;
     if(unseen) el('dunseen-tx').textContent = loc(S.current);
-    el('rhead').hidden = !arrived;
+    el('rhead').hidden = !(arrived || told());
+    el('rhead').textContent = told() ? '픽업 완료' : '고객 위치로 이동 중';
     el('cnav').hidden = !arrived;
-    /* 누르기 전 = '고객에게 도착 알리기', 누른 뒤 = 완료 표시(v2 의 cbtn.ok 와 같은 문법).
-       한 번 알린 것은 되돌릴 수 없으므로 버튼이 아니라 상태로 남는다. */
-    el('dgo').className = 'dgo'+(told?' ok':(arrived?' arrived':''));
-    el('dgo').disabled = told;
-    el('dgo').innerHTML = told ? '✓ 고객에게 알렸어요'
-      : (arrived ? '<svg class="ic" width="20" height="20" viewBox="0 0 71 68" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.74022 0.391808C3.07348 -0.871381 0 1.07361 0 4.0244V25.8094L44.2147 33.8484L0 41.8874V63.6724C0 66.6232 3.07348 68.5682 5.74021 67.305L68.702 37.481C71.7671 36.0291 71.7671 31.6677 68.702 30.2158L5.74022 0.391808Z" fill="white"/></svg>고객에게 도착 알리기'
-      : (S.departed ? '<svg class="ic" width="22" height="22" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_go)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_go"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>경로 안내받기'
-      : '<svg class="ic" width="22" height="22" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_go)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_go"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>고객 위치로 출발하기'));
-    /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해도 안 눌렀으면 '접근 중' 이다. */
-    const rk = S.notified ? 'notified'
-             : (!S.departed ? 'matched' : (S.dstate==='arrived' ? 'near' : S.dstate));
+    /* 스펙(driver-v2 상태머신): 픽업 구간의 버튼은 둘뿐이다.
+         01 pickup-go      [경로 안내받기]        → 탭 즉시 pickup-arrived 확정 + T맵
+         03 pickup-arrived [고객에게 도착 알리기] → 토스트 + 04 preview
+       '알렸어요' 를 버튼에 남기던 건 제가 지어낸 것이라 걷어냈다 — 화면이 넘어간다. */
+    el('dgo').className = 'dgo'+(arrived?' arrived':'');
+    el('dgo').disabled = false;
+    el('dgo').innerHTML = arrived ? '<svg class="ic" width="20" height="20" viewBox="0 0 71 68" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.74022 0.391808C3.07348 -0.871381 0 1.07361 0 4.0244V25.8094L44.2147 33.8484L0 41.8874V63.6724C0 66.6232 3.07348 68.5682 5.74021 67.305L68.702 37.481C71.7671 36.0291 71.7671 31.6677 68.702 30.2158L5.74022 0.391808Z" fill="white"/></svg>고객에게 도착 알리기'
+      : '<svg class="ic" width="22" height="22" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_go)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_go"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>경로 안내받기';
+    /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
+    const rk = told() ? 'notified'
+             : (!dep() ? 'matched' : (S.dphase==='nav' ? 'go' : 'near'));
     $$('.dswb').forEach(b=>b.classList.toggle('on',
-      b.dataset.ds === (b.dataset.side==='r' ? rk : S.dstate)));
+      b.dataset.ds === (b.dataset.side==='r' ? rk : S.dphase)));
 
     el('fdesc').innerHTML = S.screen==='start'
       ? (S.mode==='repeat' ? '출발지 설정 화면. 이 주소에 저장된 값이 <b>미리 채워져</b> 있습니다.'
@@ -2260,13 +2338,16 @@
      앞의 둘은 '새 값이 왔다', 마지막은 '지금 이걸 보고 들어가세요' 다.
      어느 쪽이든 8초 뒤 알약으로 접힌다 — 내비를 계속 덮고 있으면 안 된다. */
   function raiseDrover(kind){
-    S.drKind=kind; S.drover=true; S.drpill=false;
+    S.drKind=kind; S.drover=true;
     if(kind!=='near') S.ack=false;
     clearTimeout(S.drTmr);
+    /* driver-v2 핸드오프 §오버레이 확정치:
+         경로 변경  = 음성 + 8초 오버레이 → 자동 퇴장
+         도착 임박  = 반경 500m 진입 → 3초 자동 퇴장 (확인 탭·영역 터치도 닫힘) */
     S.drTmr=setTimeout(()=>{
       if(!S.drover) return;
-      S.drover=false; S.drpill=true; render();
-    }, 8000);
+      S.drover=false; render();
+    }, kind==='near' ? 3000 : 8000);
     render();
     speak();
   }
@@ -2286,6 +2367,11 @@
     return (S.drKind==='change' ? '픽업 상세가 바뀌었습니다. ' : '픽업 상세가 도착했습니다. ')+loc(S.current)+'.';
   }
 
+  /* v2 toast — 기사 화면 안내. 라이더 토스트(#rtoast)와 자리가 다르다. */
+  function dtoast(msg){
+    const t=el('dtoast'); t.textContent=msg; t.classList.add('on');
+    clearTimeout(S.dtTmr); S.dtTmr=setTimeout(()=>t.classList.remove('on'), 3000);
+  }
   function toast(msg, undo){
     const t=$('#rtoast'); t.innerHTML='';
     const s=document.createElement('span'); s.textContent=msg; t.appendChild(s);
@@ -2304,7 +2390,7 @@
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={};
     S.drover=false; S.hilite=false; S.before=null;
-    S.drpill=false; S.drKind=null; S.ack=true; S.notified=false; S.departed=false; clearTimeout(S.drTmr);
+    S.drKind=null; S.ack=true; S.dphase='go'; clearTimeout(S.drTmr);
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
       S.value=sentence(SAVED_FOR_ADDRESS); S.origin='start';
@@ -2321,7 +2407,7 @@
      남은 역할은 하나 — '봤으니 강조 걷어줘'. 기사 본인에게 이득이라 강제할 필요가 없다. */
   el('drover-ok').addEventListener('click',()=>{
     clearTimeout(S.drTmr);
-    S.ack=true; S.drpill=false;
+    S.ack=true;
     S.drover=false; S.hilite=false; render();
     /* 실제로는 여기서 타다 앱이 내비 위로 올라온다. 그 전환이 끝난 뒤에 강조가 시작돼야
        기사가 화면에 도착했을 때 펄스가 남아 있다. 클래스를 한 번 뗐다 붙여 재생도 되돌린다. */
@@ -2329,8 +2415,8 @@
   });
   /* 시간으로 끊지 않는다 — 신호등에 서서 3초 뒤에 볼 수도 있다.
      기사가 그 값을 실제로 쓴 시점(출발 누름 · 도착)에 거둔다. */
-  /* 알약을 누르면 다시 펼쳐진다. 다만 확인은 아니다 — 확인은 확인 버튼이 한다. */
-  el('drpill').addEventListener('click',()=>{ raiseDrover(S.drKind || 'first'); });
+  /* 스펙: 오버레이 영역을 터치해도 닫힌다(확인 탭과 동일). */
+  el('drover').addEventListener('click',ev=>{ if(ev.target===el('drover')) el('drover-ok').click(); });
   el('tts').addEventListener('click',()=>{
     S.tts=!S.tts;
     el('tts').textContent = S.tts ? '음성 안내 켬' : '음성 안내 끔';
@@ -2339,31 +2425,38 @@
   /* 출발/도착을 누른 건 그 값을 실제로 썼다는 뜻이다. 강조도 미확인도 여기서 거둔다. */
   el('dgo').addEventListener('click',()=>{
     S.hilite=false; S.ack=true;
-    /* 출발도 도착 알림과 같다 — 기사가 누르는 순간 승객 화면이 바뀐다.
-       누르기 전 승객이 보는 건 '배차 완료' 이고 ETA 는 아직 없다. */
-    if(!S.departed && S.dstate!=='arrived') S.departed=true;
-    /* 여기가 승객이 '차량 도착' 을 알게 되는 유일한 지점이다. 기사가 픽업지에 서 있는 것과
-       승객이 그 사실을 아는 것은 다른 사건이고, 상세 위치가 잠기는 것도 이 순간이다. */
-    if(S.dstate==='arrived' && !S.notified){
-      S.notified=true;
+    if(S.dphase==='go'){
+      /* 01 → 06 tmapsel → ptmap. 버튼 탭이 곧 전진 확정이라 T맵을 기다리지 않는다:
+         돌아오는 순간 이미 pickup-arrived 다. 승객에게는 이때부터 ETA 가 보인다. */
+      S.dphase='nav';
+    } else if(S.dphase==='arrived'){
+      /* 03 → 04 preview. 여기가 승객이 '차량 도착' 을 알게 되는 유일한 지점이고,
+         상세 위치가 잠기는 것도 이 순간이다. */
+      S.dphase='preview';
+      dtoast('고객에게 도착을 알렸어요');
       if(S.opened==='voyage' && $('#phscr').classList.contains('on') && S.value) openForm('voyage', true);
     }
     render();
   });
+  /* T맵에서 타다로 복귀 = 03 pickup-arrived. (T맵은 콜백이 없어 '돌아옴' 만 안다) */
+  const backFromTmap = ()=>{ S.dphase='arrived'; S.drover=false; clearTimeout(S.drTmr); render(); };
+  el('tovb-back').addEventListener('click', backFromTmap);
+  el('tb-x').addEventListener('click', backFromTmap);
+  el('dstart').addEventListener('click',()=>dtoast('이 프로토타입은 픽업 구간까지 다룹니다.'));
   $$('.dswb').forEach(b=>b.addEventListener('click',()=>{
-    const prev=S.dstate;
-    /* 라이더 컨트롤러의 '차량 도착' 은 기사가 버튼을 누른 것과 같은 사건이다. */
-    if(b.dataset.ds==='matched'){ S.dstate='go'; S.departed=false; S.notified=false; }
-    else if(b.dataset.ds==='notified'){ S.dstate='arrived'; S.departed=true; S.notified=true; }
-    else { S.dstate=b.dataset.ds; S.departed=true; S.notified=false; }
-    if(S.dstate==='arrived'){ S.hilite=false; S.drover=false; S.drpill=false; clearTimeout(S.drTmr); }
+    const prev=S.dphase;
+    /* 라이더 칩은 승객이 아는 것, 드라이버 칩은 기사 화면. 둘 다 dphase 하나로 모인다. */
+    const MAP={matched:'go', go:'nav', near:'near', notified:'preview'};
+    S.dphase = b.dataset.side==='r' ? MAP[b.dataset.ds] : b.dataset.ds;
+    if(S.dphase==='arrived'||S.dphase==='preview'){ S.hilite=false; S.drover=false; clearTimeout(S.drTmr); }
     /* 접근 구간에 들어서면 변경 여부·확인 여부와 무관하게 값을 한 번 더 앞으로 끌어낸다.
        어떤 시점의 확인도 최종이 아니므로, 최종인 순간에 다시 보여주는 것 말고는 방법이 없다.
        이게 기억에 의존하는 구간을 없앤다. */
-    if(S.dstate==='near' && prev!=='near' && reached()) raiseDrover('near');
+    /* 반경 500m 진입 — 변경 여부·확인 여부와 무관하게 값을 다시 앞으로 끌어낸다. */
+    if(S.dphase==='near' && prev!=='near' && reached()) raiseDrover('near');
     /* 열어 둔 채로 차가 도착하면 저장은 못 하지만 화면을 뺏을 이유도 없다.
        읽기 전용으로 바꿔서, 쓰던 화면 그대로 값만 확인하게 둔다. */
-    if(S.notified && S.opened==='voyage' && $('#phscr').classList.contains('on')){
+    if(told() && S.opened==='voyage' && $('#phscr').classList.contains('on')){
       if(S.value) openForm('voyage', true); else $('#phscr').classList.remove('on');
     }
     render();
@@ -2386,7 +2479,7 @@
     S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
     S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
     S.drover=false; S.hilite=false;
-    S.drpill=false; S.drKind=null; S.ack=true; S.notified=false; S.departed=false; clearTimeout(S.drTmr);
+    S.drKind=null; S.ack=true; S.dphase='go'; clearTimeout(S.drTmr);
     $('#phscr').classList.remove('on');
     render();
     toast(onVoyage ? '상세 위치를 지웠어요. 기사님 화면에서도 사라집니다.'
@@ -2423,7 +2516,7 @@
        못 여는 것과 열리되 못 고치는 것은 다르다: 승객은 차 앞에 서서 자기가 보낸 값을
        확인하고 싶고, 그때가 그 값이 가장 필요한 순간이다. 대신 왜 못 고치는지와
        그럼 어떻게 하는지(전화)를 토스트가 말한다. */
-    if(n.dataset.open==='voyage' && S.notified){
+    if(n.dataset.open==='voyage' && told()){
       if(!S.value) return;
       openForm('voyage', true);
       return;
