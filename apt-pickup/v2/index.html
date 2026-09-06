@@ -311,15 +311,16 @@
   .nearnote[hidden]{display:none;}
   /* 고객 메시지 — Figma 에 '메시지 보내기' 버튼은 있지만 내용·화면은 아직 미정의라
      이 아래는 제안이다. 기사 쪽 표시 방식을 보이려면 보내는 쪽이 하나 필요했다. */
-  /* 닫힘 상태를 transform 만으로 두면 컨테이닝 블록에 따라 화면 안에 남는다.
-     이 파일에서 이미 검증된 .ph-scr 패턴(visibility 를 함께 끄기)을 그대로 쓴다. */
-  .msgsheet{position:absolute;left:0;right:0;bottom:0;z-index:35;background:#fff;
-    border-radius:12px 12px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.16);
+  /* bottom:0 이 이 컨테이너에서 제대로 안 잡혔다. 이 파일에서 확실히 동작하는 방식
+     (.scr / .ph-scr 처럼 inset:0 로 깔고 안에서 아래 정렬)으로 바꿨다. */
+  .msgwrap{position:absolute;inset:0;z-index:35;display:flex;flex-direction:column;
+    justify-content:flex-end;background:rgba(0,0,0,.28);
+    visibility:hidden;opacity:0;transition:opacity .22s ease,visibility 0s .22s;}
+  .msgwrap.on{visibility:visible;opacity:1;transition:opacity .22s ease,visibility 0s 0s;}
+  .msgsheet{background:#fff;border-radius:12px 12px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.16);
     padding:20px;display:flex;flex-direction:column;gap:14px;
-    transform:translateY(100%);visibility:hidden;
-    transition:transform .28s cubic-bezier(.32,.72,.24,1),visibility 0s .28s;}
-  .msgsheet.on{transform:translateY(0);visibility:visible;
-    transition:transform .28s cubic-bezier(.32,.72,.24,1),visibility 0s 0s;}
+    transform:translateY(14px);transition:transform .22s cubic-bezier(.32,.72,.24,1);}
+  .msgwrap.on .msgsheet{transform:none;}
   .msgsheet b{font-size:17px;line-height:24px;font-weight:700;color:var(--gray-950);}
   .msgsheet .row{display:flex;gap:8px;}
   .msgsheet .row .cta{flex:0 0 96px;}
@@ -1011,12 +1012,12 @@
       </div>
 
       <!-- 상세 위치 입력 화면 (토스식 점진 입력) -->
-      <div class="msgsheet" id="msgsheet">
+      <div class="msgwrap" id="msgwrap"><div class="msgsheet">
         <b>메시지 보내기</b>
         <div class="tinwrap"><input class="tin" id="msg-in" maxlength="40" placeholder="기사님께 전할 말" /></div>
         <div class="row"><button type="button" class="cancelb" id="msg-x" style="flex:0 0 96px">닫기</button>
           <button type="button" class="cta" id="msg-go" disabled>보내기</button></div>
-      </div>
+      </div></div>
       <div class="ph-scr" id="phscr">
         <div class="sb light"><span>12:45</span>
           <span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
@@ -2563,7 +2564,9 @@
   el('ph-skip').addEventListener('click',()=>{ S.skipped[S.step]=true; S.d[S.step]=''; advance(); });
   /* 고객 → 기사 메시지 (제안). 보내면 내비 위에 드로오버로 뜨고 8초 뒤 물러난다 —
      경로 변경 오버레이와 같은 수명이다. 물러난 뒤에는 tada 타일의 빨간 점이 남는다. */
-  const msgSheet = on => { $('#msgsheet').classList.toggle('on', on); if(on) setTimeout(()=>el('msg-in').focus(),60); };
+  const msgSheet = on => { $('#msgwrap').classList.toggle('on', on); if(on) setTimeout(()=>el('msg-in').focus(),60); };
+  /* 바깥을 누르면 닫힌다 */
+  $('#msgwrap').addEventListener('click',ev=>{ if(ev.target===$('#msgwrap')) msgSheet(false); });
   el('vmsg').addEventListener('click',()=>msgSheet(true));
   el('msg-x').addEventListener('click',()=>msgSheet(false));
   el('msg-in').addEventListener('input',ev=>{ el('msg-go').disabled = !ev.target.value.trim(); });
