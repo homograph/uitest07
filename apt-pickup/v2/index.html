@@ -309,6 +309,16 @@
   /* 게이트를 없앤 대가로 책임이 승객에게 넘어갔다. 막지는 않되 알려는 준다. */
   .nearnote{margin:0;display:flex;gap:6px;font-size:13px;line-height:19px;color:#a8620a;word-break:keep-all;}
   .nearnote[hidden]{display:none;}
+  /* 고객 메시지 — Figma 에 '메시지 보내기' 버튼은 있지만 내용·화면은 아직 미정의라
+     이 아래는 제안이다. 기사 쪽 표시 방식을 보이려면 보내는 쪽이 하나 필요했다. */
+  .msgsheet{position:absolute;left:0;right:0;bottom:0;z-index:35;background:#fff;
+    border-radius:12px 12px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.16);
+    padding:20px;display:flex;flex-direction:column;gap:14px;
+    transform:translateY(100%);transition:transform .28s cubic-bezier(.32,.72,.24,1);}
+  .msgsheet.on{transform:translateY(0);}
+  .msgsheet b{font-size:17px;line-height:24px;font-weight:700;color:var(--gray-950);}
+  .msgsheet .row{display:flex;gap:8px;}
+  .msgsheet .row .cta{flex:0 0 96px;}
   .ctaw{padding:10px;}
   button:focus-visible,.pkbox:focus-visible{outline:2px solid var(--blue-600);outline-offset:2px;}
   .cta{width:100%;border:none;border-radius:4px;background:var(--navy-800);color:#fff;
@@ -796,6 +806,12 @@
   .tovb.tada .tlogo{font-size:17px;font-weight:800;letter-spacing:-.5px;color:#fff;line-height:1;}
   .tovb.tada .trun{font-size:12px;font-weight:500;color:#E6E9EF;letter-spacing:.4px;line-height:1;}
   .tovb.chg{background:#283873;border:2px solid #fff;font-size:18px;font-weight:700;color:#fff;line-height:1.16;}
+  /* 오버레이가 지나간 뒤에도 '안 읽은 메시지가 있다' 는 남아야 한다. v2 bubdot 문법 그대로. */
+  .tovb.tada{position:relative;}
+  .tovdot{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 5px;box-sizing:border-box;
+    border-radius:999px;background:var(--red);color:#fff;font-size:12px;font-weight:700;line-height:1;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.4);}
+  .tovdot[hidden]{display:none;}
   /* 오버레이는 자동 퇴장한다(8초·3초). 그 뒤로 T맵 위에 상세 위치가 아무 데도 없어지는데,
      기사는 운전 중에 타다로 돌아가지 않는다. 그래서 값이 상시 남는 자리를 하나 만든다.
      자리는 여기뿐이다 — 위는 턴 배너(안전), 왼쪽 아래는 속도계, 아래는 T맵 바.
@@ -963,12 +979,18 @@
               <div class="ph"><svg class="ic" width="22" height="22" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M44.9994 45L43.4994 54C43.4994 54 35.9543 51.0429 29.9994 43.5C24.0445 35.9571 20.9994 25.5 20.9994 25.5L29.9994 24V6H9.00002V24.0328C9.00002 26 9.26005 27.9557 9.92909 29.8056C11.4575 34.0314 14.9518 42.2984 20.9994 49.5C25.516 54.8783 30.2792 59.1773 33.7693 62.0372C37.0769 64.7476 41.274 66 45.5504 66H63V45H44.9994Z" fill="#283873"/></svg></div>
             </div>
             <div class="vmy"><svg class="ic" width="20" height="20" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_42_8)"><path d="M27 54C12.0883 54 0 41.9117 0 27C0 12.0883 12.0883 0 27 0C41.9117 0 54 12.0883 54 27C54 41.9117 41.9117 54 27 54Z" fill="#D5D7DC"/><path d="M23.6245 30.8977L38.5107 16.0115L42.4882 19.989L23.6245 38.8527L11.5107 26.739L15.4882 22.7615L23.6245 30.8977Z" fill="white"/></g><defs><clipPath id="clip0_0_42_8"><rect width="18" height="18" fill="white" transform="scale(3)"/></clipPath></defs></svg>마이 드라이버로 지정</div>
-            <button class="vmsg"><svg class="ic" width="18" height="18" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.00098 55.0002V5.00024H55.001V45.0002H15.001L5.00098 55.0002ZM20.001 27.5002C20.7093 27.5002 21.3031 27.2607 21.7822 26.7815C22.2614 26.3023 22.501 25.7086 22.501 25.0002C22.501 24.2919 22.2614 23.6982 21.7822 23.219C21.3031 22.7398 20.7093 22.5002 20.001 22.5002C19.2926 22.5002 18.6989 22.7398 18.2197 23.219C17.7406 23.6982 17.501 24.2919 17.501 25.0002C17.501 25.7086 17.7406 26.3023 18.2197 26.7815C18.6989 27.2607 19.2926 27.5002 20.001 27.5002ZM30.001 27.5002C30.7093 27.5002 31.3031 27.2607 31.7822 26.7815C32.2614 26.3023 32.501 25.7086 32.501 25.0002C32.501 24.2919 32.2614 23.6982 31.7822 23.219C31.3031 22.7398 30.7093 22.5002 30.001 22.5002C29.2926 22.5002 28.6989 22.7398 28.2197 23.219C27.7406 23.6982 27.501 24.2919 27.501 25.0002C27.501 25.7086 27.7406 26.3023 28.2197 26.7815C28.6989 27.2607 29.2926 27.5002 30.001 27.5002ZM40.001 27.5002C40.7093 27.5002 41.3031 27.2607 41.7822 26.7815C42.2614 26.3023 42.501 25.7086 42.501 25.0002C42.501 24.2919 42.2614 23.6982 41.7822 23.219C41.3031 22.7398 40.7093 22.5002 40.001 22.5002C39.2926 22.5002 38.6989 22.7398 38.2197 23.219C37.7406 23.6982 37.501 24.2919 37.501 25.0002C37.501 25.7086 37.7406 26.3023 38.2197 26.7815C38.6989 27.2607 39.2926 27.5002 40.001 27.5002Z" fill="#383D4F"/></svg>메시지 보내기</button>
+            <button type="button" class="vmsg" id="vmsg"><svg class="ic" width="18" height="18" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.00098 55.0002V5.00024H55.001V45.0002H15.001L5.00098 55.0002ZM20.001 27.5002C20.7093 27.5002 21.3031 27.2607 21.7822 26.7815C22.2614 26.3023 22.501 25.7086 22.501 25.0002C22.501 24.2919 22.2614 23.6982 21.7822 23.219C21.3031 22.7398 20.7093 22.5002 20.001 22.5002C19.2926 22.5002 18.6989 22.7398 18.2197 23.219C17.7406 23.6982 17.501 24.2919 17.501 25.0002C17.501 25.7086 17.7406 26.3023 18.2197 26.7815C18.6989 27.2607 19.2926 27.5002 20.001 27.5002ZM30.001 27.5002C30.7093 27.5002 31.3031 27.2607 31.7822 26.7815C32.2614 26.3023 32.501 25.7086 32.501 25.0002C32.501 24.2919 32.2614 23.6982 31.7822 23.219C31.3031 22.7398 30.7093 22.5002 30.001 22.5002C29.2926 22.5002 28.6989 22.7398 28.2197 23.219C27.7406 23.6982 27.501 24.2919 27.501 25.0002C27.501 25.7086 27.7406 26.3023 28.2197 26.7815C28.6989 27.2607 29.2926 27.5002 30.001 27.5002ZM40.001 27.5002C40.7093 27.5002 41.3031 27.2607 41.7822 26.7815C42.2614 26.3023 42.501 25.7086 42.501 25.0002C42.501 24.2919 42.2614 23.6982 41.7822 23.219C41.3031 22.7398 40.7093 22.5002 40.001 22.5002C39.2926 22.5002 38.6989 22.7398 38.2197 23.219C37.7406 23.6982 37.501 24.2919 37.501 25.0002C37.501 25.7086 37.7406 26.3023 38.2197 26.7815C38.6989 27.2607 39.2926 27.5002 40.001 27.5002Z" fill="#383D4F"/></svg>메시지 보내기</button>
           </div>
         </div>
       </div>
 
       <!-- 상세 위치 입력 화면 (토스식 점진 입력) -->
+      <div class="msgsheet" id="msgsheet">
+        <b>메시지 보내기</b>
+        <div class="tinwrap"><input class="tin" id="msg-in" maxlength="40" placeholder="기사님께 전할 말" /></div>
+        <div class="row"><button type="button" class="cancelb" id="msg-x" style="flex:0 0 96px">닫기</button>
+          <button type="button" class="cta" id="msg-go" disabled>보내기</button></div>
+      </div>
       <div class="ph-scr" id="phscr">
         <div class="sb light"><span>12:45</span>
           <span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
@@ -1058,7 +1080,7 @@
         <div class="dtmap" id="dtmap" hidden>
           <div class="sb light"><span>12:30</span><span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
           <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
-          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tovr"><button type="button" class="tovb loc" id="tovb-loc" hidden aria-label="픽업 상세 위치"><span class="pic3"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="tx" id="tovb-loc-tx"></span></button><button type="button" class="tovb tada" id="tovb-back"><span class="tlogo">tada</span><span class="trun">운행중</span></button><button type="button" class="tovb chg">경로<br>변경</button></div></div>
+          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tovr"><button type="button" class="tovb loc" id="tovb-loc" hidden aria-label="픽업 상세 위치"><span class="pic3"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="tx" id="tovb-loc-tx"></span></button><button type="button" class="tovb tada" id="tovb-back"><span class="tlogo">tada</span><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><button type="button" class="tovb chg">경로<br>변경</button></div></div>
           <div class="tbar"><div class="tb-info"><b>9분</b><span>1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
         </div>
         <div class="dtoast" id="dtoast"></div>
@@ -1643,7 +1665,7 @@
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     drover:false, droverEdit:false, hilite:false, before:null, ro:false,
-    drKind:null, ack:true, drTmr:null, tts:false, dtTmr:null,
+    drKind:null, ack:true, drTmr:null, tts:false, dtTmr:null, msg:'', msgUnread:false,
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
@@ -2250,20 +2272,24 @@
        물어보게 만든다. 값이 없을 때의 올바른 화면은 지금 운영 중인 화면 그대로다. */
     $('#dtalk').hidden = !got;
     /* 값이 사라졌거나 아직 안 닿았으면 확인할 것도 없다. */
-    el('drover').hidden = !(S.drover && got);
+    el('drover').hidden = !(S.drover && (got || S.drKind==='msg'));
     const near = S.drKind==='near';
+    const isMsg = S.drKind==='msg';
     /* 도착 직전 안내는 '바뀌었다' 가 아니라 '이걸 보고 들어가세요' 다 — 델타를 쓰지 않는다. */
     const dl = (!near && S.droverEdit) ? deltaOf(S.before, S.current) : [];
     /* 상자 전체를 두르는 건 첫 입력일 때만이다. 변경이면 바뀐 조각만 표시한다. */
     el('dtalkbody').classList.toggle('hl', !!(S.hilite && got && !dl.length));
     /* 오버레이 본문은 값 그 자체다. 기사가 흘긋 한 번 보고 끝내야 하므로,
        '무슨 일이 있었다' 는 타이틀이 맡고 24sp 두 줄은 위치에 내준다. */
-    el('drover-t').textContent = near ? '곧 도착' : (S.droverEdit ? '픽업 상세 변경' : '픽업 상세');
-    if(got) el('drover-b').textContent = loc(S.current);
+    el('drover-t').textContent = isMsg ? '고객 메시지' : (near ? '곧 도착' : (S.droverEdit ? '픽업 상세 변경' : '픽업 상세'));
+    if(isMsg) el('drover-b').textContent = S.msg;
+    else if(got) el('drover-b').textContent = loc(S.current);
+    el('tovdot').hidden = !S.msgUnread;
     el('drover-v').hidden = !(S.drover && got);
     if(got) el('drover-vt').textContent = voiceLine();
     const dd = el('drover-d'); dd.textContent=''; dd.hidden = true;
-    if(got && dl.length){
+    if(isMsg){ /* 메시지는 값이 아니라 사람 말이다 — 델타도 길 안내도 붙지 않는다 */ }
+    else if(got && dl.length){
       /* 운전 중에 읽을 것이라 두 개까지만. 그 이상은 세느니 다시 보라고 하는 게 낫다. */
       if(dl.length > 2){ dd.textContent = '여러 곳이 바뀌었습니다'; }
       else dl.forEach((x,i)=>{
@@ -2371,7 +2397,8 @@
      어느 쪽이든 8초 뒤 알약으로 접힌다 — 내비를 계속 덮고 있으면 안 된다. */
   function raiseDrover(kind){
     S.drKind=kind; S.drover=true;
-    if(kind!=='near') S.ack=false;
+    if(kind==='msg') S.msgUnread=true;
+    else if(kind!=='near') S.ack=false;
     clearTimeout(S.drTmr);
     /* driver-v2 핸드오프 §오버레이 확정치:
          경로 변경  = 음성 + 8초 오버레이 → 자동 퇴장
@@ -2394,6 +2421,7 @@
     }catch(e){}
   }
   function voiceLine(){
+    if(S.drKind==='msg') return '고객 메시지. '+S.msg;
     if(!S.current) return '';
     if(S.drKind==='near') return '곧 도착합니다. '+loc(S.current)+'.';
     return (S.drKind==='change' ? '픽업 상세가 바뀌었습니다. ' : '픽업 상세가 도착했습니다. ')+loc(S.current)+'.';
@@ -2467,12 +2495,16 @@
     render();
   });
   /* T맵 → 타다 복귀. 화면 전환일 뿐 상태가 아니다. */
-  const backFromTmap = ()=>{ S.dview='app'; render(); };
+  const backFromTmap = ()=>{ S.dview='app'; S.msgUnread=false; render(); };
   el('tovb-back').addEventListener('click', backFromTmap);
   /* 알약을 눌러도 타다로 돌아온다 — tovb.tada 와 같은 동작이라 따로 배울 게 없다. */
   el('tovb-loc').addEventListener('click', backFromTmap);
+  /* 메시지는 타다 앱에 들어가면 읽은 것으로 본다 — 대화는 거기 있다. */
+  el('drover-ok').addEventListener('click',()=>{ if(S.drKind==='msg') S.msgUnread=false; });
   /* 타다 앱 → 내비. driver-v2 의 cnavrow(이름 + 내비 아이콘)가 그 길이다. */
   $('.cnav').addEventListener('click',()=>{ S.dview='tmap'; render(); });
+  /* 지도 위 '내비' 버블도 같은 길이다 — 기사가 내비로 돌아가는 자리는 둘 다 살아 있어야 한다. */
+  $('.dbub.nv').addEventListener('click',()=>{ S.dview='tmap'; render(); });
   el('tb-x').addEventListener('click', backFromTmap);
   $$('.dswb').forEach(b=>b.addEventListener('click',()=>{
     const prev=S.rphase;
@@ -2497,6 +2529,18 @@
   });
   el('ph-next').addEventListener('click',()=>{ (S.form==='sform'||S.step===null) ? submitForm() : advance(); });
   el('ph-skip').addEventListener('click',()=>{ S.skipped[S.step]=true; S.d[S.step]=''; advance(); });
+  /* 고객 → 기사 메시지 (제안). 보내면 내비 위에 드로오버로 뜨고 8초 뒤 물러난다 —
+     경로 변경 오버레이와 같은 수명이다. 물러난 뒤에는 tada 타일의 빨간 점이 남는다. */
+  const msgSheet = on => { $('#msgsheet').classList.toggle('on', on); if(on) setTimeout(()=>el('msg-in').focus(),60); };
+  el('vmsg').addEventListener('click',()=>msgSheet(true));
+  el('msg-x').addEventListener('click',()=>msgSheet(false));
+  el('msg-in').addEventListener('input',ev=>{ el('msg-go').disabled = !ev.target.value.trim(); });
+  el('msg-go').addEventListener('click',()=>{
+    const v=el('msg-in').value.trim(); if(!v) return;
+    S.msg=v; msgSheet(false); el('msg-in').value=''; el('msg-go').disabled=true;
+    raiseDrover('msg');
+    toast('메시지를 보냈습니다.');
+  });
   el('chk-save').addEventListener('change',()=>{
     S.always=el('chk-save').checked;
     /* Figma 주석: '체크 해제 시 토스트' · '상세 위치 내용 클라에 저장하고 토스트 처리' */
