@@ -230,11 +230,14 @@
   .chip2.on{border-color:#31487d;background:#31487d;color:#fff;font-weight:500;}
 
   .tinwrap{position:relative;width:100%;}
-  .tin{width:100%;border:none;border-radius:8px;background:var(--gray-30);padding:15px 58px 15px 16px;
-    font:inherit;font-size:16px;line-height:18px;color:var(--gray-950);outline:none;}
+  /* Figma text box / monoline 실측: #f5f6f7 · r6 · pad16 · 15px/22 · 값 #000.
+     오른쪽 여백 53 = pad16 + 카운터 27 + gap10 (카운터는 절대배치라 자리를 비워 준다). */
+  .tin{width:100%;border:none;border-radius:6px;background:var(--gray-30);padding:16px 53px 16px 16px;
+    font:inherit;font-size:15px;line-height:22px;color:#000;outline:none;}
   .tin::placeholder{color:var(--gray-500);}
-  .tin:focus{box-shadow:inset 0 0 0 1.5px var(--navy-800);}
-  .tcnt{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--gray-500);}
+  /* 포커스는 검정 1px 이다(navy 1.5 가 아니었다). */
+  .tin:focus{box-shadow:inset 0 0 0 1px #000;}
+  .tcnt{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--gray-500);}
   .tcnt b{font-weight:700;}
   .askhelp{margin:9px 0 0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
   .askhelp b{color:var(--gray-700);font-weight:600;}
@@ -343,6 +346,8 @@
      칸을 통째로 흐리면 '값이 사라졌나' 로 읽히고, 그대로 두면 눌러 보게 된다 —
      글자만 내리는 게 그 둘 사이의 정확한 자리다. */
   .ph-scr.ro .fld,.ph-scr.ro .addetc{cursor:default;}
+  /* 수정 불가에서는 ＋/− 자체가 없다 — 접거나 펼 수 없으니 아이콘도 남기지 않는다. */
+  .ph-scr.ro .addetc .tg{display:none;}
   .ph-scr.ro .bv,.ph-scr.ro .fld .u,.ph-scr.ro .fld .nn,.ph-scr.ro .fld.pick{color:var(--gray-500);}
   .ph-scr.ro .fld:focus-within,.ph-scr.ro .fld.pick:focus,.ph-scr.ro .fld.pick:hover{
     background:var(--gray-30);box-shadow:none;}
@@ -538,7 +543,7 @@
   /* Figma etc-header: 312×50 · 위쪽 stroke #e3e4e8 · gap8.
      위 선은 inset 으로 그려 50 을 지킨다(테두리가 자리를 먹으면 51 이 된다). */
   .addetc{display:flex;align-items:center;gap:8px;
-    width:100%;margin-top:0;border:none;background:none;padding:15px 0;
+    width:100%;margin-top:0;border:none;background:none;padding:14px 0;
     font:inherit;font-size:15px;line-height:20px;font-weight:500;color:var(--gray-800);text-align:left;cursor:pointer;
     box-shadow:inset 0 1px 0 0 var(--gray-80);border-radius:0;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
@@ -1033,7 +1038,7 @@
                 type="button" class="fa" id="f-hint-a2" hidden></button></span>
             </div>
 
-            <button type="button" class="addetc" id="f-addetc" hidden><span>찾아오는 길</span><svg class="ic tg" id="f-etc-ic" width="13" height="13" viewBox="0 0 13 13" fill="none" xmlns="http://www.w3.org/2000/svg"><path id="f-etc-v" d="M6.5 1.2V11.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M1.2 6.5H11.8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+            <button type="button" class="addetc" id="f-addetc" hidden><span>찾아오는 길</span><svg class="ic tg" id="f-etc-ic" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect id="f-etc-v" x="9" y="4" width="2" height="12" rx="1" fill="currentColor"/><rect x="4" y="9" width="12" height="2" rx="1" fill="currentColor"/></svg></button>
             <div class="fopt" id="fopt" hidden>
 
               <div class="tinwrap">
@@ -1837,15 +1842,10 @@
 
   function paintEtcHelp(){
     const p=el('etc-help'); if(!p) return;
-    const n=S.d.etc.trim().length;
-    if(n>60){
-      p.className='askhelp warn';
-      p.innerHTML='길어지면 <b>운전 중에는 못 읽습니다.</b> 기사님은 멈췄을 때 펼쳐 봐요. '
-                 +'가능하면 목적지를 정확히 적는 편이 더 도움이 됩니다.';
-    } else {
-      p.className='askhelp';
-      p.innerHTML='길 안내는 <b>기사님이 멈춰 있을 때</b> 펼쳐 봅니다. 운전 중에는 위치만 보여요.';
-    }
+    /* Figma 는 한 문장 · 강조 없음 · #73788b 13sp 다. 60자 경고 분기는 maxlength 가
+       20 이 되면서 도달할 수 없게 돼 함께 걷어냈다. */
+    p.className='askhelp';
+    p.textContent='길 안내는 드라이버가 멈춰 있을 때 펼쳐 봅니다.';
   }
   /* ── 1안: 한 화면 문장형 ──
      필수 세 가지를 한 화면에 다 펼친다. 위치는 세그먼트, 층·동은 문장 안의 빈칸이다.
@@ -1980,15 +1980,10 @@
   }
   function paintFEtc(){
     const p=el('f-etc-help'); if(!p) return;
-    const n=S.d.etc.trim().length;
-    if(n>60){
-      p.className='askhelp warn';
-      p.innerHTML='길어지면 <b>운전 중에는 못 읽습니다.</b> 기사님은 멈췄을 때 펼쳐 봐요. '
-                 +'가능하면 목적지를 정확히 적는 편이 더 도움이 됩니다.';
-    } else {
-      p.className='askhelp';
-      p.innerHTML='길 안내는 <b>기사님이 멈춰 있을 때</b> 펼쳐 봅니다. 운전 중에는 위치만 보여요.';
-    }
+    /* Figma 는 한 문장 · 강조 없음 · #73788b 13sp 다. 60자 경고 분기는 maxlength 가
+       20 이 되면서 도달할 수 없게 돼 함께 걷어냈다. */
+    p.className='askhelp';
+    p.textContent='길 안내는 드라이버가 멈춰 있을 때 펼쳐 봅니다.';
   }
   /* 문장형 빈칸은 한 번만 묶어 둔다. 매 렌더마다 다시 그리면 포커스가 날아간다 */
   function bindSentence(){
