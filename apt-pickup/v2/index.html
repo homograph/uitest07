@@ -2285,8 +2285,9 @@
     if(isMsg) el('drover-b').textContent = S.msg;
     else if(got) el('drover-b').textContent = loc(S.current);
     el('tovdot').hidden = !S.msgUnread;
-    el('drover-v').hidden = !(S.drover && got);
-    if(got) el('drover-vt').textContent = voiceLine();
+    /* 메시지야말로 음성이 필요하다 — 값과 달리 언제 올지 모르고, 운전 중엔 읽을 수 없다. */
+    el('drover-v').hidden = !(S.drover && (got || isMsg));
+    if(got || isMsg) el('drover-vt').textContent = voiceLine();
     const dd = el('drover-d'); dd.textContent=''; dd.hidden = true;
     if(isMsg){ /* 메시지는 값이 아니라 사람 말이다 — 델타도 길 안내도 붙지 않는다 */ }
     else if(got && dl.length){
