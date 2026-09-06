@@ -159,9 +159,12 @@
   .pkbox.sending{background:#f9f9f9;box-shadow:inset 0 0 0 1px var(--gray-50);}
   /* 아이콘은 이제 상태를 나르지 않는다 — 네 상태가 모두 같은 연파랑 배지에 파란 P 다.
      상태 신호를 내려놓고 '여기가 주차장 위치 자리' 라는 표시만 맡는다. blue-150 @60%. */
-  .pico{flex:0 0 auto;width:20px;height:20px;border-radius:4.8px;display:grid;place-items:center;
+  /* 실측(LAYOUT=1): 배지 24×24 · r4.8 · 아이콘 프레임 14×14 (벡터 자체는 8×11).
+     배지가 20→24 로 커지면서 카드 hug 높이도 12+24+12 = 48 이 된다. */
+  .pico{flex:0 0 auto;width:24px;height:24px;border-radius:4.8px;display:grid;place-items:center;
     background:rgba(185,221,253,.6);}
-  .pico svg{display:block;width:12px;height:12px;}
+  /* 손으로 그리지 않고 Figma 원본을 --svg 로 추출해 넣었다(viewBox 44). */
+  .pico svg{display:block;width:14px;height:14px;}
   .pico svg path{fill:var(--blue-500);}
   /* 남은 두 채널이 각자 한 가지만 말한다:
        면 + 값 색 = 이 값이 기사에게 가 있는가  (파란 면 + 검정 / 회색 면 + #4b5064)
@@ -303,7 +306,23 @@
      Neutral Solid Button / Large 의 비활성은 gray-300 배경 · gray-200 글자다.
      (대비 1.47:1 — 낮지만 WCAG 1.4.3 은 비활성 컨트롤을 제외하므로 DS 값을 그대로 따른다.) */
   .cta:disabled{background:var(--gray-300);color:var(--gray-200);cursor:default;}
-  /* 취소 = Neutral Weak Solid Button / Large · 120×52 고정폭 */
+  /* 차량 도착(수정 불가) — Figma 11594:52300 '수정 불가'.
+     칸의 껍데기(#f5f6f7 · r8 · 42dp)는 그대로 두고 글자만 물러난다.
+     값이 없어진 게 아니라 '이제 못 바꾼다' 이므로 읽히기는 해야 하고 만져지지는 말아야 한다.
+     칸을 통째로 흐리면 '값이 사라졌나' 로 읽히고, 그대로 두면 눌러 보게 된다 —
+     글자만 내리는 게 그 둘 사이의 정확한 자리다. */
+  .ph-scr.ro .fld,.ph-scr.ro .addetc{cursor:default;}
+  .ph-scr.ro .bv,.ph-scr.ro .fld .u,.ph-scr.ro .fld .nn,.ph-scr.ro .fld.pick{color:var(--gray-500);}
+  .ph-scr.ro .fld:focus-within,.ph-scr.ro .fld.pick:focus,.ph-scr.ro .fld.pick:hover{
+    background:var(--gray-30);box-shadow:none;}
+  /* 찾아오는 길 칸만 한 톤 더 눌러 둔다(#f5f6f7 → #efeff1). 여기만 '입력란' 이라
+     테두리 없는 회색 면이 비어 보이기 쉬운데, 한 단계 어두우면 채워진 칸으로 읽힌다. */
+  .ph-scr.ro .tin{background:var(--gray-50);color:var(--gray-500);}
+  .ph-scr.ro .tin:focus{box-shadow:none;}
+  /* 취소 = Neutral Weak Solid Button / Large · 120×52 고정폭
+     ⚠ 9/6 Figma: 12개 변형 전부에서 취소가 빠지고 저장이 전폭(FILL)이 됐다.
+     헤더의 '지우기'(Sub button)도 비었다 — 나가는 길이 ✕ 하나로 정리됐다.
+     엘리먼트는 남기되 항상 숨긴다(핸들러가 참조하고, 되돌릴 수 있다). */
   .cancelb{flex:0 0 120px;border:none;border-radius:4px;background:var(--gray-e6);
     color:var(--navy-700);padding:14px 18px;font:inherit;font-size:16px;line-height:24px;
     font-weight:700;letter-spacing:-.2px;cursor:pointer;}
@@ -727,7 +746,7 @@
               <span>차량이 도착하는 위치를 확인해주세요.</span>
             </div>
             <div class="fields">
-              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="픽업 위치 입력하기"><span class="pico"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 31.5V4.5H19.5C22 4.5 24.125 5.375 25.875 7.125C27.625 8.875 28.5 11 28.5 13.5C28.5 16 27.625 18.125 25.875 19.875C24.125 21.625 22 22.5 19.5 22.5H15V31.5H9ZM15 16.5H19.8C20.625 16.5 21.3313 16.2063 21.9188 15.6187C22.5062 15.0313 22.8 14.325 22.8 13.5C22.8 12.675 22.5062 11.9688 21.9188 11.3813C21.3313 10.7937 20.625 10.5 19.8 10.5H15V16.5Z"/></svg></span><span class="ph" id="pk-start-tx">지상·지하 주차장에서 타시나요?</span><span class="pact" id="pk-start-act">입력</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></button>
+              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="픽업 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="ph" id="pk-start-tx">지상·지하 주차장에서 타시나요?</span><span class="pact" id="pk-start-act">입력</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></button>
 
             </div>
           </div>
@@ -753,7 +772,7 @@
             <button class="obtn">경로 변경</button>
           </div>
           <div class="vpk">
-            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="픽업 위치 입력하기"><span class="pico"><svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 31.5V4.5H19.5C22 4.5 24.125 5.375 25.875 7.125C27.625 8.875 28.5 11 28.5 13.5C28.5 16 27.625 18.125 25.875 19.875C24.125 21.625 22 22.5 19.5 22.5H15V31.5H9ZM15 16.5H19.8C20.625 16.5 21.3313 16.2063 21.9188 15.6187C22.5062 15.0313 22.8 14.325 22.8 13.5C22.8 12.675 22.5062 11.9688 21.9188 11.3813C21.3313 10.7937 20.625 10.5 19.8 10.5H15V16.5Z"/></svg></span><span class="ph" id="pk-voy-tx">지상·지하 주차장에서 타시나요?</span><span class="pact" id="pk-voy-act">입력</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span><span class="sr" id="pk-voy-sr"></span></button>
+            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="픽업 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="ph" id="pk-voy-tx">지상·지하 주차장에서 타시나요?</span><span class="pact" id="pk-voy-act">입력</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span><span class="sr" id="pk-voy-sr"></span></button>
 
           </div>
           <div class="vdiv"></div>
@@ -1430,7 +1449,7 @@
   const S={
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
-    drover:false, droverEdit:false, hilite:false, before:null,
+    drover:false, droverEdit:false, hilite:false, before:null, ro:false,
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
@@ -1865,14 +1884,14 @@
        재편집에만 두던 취소가 이제 상시다 — 빈 상태에서도 '안 쓸래' 로 나갈 길이 생긴다.
        reedit 은 저장 버튼의 활성 조건(바꾼 게 있는가)에만 계속 쓴다. */
     const reedit = S.opened==='start' ? !!S.value : !!(S.value && S.confirmed);
-    el('ph-cancel').hidden = false;
-    /* 이미 확정된 값을 고치러 들어온 경우에만 '지우기' 를 준다 */
-    el('ph-del').hidden = !S.value;
+    /* 9/6 Figma: 취소도 지우기도 없다. 나가는 길은 ✕ 하나다. */
+    el('ph-cancel').hidden = true;
+    el('ph-del').hidden = true;
     el('chk-save').checked = S.always;
     if(sf){
       el('ph-skip').hidden = true;
       const n=el('ph-next');
-      n.disabled = !ok || (reedit && !dirty());
+      n.disabled = S.ro || !ok || (reedit && !dirty());
       n.textContent = '이 위치로 보내기';
       return;
     }
@@ -1891,8 +1910,8 @@
     }
   }
 
-  function openForm(where){
-    S.opened=where; S.skipped={};
+  function openForm(where, ro){
+    S.opened=where; S.skipped={}; S.ro=!!ro;
     /* 이미 쓴 길 안내가 있으면 펼친 채로 연다 — 접힌 채 열면 안 보이는 값이 된다 */
     S.etcOpen = !!(S.current && S.current.etc && S.current.etc.trim());
     S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false};
@@ -1900,8 +1919,13 @@
     /* 값이 이미 있으면 전부 답한 상태로 열어 요약만 보여준다 */
     if(S.current){ Object.keys(ASK).forEach(k=>{ if(ASK[k].skip && !S.d[k].trim()) S.skipped[k]=true; }); }
     advance();
+    /* 읽기 전용은 '못 누른다' 를 CSS 색으로만 말하지 않는다 — 실제로 못 만져야 한다.
+       매번 양방향으로 되돌린다(한쪽만 걸면 다음에 연 화면이 잠긴 채로 열린다). */
+    $('#phscr').classList.toggle('ro', S.ro);
+    ['f-floor','f-dong','f-line2','f-etc'].forEach(i=>{ el(i).readOnly = S.ro; });
+    el('f-lvl').disabled = S.ro; el('f-addetc').disabled = S.ro; el('chk-save').disabled = S.ro;
     $('#phscr').classList.add('on');
-    if(S.form==='sform'){
+    if(S.form==='sform' && !S.ro){
       const first = (S.d.lvl==='under' && !S.d.floor) ? 'f-floor' : (!S.d.dong.trim() ? 'f-dong' : null);
       if(first) setTimeout(()=>el(first).focus(),260);
     }
@@ -2179,11 +2203,27 @@
       render();
     });
   });
-  $('#phclose').addEventListener('click',()=>$('#phscr').classList.remove('on'));
+  function closeSheet(){
+    $('#phscr').classList.remove('on');
+    /* 읽기 전용으로 열었던 거라면, 닫히고 나서 왜 못 고쳤는지와 그럼 어떻게 하는지를 말한다.
+       Figma 의 토스트는 지도 위에 그려져 있다 — 시트(z40)가 토스트(z30)를 덮으므로
+       열려 있는 동안 띄우면 아무도 못 본다. */
+    if(S.ro){ S.ro=false; toast('차량 도착 후 상세 위치를 변경할 수 없습니다. 전화를 통해 소통해주세요.'); }
+  }
+  $('#phclose').addEventListener('click', closeSheet);
   /* 값은 '저장' 에서만 커밋된다. 그래서 취소는 그냥 닫으면 편집분이 버려진다. */
   el('ph-cancel').addEventListener('click',()=>$('#phscr').classList.remove('on'));
   $$('[data-open]').forEach(n=>n.addEventListener('click',()=>{
-    if(n.dataset.open==='voyage' && (S.dstate==='arrived' || S.sending)) return;
+    if(n.dataset.open==='voyage' && S.sending) return;
+    /* 차량이 도착해도 카드는 열린다 — 다만 읽기 전용이다(Figma '차량 도착(수정 불가)').
+       못 여는 것과 열리되 못 고치는 것은 다르다: 승객은 차 앞에 서서 자기가 보낸 값을
+       확인하고 싶고, 그때가 그 값이 가장 필요한 순간이다. 대신 왜 못 고치는지와
+       그럼 어떻게 하는지(전화)를 토스트가 말한다. */
+    if(n.dataset.open==='voyage' && S.dstate==='arrived'){
+      if(!S.value) return;
+      openForm('voyage', true);
+      return;
+    }
     openForm(n.dataset.open);
   }));
   $('#cta-start').addEventListener('click',()=>{ if(S.value) S.confirmed=true; S.screen='voyage'; render(); });
