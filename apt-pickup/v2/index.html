@@ -247,8 +247,15 @@
   .skipb[hidden]{display:none;}
   .footrow .cta{flex:1 1 auto;}
 
-  .ph-foot{flex:0 0 auto;box-shadow:inset 0 1px 0 0 var(--gray-50);background:#fff;padding:10px;
-    display:flex;flex-direction:column;gap:16px;}
+  /* Figma 실측: foot 자체는 여백이 없고 save 가 [20,20,10,20], button_group 이 [10] 을 가진다. */
+  .ph-foot{flex:0 0 auto;box-shadow:inset 0 1px 0 0 var(--gray-50);background:#fff;padding:0;
+    display:flex;flex-direction:column;}
+  .savechk{padding:20px 20px 10px;}
+  .footrow{padding:10px;}
+  /* 수정 불가에서는 체크박스 자리를 경고가 대신한다 — 못 고친다는 사실과 대안(전화)을
+     저장 버튼 바로 위에서 말한다. Figma: save 안, #fe4c00 13sp. */
+  .rowarn{margin:0;padding:20px 20px 10px;font-size:13px;line-height:19px;color:#fe4c00;word-break:keep-all;}
+  .rowarn[hidden]{display:none;}
   .prev2{display:flex;align-items:flex-start;gap:8px;background:var(--gray-30);border-radius:8px;
     padding:11px 12px;min-height:44px;}
   .prev2.ready{background:var(--blue-050);}
@@ -274,8 +281,9 @@
   .confirm.pending .ck{color:var(--gray-500);}
   .skipnote{border:1px dashed var(--gray-100);border-radius:4px;padding:12px 14px;
     font-size:13px;line-height:20px;color:var(--gray-500);word-break:keep-all;}
-  .rtoast{position:absolute;left:16px;right:16px;bottom:88px;z-index:30;background:rgba(23,26,36,.92);
-    color:#fff;border-radius:8px;padding:11px 14px;font-size:13px;line-height:19px;
+  /* Figma toast_only_text: #383d4f · r6 · pad15 · 14sp 흰 글씨 */
+  .rtoast{position:absolute;left:16px;right:16px;bottom:88px;z-index:30;background:#383d4f;
+    color:#fff;border-radius:6px;padding:15px;font-size:14px;line-height:20px;
     opacity:0;transform:translateY(8px);transition:.24s;pointer-events:none;}
   .rtoast.on{opacity:1;transform:none;}
   .rtoast.act{display:flex;align-items:center;gap:12px;pointer-events:auto;}
@@ -978,6 +986,7 @@
         </div>
         <div class="ph-foot">
           <div class="prev2" id="prev2"><span id="prev2-tx">고르면 기사님께 갈 문장이 여기 만들어져요</span></div>
+          <p class="rowarn" id="rowarn" hidden>차량이 도착했습니다. 변경이 필요하다면 전화로 직접 소통해주세요.</p>
           <label class="savechk" id="savewrap" hidden><input type="checkbox" id="chk-save" />
             <span>이 주소에서 항상 이렇게 보내기</span></label>
           <p class="nearnote" id="nearnote" hidden><span>⚠</span><span>기사님이 이미 진입 중일 수 있어요.</span></p>
@@ -2058,7 +2067,8 @@
     el('prev2').hidden = sf;
     el('prev2').classList.toggle('ready', ok);
     el('prev2-tx').textContent = ok ? sentence(S.d) : '고르면 기사님께 갈 문장이 여기 만들어져요';
-    el('savewrap').hidden = sf ? !ok : !done;
+    el('savewrap').hidden = S.ro || (sf ? !ok : !done);
+    el('rowarn').hidden = !S.ro;
     /* Figma 실측: "재편집"·"지상 재편집" 은 취소 + 비활성 저장인데,
        "운행 중 진입" 은 필드가 똑같이 차 있는데도 버튼이 활성이고 취소가 없다.
        가르는 건 값의 유무가 아니라 '그 값이 이미 상대에게 가 있느냐' 다.
@@ -2143,8 +2153,7 @@
          첫 입력은 없던 정보가 생긴 것이다. */
       S.droverEdit=S.edited; raiseDrover(S.edited ? 'change' : 'first');
       render();
-      toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
-                     : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
+      toast('드라이버에게 전달했습니다. 이동 중 확인이 늦어질 수 있습니다.');
     },2000);
   }
 
@@ -2470,7 +2479,11 @@
   });
   el('ph-next').addEventListener('click',()=>{ (S.form==='sform'||S.step===null) ? submitForm() : advance(); });
   el('ph-skip').addEventListener('click',()=>{ S.skipped[S.step]=true; S.d[S.step]=''; advance(); });
-  el('chk-save').addEventListener('change',()=>{ S.always=el('chk-save').checked; });
+  el('chk-save').addEventListener('change',()=>{
+    S.always=el('chk-save').checked;
+    /* Figma 주석: '체크 해제 시 토스트' · '상세 위치 내용 클라에 저장하고 토스트 처리' */
+    toast(S.always ? '다음에도 사용하도록 설정되었습니다.' : '이번만 사용하도록 설정되었습니다.');
+  });
   /* 헤더에 두면 누르기 쉬워진 만큼 안전장치가 필요하다.
      확인 다이얼로그로 막는 대신 즉시 지우고 되돌릴 수 있게 한다 — 마찰 없이 되돌아간다. */
   el('ph-del').addEventListener('click',()=>{
