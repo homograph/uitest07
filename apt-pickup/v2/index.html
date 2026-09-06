@@ -298,6 +298,9 @@
   .curval p{margin:0;font-size:14px;line-height:21px;color:#000;word-break:keep-all;}
   .ph-body .qbox .q{display:block;margin-top:12px;padding-top:12px;border-top:1px solid var(--gray-30);
     font-size:13.5px;line-height:21px;color:var(--gray-900);font-weight:600;}
+  /* 게이트를 없앤 대가로 책임이 승객에게 넘어갔다. 막지는 않되 알려는 준다. */
+  .nearnote{margin:0;display:flex;gap:6px;font-size:13px;line-height:19px;color:#a8620a;word-break:keep-all;}
+  .nearnote[hidden]{display:none;}
   .ctaw{padding:10px;}
   button:focus-visible,.pkbox:focus-visible{outline:2px solid var(--blue-600);outline-offset:2px;}
   .cta{width:100%;border:none;border-radius:4px;background:var(--navy-800);color:#fff;
@@ -569,6 +572,34 @@
      blue-600 은 같은 계열에서 4.69:1 — 흰 글씨를 얹는 면은 blue-600 으로 통일한다. */
   .drbtn{width:100%;border:none;border-radius:8px;background:var(--blue-600);color:#fff;
     padding:15px;font:inherit;font-size:20px;line-height:30px;font-weight:700;cursor:pointer;}
+  /* 값이 언제든 바뀔 수 있다는 건 어떤 시점의 확인도 최종이 아니라는 뜻이다.
+     그래서 오버레이는 '탭할 때까지 내비를 덮는' 물건이면 안 된다 — 운전 중엔 위험하고,
+     기사는 신호에 걸릴 때까지 못 누른다. 8초 뒤 스스로 접히되 사라지지는 않는다:
+     알약으로 남아 값을 계속 들고 있다가, 누르면 다시 펼쳐진다. */
+  .drpill{position:absolute;top:72px;right:10px;z-index:40;max-width:calc(100% - 20px);
+    display:flex;align-items:center;gap:8px;border:1.5px solid var(--blue-500);
+    background:var(--navy-800);border-radius:9999px;padding:7px 14px 7px 7px;
+    font:inherit;font-size:15px;line-height:20px;font-weight:700;color:#fff;cursor:pointer;
+    box-shadow:0 6px 18px rgba(0,0,0,.28);animation:pillIn .22s ease;}
+  .drpill[hidden]{display:none;}
+  @keyframes pillIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:none;}}
+  .drpill .pic2{flex:0 0 auto;width:24px;height:24px;border-radius:5px;display:grid;place-items:center;
+    background:rgba(185,221,253,.22);}
+  .drpill .pic2 svg{display:block;width:14px;height:14px;}
+  .drpill .pic2 svg path{fill:var(--blue-500);}
+  .drpill .tx{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
+  /* 운전자에게서 눈을 뺏지 않는 유일한 채널. 실제 구현은 TTS 이고,
+     여기서는 무엇이 읽히는지 보이게만 둔다(하네스에서 실제 발화도 켤 수 있다). */
+  .drvoice{margin:0;display:flex;align-items:flex-start;gap:8px;
+    font-size:14px;line-height:20px;font-weight:500;color:var(--blue-150);word-break:keep-all;}
+  .drvoice[hidden]{display:none;}
+  .drvoice svg{flex:0 0 auto;margin-top:3px;}
+  /* 마지막 관문. 기사가 반드시 지나가는 자리라 못 본 값은 여기서 놓칠 수 없다. */
+  .dunseen{display:flex;align-items:center;gap:10px;background:var(--blue-600);
+    padding:12px 16px;font-size:15px;line-height:21px;color:#fff;}
+  .dunseen[hidden]{display:none;}
+  .dunseen b{font-weight:700;}
+  .dunseen .lb{flex:0 0 auto;font-size:13px;font-weight:700;color:var(--blue-150);}
   .dbubs{position:absolute;top:76px;left:0;right:0;display:flex;justify-content:center;gap:8px;z-index:12;}
   .dbub{border:2px solid #fff;border-radius:15px;padding:7px 10px;font-size:19px;font-weight:700;
     color:#fff;display:flex;align-items:center;gap:6px;position:relative;line-height:23px;}
@@ -703,6 +734,7 @@
     <button class="tab on" data-mode="new">첫 이용</button>
     <button class="tab" data-mode="repeat">재방문 · 지난번 값 있음</button>
     <span class="sp"></span>
+    <button class="rst" id="tts">음성 안내 끔</button>
     <button class="rst" id="rst">처음부터</button>
   </div>
   <div class="tabs">
@@ -728,6 +760,7 @@
   <div>
     <div class="cap"><span class="dot"></span><b>라이더 앱</b><em>유저</em><em id="pwlab">360</em>
       <span class="dsw"><button type="button" class="dswb on" data-ds="go">이동 중</button><button
+        type="button" class="dswb" data-ds="near">접근 중</button><button
         type="button" class="dswb" data-ds="arrived">차량 도착</button></span></div>
     <div class="phbox" id="riderbox"><div class="phone" id="rider">
 
@@ -838,6 +871,7 @@
           <div class="prev2" id="prev2"><span id="prev2-tx">고르면 기사님께 갈 문장이 여기 만들어져요</span></div>
           <label class="savechk" id="savewrap" hidden><input type="checkbox" id="chk-save" />
             <span>이 주소에서 항상 이렇게 보내기</span></label>
+          <p class="nearnote" id="nearnote" hidden><span>⚠</span><span>기사님이 이미 진입 중일 수 있어요.</span></p>
           <div class="footrow">
             <button class="skipb" id="ph-skip" hidden>건너뛰기</button>
             <button type="button" class="cancelb" id="ph-cancel" hidden>취소</button>
@@ -852,6 +886,7 @@
   <div>
     <div class="cap"><span class="dot d"></span><b>드라이버 앱</b><em>기사님</em>
       <span class="dsw"><button type="button" class="dswb on" data-ds="go">이동 중</button><button
+        type="button" class="dswb" data-ds="near">접근 중</button><button
         type="button" class="dswb" data-ds="arrived">픽업지 도착</button></span></div>
     <div class="phbox"><div class="phone">
       <div class="scr on dscr">
@@ -870,10 +905,12 @@
               <div class="drtitle" id="drover-h"><svg class="tdlogo" width="40" height="10" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M43.2016 3H47.9996V12.5985H57.599V17.4004H47.9996V27H43.2016V3Z" fill="white"/><path d="M9.60059 7.79815H33.6021V3.00004H9.60059V7.79815Z" fill="white"/><path d="M9.60059 26.9999H33.6021V22.1972H9.60059V26.9999Z" fill="white"/><path d="M9.60059 17.4005H33.6021V12.5985H9.60059V17.4005Z" fill="white"/><path d="M86.4255 7.79815H62.424V3.00004H86.4255V7.79815Z" fill="white"/><path d="M110.401 12.5985H100.825V3.00004H96.0234V26.9999H100.825V17.4005H110.401V12.5985Z" fill="white"/><path d="M86.4255 26.9999H62.424V22.1972H86.4255V26.9999Z" fill="white"/></svg><span id="drover-t">픽업 상세</span></div>
               <p class="drbody" id="drover-b"></p>
               <p class="drdelta" id="drover-d" hidden></p>
+              <p class="drvoice" id="drover-v" hidden><svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 9.5h3L11 6v12l-4-3.5H4v-5Z" fill="currentColor"/><path d="M15 9a4 4 0 0 1 0 6M17.8 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span id="drover-vt"></span></p>
             </div>
             <button type="button" class="drbtn" id="drover-ok">확인하기</button>
           </div>
         </div>
+        <button type="button" class="drpill" id="drpill" hidden aria-label="픽업 상세 다시 보기"><span class="pic2"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="tx" id="drpill-tx"></span></button>
         <div class="dbubs">
           <div class="dbub rsv">예약<span class="cnt">3</span></div>
           <div class="dbub rt">경로<br>검색</div>
@@ -906,7 +943,8 @@
                 <span class="rx" id="droute-x">보기</span>
               </button>
             </div>
-            <button class="dgo" id="dgo"></button>
+            <div class="dunseen" id="dunseen" hidden><span class="lb">픽업 상세</span><b id="dunseen-tx"></b></div>
+          <button class="dgo" id="dgo"></button>
           </div>
         </div>
       </div>
@@ -1450,6 +1488,7 @@
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     drover:false, droverEdit:false, hilite:false, before:null, ro:false,
+    drpill:false, drKind:null, ack:true, drTmr:null, tts:false,
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
@@ -1958,7 +1997,7 @@
          첫 입력도 기사에겐 똑같이 '모르고 지나칠 수 있는' 정보라 함께 띄우되,
          할 일이 다르므로 문구를 가른다 — 변경은 세운 계획을 고치는 것이고,
          첫 입력은 없던 정보가 생긴 것이다. */
-      S.drover=true; S.droverEdit=S.edited;
+      S.droverEdit=S.edited; raiseDrover(S.edited ? 'change' : 'first');
       render();
       toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
                      : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
@@ -2025,8 +2064,11 @@
     el('pk-voy').hidden = atCar && !has;
     /* 카드만 잠그고 헤더가 '출발지로 이동 중' 이면 화면이 서로 다른 말을 한다.
        Figma 11161:71869(도착 전) ↔ 11161:72262(도착) 의 차이를 그대로 옮긴다. */
-    el('vh1').textContent = atCar ? '차량 도착' : '약 5분 후 도착';
-    el('vh2').textContent = atCar ? '출발지에서 대기 중' : '출발지로 이동 중';
+    const nearing = S.dstate==='near';
+    el('vh1').textContent = atCar ? '차량 도착' : (nearing ? '약 1분 후 도착' : '약 5분 후 도착');
+    el('vh2').textContent = atCar ? '출발지에서 대기 중' : (nearing ? '출발지 근처 이동 중' : '출발지로 이동 중');
+    /* 게이트를 없앤 대가로 책임이 승객에게 넘어갔다. 막지는 않되, 알려는 준다. */
+    el('nearnote').hidden = !(nearing && !S.ro);
     el('vban').hidden = !atCar;
     el('map-voy').classList.toggle('arrived', atCar);
     sr.textContent = (has && S.confirmed)
@@ -2039,13 +2081,19 @@
     $('#dtalk').hidden = !got;
     /* 값이 사라졌거나 아직 안 닿았으면 확인할 것도 없다. */
     el('drover').hidden = !(S.drover && got);
-    const dl = S.droverEdit ? deltaOf(S.before, S.current) : [];
+    el('drpill').hidden = !(S.drpill && got);
+    if(got) el('drpill-tx').textContent = loc(S.current);
+    const near = S.drKind==='near';
+    /* 도착 직전 안내는 '바뀌었다' 가 아니라 '이걸 보고 들어가세요' 다 — 델타를 쓰지 않는다. */
+    const dl = (!near && S.droverEdit) ? deltaOf(S.before, S.current) : [];
     /* 상자 전체를 두르는 건 첫 입력일 때만이다. 변경이면 바뀐 조각만 표시한다. */
     el('dtalkbody').classList.toggle('hl', !!(S.hilite && got && !dl.length));
     /* 오버레이 본문은 값 그 자체다. 기사가 흘긋 한 번 보고 끝내야 하므로,
        '무슨 일이 있었다' 는 타이틀이 맡고 24sp 두 줄은 위치에 내준다. */
-    el('drover-t').textContent = S.droverEdit ? '픽업 상세 변경' : '픽업 상세';
+    el('drover-t').textContent = near ? '곧 도착' : (S.droverEdit ? '픽업 상세 변경' : '픽업 상세');
     if(got) el('drover-b').textContent = loc(S.current);
+    el('drover-v').hidden = !(S.drover && got);
+    if(got) el('drover-vt').textContent = voiceLine();
     const dd = el('drover-d'); dd.textContent=''; dd.hidden = true;
     if(got && dl.length){
       /* 운전 중에 읽을 것이라 두 개까지만. 그 이상은 세느니 다시 보라고 하는 게 낫다. */
@@ -2057,8 +2105,10 @@
         const b=document.createElement('b'); b.textContent=x.to; dd.appendChild(b);
       });
       dd.hidden = false;
-    } else if(got && !S.droverEdit && (S.current.etc||'').trim()){
-      dd.textContent = '길 안내 있음'; dd.hidden = false;   /* 첫 입력이라도 길 안내가 있으면 알린다 */
+    } else if(got && (S.current.etc||'').trim()){
+      /* 도착 직전엔 길 안내를 통째로 편다 — 지금이 그걸 실제로 쓰는 순간이다.
+         그 전에는 있다는 사실만 알린다(운전 중에 읽을 것이 아니다). */
+      dd.textContent = near ? S.current.etc.trim() : '길 안내 있음'; dd.hidden = false;
     }
     /* Figma "자세한 탑승 위치" 그대로: 한 흐름으로 흐르되 층·동만 20sp 볼드,
        라인과 꼬리는 18sp 레귤러이고 꼬리는 한 단계 더 흐리다.
@@ -2108,6 +2158,10 @@
        RouteHeader, 주소 옆 내비 버튼, CTA 색과 문구다. 상태마다 배지를 바꾸면
        기사가 다시 학습해야 한다. 같은 자리 같은 모양이 맞다. */
     const arrived = S.dstate==='arrived';
+    /* 마지막 관문. 기사가 반드시 누르는 버튼 바로 위라 못 본 값을 여기서 놓칠 수 없다. */
+    const unseen = arrived && got && !S.ack;
+    el('dunseen').hidden = !unseen;
+    if(unseen) el('dunseen-tx').textContent = loc(S.current);
     el('rhead').hidden = !arrived;
     el('cnav').hidden = !arrived;
     el('dgo').className = 'dgo'+(arrived?' arrived':'');
@@ -2121,6 +2175,36 @@
                            : '출발지 설정 화면. 픽업 위치는 <b>선택</b>입니다.')
       : (has ? '운행 화면. 값이 채워진 필드로 뜹니다. 눌러서 바꿀 수 있습니다.'
              : '운행 화면. 입력 전 필드로 뜹니다. 여기서 넣으면 기사는 이동 중에 받습니다.');
+  }
+
+  /* 오버레이는 세 이유로 뜬다: 첫 입력 · 변경 · 도착 직전.
+     앞의 둘은 '새 값이 왔다', 마지막은 '지금 이걸 보고 들어가세요' 다.
+     어느 쪽이든 8초 뒤 알약으로 접힌다 — 내비를 계속 덮고 있으면 안 된다. */
+  function raiseDrover(kind){
+    S.drKind=kind; S.drover=true; S.drpill=false;
+    if(kind!=='near') S.ack=false;
+    clearTimeout(S.drTmr);
+    S.drTmr=setTimeout(()=>{
+      if(!S.drover) return;
+      S.drover=false; S.drpill=true; render();
+    }, 8000);
+    render();
+    speak();
+  }
+  /* 실제 앱에서는 TTS 다. 여기서는 무엇이 읽히는지 화면에 보이고,
+     하네스에서 켜면 실제로도 읽는다(기본 꺼짐 — 데모 중 갑자기 말하면 곤란하다). */
+  function speak(){
+    if(!S.tts || !window.speechSynthesis) return;
+    try{
+      speechSynthesis.cancel();
+      const u=new SpeechSynthesisUtterance(voiceLine()); u.lang='ko-KR'; u.rate=1.05;
+      speechSynthesis.speak(u);
+    }catch(e){}
+  }
+  function voiceLine(){
+    if(!S.current) return '';
+    if(S.drKind==='near') return '곧 도착합니다. '+loc(S.current)+'.';
+    return (S.drKind==='change' ? '픽업 상세가 바뀌었습니다. ' : '픽업 상세가 도착했습니다. ')+loc(S.current)+'.';
   }
 
   function toast(msg, undo){
@@ -2141,6 +2225,7 @@
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={};
     S.drover=false; S.hilite=false; S.before=null;
+    S.drpill=false; S.drKind=null; S.ack=true; clearTimeout(S.drTmr);
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
       S.value=sentence(SAVED_FOR_ADDRESS); S.origin='start';
@@ -2153,7 +2238,11 @@
     render();
   }
 
+  /* 확인은 더 이상 아무 정책도 좌우하지 않는다(값은 확인과 무관하게 적용된다).
+     남은 역할은 하나 — '봤으니 강조 걷어줘'. 기사 본인에게 이득이라 강제할 필요가 없다. */
   el('drover-ok').addEventListener('click',()=>{
+    clearTimeout(S.drTmr);
+    S.ack=true; S.drpill=false;
     S.drover=false; S.hilite=false; render();
     /* 실제로는 여기서 타다 앱이 내비 위로 올라온다. 그 전환이 끝난 뒤에 강조가 시작돼야
        기사가 화면에 도착했을 때 펄스가 남아 있다. 클래스를 한 번 뗐다 붙여 재생도 되돌린다. */
@@ -2161,10 +2250,23 @@
   });
   /* 시간으로 끊지 않는다 — 신호등에 서서 3초 뒤에 볼 수도 있다.
      기사가 그 값을 실제로 쓴 시점(출발 누름 · 도착)에 거둔다. */
-  el('dgo').addEventListener('click',()=>{ S.hilite=false; render(); });
+  /* 알약을 누르면 다시 펼쳐진다. 다만 확인은 아니다 — 확인은 확인 버튼이 한다. */
+  el('drpill').addEventListener('click',()=>{ raiseDrover(S.drKind || 'first'); });
+  el('tts').addEventListener('click',()=>{
+    S.tts=!S.tts;
+    el('tts').textContent = S.tts ? '음성 안내 켬' : '음성 안내 끔';
+    if(!S.tts && window.speechSynthesis) speechSynthesis.cancel();
+  });
+  /* 출발/도착을 누른 건 그 값을 실제로 썼다는 뜻이다. 강조도 미확인도 여기서 거둔다. */
+  el('dgo').addEventListener('click',()=>{ S.hilite=false; S.ack=true; render(); });
   $$('.dswb').forEach(b=>b.addEventListener('click',()=>{
+    const prev=S.dstate;
     S.dstate=b.dataset.ds;
-    if(b.dataset.ds==='arrived') S.hilite=false;
+    if(b.dataset.ds==='arrived'){ S.hilite=false; S.drover=false; S.drpill=false; clearTimeout(S.drTmr); }
+    /* 접근 구간에 들어서면 변경 여부·확인 여부와 무관하게 값을 한 번 더 앞으로 끌어낸다.
+       어떤 시점의 확인도 최종이 아니므로, 최종인 순간에 다시 보여주는 것 말고는 방법이 없다.
+       이게 기억에 의존하는 구간을 없앤다. */
+    if(S.dstate==='near' && prev!=='near' && reached()) raiseDrover('near');
     /* 열어 둔 채로 차가 도착하면 저장은 못 하지만 화면을 뺏을 이유도 없다.
        읽기 전용으로 바꿔서, 쓰던 화면 그대로 값만 확인하게 둔다. */
     if(S.dstate==='arrived' && S.opened==='voyage' && $('#phscr').classList.contains('on')){
@@ -2190,6 +2292,7 @@
     S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
     S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
     S.drover=false; S.hilite=false;
+    S.drpill=false; S.drKind=null; S.ack=true; clearTimeout(S.drTmr);
     $('#phscr').classList.remove('on');
     render();
     toast(onVoyage ? '상세 위치를 지웠어요. 기사님 화면에서도 사라집니다.'
@@ -2201,7 +2304,7 @@
         clearTimeout(S.tmr);
         S.tmr=setTimeout(()=>{
           S.tmr=null; S.sending=false; S.sent=true;
-          S.drover=true; S.droverEdit=S.edited;
+          S.droverEdit=S.edited; raiseDrover(S.edited ? 'change' : 'first');
           render();
           toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
                          : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
