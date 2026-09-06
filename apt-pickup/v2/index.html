@@ -851,12 +851,15 @@
   /* 누르면 타다로 넘어가는 게 아니라 '제자리에서' 펼쳐진다.
      기사를 내비 밖으로 내보내지 않는 것이 이 자리의 존재 이유다 —
      앱을 바꾸게 하면 알약을 만든 의미가 없어진다. */
-  .tovb.loc.open{max-width:none;width:262px;flex-direction:column;align-items:flex-start;
+  /* 262 에서는 '2-5호라인' 이 하이픈에서 갈라졌다. 값 한 줄이 안 갈라지는 폭이 300 이다
+     (화면 360 · tovr right:10 이라 여유 안). */
+  .tovb.loc.open{max-width:none;width:300px;flex-direction:column;align-items:flex-start;
     gap:6px;padding:14px 16px;text-align:left;}
   .tovb.loc.open .hd{display:flex;align-items:center;gap:8px;}
   .tovb.loc .hd .lb{display:none;}
   .tovb.loc.open .hd .lb{display:block;font-size:13px;line-height:18px;font-weight:700;color:#5CB4FA;}
-  .tovb.loc.open .tx{white-space:normal;font-size:20px;line-height:28px;word-break:keep-all;}
+  .tovb.loc.open .tx{white-space:normal;font-size:20px;line-height:28px;
+    word-break:keep-all;overflow-wrap:normal;line-break:strict;}
   .tovb.loc .rt{display:none;}
   /* 찾아오는 길은 펼쳤을 때만 — 접힌 알약은 흘긋 보는 것이고, 편 것은 멈춰서 보는 것이다. */
   .tovb.loc.open .rt{display:block;font-size:15px;line-height:21px;font-weight:400;color:#C0C8D9;
