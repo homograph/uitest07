@@ -783,60 +783,54 @@
      자리는 여기뿐이다 — 위는 턴 배너(안전), 왼쪽 아래는 속도계, 아래는 T맵 바.
      tovr 은 이미 타다 표면이고 align-items:flex-end 라 가변 폭을 허용한다.
      문법은 tovb.tada 와 같게 두어 'T맵 위 타다 표면' 이 한 벌로 읽히게 한다. */
+  /* ══ 픽업 상세 카드 — 하나의 컴포넌트, 세 상태 ══
+     접힘(흘긋) → 펼침(기사가 연다) → 이벤트(값이 왔다).
+     이벤트는 새 화면이 아니라 같은 카드가 펼쳐진 채로 뜨는 것이고,
+     델타와 [확인]만 더 붙는다. 그래서 폭·정렬·헤더가 세 상태에서 같다.
+     (전엔 전폭 오버레이와 300px 카드가 따로 있었는데, 정말 다른 건
+      폭·정렬·닫는 법뿐이었다 — 정보가 아니라 껍데기 차이였다.) */
   .tovb.loc{width:auto;max-width:200px;height:auto;min-height:44px;flex-direction:row;gap:8px;
     padding:9px 14px 9px 9px;background:#19254D;border:2px solid #5CB4FA;}
   .tovb.loc[hidden]{display:none;}
-  .tovb.loc .pic3{flex:0 0 auto;width:22px;height:22px;border-radius:5px;display:grid;place-items:center;
+  .tovb.loc .hd{display:flex;align-items:center;gap:8px;}
+  .tovb.loc .pic3{flex:0 0 auto;width:24px;height:24px;border-radius:6px;display:grid;place-items:center;
     background:rgba(185,221,253,.22);}
-  .tovb.loc .pic3 svg{display:block;width:13px;height:13px;}
+  .tovb.loc .pic3 svg{display:block;width:14px;height:14px;}
   .tovb.loc .pic3 svg path{fill:#5CB4FA;}
-  /* 층·동까지만. 실측 1,727건에서 출발지 POI 에 동은 41.0% 가 이미 들어 있지만
-     지하·층은 0.8% 뿐이다 — 늘 새 정보인 것은 층이고, 진입구를 고르는 데 필요한 것도 층·동이다.
-     라인은 주차한 뒤 걸어가는 정보라 도착해서 봐도 늦지 않다. */
+  /* 접힘: 층·동만. 실측 1,727건에서 POI 에 동은 91.1% 가 이미 들어 있지만 지하·층은 거의 없다 —
+     늘 새 정보인 것은 층이고, 진입구를 고르는 데 필요한 것도 층·동이다. */
   .tovb.loc .tx{font-size:15px;line-height:20px;font-weight:700;color:#fff;white-space:nowrap;
     overflow:hidden;text-overflow:ellipsis;min-width:0;}
-  /* 누르면 타다로 넘어가는 게 아니라 '제자리에서' 펼쳐진다.
-     기사를 내비 밖으로 내보내지 않는 것이 이 자리의 존재 이유다 —
-     앱을 바꾸게 하면 알약을 만든 의미가 없어진다. */
-  /* 262 에서는 '2-5호라인' 이 하이픈에서 갈라졌다. 값 한 줄이 안 갈라지는 폭이 300 이다
-     (화면 360 · tovr right:10 이라 여유 안). */
-  .tovb.loc.open{max-width:none;width:300px;flex-direction:column;align-items:flex-start;
-    gap:6px;padding:14px 16px;text-align:left;}
-  .tovb.loc.open .hd{display:flex;align-items:center;gap:8px;}
-  .tovb.loc .hd .lb{display:none;}
-  .tovb.loc.open .hd .lb{display:block;font-size:13px;line-height:18px;font-weight:700;color:#5CB4FA;}
-  .tovb.loc.open .tx{display:block;width:100%;white-space:normal;font-size:20px;line-height:28px;
+  .tovb.loc .lb,.tovb.loc .spk,.tovb.loc .call,.tovb.loc .dl,.tovb.loc .rt,.tovb.loc .ok{display:none;}
+
+  /* ── 펼침 · 이벤트 공통 ── */
+  .tovb.loc.open{width:320px;max-width:none;flex-direction:column;align-items:stretch;
+    gap:8px;padding:14px 16px 16px;text-align:left;}
+  .tovb.loc.open .hd{width:100%;}
+  .tovb.loc.open .lb{display:block;flex:1 1 auto;font-size:14px;line-height:20px;font-weight:700;
+    color:#5CB4FA;text-align:left;}
+  /* 음성은 소리지 글자다 — 값을 두 줄에 걸쳐 다시 쓰던 전사를 아이콘 하나로 줄였다.
+     카드 안에서 가장 큰 중복이었다. */
+  .tovb.loc.open.ev .spk{display:block;flex:0 0 auto;color:#5CB4FA;}
+  /* 전화는 헤더 오른쪽 고정. 값이 바뀐 걸 본 순간 바로 걸 수 있어야 한다. */
+  .tovb.loc.open .call{display:grid;flex:0 0 auto;width:40px;height:40px;border-radius:50%;
+    background:var(--blue700);place-items:center;margin-left:2px;}
+  .tovb.loc .call svg{width:19px;height:19px;fill:#fff;}
+  .tovb.loc.open .tx{display:block;width:100%;white-space:normal;font-size:22px;line-height:31px;
     word-break:keep-all;overflow-wrap:normal;line-break:strict;text-align:left;}
-  .tovb.loc .rt{display:none;}
-  /* 찾아오는 길은 펼쳤을 때만 — 접힌 알약은 흘긋 보는 것이고, 편 것은 멈춰서 보는 것이다. */
-  .tovb.loc.open .rt{display:block;width:100%;font-size:15px;line-height:21px;font-weight:400;
-    color:#C0C8D9;white-space:normal;word-break:keep-all;text-align:left;}
-  /* 이번 프로토타입이 담는 것은 위치(지상·지하 / 층 / 동 / 라인)와 찾아오는 길까지다.
-     짐·동승자 같은 요청사항은 범위 밖이라 카드에서 뺐다.
-     아파트_요청사항_샘플_상위180단지.csv 1,727건 직접 집계:
-       지하 82.3% · 지상 0.8% / 동 91.1% · 층 62.1% · 라인 37.6%
-       경로·길 안내 성격 26.6% — 4명 중 1명 이상이 찾아오는 길을 쓴다.
-     그래서 펼친 카드에 찾아오는 길이 반드시 있어야 하고, 접힌 알약에는 없어도 된다.
-     전화는 정보가 아니라 동작이다 — 못 찾으면 결국 전화이고(수정 불가 안내도
-     '전화를 통해 소통해주세요') 그 순간 기사는 내비에 있어 여기 없으면 앱을 바꿔야 한다. */
-  .tovb.loc .ex{display:none;}
-  .tovb.loc.open .ex{display:block;width:100%;}
-  /* 전부 span 이라 명시적으로 블록을 줘야 한다(안 그러면 라벨과 값이 한 줄로 붙는다) */
-  .tovb.loc.open .sep{display:block;height:1px;background:rgba(255,255,255,.14);margin:10px 0;}
-  .tovb.loc.open .k{display:block;font-size:13px;line-height:18px;font-weight:700;color:#5CB4FA;
-    margin-bottom:2px;text-align:left;}
-  .tovb.loc.open .v2{display:block;font-size:15px;line-height:21px;font-weight:400;color:#fff;
-    white-space:normal;word-break:keep-all;text-align:left;}
-  .tovb.loc.open .who{display:flex;align-items:center;gap:10px;width:100%;}
-  .tovb.loc.open .who b{flex:1 1 auto;font-size:16px;line-height:22px;font-weight:700;color:#fff;
-    text-align:left;}
-  .tovb.loc .call{flex:0 0 auto;width:40px;height:40px;border-radius:50%;background:var(--blue700);
-    display:grid;place-items:center;border:none;cursor:pointer;}
-  .tovb.loc .call svg{width:20px;height:20px;fill:#fff;}
-  .tovb.loc .cx{position:absolute;top:10px;right:12px;font-size:15px;line-height:1;color:#C0C8D9;
-    background:none;border:none;cursor:pointer;padding:4px;display:none;}
-  .tovb.loc.open .cx{display:block;}
-  .tovb.loc.open{position:relative;}
+  /* 델타는 '방금 바뀌었다' 의 문법이라 이벤트에서만 나온다. */
+  .tovb.loc.open.ev .dl{display:block;width:100%;font-size:15px;line-height:21px;font-weight:500;
+    color:#99A5C0;text-align:left;}
+  .tovb.loc .dl b{color:#fff;font-weight:700;}
+  /* 찾아오는 길은 펼쳤을 때만. 접힌 알약은 흘긋 보는 것이고, 편 것은 멈춰서 보는 것이다.
+     아이콘을 준 것은 값의 부제처럼 읽히지 않게 하기 위해서다(실측 26.6% 가 경로를 쓴다). */
+  .tovb.loc.open .rt{display:flex;align-items:flex-start;gap:8px;width:100%;margin-top:2px;
+    font-size:15px;line-height:21px;font-weight:400;color:#C0C8D9;text-align:left;
+    white-space:normal;word-break:keep-all;}
+  .tovb.loc .rt svg{flex:0 0 auto;margin-top:2px;color:#99A5C0;}
+  .tovb.loc.open.ev .ok{display:block;width:100%;margin-top:6px;border-radius:8px;
+    background:var(--blue700);color:#fff;padding:15px;font-size:19px;line-height:28px;
+    font-weight:700;text-align:center;}
   /* v2 toast — 도착 알림 등 기사 화면 안내 */
   .dtoast{position:absolute;left:50%;bottom:16%;transform:translate(-50%,10px);max-width:90%;
     white-space:nowrap;background:rgba(13,20,44,.96);color:#fff;font-size:15px;font-weight:600;
@@ -1099,7 +1093,7 @@
         <div class="dtmap" id="dtmap" hidden>
           <div class="sb light"><span>12:30</span><span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
           <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
-          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tovr"><button type="button" class="tovb loc" id="tovb-loc" hidden aria-label="픽업 상세 위치"><span class="hd"><span class="pic3"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="lb">픽업 상세</span></span><span class="tx" id="tovb-loc-tx"></span><span class="rt" id="tovb-loc-rt"></span><span class="ex" id="tovb-loc-ex"><span class="sep"></span><span class="who"><b>김지혜</b><span class="call" id="tovb-loc-call" role="button" aria-label="전화"><svg viewBox="0 0 84 84"><path d="M53.5 53.7L51.58 65.4S41.94 61.56 34.33 51.75C26.72 41.94 22.83 28.35 22.83 28.35L34.33 26.4V3H7.5v24.63c0 1.77.23 3.53.8 5.2 1.71 5.04 6.24 16.68 14.53 26.72 6.6 8 13.62 14.17 18.14 17.79C44.07 79.82 47.94 81 51.9 81H76.5V53.7H53.5Z"/></svg></span></span></span><span class="cx" id="tovb-loc-x" role="button" aria-label="접기">✕</span></button><button type="button" class="tovb tada" id="tovb-back"><span class="tlogo">tada</span><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><button type="button" class="tovb chg">경로<br>변경</button></div></div>
+          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tovr"><button type="button" class="tovb loc" id="tovb-loc" hidden aria-label="픽업 상세 위치"><span class="hd"><span class="pic3"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="lb" id="tovb-loc-lb">픽업 상세</span><svg class="spk" width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M4 9.5h3L11 6v12l-4-3.5H4v-5Z" fill="currentColor"/><path d="M15 9a4 4 0 0 1 0 6M17.8 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><span class="call" id="tovb-loc-call" role="button" aria-label="전화"><svg viewBox="0 0 84 84"><path d="M53.5 53.7L51.58 65.4S41.94 61.56 34.33 51.75C26.72 41.94 22.83 28.35 22.83 28.35L34.33 26.4V3H7.5v24.63c0 1.77.23 3.53.8 5.2 1.71 5.04 6.24 16.68 14.53 26.72 6.6 8 13.62 14.17 18.14 17.79C44.07 79.82 47.94 81 51.9 81H76.5V53.7H53.5Z"/></svg></span></span><span class="tx" id="tovb-loc-tx"></span><span class="dl" id="tovb-loc-dl"></span><span class="rt"><svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M7 20V9.5A3.5 3.5 0 0 1 10.5 6H17M14 3l3.5 3L14 9" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="tovb-loc-rt"></span></span><span class="ok" id="tovb-loc-ok">확인</span></button><button type="button" class="tovb tada" id="tovb-back"><span class="tlogo">tada</span><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><button type="button" class="tovb chg">경로<br>변경</button></div></div>
           <div class="tbar"><div class="tb-info"><b>9분</b><span>1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
         </div>
         <div class="dtoast" id="dtoast"></div>
@@ -1671,7 +1665,7 @@
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     drover:false, droverEdit:false, hilite:false, before:null, ro:false,
-    drKind:null, ack:true, drTmr:null, tts:false, dtTmr:null, msg:'', msgUnread:false, matchTmr:null, locOpen:false, locTmr:null,
+    drKind:null, ack:true, drTmr:null, tts:false, dtTmr:null, msg:'', msgUnread:false, matchTmr:null, locOpen:false, locTmr:null, locEvent:null,
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
@@ -2279,7 +2273,7 @@
 
     const got=reached();
     /* 값이 사라졌거나 아직 안 닿았으면 확인할 것도 없다. */
-    el('drover').hidden = !(S.drover && (got || S.drKind==='msg'));
+    el('drover').hidden = !(S.drover && S.drKind==='msg');
     const near = S.drKind==='near';
     const isMsg = S.drKind==='msg';
     /* 도착 직전 안내는 '바뀌었다' 가 아니라 '이걸 보고 들어가세요' 다 — 델타를 쓰지 않는다. */
@@ -2331,17 +2325,28 @@
        기사가 다시 학습해야 한다. 같은 자리 같은 모양이 맞다. */
     /* 화면 자체가 갈린다 — 기사는 nav/near 동안 타다 앱이 아니라 T맵에 있다. */
     el('dtmap').hidden = !onTmap();
-    /* T맵 위 상시 값. 층·동까지만 — 라인은 주차 뒤 정보라 여기 없어도 된다. */
-    const lp = el('tovb-loc');
+    /* 픽업 상세 카드 — 접힘 / 펼침 / 이벤트. 셋이 한 컴포넌트다. */
+    const lp = el('tovb-loc'), ev = S.locEvent;
     lp.hidden = !(got && S.current);
     lp.classList.toggle('open', S.locOpen);
+    lp.classList.toggle('ev', !!ev);
     if(got && S.current){
       const d=S.current;
-      /* 접힘 = 층·동(흘긋용) · 펼침 = 문장 전체 + 찾아오는 길 */
+      /* 접힘 = 층·동(흘긋용) · 펼침 = 문장 전체 */
       lp.querySelector('.tx').textContent = S.locOpen ? loc(d)
         : (d.lvl==='under'?'지하 ':'지상 ')+d.floor+'층 · '+(d.noDong?'동 없음':d.dong.trim()+'동');
+      el('tovb-loc-lb').textContent =
+        ev==='change' ? '픽업 상세 변경' : (ev==='near' ? '곧 도착' : '픽업 상세');
+      /* 델타는 변경일 때만. 첫 입력·도착 직전엔 '어디가 바뀌었나' 가 없다. */
+      const dl=el('tovb-loc-dl'); dl.textContent='';
+      const dd = (ev==='change') ? deltaOf(S.before, S.current) : [];
+      if(dd.length===1 && dd[0].k!=='etc'){
+        dl.appendChild(document.createTextNode(dd[0].from+' → '));
+        const b=document.createElement('b'); b.textContent=dd[0].to; dl.appendChild(b);
+      } else if(dd.length){ dl.textContent='여러 곳이 바뀌었습니다'; }
+      dl.style.display = dd.length ? '' : 'none';
       const rt=el('tovb-loc-rt'); rt.textContent=(d.etc||'').trim();
-      rt.style.display = (S.locOpen && (d.etc||'').trim()) ? '' : 'none';
+      rt.parentElement.style.display = (S.locOpen && (d.etc||'').trim()) ? '' : 'none';
     }
     /* 카드는 늘 03 pickup-arrived 다 — 이 기능이 실제로 걸리는 시점이 여기다. */
     const arrived = true;
@@ -2370,21 +2375,25 @@
              : '운행 화면. 입력 전 필드로 뜹니다. 여기서 넣으면 기사는 이동 중에 받습니다.');
   }
 
-  /* 오버레이는 세 이유로 뜬다: 첫 입력 · 변경 · 도착 직전.
-     앞의 둘은 '새 값이 왔다', 마지막은 '지금 이걸 보고 들어가세요' 다.
-     어느 쪽이든 8초 뒤 알약으로 접힌다 — 내비를 계속 덮고 있으면 안 된다. */
+  /* 픽업 상세 이벤트(첫 입력·변경·도착 직전)는 새 화면이 아니라 '픽업 상세 카드' 가
+     펼쳐진 채로 뜨는 것이다. 전엔 전폭 오버레이가 따로 있었는데, 같은 값·같은 자리에
+     모양만 달랐다. 오버레이는 이제 고객 메시지 전용이다 — 그건 위치가 아니라 사람 말이다.
+     타이밍은 driver-v2 핸드오프 확정치: 변경 8초 · 도착 임박 3초, 자동 퇴장. */
   function raiseDrover(kind){
-    S.drKind=kind; S.drover=true;
-    if(kind==='msg') S.msgUnread=true;
-    else if(kind!=='near') S.ack=false;
-    clearTimeout(S.drTmr);
-    /* driver-v2 핸드오프 §오버레이 확정치:
-         경로 변경  = 음성 + 8초 오버레이 → 자동 퇴장
-         도착 임박  = 반경 500m 진입 → 3초 자동 퇴장 (확인 탭·영역 터치도 닫힘) */
-    S.drTmr=setTimeout(()=>{
-      if(!S.drover) return;
-      S.drover=false; render();
-    }, kind==='near' ? 3000 : 8000);
+    S.drKind=kind;
+    if(kind==='msg'){
+      S.drover=true; S.msgUnread=true;
+      clearTimeout(S.drTmr);
+      S.drTmr=setTimeout(()=>{ if(S.drover){ S.drover=false; render(); } }, 8000);
+    } else {
+      if(kind!=='near') S.ack=false;
+      S.locEvent=kind; S.locOpen=true;
+      clearTimeout(S.locTmr);
+      S.locTmr=setTimeout(()=>{
+        if(S.locEvent!==kind) return;
+        S.locEvent=null; S.locOpen=false; render();
+      }, kind==='near' ? 3000 : 8000);
+    }
     render();
     speak();
   }
@@ -2400,6 +2409,7 @@
   }
   function voiceLine(){
     if(S.drKind==='msg') return '고객 메시지. '+S.msg;
+    if(S.drKind==='first'||S.drKind==='change'||S.drKind==='near'){}
     if(!S.current) return '';
     if(S.drKind==='near') return '곧 도착합니다. '+loc(S.current)+'.';
     return (S.drKind==='change' ? '픽업 상세가 바뀌었습니다. ' : '픽업 상세가 도착했습니다. ')+loc(S.current)+'.';
@@ -2428,7 +2438,7 @@
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={};
     S.drover=false; S.hilite=false; S.before=null;
-    S.drKind=null; S.ack=true; S.rphase='match'; S.dview='tmap'; clearTimeout(S.drTmr);
+    S.drKind=null; S.ack=true; S.rphase='match'; S.dview='tmap'; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
       S.value=sentence(SAVED_FOR_ADDRESS); S.origin='start';
@@ -2482,8 +2492,16 @@
      읽는 도중에 사라지면 다시 열어야 한다. 닫는 것도 기사가 정한다. */
   el('tovb-loc').addEventListener('click',ev=>{
     if(ev.target.closest('#tovb-loc-call')){ dtoast('고객에게 전화를 겁니다.'); return; }
-    S.locOpen = ev.target.closest('#tovb-loc-x') ? false : !S.locOpen;
-    render();
+    /* [확인] = 이벤트를 거둔다. 카드는 접힌다 — 값은 알약으로 계속 남는다. */
+    if(ev.target.closest('#tovb-loc-ok')){
+      clearTimeout(S.locTmr);
+      if(S.locEvent!=='near') S.ack=true;
+      S.locEvent=null; S.locOpen=false; S.hilite=true; render(); return;
+    }
+    /* 이벤트로 떠 있는 걸 누르면 먼저 이벤트만 거두고 펼친 상태로 남는다. */
+    clearTimeout(S.locTmr);
+    if(S.locEvent){ S.locEvent=null; render(); return; }
+    S.locOpen=!S.locOpen; render();
   });
   /* 메시지는 타다 앱에 들어가면 읽은 것으로 본다 — 대화는 거기 있다. */
   el('drover-ok').addEventListener('click',()=>{ if(S.drKind==='msg'){ S.msgUnread=false; render(); } });
@@ -2543,7 +2561,7 @@
     S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
     S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
     S.drover=false; S.hilite=false;
-    S.drKind=null; S.ack=true; S.rphase='match'; S.dview='tmap'; clearTimeout(S.drTmr);
+    S.drKind=null; S.ack=true; S.rphase='match'; S.dview='tmap'; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     $('#phscr').classList.remove('on');
     render();
     toast(onVoyage ? '상세 위치를 지웠어요. 기사님 화면에서도 사라집니다.'
