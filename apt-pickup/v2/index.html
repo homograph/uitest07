@@ -536,49 +536,62 @@
     .ph-body.sform{padding-left:26px;padding-right:26px;}
   }
 
-  /* ══════ 드라이버 앱 ══════ */
-  .dscr{background:var(--navy-900);}
-  .dbar{flex:0 0 auto;background:var(--navy-900);display:flex;align-items:center;
-    justify-content:space-between;padding:6px 10px;}
-  .dmenu{width:34px;height:34px;display:grid;place-items:center;}
-  .dmenu i{display:block;width:20px;height:2px;background:#fff;box-shadow:0 -6px 0 #fff,0 6px 0 #fff;}
-  .dfwd{background:rgba(35,53,101,.8);border-radius:8px;padding:10px 3px 10px 10px;
-    display:flex;align-items:center;gap:1px;}
-  .dfwd i{width:10px;height:10px;border-radius:5px;background:var(--yellow);
-    box-shadow:0 0 7px rgba(238,255,0,.5);display:block;}
-  .dfwd span{font-size:16px;font-weight:700;color:var(--yellow);padding:0 8px 0 6px;}
+  /* ══════ 드라이버 앱 — TADA Driver v2 프로토타입(driverapp/driver-v2) 디자인 언어 ══════
+     토큰·타입 스케일·컴포넌트를 v2 에서 그대로 가져온다. 이 화면만 별도 규칙으로 굴리면
+     실제 앱에 들어갈 때 두 번 만들어야 한다.
+     타입 스케일: Display 26 · Title 24 · Headline 20 · Body 18 · Label 15 · Caption 13
+     한 곳만 v2 와 다르게 뒀다 — 아래 .dgo 참고(흰 글씨를 얹는 파란 면). */
+  .dscr{background:var(--navy);
+    --navy:#101A3D; --navy2:#19254D; --navyL:#283873; --navy700:#293F71;
+    --blue700:#0074D7; --blue:#32A2FA; --b300:#5CB4FA;
+    --red:#FE4C00; --lemon:#EEFF00; --e6:#E6E9EF; --ef:#EFEFF1;
+    --dim:#99A5C0; --n1:#C0C8D9; --off:#F5F6F7; --ink:#171A24; --bd:#384F85;}
+  .dbar{flex:0 0 auto;background:var(--navy);display:flex;align-items:center;
+    justify-content:space-between;gap:8px;padding:6px 10px;}
+  .dmenu{width:40px;height:40px;display:grid;place-items:center;color:var(--n1);}
+  .dmenu i{display:block;width:20px;height:2px;background:currentColor;
+    box-shadow:0 -6px 0 currentColor,0 6px 0 currentColor;}
+  /* achip — 앱바 우측 상태 칩 */
+  .dfwd{background:rgba(35,53,101,.8);border-radius:8px;padding:8px 10px;
+    display:flex;align-items:center;gap:6px;white-space:nowrap;}
+  .dfwd i{width:8px;height:8px;border-radius:50%;background:var(--lemon);display:block;}
+  .dfwd span{font-size:16px;font-weight:700;color:var(--lemon);}
   /* Figma 11161:72775 "drawover_ride_chat" — 기사가 내비를 보고 있어도 위에 뜨는
      안드로이드 오버레이 알림. 값이 바뀐 걸 기사 화면 안에서만 알리면
      그 화면을 안 보고 있는 동안은 아무 신호도 아니다. 그래서 화면 위로 올라온다. */
   .drover{position:absolute;top:64px;left:0;right:0;z-index:40;
     padding:18px 10px 25px;display:flex;justify-content:center;}
   .drover[hidden]{display:none;}
-  .drcard{width:100%;box-sizing:border-box;background:var(--navy-800);
-    border:2px solid var(--blue-500);border-radius:15px;padding:15px;
+  /* v2 의 T맵 위 tada 버튼(.tovb.tada)과 같은 문법 — navy2 바탕에 b300 2px 테두리.
+     기사가 다른 앱 위에서 보는 '타다' 표면은 전부 이 한 벌이어야 한다. */
+  .drcard{width:100%;box-sizing:border-box;background:var(--navy2);
+    border:2px solid var(--b300);border-radius:15px;padding:15px;
     display:flex;flex-direction:column;gap:10px;
     box-shadow:0 4px 18px 3px rgba(0,0,0,.12),0 10px 14px 1px rgba(0,0,0,.14),0 6px 6px -3px rgba(0,0,0,.2);}
   .drinfo{display:flex;flex-direction:column;gap:10px;padding:5px;}
   .drtitle{display:flex;align-items:center;gap:10px;}
   .drtitle .tdlogo{display:block;flex:0 0 auto;}
-  .drtitle span{font-size:16px;line-height:24px;font-weight:700;color:var(--blue-500);}
+  .drtitle span{font-size:16px;line-height:24px;font-weight:700;color:var(--b300);}
   /* 본문은 '무슨 일이 있었다' 가 아니라 값 그 자체다. 기사는 운전 중 한 번 흘긋 본다 —
      그 한 번에 위치가 들어와야 탭 → 앱 전환 → 말풍선 찾기를 안 한다. */
   .drbody{margin:0;font-size:24px;line-height:36px;font-weight:700;color:#fff;word-break:keep-all;}
   /* 무엇이 바뀌었는지는 값보다 한 단계 낮게. 없으면(첫 입력) 자리도 안 차지한다. */
-  .drdelta{margin:0;font-size:16px;line-height:24px;font-weight:500;color:var(--gray-200);word-break:keep-all;}
+  .drdelta{margin:0;font-size:16px;line-height:24px;font-weight:500;color:var(--n1);word-break:keep-all;}
   .drdelta[hidden]{display:none;}
   .drdelta b{color:#fff;font-weight:700;}
   /* blue-500 위의 흰 글씨는 2.73:1 이라 운전 중 흘긋 보기에 못 미친다.
      blue-600 은 같은 계열에서 4.69:1 — 흰 글씨를 얹는 면은 blue-600 으로 통일한다. */
-  .drbtn{width:100%;border:none;border-radius:8px;background:var(--blue-600);color:#fff;
-    padding:15px;font:inherit;font-size:20px;line-height:30px;font-weight:700;cursor:pointer;}
+  .drbtn{width:100%;border:none;border-radius:8px;background:var(--blue700);color:#fff;
+    padding:15px;font:inherit;font-size:20px;line-height:30px;font-weight:700;cursor:pointer;
+    transition:transform .1s ease,filter .1s ease;-webkit-tap-highlight-color:transparent;}
+  .drbtn:active{transform:scale(.95);filter:brightness(.89);}
   /* 값이 언제든 바뀔 수 있다는 건 어떤 시점의 확인도 최종이 아니라는 뜻이다.
      그래서 오버레이는 '탭할 때까지 내비를 덮는' 물건이면 안 된다 — 운전 중엔 위험하고,
      기사는 신호에 걸릴 때까지 못 누른다. 8초 뒤 스스로 접히되 사라지지는 않는다:
      알약으로 남아 값을 계속 들고 있다가, 누르면 다시 펼쳐진다. */
   .drpill{position:absolute;top:72px;right:10px;z-index:40;max-width:calc(100% - 20px);
-    display:flex;align-items:center;gap:8px;border:1.5px solid var(--blue-500);
-    background:var(--navy-800);border-radius:9999px;padding:7px 14px 7px 7px;
+    display:flex;align-items:center;gap:8px;border:1.5px solid var(--b300);
+    background:var(--navy2);border-radius:9999px;padding:7px 14px 7px 7px;
     font:inherit;font-size:15px;line-height:20px;font-weight:700;color:#fff;cursor:pointer;
     box-shadow:0 6px 18px rgba(0,0,0,.28);animation:pillIn .22s ease;}
   .drpill[hidden]{display:none;}
@@ -586,28 +599,35 @@
   .drpill .pic2{flex:0 0 auto;width:24px;height:24px;border-radius:5px;display:grid;place-items:center;
     background:rgba(185,221,253,.22);}
   .drpill .pic2 svg{display:block;width:14px;height:14px;}
-  .drpill .pic2 svg path{fill:var(--blue-500);}
+  .drpill .pic2 svg path{fill:var(--b300);}
+  .drpill:active{transform:scale(.95);filter:brightness(.89);}
   .drpill .tx{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;}
   /* 운전자에게서 눈을 뺏지 않는 유일한 채널. 실제 구현은 TTS 이고,
      여기서는 무엇이 읽히는지 보이게만 둔다(하네스에서 실제 발화도 켤 수 있다). */
   .drvoice{margin:0;display:flex;align-items:flex-start;gap:8px;
-    font-size:14px;line-height:20px;font-weight:500;color:var(--blue-150);word-break:keep-all;}
+    font-size:15px;line-height:22px;font-weight:500;color:var(--b300);word-break:keep-all;}
   .drvoice[hidden]{display:none;}
   .drvoice svg{flex:0 0 auto;margin-top:3px;}
   /* 마지막 관문. 기사가 반드시 지나가는 자리라 못 본 값은 여기서 놓칠 수 없다. */
-  .dunseen{display:flex;align-items:center;gap:10px;background:var(--blue-600);
-    padding:12px 16px;font-size:15px;line-height:21px;color:#fff;}
+  .dunseen{display:flex;align-items:center;gap:10px;background:var(--blue700);
+    margin:0 20px 12px;border-radius:4px;padding:12px 16px;font-size:15px;line-height:21px;color:#fff;}
   .dunseen[hidden]{display:none;}
   .dunseen b{font-weight:700;}
-  .dunseen .lb{flex:0 0 auto;font-size:13px;font-weight:700;color:var(--blue-150);}
-  .dbubs{position:absolute;top:76px;left:0;right:0;display:flex;justify-content:center;gap:8px;z-index:12;}
-  .dbub{border:2px solid #fff;border-radius:15px;padding:7px 10px;font-size:19px;font-weight:700;
-    color:#fff;display:flex;align-items:center;gap:6px;position:relative;line-height:23px;}
-  .dbub.rsv{background:var(--navy-900);}
-  .dbub.rt{background:var(--navy-700);font-size:15px;line-height:17px;text-align:center;}
-  .dbub.nv{background:#0044a6;}
-  .dbub .cnt{position:absolute;top:-10px;left:-8px;background:var(--orange);border:1px solid #fff;
-    border-radius:9999px;padding:1px 8px;font-size:14px;line-height:18px;}
+  .dunseen .lb{flex:0 0 auto;font-size:13px;font-weight:700;color:var(--b300);}
+  /* v2 bubs — 52×52 타일. 지도 우상단에 붙는다(예전엔 가운데 알약이었다). */
+  .dbubs{position:absolute;right:10px;top:10px;display:flex;gap:8px;z-index:12;}
+  .dbub{width:52px;height:52px;border-radius:13px;border:1px solid rgba(255,255,255,.22);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;
+    font-size:14px;line-height:1.1;font-weight:700;color:#fff;position:relative;gap:1px;
+    transition:transform .1s ease,filter .1s ease;}
+  .dbub:active{transform:scale(.91);filter:brightness(.88);}
+  .dbub.rsv{background:var(--navy700);}
+  .dbub.rt{background:var(--navy700);}
+  .dbub.nv{background:var(--blue700);}
+  .dbub .cnt{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 5px;
+    box-sizing:border-box;border-radius:999px;background:var(--red);color:#fff;font-size:12px;
+    font-weight:700;line-height:1;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 1px 4px rgba(0,0,0,.4);}
   .dpin{position:absolute;display:flex;flex-direction:column;align-items:center;z-index:8;}
   .dpin .b{background:var(--blue-600);border:1px solid #0063c5;border-radius:6px;padding:5px 11px;
     font-size:15px;font-weight:700;color:#fff;}
@@ -616,30 +636,46 @@
   .dpin .dots{width:2px;height:30px;background:repeating-linear-gradient(#0074d7 0 4px,transparent 4px 8px);}
   .dcar{position:absolute;width:38px;height:38px;border-radius:19px;background:var(--navy-700);z-index:8;}
 
-  .dpass{margin:15px;background:var(--navy-900);border-radius:10px;padding:10px 15px;
-    display:flex;align-items:center;gap:10px;
+  /* v2 pcard — 승객 카드. 정체성 행(이름·전화) + 요청사항 행 */
+  .dpass{margin:15px;background:var(--navy);border-radius:10px;padding:10px;
+    display:flex;flex-direction:column;gap:10px;
     box-shadow:0 6px 30px 5px rgba(0,0,0,.12),0 16px 24px 2px rgba(0,0,0,.14),0 8px 10px -5px rgba(0,0,0,.2);}
+  .dpass .prow{display:flex;align-items:center;gap:10px;padding:0 6px;}
   .dpass .pic{display:flex;}
-  .dpass b{flex:1 1 auto;font-size:22px;font-weight:700;color:var(--gray-50);letter-spacing:-.3px;}
-  .dpass .tel{display:flex;padding-right:15px;}
-  .dsheet{background:var(--navy-900);border-radius:12px 12px 0 0;padding:14px;}
-  .rhead{padding:16px 16px 0;font-size:15px;line-height:21px;color:var(--gray-300);}
-  .dcard{border:1px solid var(--gray-50);border-radius:8px;overflow:hidden;background:var(--navy-900);}
-  .dtop{padding:16px 16px 24px;display:flex;flex-direction:column;gap:8px;}
-  .dtop .row{display:flex;gap:12px;}
-  .dbadge{background:var(--blue-600);border-radius:4px;padding:6px 10px;font-size:16px;
-    font-weight:700;color:var(--gray-50);align-self:flex-start;line-height:22px;}
-  .dtop .ci{flex:1 1 auto;display:flex;flex-direction:column;gap:8px;}
-  .cnav{display:flex;align-items:center;gap:15px;}
-  .cnav .navb{flex:0 0 auto;}
+  .dpass b{flex:1 1 auto;min-width:0;font-size:22px;font-weight:700;color:var(--ef);letter-spacing:-.3px;}
+  .dpass .tel{display:flex;padding:0 8px 0 25px;color:var(--e6);}
+  /* v2 그대로 — 실제 앱의 승객 카드에는 요청사항 행이 이미 있다. 이 프로토타입에서는
+     동작을 걸지 않는다(v2 에서도 아직 안 걸려 있다). 주차장 상세 위치는 이 행이 아니라
+     아래 운행 카드의 말풍선에 있다는 것이 이 화면에서 보여야 한다. */
+  .dpass .preq{width:100%;background:rgba(255,255,255,.06);border-radius:8px;
+    padding:8px 10px;display:flex;align-items:center;justify-content:center;gap:8px;
+    font-size:16px;color:var(--dim);}
+  /* v2 route — 시트는 패딩을 갖지 않는다. 여백은 카드가 margin 으로 만든다. */
+  .dsheet{background:var(--navy);border-radius:12px 12px 0 0;padding:6px 0 14px;
+    box-shadow:0 -8px 24px rgba(0,0,0,.28);}
+  .rhead{padding:16px 16px 0;font-size:15px;line-height:21px;color:var(--dim);}
+  /* v2 crd — 위아래 그라디언트(navy → navy700)에 #384f85 테두리. 시트 바닥에서 떠 보인다. */
+  .dcard{margin:14px;border:1px solid var(--bd);border-radius:8px;overflow:hidden;
+    background:linear-gradient(180deg,var(--navy) 0%,var(--navy700) 100%);}
+  .dtop{padding:20px;display:flex;flex-direction:column;gap:8px;}
+  .dtop .row{display:flex;align-items:flex-start;gap:14px;}
+  .dbadge{background:var(--blue700);border-radius:4px;padding:4px 6px;font-size:16px;
+    font-weight:700;color:#fff;align-self:flex-start;line-height:22px;margin-top:4px;}
+  .dtop .ci{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px;}
+  /* cnavrow — 이름과 내비 버튼이 한 덩어리로 눌린다 */
+  .cnav{display:flex;align-items:flex-start;gap:15px;border-radius:8px;padding:2px 6px;margin:-2px -6px;
+    transition:background .1s ease;}
+  .cnav .navb{flex:0 0 auto;transition:transform .1s ease,filter .1s ease;}
   .cnav .navb svg path{fill:#ffffff;}
-  .dtop .ci b{font-size:24px;font-weight:700;color:#fff;line-height:31px;letter-spacing:-.4px;}
-  .dtop .ci span{font-size:15px;color:var(--gray-200);line-height:20px;}
+  .cnav:active{background:rgba(255,255,255,.07);}
+  .cnav:active .navb{transform:scale(.74);filter:brightness(1.4);}
+  .dtop .ci b{font-size:26px;font-weight:700;color:#fff;line-height:1.28;letter-spacing:-.4px;}
+  .dtop .ci span{font-size:16px;color:var(--n1);line-height:1.35;}
   /* Figma "자세한 탑승 위치"(10684:12120 · 10663:21535 · 10476:126743 동일):
      말풍선이 출발지 행 '위' 에 있고 꼬리가 아래를 향해 출발지를 가리킨다.
      값은 한 흐름으로 흐르며 층·동만 20sp 볼드, 라인과 꼬리는 18sp 레귤러다. */
   .dtalk{display:flex;flex-direction:column;align-items:center;}
-  .dtalk .body{width:100%;background:var(--navy-700);border-radius:4px;padding:10px 16px;
+  .dtalk .body{width:100%;background:var(--navyL);border-radius:4px;padding:10px 16px;
     display:flex;align-items:baseline;gap:16px;position:relative;}
   /* 오버레이의 [확인하기] 는 강조 트리거가 아니라 앱 전환이다. 기사는 내비를 보고 있었다.
      그래서 순간 애니메이션만 쓰면 전환되는 동안 다 타버리고, 도착했을 땐 이미 끝나 있다.
@@ -663,30 +699,42 @@
   /* 움직임을 줄이는 설정이면 펄스는 빼고 테두리만 남긴다 — 신호는 그대로다. */
   @media (prefers-reduced-motion:reduce){ .dtalk .body.hl::after{animation:none;} }
   .dtalk .tail{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;
-    border-top:9px solid var(--navy-700);}
+    border-top:9px solid var(--navyL);}
   /* Figma 원본 #32a2fa 는 이 배경에서 4.04:1 이고 16sp 볼드는 large text 기준(18.66px)에
      못 미쳐 4.5:1 을 밑돈다. 되돌리기 링크가 이미 쓰는 #7cc4ff 로 올리면 5.88:1 이다. */
-  .dtalk .blab{flex:0 0 auto;font-size:16px;font-weight:700;color:#7cc4ff;line-height:26px;}
+  /* v2 팔레트에 이미 있는 b300 이 정확히 이 색이다(#5cb4fa). 별색을 새로 만들 필요가 없었다. */
+  .dtalk .blab{flex:0 0 auto;font-size:16px;font-weight:700;color:var(--b300);line-height:26px;}
   .dtalk .bflow{flex:1 1 auto;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px;}
   .dtalk .bflow .v{font-size:20px;line-height:26px;font-weight:700;color:#f9f9f9;word-break:keep-all;}
   .dtalk .bflow .d{font-size:18px;line-height:26px;font-weight:400;color:#f9f9f9;}
-  .dtalk .bflow .t{font-size:18px;line-height:26px;font-weight:400;color:#c0c2cc;word-break:keep-all;}
+  .dtalk .bflow .t{font-size:18px;line-height:26px;font-weight:400;color:var(--n1);word-break:keep-all;}
   .dtalk[hidden]{display:none;}
   /* 순서가 있는 길 안내는 목적지와 분리한다. 운전 중엔 접혀 있고, 멈췄을 때 펼친다.
      3줄로 자른 길 안내는 없느니만 못하다. */
-  .droute{position:relative;width:100%;margin-top:8px;border:1px solid var(--navy-600);
-    background:transparent;border-radius:2px;padding:11px 46px 11px 14px;
-    display:flex;align-items:flex-start;gap:8px;font:inherit;text-align:left;cursor:pointer;}
-  .droute .rl{flex:0 0 auto;font-size:14px;font-weight:700;color:var(--blue-500);line-height:21px;}
-  .droute .rv{flex:1 1 auto;min-width:0;font-size:14px;line-height:21px;color:var(--gray-200);
+  .droute{position:relative;width:100%;margin-top:8px;border:1px solid #233565;
+    background:transparent;border-radius:4px;padding:11px 46px 11px 14px;
+    display:flex;align-items:flex-start;gap:8px;font:inherit;text-align:left;cursor:pointer;
+    transition:filter .1s ease;}
+  .droute:active{filter:brightness(1.22);}
+  .droute .rl{flex:0 0 auto;font-size:15px;font-weight:700;color:var(--b300);line-height:22px;}
+  .droute .rv{flex:1 1 auto;min-width:0;font-size:15px;line-height:22px;color:var(--n1);
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:keep-all;}
   .droute.open .rv{white-space:normal;overflow:visible;text-overflow:clip;}
-  .droute .rx{position:absolute;right:12px;top:11px;font-size:13px;color:var(--gray-300);}
-  .dgo.arrived{background:var(--blue-600);color:#fff;}
+  .droute .rx{position:absolute;right:12px;top:11px;font-size:13px;color:var(--dim);}
+  /* v2 cbtn — 카드 밖에 붙은 전폭 바가 아니라 카드 '안' 의 버튼이다.
+     높이는 차량 거치 상태에서 누를 것을 전제로 68~78 사이에서 글자 배율을 따라간다. */
+  .dgo{width:auto;margin:0 20px 20px;border:none;border-radius:4px;font:inherit;
+    min-height:clamp(68px,calc(48px + 20px),78px);padding:10px 16px;
+    font-size:20px;font-weight:700;letter-spacing:-.3px;
+    background:var(--off);color:var(--ink);display:flex;align-items:center;
+    justify-content:center;gap:10px;cursor:pointer;
+    transition:filter .12s ease;-webkit-tap-highlight-color:transparent;user-select:none;}
+  .dgo:active{filter:brightness(.86);}
+  /* ⚠ v2 는 여기에 --blue(#32a2fa) 를 쓰지만 흰 글씨와 2.73:1 이다.
+     같은 팔레트 안의 --blue700(#0074d7)이면 4.69:1 — 새 색을 만들지 않고 역할만 옮겼다.
+     v2 쪽도 같이 바꾸는 게 맞다고 봅니다. */
+  .dgo.arrived{background:var(--blue700);color:#fff;}
   .dgo.arrived svg path{fill:#ffffff;}
-  .dgo{width:100%;border:none;background:var(--gray-50);padding:10px 16px;font:inherit;
-    font-size:20px;font-weight:700;color:var(--gray-950);display:flex;align-items:center;
-    justify-content:center;gap:10px;letter-spacing:-.3px;}
 
   /* ══════ 노트 ══════ */
   .sech{max-width:1000px;margin:26px auto 0;padding:0 20px;font-size:13px;font-weight:700;
@@ -917,7 +965,8 @@
           <div class="dbub nv">내비</div>
         </div>
         <div class="dpass">
-          <span class="pic"><svg class="ic" width="26" height="26" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_19_10)"><path fill-rule="evenodd" clip-rule="evenodd" d="M42 84C65.196 84 84 65.196 84 42C84 18.804 65.196 0 42 0C18.804 0 0 18.804 0 42C0 65.196 18.804 84 42 84ZM50.4116 27.5621C50.4116 32.6369 46.4355 36.7492 41.5321 36.7492C36.6285 36.7492 32.6526 32.6369 32.6526 27.5621C32.6526 22.4873 36.6285 18.375 41.5321 18.375C46.4355 18.375 50.4116 22.4873 50.4116 27.5621ZM21 60.375L22.694 43.6772C22.694 43.6772 42.4725 41.4653 61.684 43.4777L63 60.172L21 60.375Z" fill="#D5D7DC"/></g><defs><clipPath id="clip0_0_19_10"><rect width="28" height="28" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><b>김지혜</b><span class="tel"><svg class="ic" width="24" height="24" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M53.4992 53.7L51.5826 65.4C51.5826 65.4 41.9416 61.5557 34.3326 51.75C26.7236 41.9443 22.8326 28.35 22.8326 28.35L34.3326 26.4V3H7.50003V27.6314C7.50003 29.4002 7.73162 31.1559 8.29943 32.831C10.0058 37.8648 14.5411 49.5047 22.8326 59.55C29.4371 67.5515 36.4544 73.7153 40.974 77.3405C44.065 79.82 47.9413 81 51.9039 81H76.5V53.7H53.4992Z" fill="white"/></svg></span>
+          <div class="prow"><span class="pic"><svg class="ic" width="26" height="26" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_19_10)"><path fill-rule="evenodd" clip-rule="evenodd" d="M42 84C65.196 84 84 65.196 84 42C84 18.804 65.196 0 42 0C18.804 0 0 18.804 0 42C0 65.196 18.804 84 42 84ZM50.4116 27.5621C50.4116 32.6369 46.4355 36.7492 41.5321 36.7492C36.6285 36.7492 32.6526 32.6369 32.6526 27.5621C32.6526 22.4873 36.6285 18.375 41.5321 18.375C46.4355 18.375 50.4116 22.4873 50.4116 27.5621ZM21 60.375L22.694 43.6772C22.694 43.6772 42.4725 41.4653 61.684 43.4777L63 60.172L21 60.375Z" fill="#D5D7DC"/></g><defs><clipPath id="clip0_0_19_10"><rect width="28" height="28" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><b>김지혜</b><span class="tel"><svg class="ic" width="24" height="24" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M53.4992 53.7L51.5826 65.4C51.5826 65.4 41.9416 61.5557 34.3326 51.75C26.7236 41.9443 22.8326 28.35 22.8326 28.35L34.3326 26.4V3H7.50003V27.6314C7.50003 29.4002 7.73162 31.1559 8.29943 32.831C10.0058 37.8648 14.5411 49.5047 22.8326 59.55C29.4371 67.5515 36.4544 73.7153 40.974 77.3405C44.065 79.82 47.9413 81 51.9039 81H76.5V53.7H53.4992Z" fill="white"/></svg></span></div>
+          <div class="preq">고객 요청사항 보기 <span aria-hidden="true">›</span></div>
         </div>
         <div class="dsheet">
           <div class="rhead" id="rhead" hidden>고객 위치로 이동 중</div>
