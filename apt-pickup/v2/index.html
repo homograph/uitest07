@@ -313,10 +313,12 @@
      이 아래는 제안이다. 기사 쪽 표시 방식을 보이려면 보내는 쪽이 하나 필요했다. */
   /* bottom:0 이 이 컨테이너에서 제대로 안 잡혔다. 이 파일에서 확실히 동작하는 방식
      (.scr / .ph-scr 처럼 inset:0 로 깔고 안에서 아래 정렬)으로 바꿨다. */
+  /* 숨김을 transition 지연(visibility 0s .22s)에 걸면 트랜지션이 안 도는 환경에서
+     닫아도 남는다. opacity + pointer-events 만으로 닫히게 해 지연에 의존하지 않는다. */
   .msgwrap{position:absolute;inset:0;z-index:35;display:flex;flex-direction:column;
     justify-content:flex-end;background:rgba(0,0,0,.28);
-    visibility:hidden;opacity:0;transition:opacity .22s ease,visibility 0s .22s;}
-  .msgwrap.on{visibility:visible;opacity:1;transition:opacity .22s ease,visibility 0s 0s;}
+    opacity:0;pointer-events:none;transition:opacity .22s ease;}
+  .msgwrap.on{opacity:1;pointer-events:auto;}
   .msgsheet{background:#fff;border-radius:12px 12px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.16);
     padding:20px;display:flex;flex-direction:column;gap:14px;
     transform:translateY(14px);transition:transform .22s cubic-bezier(.32,.72,.24,1);}
