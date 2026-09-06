@@ -2313,14 +2313,17 @@
     el('rhead').hidden = !(arrived || told());
     el('rhead').textContent = told() ? '픽업 완료' : '고객 위치로 이동 중';
     el('cnav').hidden = !arrived;
-    /* 스펙(driver-v2 상태머신): 픽업 구간의 버튼은 둘뿐이다.
-         01 pickup-go      [경로 안내받기]        → 탭 즉시 pickup-arrived 확정 + T맵
-         03 pickup-arrived [고객에게 도착 알리기] → 토스트 + 04 preview
-       '알렸어요' 를 버튼에 남기던 건 제가 지어낸 것이라 걷어냈다 — 화면이 넘어간다. */
+    /* 스펙(driver-v2 핸드오프 상태머신): 픽업 구간의 버튼은 둘뿐이다.
+         01 pickup-go      [고객 위치로 출발하기]  → 탭 즉시 pickup-arrived 확정 + T맵
+         03 pickup-arrived [고객에게 도착 알리기]  → 토스트 + 04 preview
+       ⚠ '경로 안내받기' 는 04 preview 에서 [운행 시작하기] 를 누른 뒤,
+         05 drive-go 의 버튼이다(Ev.GetRoute). 픽업 구간의 버튼이 아니다.
+         driver-v2 라이브 프로토타입의 pickup() 이 이 라벨을 잘못 쓰고 있어
+         한 번 따라 갔었다 — 핸드오프 문서와 Ev 정의가 기준이다. */
     el('dgo').className = 'dgo'+(arrived?' arrived':'');
     el('dgo').disabled = false;
     el('dgo').innerHTML = arrived ? '<svg class="ic" width="20" height="20" viewBox="0 0 71 68" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.74022 0.391808C3.07348 -0.871381 0 1.07361 0 4.0244V25.8094L44.2147 33.8484L0 41.8874V63.6724C0 66.6232 3.07348 68.5682 5.74021 67.305L68.702 37.481C71.7671 36.0291 71.7671 31.6677 68.702 30.2158L5.74022 0.391808Z" fill="white"/></svg>고객에게 도착 알리기'
-      : '<svg class="ic" width="22" height="22" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_go)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_go"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>경로 안내받기';
+      : '<svg class="ic" width="22" height="22" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_go)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_go"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>고객 위치로 출발하기';
     /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
     const rk = told() ? 'notified'
              : (!dep() ? 'matched' : (S.dphase==='nav' ? 'go' : 'near'));
