@@ -569,8 +569,9 @@
      그 화면을 안 보고 있는 동안은 아무 신호도 아니다. 그래서 화면 위로 올라온다. */
   /* T맵 위에 뜨는 드로오버다. 예전엔 top:64 라 초록 턴 배너('320m 반포대로 방면')를
      통째로 덮었다 — 도착 임박 3초는 견디지만 경로 변경은 8초다. 운전 중 8초간 다음 회전
-     안내가 사라지는 건 안전 문제라, 배너 아래에서 시작하게 내렸다. */
-  .drover{position:absolute;top:112px;left:0;right:0;z-index:40;
+     안내가 사라지는 건 안전 문제라, 배너 아래에서 시작하게 내렸다.
+     실측: 상태바 30 + 턴 배너 85 = 115 에서 8 띄워 123. */
+  .drover{position:absolute;top:123px;left:0;right:0;z-index:40;
     padding:0 10px 25px;display:flex;justify-content:center;}
   .drover[hidden]{display:none;}
   /* v2 의 T맵 위 tada 버튼(.tovb.tada)과 같은 문법 — navy2 바탕에 b300 2px 테두리.
