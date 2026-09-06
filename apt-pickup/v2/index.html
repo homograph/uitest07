@@ -147,30 +147,33 @@
      오른쪽 '입력'/'수정' 이 누를 수 있다는 것과 무엇이 일어나는지를 글자로 말한다.
      못 누르는 상태(도착 후)는 그 액션 글자가 사라지는 것으로 표시된다 — 면이 아니라
      '할 수 있는 일' 의 유무가 신호가 되므로, 카드 배경은 네 상태가 모두 같다. */
-  .pkbox{box-sizing:border-box;width:100%;height:48px;font:inherit;text-align:left;
+  /* 높이가 고정 48 에서 hug 로 바뀌었다(Figma sizingV=HUG) — 12+20+12 = 44 가 자연히 나온다.
+     오른쪽 패딩만 18 인 건 액션 글자('입력'/'수정')가 모서리에 붙지 않게 하는 여백이다. */
+  .pkbox{box-sizing:border-box;width:100%;font:inherit;text-align:left;
     background:#f9f9f9;box-shadow:inset 0 0 0 1px var(--gray-50);border:none;border-radius:4px;
-    padding:14px;display:flex;flex-direction:row;align-items:center;gap:12px;cursor:pointer;}
-  /* 아이콘 배지: 빈/전송 중은 gray-100 바탕에 #60667a P, 찬/도착은 blue-500 바탕에 흰 P */
-  .pico{flex:0 0 auto;width:20px;height:20px;border-radius:4px;display:grid;place-items:center;
-    background:var(--gray-100);}
+    padding:12px 18px 12px 12px;display:flex;flex-direction:row;align-items:center;gap:12px;cursor:pointer;}
+  /* 9/6 재설계: 상태를 나르는 축이 아이콘에서 '카드 면' 으로 옮겨졌다.
+     값이 기사에게 가 있으면 면 전체가 파랗게 물들고, 아직이면 회색으로 남는다.
+     전송 중은 값이 있어도 아직 안 닿았으므로 회색이다(.filled 뒤에 와서 이긴다). */
+  .pkbox.filled{background:var(--blue-050);box-shadow:inset 0 0 0 1px var(--blue-100);}
+  .pkbox.sending{background:#f9f9f9;box-shadow:inset 0 0 0 1px var(--gray-50);}
+  /* 아이콘은 이제 상태를 나르지 않는다 — 네 상태가 모두 같은 연파랑 배지에 파란 P 다.
+     상태 신호를 내려놓고 '여기가 주차장 위치 자리' 라는 표시만 맡는다. blue-150 @60%. */
+  .pico{flex:0 0 auto;width:20px;height:20px;border-radius:4.8px;display:grid;place-items:center;
+    background:rgba(185,221,253,.6);}
   .pico svg{display:block;width:12px;height:12px;}
-  .pico svg path{fill:var(--gray-600);}
-  .pkbox.filled .pico{background:var(--blue-500);}
-  .pkbox.filled .pico svg path{fill:#fff;}
-  /* 카드 크롬(배경·테두리·높이)은 네 상태가 모두 같다. 상태를 나르는 세 채널이
-     이제 각자 한 가지만 말한다(Figma 11559:32624 · 9/6 수정):
-       값 색   = 이 값이 기사에게 가 있는가   #262a38 있다 / #4b5064 아직
-       아이콘  = 지금 고칠 수 있는가          파랑 고친다 / 회색 못 고친다
-       오른쪽  = 지금 할 수 있는 일           입력 · 수정 · 스피너 · 없음
-     그래서 도착 후에는 값이 '입력 완료' 와 똑같이 진하다. 못 고친다는 사실은
-     아이콘이 회색으로 돌아가고 오른쪽이 비는 것만으로 이미 다 말한다 —
-     정보의 쓸모가 최고인 순간(차 앞에 서서 몇 동인지 확인할 때)에 값을 흐릴 이유가 없다. */
-  .pkbox.sending .pico,.pkbox.arrived .pico{background:var(--gray-100);}
-  .pkbox.sending .pico svg path,.pkbox.arrived .pico svg path{fill:var(--gray-600);}
+  .pico svg path{fill:var(--blue-500);}
+  /* 남은 두 채널이 각자 한 가지만 말한다:
+       면 + 값 색 = 이 값이 기사에게 가 있는가  (파란 면 + 검정 / 회색 면 + #4b5064)
+       오른쪽     = 지금 할 수 있는 일          (입력 · 수정 · 스피너 · 없음)
+     그래서 각 쌍은 오른쪽 하나로만 갈린다 — 입력 전↔전송 중, 입력 완료↔도착 후.
+     도착 후에도 값은 입력 완료와 똑같이 진하다. 못 고친다는 사실은 오른쪽이
+     비는 것만으로 이미 다 말한다 — 정보의 쓸모가 최고인 순간(차 앞에 서서
+     몇 동인지 확인할 때)에 값을 흐릴 이유가 없다. */
   .pkbox .ph,.pkbox .fill{font-size:14px;line-height:20px;flex:1 1 auto;min-width:0;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pkbox .ph{color:var(--gray-700);}
-  .pkbox .fill{color:#262a38;}
+  .pkbox .fill{color:#000;}
   .pkbox.sending .fill{color:var(--gray-700);}
   /* 액션 글자 — 빈 상태 '입력', 찬 상태 '수정'. 전송 중엔 스피너가 대신하고
      도착 후엔 아예 사라진다(더 이상 할 수 있는 일이 없다). */
@@ -536,8 +539,16 @@
   .drtitle{display:flex;align-items:center;gap:10px;}
   .drtitle .tdlogo{display:block;flex:0 0 auto;}
   .drtitle span{font-size:16px;line-height:24px;font-weight:700;color:var(--blue-500);}
+  /* 본문은 '무슨 일이 있었다' 가 아니라 값 그 자체다. 기사는 운전 중 한 번 흘긋 본다 —
+     그 한 번에 위치가 들어와야 탭 → 앱 전환 → 말풍선 찾기를 안 한다. */
   .drbody{margin:0;font-size:24px;line-height:36px;font-weight:700;color:#fff;word-break:keep-all;}
-  .drbtn{width:100%;border:none;border-radius:8px;background:var(--blue-500);color:#fff;
+  /* 무엇이 바뀌었는지는 값보다 한 단계 낮게. 없으면(첫 입력) 자리도 안 차지한다. */
+  .drdelta{margin:0;font-size:16px;line-height:24px;font-weight:500;color:var(--gray-200);word-break:keep-all;}
+  .drdelta[hidden]{display:none;}
+  .drdelta b{color:#fff;font-weight:700;}
+  /* blue-500 위의 흰 글씨는 2.73:1 이라 운전 중 흘긋 보기에 못 미친다.
+     blue-600 은 같은 계열에서 4.69:1 — 흰 글씨를 얹는 면은 blue-600 으로 통일한다. */
+  .drbtn{width:100%;border:none;border-radius:8px;background:var(--blue-600);color:#fff;
     padding:15px;font:inherit;font-size:20px;line-height:30px;font-weight:700;cursor:pointer;}
   .dbubs{position:absolute;top:76px;left:0;right:0;display:flex;justify-content:center;gap:8px;z-index:12;}
   .dbub{border:2px solid #fff;border-radius:15px;padding:7px 10px;font-size:19px;font-weight:700;
@@ -583,8 +594,16 @@
   /* 오버레이의 [확인하기] 는 강조 트리거가 아니라 앱 전환이다. 기사는 내비를 보고 있었다.
      그래서 순간 애니메이션만 쓰면 전환되는 동안 다 타버리고, 도착했을 땐 이미 끝나 있다.
      게다가 운전 중이라 화면은 흘긋 본다 — 그 흘긋이 펄스 700ms 와 겹칠 확률은 낮다.
-     그러므로 남는 것이 본체고 펄스는 보조다. 같은 파란 테두리가 두 역할을 한다. */
+     그러므로 남는 것이 본체고 펄스는 보조다. 같은 파란 테두리가 두 역할을 한다.
+     ── 다만 상자 전체를 두르는 건 '첫 입력' 일 때만 맞다. 값이 바뀐 경우 기사는
+     이미 뭔가 바뀐 걸 안다(오버레이가 방금 말했다). 필요한 건 '어디가' 이므로
+     변경일 때는 바뀐 조각에만 표시를 남긴다. */
   .dtalk .body.hl{box-shadow:inset 0 0 0 1.5px var(--blue-500);}
+  .dtalk .bflow .chg{border-radius:3px;padding:0 4px;margin:0 -1px;
+    background:rgba(124,196,255,.26);box-shadow:inset 0 -2px 0 0 #7cc4ff;position:relative;}
+  .dtalk .bflow .chg::after{content:'';position:absolute;inset:-2px;border-radius:4px;pointer-events:none;
+    animation:hlring .7s cubic-bezier(.22,.61,.36,1) 1;}
+  @media (prefers-reduced-motion:reduce){ .dtalk .bflow .chg::after{animation:none;} }
   .dtalk .body.hl::after{content:'';position:absolute;inset:0;border-radius:4px;pointer-events:none;
     animation:hlring .7s cubic-bezier(.22,.61,.36,1) 1;}
   @keyframes hlring{
@@ -595,9 +614,9 @@
   @media (prefers-reduced-motion:reduce){ .dtalk .body.hl::after{animation:none;} }
   .dtalk .tail{width:0;height:0;border-left:9px solid transparent;border-right:9px solid transparent;
     border-top:9px solid var(--navy-700);}
-  /* Figma 원본. 이 배경에서 4.04:1 — 16sp 볼드는 large text 기준(18.66px)에 못 미쳐
-     본문 기준 4.5:1 을 살짝 밑돈다. 디자이너 확인 필요. */
-  .dtalk .blab{flex:0 0 auto;font-size:16px;font-weight:700;color:#32a2fa;line-height:26px;}
+  /* Figma 원본 #32a2fa 는 이 배경에서 4.04:1 이고 16sp 볼드는 large text 기준(18.66px)에
+     못 미쳐 4.5:1 을 밑돈다. 되돌리기 링크가 이미 쓰는 #7cc4ff 로 올리면 5.88:1 이다. */
+  .dtalk .blab{flex:0 0 auto;font-size:16px;font-weight:700;color:#7cc4ff;line-height:26px;}
   .dtalk .bflow{flex:1 1 auto;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:4px;}
   .dtalk .bflow .v{font-size:20px;line-height:26px;font-weight:700;color:#f9f9f9;word-break:keep-all;}
   .dtalk .bflow .d{font-size:18px;line-height:26px;font-weight:400;color:#f9f9f9;}
@@ -613,7 +632,7 @@
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;word-break:keep-all;}
   .droute.open .rv{white-space:normal;overflow:visible;text-overflow:clip;}
   .droute .rx{position:absolute;right:12px;top:11px;font-size:13px;color:var(--gray-300);}
-  .dgo.arrived{background:var(--blue-500);color:#fff;}
+  .dgo.arrived{background:var(--blue-600);color:#fff;}
   .dgo.arrived svg path{fill:#ffffff;}
   .dgo{width:100%;border:none;background:var(--gray-50);padding:10px 16px;font:inherit;
     font-size:20px;font-weight:700;color:var(--gray-950);display:flex;align-items:center;
@@ -829,8 +848,9 @@
         <div class="drover" id="drover" hidden>
           <div class="drcard">
             <div class="drinfo">
-              <div class="drtitle"><svg class="tdlogo" width="40" height="10" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M43.2016 3H47.9996V12.5985H57.599V17.4004H47.9996V27H43.2016V3Z" fill="white"/><path d="M9.60059 7.79815H33.6021V3.00004H9.60059V7.79815Z" fill="white"/><path d="M9.60059 26.9999H33.6021V22.1972H9.60059V26.9999Z" fill="white"/><path d="M9.60059 17.4005H33.6021V12.5985H9.60059V17.4005Z" fill="white"/><path d="M86.4255 7.79815H62.424V3.00004H86.4255V7.79815Z" fill="white"/><path d="M110.401 12.5985H100.825V3.00004H96.0234V26.9999H100.825V17.4005H110.401V12.5985Z" fill="white"/><path d="M86.4255 26.9999H62.424V22.1972H86.4255V26.9999Z" fill="white"/></svg><span>픽업 상세</span></div>
-              <p class="drbody" id="drover-b">고객이 상세 위치를 변경했습니다</p>
+              <div class="drtitle" id="drover-h"><svg class="tdlogo" width="40" height="10" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M43.2016 3H47.9996V12.5985H57.599V17.4004H47.9996V27H43.2016V3Z" fill="white"/><path d="M9.60059 7.79815H33.6021V3.00004H9.60059V7.79815Z" fill="white"/><path d="M9.60059 26.9999H33.6021V22.1972H9.60059V26.9999Z" fill="white"/><path d="M9.60059 17.4005H33.6021V12.5985H9.60059V17.4005Z" fill="white"/><path d="M86.4255 7.79815H62.424V3.00004H86.4255V7.79815Z" fill="white"/><path d="M110.401 12.5985H100.825V3.00004H96.0234V26.9999H100.825V17.4005H110.401V12.5985Z" fill="white"/><path d="M86.4255 26.9999H62.424V22.1972H86.4255V26.9999Z" fill="white"/></svg><span id="drover-t">픽업 상세</span></div>
+              <p class="drbody" id="drover-b"></p>
+              <p class="drdelta" id="drover-d" hidden></p>
             </div>
             <button type="button" class="drbtn" id="drover-ok">확인하기</button>
           </div>
@@ -1410,7 +1430,7 @@
   const S={
     mode:'new', screen:'start',
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
-    drover:false, droverEdit:false, hilite:false,
+    drover:false, droverEdit:false, hilite:false, before:null,
     sending:false, sent:false, tmr:null, opened:null,
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
@@ -1427,6 +1447,24 @@
       (d.etc||'').trim()
     ].filter(x=>x && x.trim()).join(' · ');
   const sentence = d => !d ? '' : core(d);
+  /* 오버레이 본문에는 위치만 쓴다. 찾아오는 길은 최대 100자라 24sp 두 줄을 넘긴다 —
+     그건 기사가 '멈췄을 때' 펼쳐 보는 정보고, 오버레이는 흘긋 보는 자리다. */
+  const loc = d => !d ? '' : [
+      (d.lvl==='under' ? '지하 ' : '지상 ') + d.floor + '층',
+      (d.noDong ? '' : d.dong.trim()+'동') + (d.line ? ' '+lineText(d.line) : '')
+    ].filter(x=>x && x.trim()).join(' · ');
+  /* 값을 조각으로 갈라 둔다. 어디가 바뀌었는지는 조각 단위로만 말할 수 있다. */
+  const partsOf = d => ({
+    floor:(d.lvl==='under' ? '지하 ' : '지상 ')+d.floor+'층',
+    dong : d.noDong ? '동 없음' : d.dong.trim()+'동',
+    line : (d.noLine || !d.line.trim()) ? '라인 없음' : lineText(d.line),
+    etc  : (d.etc||'').trim()
+  });
+  const deltaOf = (a,b) => {
+    if(!a || !b) return [];
+    const pa=partsOf(a), pb=partsOf(b);
+    return ['floor','dong','line','etc'].filter(k=>pa[k]!==pb[k]).map(k=>({k,from:pa[k],to:pb[k]}));
+  };
   /* 지상에도 층 칸이 생겼으므로 층은 두 경우 모두 필수다(지상은 1 이 미리 채워진다). */
   const ready = d => (!!d.dong.trim() || !!d.noDong) && !!d.floor;
   const reached = () => (!S.value||!S.confirmed) ? false : (S.origin==='start' ? true : S.sent);
@@ -1872,6 +1910,8 @@
   function submitForm(){
     if(!ready(S.d)) return;
     S.edited=(S.opened==='voyage') && !!S.value;
+    /* 덮어쓰기 전에 직전 값을 남긴다 — '어디가 바뀌었나' 는 이것 없이는 못 만든다. */
+    S.before = S.edited && S.current ? Object.assign({},S.current) : null;
     S.current=Object.assign({},S.d);
     S.value=sentence(S.d);
     S.routeOpen=null;
@@ -1971,21 +2011,43 @@
     $('#dtalk').hidden = !got;
     /* 값이 사라졌거나 아직 안 닿았으면 확인할 것도 없다. */
     el('drover').hidden = !(S.drover && got);
-    el('dtalkbody').classList.toggle('hl', !!(S.hilite && got));
-    /* 타이틀은 고정, 본문만 갈린다 — 제가 타이틀까지 갈랐던 걸 디자이너가 되돌렸다. */
-    el('drover-b').textContent = S.droverEdit ? '고객이 상세 위치를 변경했습니다'
-                                              : '고객이 상세 위치를 입력했습니다';
+    const dl = S.droverEdit ? deltaOf(S.before, S.current) : [];
+    /* 상자 전체를 두르는 건 첫 입력일 때만이다. 변경이면 바뀐 조각만 표시한다. */
+    el('dtalkbody').classList.toggle('hl', !!(S.hilite && got && !dl.length));
+    /* 오버레이 본문은 값 그 자체다. 기사가 흘긋 한 번 보고 끝내야 하므로,
+       '무슨 일이 있었다' 는 타이틀이 맡고 24sp 두 줄은 위치에 내준다. */
+    el('drover-t').textContent = S.droverEdit ? '픽업 상세 변경' : '픽업 상세';
+    if(got) el('drover-b').textContent = loc(S.current);
+    const dd = el('drover-d'); dd.textContent=''; dd.hidden = true;
+    if(got && dl.length){
+      /* 운전 중에 읽을 것이라 두 개까지만. 그 이상은 세느니 다시 보라고 하는 게 낫다. */
+      if(dl.length > 2){ dd.textContent = '여러 곳이 바뀌었습니다'; }
+      else dl.forEach((x,i)=>{
+        if(i) dd.appendChild(document.createTextNode(' · '));
+        if(x.k==='etc'){ dd.appendChild(document.createTextNode(x.to ? '길 안내 바뀜' : '길 안내 지움')); return; }
+        dd.appendChild(document.createTextNode(x.from+' → '));
+        const b=document.createElement('b'); b.textContent=x.to; dd.appendChild(b);
+      });
+      dd.hidden = false;
+    } else if(got && !S.droverEdit && (S.current.etc||'').trim()){
+      dd.textContent = '길 안내 있음'; dd.hidden = false;   /* 첫 입력이라도 길 안내가 있으면 알린다 */
+    }
     /* Figma "자세한 탑승 위치" 그대로: 한 흐름으로 흐르되 층·동만 20sp 볼드,
        라인과 꼬리는 18sp 레귤러이고 꼬리는 한 단계 더 흐리다.
        꼬리를 남기되 무게로 낮추는 방식이라, 운전 중 스캔에서 값이 먼저 잡힌다. */
     const cur=S.current;
     if(got){
       const flow=el('db-flow'); flow.innerHTML='';
-      const add=(cls,tx)=>{ const s=document.createElement('span'); s.className=cls; s.textContent=tx; flow.appendChild(s); };
-      add('v', (cur.lvl==='under' ? '지하 ' : '지상 ')+cur.floor+'층');
+      /* key 를 받아 바뀐 조각에만 .chg 를 붙인다. 기사는 '뭔가 바뀌었다' 는 이미 알고
+         들어왔으므로, 여기서 필요한 건 '어디가' 하나뿐이다. */
+      const chg = new Set(S.hilite ? dl.map(x=>x.k) : []);
+      const add=(cls,tx,key)=>{ const n=document.createElement('span');
+        n.className=cls+(key&&chg.has(key)?' chg':''); n.textContent=tx; flow.appendChild(n); };
+      add('v', (cur.lvl==='under' ? '지하 ' : '지상 ')+cur.floor+'층', 'floor');
       add('d', '·');
-      add('v', cur.dong.trim()+'동');
-      if(cur.line.trim()) add('d', lineText(cur.line));
+      /* noDong 이면 dong 이 비어 있어 '동' 한 글자만 찍히던 것을 바로잡는다. */
+      add('v', cur.noDong ? '동 없음' : cur.dong.trim()+'동', 'dong');
+      if(!cur.noLine && cur.line.trim()) add('d', lineText(cur.line), 'line');
       add('t', '앞에서 탈게요');
     }
     const dr=el('droute'), route=(got && cur && cur.etc.trim()) ? cur.etc.trim() : '';
@@ -2050,7 +2112,7 @@
     S.mode=m; S.screen='start';
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={};
-    S.drover=false; S.hilite=false;
+    S.drover=false; S.hilite=false; S.before=null;
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
       S.value=sentence(SAVED_FOR_ADDRESS); S.origin='start';
