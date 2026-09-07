@@ -2360,8 +2360,11 @@
         : (d.lvl==='under'?'지하 ':'지상 ')+d.floor+'층\u2002'+(d.noDong?'동 없음':d.dong.trim()+'동');
       /* ② 라벨은 '픽업' 고정 — 상태는 칩이 말한다 */
       el('tovb-loc-lb').textContent = '픽업';
+      /* 이벤트 없이 기사가 직접 펼친 것(ev=null)만 칩이 없다.
+         first 는 '값이 처음 도착' 인데 칩이 비어 있어 무슨 일인지 말하지 않았다. */
+      const CHIP = { first:'새로 받음', change:'방금 변경됨', near:'곧 도착' };
       const chip = el('tovb-loc-chip');
-      chip.textContent = ev==='change' ? '방금 변경됨' : (ev==='near' ? '곧 도착' : '');
+      chip.textContent = CHIP[ev] || '';
       chip.classList.toggle('near', ev==='near');
       chip.hidden = !chip.textContent;
       /* 델타는 변경일 때만. 첫 입력·도착 직전엔 '어디가 바뀌었나' 가 없다. */
