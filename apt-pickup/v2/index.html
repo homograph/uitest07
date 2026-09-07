@@ -674,6 +674,10 @@
   .dpin .dots{width:2px;height:30px;background:repeating-linear-gradient(#0074d7 0 4px,transparent 4px 8px);}
   .dcar{position:absolute;width:38px;height:38px;border-radius:19px;background:var(--navy-700);z-index:8;}
 
+  /* v2 .bottom — 지도 위에 떠 있는 층이다(흐름 안의 블록이 아니다).
+     지도는 앱바 아래부터 화면 끝까지 깔리고, 승객 카드와 시트가 그 위로 얹힌다. */
+  .dbottom{position:absolute;left:0;right:0;bottom:0;z-index:10;max-height:66%;
+    display:flex;flex-direction:column;}
   /* v2 pcard — 승객 카드. 정체성 행(이름·전화) + 요청사항 행 */
   .dpass{margin:0 15px 15px;background:var(--navy);border-radius:10px;padding:10px;
     display:flex;flex-direction:column;gap:10px;
@@ -1117,8 +1121,9 @@
           <div class="dbub rt">경로<br>변경</div>
           <div class="dbub nv"><svg viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="12" fill="#F9F9F9"/><path d="M13.9 19.72L10.65 14.77L4.83 13.66L4.62 12.59L17.36 4.74L14.97 19.51L13.9 19.72Z" fill="#0074D7"/></svg><span>내비</span></div>
         </div>
+        <div class="dbottom">
         <div class="dpass">
-          <div class="prow"><span class="pic"><svg class="ic" width="26" height="26" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_19_10)"><path fill-rule="evenodd" clip-rule="evenodd" d="M42 84C65.196 84 84 65.196 84 42C84 18.804 65.196 0 42 0C18.804 0 0 18.804 0 42C0 65.196 18.804 84 42 84ZM50.4116 27.5621C50.4116 32.6369 46.4355 36.7492 41.5321 36.7492C36.6285 36.7492 32.6526 32.6369 32.6526 27.5621C32.6526 22.4873 36.6285 18.375 41.5321 18.375C46.4355 18.375 50.4116 22.4873 50.4116 27.5621ZM21 60.375L22.694 43.6772C22.694 43.6772 42.4725 41.4653 61.684 43.4777L63 60.172L21 60.375Z" fill="#D5D7DC"/></g><defs><clipPath id="clip0_0_19_10"><rect width="28" height="28" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><b>김지혜</b><span class="tel"><svg class="ic" width="24" height="24" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M53.4992 53.7L51.5826 65.4C51.5826 65.4 41.9416 61.5557 34.3326 51.75C26.7236 41.9443 22.8326 28.35 22.8326 28.35L34.3326 26.4V3H7.50003V27.6314C7.50003 29.4002 7.73162 31.1559 8.29943 32.831C10.0058 37.8648 14.5411 49.5047 22.8326 59.55C29.4371 67.5515 36.4544 73.7153 40.974 77.3405C44.065 79.82 47.9413 81 51.9039 81H76.5V53.7H53.4992Z" fill="white"/></svg></span></div>
+          <div class="prow"><span class="pic"><svg class="ic" width="28" height="28" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_19_10)"><path fill-rule="evenodd" clip-rule="evenodd" d="M42 84C65.196 84 84 65.196 84 42C84 18.804 65.196 0 42 0C18.804 0 0 18.804 0 42C0 65.196 18.804 84 42 84ZM50.4116 27.5621C50.4116 32.6369 46.4355 36.7492 41.5321 36.7492C36.6285 36.7492 32.6526 32.6369 32.6526 27.5621C32.6526 22.4873 36.6285 18.375 41.5321 18.375C46.4355 18.375 50.4116 22.4873 50.4116 27.5621ZM21 60.375L22.694 43.6772C22.694 43.6772 42.4725 41.4653 61.684 43.4777L63 60.172L21 60.375Z" fill="#C2CADB"/></g><defs><clipPath id="clip0_0_19_10"><rect width="28" height="28" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><b>김지혜</b><span class="tel"><svg class="ic" width="24" height="24" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M53.4992 53.7L51.5826 65.4C51.5826 65.4 41.9416 61.5557 34.3326 51.75C26.7236 41.9443 22.8326 28.35 22.8326 28.35L34.3326 26.4V3H7.50003V27.6314C7.50003 29.4002 7.73162 31.1559 8.29943 32.831C10.0058 37.8648 14.5411 49.5047 22.8326 59.55C29.4371 67.5515 36.4544 73.7153 40.974 77.3405C44.065 79.82 47.9413 81 51.9039 81H76.5V53.7H53.4992Z" fill="white"/></svg></span></div>
           <div class="preq">고객 요청사항 보기 <span class="chev" aria-hidden="true"><svg viewBox="0 0 10 16"><path d="M0.625 1.78L7.33 7.89L0.74 13.9L2.07 15.11L9.99 7.89L1.95 0.57L0.625 1.78Z"/></svg></span></div>
         </div>
         <div class="dsheet">
@@ -1135,6 +1140,7 @@
             </div>
           <button class="dgo" id="dgo"></button>
           </div>        </div>
+        </div>
       </div>
     </div></div>
     <p class="step" id="dstep"></p>
