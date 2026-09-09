@@ -742,6 +742,28 @@
   .dsent b{font-weight:700;color:var(--ef);}
   .dway{margin:0;font-size:16px;line-height:24px;font-weight:400;color:var(--dim);word-break:keep-all;}
   .dway[hidden]{display:none;}
+  /* Figma 11903:17373 — 04 preview. 픽업 상세 행이 '출발' 행 바로 아래에 끼어든다. */
+  .dlist{display:flex;flex-direction:column;background:var(--navy);
+    box-shadow:inset 0 1px 0 0 var(--navy700);padding-bottom:24px;}
+  .dlist[hidden]{display:none;}
+  .irow{display:flex;align-items:center;gap:14px;padding:18px 20px;background:var(--navy);}
+  .irow.sm{padding:14px 20px;}
+  .ibadge{flex:0 0 auto;width:52px;box-sizing:border-box;display:inline-flex;align-items:center;
+    justify-content:center;border-radius:4px;padding:4px 6px;background:var(--navy700);
+    font-size:16px;line-height:24px;font-weight:700;color:#fff;}
+  .irow b{flex:1 1 auto;min-width:0;font-size:20px;line-height:30px;font-weight:700;color:#fff;}
+  /* 이미 지난 구간은 이름을 눌러 둔다 — 완료 표시는 초록으로 따로 말한다 */
+  .irow.done b{color:#7282a6;}
+  .idone{flex:0 0 auto;font-size:16px;line-height:24px;font-weight:700;color:var(--green);}
+  .inav{flex:0 0 auto;width:30px;height:30px;border-radius:15px;background:#2f3f79;
+    display:grid;place-items:center;box-shadow:inset 0 0 20px rgba(255,255,255,.04);}
+  .inav svg{width:14px;height:17px;display:block;}
+  /* 목록 안의 상세 행은 카드 면(navy2)을 그대로 쓴다 — 한 구간의 부속이라는 표시다 */
+  .dlist .dtop2{background:var(--navy2);}
+  /* 01·03 은 CTA 가 카드 안(navy2), 04 는 Footer(fixed)(navy) 다 — 면만 갈린다 */
+  .dfoot{padding:0 20px 22px;background:var(--navy2);}
+  .dfoot.prev{padding-bottom:20px;background:var(--navy);}
+  .dgo{margin:0;}
   /* v2 cbtn — 카드 밖에 붙은 전폭 바가 아니라 카드 '안' 의 버튼이다.
      높이는 차량 거치 상태에서 누를 것을 전제로 68~78 사이에서 글자 배율을 따라간다. */
   .dgo{width:auto;margin:0 20px 22px;border:none;border-radius:4px;font:inherit;
@@ -1086,7 +1108,10 @@
     <div class="cap"><span class="dot d"></span><b>드라이버 앱</b><em>기사님</em>
       <span class="dsw"><button type="button" class="dswb on" data-side="d" data-ds="tmap">T맵 내비</button><button
         type="button" class="dswb" data-side="d" data-ds="app">타다 앱</button><button
-        type="button" class="rst" id="d500" style="padding:5px 11px;font-size:11.5px">500m 진입</button></span></div>
+        type="button" class="rst" id="d500" style="padding:5px 11px;font-size:11.5px">500m 진입</button></span>
+      <span class="dsw" id="dstagesw"><button type="button" class="dswb dstg" data-dg="go">출발 전</button><button
+        type="button" class="dswb dstg on" data-dg="arrived">이동 중</button><button
+        type="button" class="dswb dstg" data-dg="preview">전체 경로</button></span></div>
     <div class="phbox"><div class="phone">
       <div class="scr on dscr">
         <div class="sb dark"><span class="ic"><i class="wifi"></i><i class="sig"></i><i class="bat"></i></span><span>12:30</span></div>
@@ -1147,8 +1172,24 @@
                 <p class="dway" id="d-way"></p>
               </div>
             </div>
-          <button class="dgo" id="dgo"></button>
-          </div>        </div>
+          </div>
+          <div class="dlist" id="dlist" hidden>
+            <div class="irow done"><span class="ibadge">출발</span><b>위워크 삼성역점</b><span class="idone">완료</span><span class="inav"><svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#ffffff"/></svg></span></div>
+            <div class="dtop2" id="dtop2b">
+              <span class="dbadge2">상세</span>
+              <div class="ci2">
+                <p class="dsent"><b id="d-loc-b"></b><span>에서 탈게요.</span></p>
+                <p class="dway" id="d-way-b"></p>
+              </div>
+            </div>
+            <div class="irow"><span class="ibadge">경유</span><b>삼성동 201-23</b><span class="inav"><svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#ffffff"/></svg></span></div>
+            <div class="irow sm"><span class="ibadge">출발</span><b>성수역 4번 출구</b><span class="inav"><svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#ffffff"/></svg></span></div>
+            <div class="irow sm"><span class="ibadge">경유2</span><b>성수역 4번 출구</b><span class="inav"><svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#ffffff"/></svg></span></div>
+            <div class="irow sm"><span class="ibadge">경유3</span><b>갤러리아 포레</b><span class="inav"><svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#ffffff"/></svg></span></div>
+            <div class="irow sm last"><span class="ibadge">도착</span><b>뚝섬역 1번 출구</b><span class="inav"><svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#ffffff"/></svg></span></div>
+          </div>
+          <div class="dfoot" id="dfoot"><button class="dgo" id="dgo"></button></div>
+        </div>
         </div>
       </div>
     </div></div>
@@ -1696,7 +1737,8 @@
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     drover:false, droverEdit:false, hilite:false, before:null, ro:false,
     drKind:null, ack:true, drTmr:null, tts:false, dtTmr:null, msg:'', msgUnread:false, matchTmr:null, locOpen:false, locTmr:null, locEvent:null,
-    sending:false, sent:false, tmr:null, opened:null,
+    sending:false, sent:false, tmr:null, opened:null, dstage:'arrived',
+
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
     /* dstate = 기사가 지금 어디 있나(go · near · arrived).
@@ -2375,10 +2417,33 @@
          05 drive-go 의 버튼이다(Ev.GetRoute). 픽업 구간의 버튼이 아니다.
          driver-v2 라이브 프로토타입의 pickup() 이 이 라벨을 잘못 쓰고 있어
          한 번 따라 갔었다 — 핸드오프 문서와 Ev 정의가 기준이다. */
-    el('dgo').className = 'dgo'+(arrived?' arrived':'');
+    /* 앱 화면 3종 — Figma 11903:17246(01) / 17315(03) / 17373(04 preview).
+       내비 위 tada 버튼으로 들어와 여기서 본다. CTA 를 누르면 다음 단계로 넘어간다. */
+    const stg = S.dstage || 'arrived';
+    const prev = (stg === 'preview');
+    el('rhead').hidden = (stg === 'go');
+    el('rhead').textContent = prev ? '남은 경로 5개' : '고객 위치로 이동 중';
+    $('.dcard').hidden = prev;
+    el('dlist').hidden = !prev;
+    el('dfoot').classList.toggle('prev', prev);
+    /* 주소 옆 내비 버튼은 이동 중(03)에만 있다 */
+    el('cnav').hidden = (stg !== 'arrived');
+    const CTA = {
+      go     : {cls:'',        icon:'<svg class="ic" width="32" height="32" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_go)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_go"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>', label:'고객 위치로 출발하기'},
+      arrived: {cls:' arrived', icon:'<svg class="ic" width="24" height="24" viewBox="0 0 71 68" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.74022 0.391808C3.07348 -0.871381 0 1.07361 0 4.0244V25.8094L44.2147 33.8484L0 41.8874V63.6724C0 66.6232 3.07348 68.5682 5.74021 67.305L68.702 37.481C71.7671 36.0291 71.7671 31.6677 68.702 30.2158L5.74022 0.391808Z" fill="white"/></svg>', label:'고객에게 도착 알리기'},
+      preview: {cls:' arrived', icon:'', label:'운행 시작하기'}
+    }[stg];
+    el('dgo').className = 'dgo'+CTA.cls;
     el('dgo').disabled = false;
-    el('dgo').innerHTML = arrived ? '<svg class="ic" width="24" height="24" viewBox="0 0 71 68" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.74022 0.391808C3.07348 -0.871381 0 1.07361 0 4.0244V25.8094L44.2147 33.8484L0 41.8874V63.6724C0 66.6232 3.07348 68.5682 5.74021 67.305L68.702 37.481C71.7671 36.0291 71.7671 31.6677 68.702 30.2158L5.74022 0.391808Z" fill="white"/></svg>고객에게 도착 알리기'
-      : '<svg class="ic" width="32" height="32" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_4_go)"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#171A24"/></g><defs><clipPath id="clip0_0_4_go"><rect width="32" height="32" fill="white" transform="scale(3)"/></clipPath></defs></svg>고객 위치로 출발하기';
+    el('dgo').innerHTML = CTA.icon + CTA.label;
+    /* 상세 행은 카드와 목록 두 곳에 있다 — 같은 값을 같이 칠한다 */
+    if(show){
+      el('d-loc-b').textContent = el('d-loc').textContent;
+      el('d-way-b').textContent = el('d-way').textContent;
+      el('d-way-b').hidden = el('d-way').hidden;
+    }
+    el('dtop2b').hidden = !show;
+    $$('.dstg').forEach(b=>b.classList.toggle('on', b.dataset.dg===stg));
     /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
     $$('.dswb').forEach(b=>b.classList.toggle('on',
       b.dataset.ds === (b.dataset.side==='r' ? S.rphase : S.dview)));
@@ -2462,7 +2527,7 @@
   function setMode(m){
     S.mode=m; S.screen='start';
     clearTimeout(S.tmr); S.tmr=null;
-    S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={};
+    S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='arrived';
     S.drover=false; S.hilite=false; S.before=null;
     S.drKind=null; S.ack=true; S.rphase='match'; S.dview='tmap'; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     if(m==='repeat'){
@@ -2499,15 +2564,26 @@
   /* 출발/도착을 누른 건 그 값을 실제로 썼다는 뜻이다. 강조도 미확인도 여기서 거둔다. */
   el('dgo').addEventListener('click',()=>{
     S.hilite=false; S.ack=true;
-    /* 03 pickup-arrived → 탭. 여기가 승객이 '차량 도착' 을 알게 되는 유일한 지점이고,
-       상세 위치가 잠기는 것도 이 순간이다. */
-    if(!told()){
-      S.rphase='arrived';
-      dtoast('고객에게 도착을 알렸어요');
-      if(S.opened==='voyage' && $('#phscr').classList.contains('on') && S.value) openForm('voyage', true);
+    const stg = S.dstage || 'arrived';
+    /* 01 pickup-go [고객 위치로 출발하기] → 03 으로. 승객 화면은 '약 5분 후 도착' 이 된다. */
+    if(stg==='go'){ S.dstage='arrived'; S.rphase='go'; render(); return; }
+    /* 03 pickup-arrived [고객에게 도착 알리기] → 04 preview.
+       여기가 승객이 '차량 도착' 을 알게 되는 유일한 지점이고, 상세 위치가 잠기는 것도 이 순간이다. */
+    if(stg==='arrived'){
+      S.dstage='preview';
+      if(!told()){
+        S.rphase='arrived';
+        dtoast('고객에게 도착을 알렸어요');
+        if(S.opened==='voyage' && $('#phscr').classList.contains('on') && S.value) openForm('voyage', true);
+      }
+      render(); return;
     }
+    /* 04 preview [운행 시작하기] — 이 프로토타입의 범위 밖이다(픽업까지만 다룬다) */
+    dtoast('운행을 시작했어요');
     render();
   });
+  /* 앱 화면 3종 전환 — 내비 버튼으로 들어온 뒤 어느 화면을 볼지 고른다 */
+  $$('.dstg').forEach(b=>b.addEventListener('click',()=>{ S.dstage=b.dataset.dg; S.dview='app'; render(); }));
   /* T맵 → 타다 복귀. 화면 전환일 뿐 상태가 아니다. */
   const backFromTmap = ()=>{ S.dview='app'; S.msgUnread=false; render(); };
   el('tovb-back').addEventListener('click', backFromTmap);
