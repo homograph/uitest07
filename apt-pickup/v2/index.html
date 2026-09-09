@@ -2445,7 +2445,7 @@
     el('dtop2b').hidden = !show;
     $$('.dstg').forEach(b=>b.classList.toggle('on', b.dataset.dg===stg));
     /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
-    $$('.dswb').forEach(b=>b.classList.toggle('on',
+    $$('.dswb:not(.dstg)').forEach(b=>b.classList.toggle('on',
       b.dataset.ds === (b.dataset.side==='r' ? S.rphase : S.dview)));
 
     el('fdesc').innerHTML = S.screen==='start'
