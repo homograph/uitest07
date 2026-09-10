@@ -1,0 +1,1011 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>항공편에 맞춰 픽업 · 예약 생성 프로토타입</title>
+<meta name="color-scheme" content="light dark" />
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   TADA 라이더 · 항공편에 맞춰 픽업 (TADA-3746)
+   예약 생성 구간 프로토타입.
+
+   토큰은 한 벌만 쓴다.
+   accent  = TADA navy #19254d. 페이지 전체에서 강조는 이 색 하나.
+   app-*   = 폰 프레임 안쪽. Figma 실측값이며 다크 모드에서도
+             뒤집지 않는다. 프레임 안은 라이트 모드 앱의 '사진'이다.
+   한글 웹폰트는 쓰지 않는다. dynamic-subset 로딩 중 리플로가 나는데
+   이 페이지는 px 를 재서 비교하는 계측 화면이라 대가가 크다.
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --plane:#eceff4;  --surface:#ffffff;  --sunken:#f4f6f9;
+  --line:#dde2ea;   --line-soft:#eef1f6;
+  --ink:#12172a;    --ink-2:#4c5468;    --ink-3:#7b8398;
+  --accent:#19254d; --accent-ink:#ffffff; --accent-soft:#e7ebf4;
+  --focus:#3d63c9;
+  --shadow:0 1px 2px rgba(18,23,42,.05), 0 12px 28px rgba(18,23,42,.09);
+  --st-ok:#0ca30c; --st-part:#fab219; --st-no:#d03b3b;
+
+  --mono:ui-monospace,SFMono-Regular,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  --chrome:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",
+           "Pretendard Variable",Pretendard,"Malgun Gothic",sans-serif;
+  --app:"Spoqa Han Sans Neo",-apple-system,BlinkMacSystemFont,
+        "Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+
+  --r-surface:12px; --r-mark:4px; --r-pill:9999px; --r-device:22px;
+
+  /* ── Figma 실측 (2025-1Q Rider Handoff / node 3033-48722) ── */
+  --app-navy:#19254D;      /* primary button, 강조 카드 */
+  --app-navy-off:#99A5C0;  /* disabled button */
+  --app-navy-off-ink:#C0C8D9;
+  --app-blue:#32A2FA;      /* accent / helper text / BETA */
+  --app-blue-bg:#F1F9FE;   /* 넛지 카드 배경 */
+  --app-border:#C0C8D9;    /* 필드 테두리 */
+  --app-arrow:#C0C2CC;
+  --app-ink:#000000;
+  --app-ink-2:#262A38;
+  --app-ink-3:#4B5064;
+  --app-label:#868B9C;     /* 12 Bold 라벨 */
+  --app-sub:#73788B;
+  --app-radio-off:#D5D7DC;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --plane:#0d1015;  --surface:#161a21;  --sunken:#1b2029;
+    --line:#272d38;   --line-soft:#1e232c;
+    --ink:#e9ebf1;    --ink-2:#a6adbe;    --ink-3:#767e91;
+    --accent:#9db1e6; --accent-ink:#10141b; --accent-soft:#212838;
+    --focus:#8fa7ec;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 16px 34px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --plane:#0d1015;  --surface:#161a21;  --sunken:#1b2029;
+  --line:#272d38;   --line-soft:#1e232c;
+  --ink:#e9ebf1;    --ink-2:#a6adbe;    --ink-3:#767e91;
+  --accent:#9db1e6; --accent-ink:#10141b; --accent-soft:#212838;
+  --focus:#8fa7ec;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 16px 34px rgba(0,0,0,.45);
+}
+
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{background:var(--plane);color:var(--ink);font-family:var(--chrome);
+  -webkit-font-smoothing:antialiased;}
+:where(button,a,input,[tabindex]):focus-visible{outline:2px solid var(--focus);
+  outline-offset:2px;border-radius:var(--r-mark);}
+
+.page{max-width:1320px;margin:0 auto;padding:26px 20px 72px;}
+
+/* ── 머리말 ────────────────────────────────────────────────── */
+.head h1{margin:0 0 6px;font-size:20px;line-height:27px;letter-spacing:-.01em;
+  word-break:keep-all;}
+.head p{margin:0;font-size:13.5px;line-height:21px;color:var(--ink-2);
+  max-width:62ch;word-break:keep-all;}
+.head .meta{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;}
+.tag{font-size:11.5px;line-height:16px;font-weight:600;color:var(--ink-3);
+  background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-pill);padding:3px 10px;}
+.tag b{font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums;}
+
+/* ── 컨트롤 레일 ───────────────────────────────────────────── */
+.rail{position:sticky;top:0;z-index:40;margin:18px -20px 24px;padding:11px 20px;
+  background:color-mix(in srgb, var(--plane) 88%, transparent);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--line);}
+.rline{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.rline + .rline{margin-top:8px;}
+.rname{flex:0 0 auto;min-width:74px;font-size:11.5px;line-height:15px;
+  font-weight:600;color:var(--ink-3);word-break:keep-all;}
+.seg{display:inline-flex;max-width:100%;background:var(--surface);
+  border:1px solid var(--line);border-radius:var(--r-pill);padding:2px;gap:2px;}
+.seg button{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;
+  color:var(--ink-3);padding:6px 13px;border-radius:var(--r-pill);cursor:pointer;
+  white-space:nowrap;transition:color .14s, background-color .14s;}
+.seg button:hover{color:var(--ink);}
+.seg button.on{background:var(--accent);color:var(--accent-ink);}
+.reset{margin-left:auto;border:0;background:none;font:inherit;font-size:12.5px;
+  color:var(--ink-3);cursor:pointer;text-decoration:underline;
+  text-underline-offset:3px;padding:6px 2px;}
+.reset:hover{color:var(--ink);}
+
+/* ── 작업 영역 ─────────────────────────────────────────────── */
+.work{display:grid;grid-template-columns:minmax(0,392px) minmax(0,1fr);
+  gap:28px;align-items:start;}
+@media (max-width:900px){.work{grid-template-columns:1fr;}}
+
+.stage{position:sticky;top:96px;display:flex;flex-direction:column;
+  align-items:center;gap:12px;}
+.steplabel{font-size:11.5px;line-height:16px;font-weight:600;color:var(--ink-3);
+  font-variant-numeric:tabular-nums;}
+
+/* ── 폰 프레임 ─────────────────────────────────────────────── */
+.phone{width:360px;height:780px;border-radius:var(--r-device);overflow:hidden;
+  background:#fff;box-shadow:var(--shadow);border:1px solid var(--line);
+  position:relative;font-family:var(--app);color:var(--app-ink);
+  display:flex;flex-direction:column;}
+
+.statusbar{flex:0 0 auto;height:44px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 22px;font-size:13px;font-weight:600;
+  color:#000;letter-spacing:.01em;font-variant-numeric:tabular-nums;}
+.statusbar .dots{display:flex;gap:3px;align-items:center;}
+.statusbar .dots i{display:block;width:3px;background:#000;border-radius:1px;}
+.statusbar .dots i:nth-child(1){height:5px;}
+.statusbar .dots i:nth-child(2){height:7px;}
+.statusbar .dots i:nth-child(3){height:9px;}
+.statusbar .bat{width:20px;height:10px;border:1.2px solid #000;border-radius:2.5px;
+  position:relative;}
+.statusbar .bat::after{content:"";position:absolute;inset:1.5px;background:#000;
+  border-radius:1px;}
+
+.appbar{flex:0 0 auto;height:52px;display:flex;align-items:center;gap:4px;
+  padding:0 8px;}
+.appbar button{border:0;background:none;padding:10px;cursor:pointer;
+  display:flex;line-height:0;}
+.appbar .ttl{font-size:18px;font-weight:400;color:#000;}
+
+.scroll{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;}
+.scroll::-webkit-scrollbar{width:0;}
+
+/* 화면 본문. Figma: pad[20,25,30,25] */
+.body{padding:20px 25px 30px;display:flex;flex-direction:column;gap:40px;}
+
+.sec{display:flex;flex-direction:column;gap:20px;}
+.sec > h3{margin:0;font-size:16px;font-weight:700;color:#000;line-height:23px;}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;gap:8px;}
+.sechead .aside{font-size:14px;color:#9DA0AE;font-weight:400;}
+
+/* 필드. Figma: str #C0C8D9/1, r8, pad[17,16,17,20] */
+.field{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  background:#fff;border:1px solid var(--app-border);border-radius:8px;
+  padding:17px 16px 17px 20px;font:inherit;font-size:15px;color:#000;
+  cursor:pointer;line-height:22px;}
+.field .val{flex:1 1 auto;min-width:0;word-break:keep-all;}
+.field .pre{flex:0 0 auto;font-size:14px;color:var(--app-ink-3);}
+.field .car{flex:0 0 auto;color:var(--app-arrow);line-height:0;}
+.field.ph .val{color:#9DA0AE;}
+.field.stack-top{border-radius:8px 8px 0 0;}
+.field.stack-bot{border-radius:0 0 8px 8px;border-top:0;}
+.field:disabled{cursor:default;background:#F7F8FA;color:#9DA0AE;}
+
+.label{font-size:12px;font-weight:700;color:var(--app-label);line-height:17px;}
+.fieldset{display:flex;flex-direction:column;gap:20px;}
+.helper{font-size:13px;line-height:19px;color:var(--app-blue);word-break:keep-all;}
+.helper.warn{color:#D03B3B;}
+.stackgroup{display:flex;flex-direction:column;gap:10px;}
+
+/* 넛지 카드. Figma: #F1F9FE, r8, pad[18,15] */
+.nudge{display:flex;align-items:center;gap:20px;width:100%;text-align:left;
+  background:var(--app-blue-bg);border:0;border-radius:8px;padding:18px 15px;
+  font:inherit;cursor:pointer;}
+.nudge .txt{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.nudge .beta{align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.04em;
+  color:var(--app-blue);border:1px solid var(--app-blue);border-radius:99px;
+  padding:3px 7px;line-height:14px;margin-bottom:6px;}
+.nudge .t1{font-size:15px;font-weight:700;color:#101A3D;line-height:22px;}
+.nudge .t2{font-size:13px;color:#101A3D;line-height:19px;word-break:keep-all;}
+.nudge .car{flex:0 0 auto;color:#9EC9F6;line-height:0;}
+
+/* 정보 카드 (결항 안내 등) */
+.note{display:flex;gap:10px;background:#F4F6F9;border-radius:8px;padding:14px 15px;}
+.note .ico{flex:0 0 auto;line-height:0;margin-top:1px;}
+.note p{margin:0;font-size:13px;line-height:19px;color:var(--app-ink-3);
+  word-break:keep-all;}
+.note.alert{background:#FFF4F4;}
+.note.alert p{color:#8A2B2B;}
+
+/* 차량 카드 */
+.veh{display:flex;align-items:center;gap:10px;background:#fff;
+  border:1px solid var(--app-border);border-radius:8px;padding:15px;
+  width:100%;text-align:left;font:inherit;cursor:pointer;}
+.veh .radio{flex:0 0 auto;width:20px;height:20px;border-radius:50%;
+  border:2px solid var(--app-radio-off);}
+.veh[aria-checked="true"]{border-color:var(--app-blue);}
+.veh[aria-checked="true"] .radio{border:6px solid var(--app-blue);}
+.veh .info{flex:1 1 auto;min-width:0;}
+.veh .n{font-size:14px;font-weight:700;color:#000;line-height:20px;}
+.veh .d{font-size:12px;color:var(--app-sub);line-height:17px;margin-top:3px;}
+
+/* 하단 고정 버튼 */
+.cta{flex:0 0 auto;padding:10px;background:#fff;
+  border-top:1px solid var(--line-soft);}
+.btn{width:100%;border:0;border-radius:4px;background:var(--app-navy);
+  color:#fff;font:inherit;font-size:16px;font-weight:700;padding:16px 10px;
+  cursor:pointer;line-height:23px;}
+.btn[disabled]{background:var(--app-navy-off);color:var(--app-navy-off-ink);
+  cursor:default;}
+.btn.ghost{background:#E6E9EF;color:#283873;}
+
+/* ── 시트 ──────────────────────────────────────────────────── */
+.sheetwrap{position:absolute;inset:0;display:none;z-index:5;}
+.sheetwrap.on{display:block;}
+.scrim{position:absolute;inset:0;background:rgba(16,26,61,.42);}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;
+  border-radius:16px 16px 0 0;max-height:88%;display:flex;flex-direction:column;}
+.sheet > header{flex:0 0 auto;padding:24px 25px 14px;}
+.sheet h2{margin:0;font-size:18px;font-weight:700;line-height:26px;color:#000;
+  word-break:keep-all;}
+.sheet .sub{margin:8px 0 0;font-size:14px;line-height:20px;color:var(--app-ink-2);
+  word-break:keep-all;}
+.sheet .sbody{flex:1 1 auto;overflow-y:auto;padding:0 25px 8px;}
+.sheet .sbody::-webkit-scrollbar{width:0;}
+.sheet .sfoot{flex:0 0 auto;padding:10px;}
+
+/* 편명 입력 */
+.entry{display:flex;align-items:center;gap:10px;border:1px solid var(--app-border);
+  border-radius:8px;padding:15px 16px;margin-bottom:6px;}
+.entry input{flex:1 1 auto;min-width:0;border:0;outline:0;font:inherit;
+  font-size:18px;font-weight:700;letter-spacing:.06em;color:#000;
+  text-transform:uppercase;background:none;}
+.entry input::placeholder{font-weight:400;letter-spacing:normal;color:#9DA0AE;}
+.entry:focus-within{border-color:var(--app-blue);}
+
+.cand{list-style:none;margin:0;padding:0;}
+.cand li + li{border-top:1px solid var(--line-soft);}
+.cand button{display:flex;align-items:center;gap:12px;width:100%;background:none;
+  border:0;font:inherit;text-align:left;padding:15px 2px;cursor:pointer;}
+.cand .no{flex:0 0 auto;font-size:15px;font-weight:700;color:#000;
+  min-width:66px;letter-spacing:.03em;}
+.cand .rt{flex:1 1 auto;min-width:0;font-size:13px;color:var(--app-sub);
+  line-height:18px;word-break:keep-all;}
+.cand .eta{flex:0 0 auto;font-size:15px;font-weight:700;color:#000;
+  font-variant-numeric:tabular-nums;}
+.cand .eta small{display:block;font-size:11px;font-weight:400;color:var(--app-sub);
+  text-align:right;margin-top:1px;}
+.empty{padding:26px 2px 8px;}
+.empty .t{font-size:15px;font-weight:700;color:#000;line-height:22px;}
+.empty .d{font-size:13.5px;color:var(--app-ink-3);line-height:20px;margin-top:6px;
+  word-break:keep-all;}
+
+/* 여유 시간 칩 그리드 */
+.chips{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;}
+.chip{border:1px solid var(--app-border);background:#fff;border-radius:8px;
+  padding:11px 4px;font:inherit;cursor:pointer;text-align:center;}
+.chip .m{display:block;font-size:12.5px;color:var(--app-ink-3);line-height:18px;
+  white-space:nowrap;}
+.chip .t{display:block;font-size:15px;font-weight:700;color:#000;line-height:22px;
+  margin-top:2px;font-variant-numeric:tabular-nums;}
+.chip[aria-pressed="true"]{border-color:var(--app-navy);background:var(--app-navy);}
+.chip[aria-pressed="true"] .m{color:#B9C4DE;}
+.chip[aria-pressed="true"] .t{color:#fff;}
+
+.calc{background:#F4F6F9;border-radius:8px;padding:15px;margin:14px 0 4px;}
+.calc .row{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;
+  line-height:20px;color:var(--app-ink-3);}
+.calc .row b{font-weight:400;color:#000;font-variant-numeric:tabular-nums;}
+.calc .row + .row{margin-top:5px;}
+.calc .tot{margin-top:11px;padding-top:11px;border-top:1px solid #E3E7EE;
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.calc .tot span{font-size:13.5px;font-weight:700;color:#000;}
+.calc .tot b{font-size:19px;font-weight:700;color:var(--app-navy);
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
+
+/* 라디오 리스트 (터미널) */
+.opts{list-style:none;margin:0;padding:0;}
+.opts li + li{margin-top:10px;}
+.opts button{display:flex;align-items:center;gap:12px;width:100%;background:#fff;
+  border:1px solid var(--app-border);border-radius:8px;padding:16px 15px;
+  font:inherit;text-align:left;cursor:pointer;font-size:15px;color:#000;}
+.opts .radio{flex:0 0 auto;width:20px;height:20px;border-radius:50%;
+  border:2px solid var(--app-radio-off);}
+.opts button[aria-checked="true"]{border-color:var(--app-blue);}
+.opts button[aria-checked="true"] .radio{border:6px solid var(--app-blue);}
+
+/* 요약 행 (복귀 화면 항공편 블록) */
+.sum{border:1px solid var(--app-border);border-radius:8px;overflow:hidden;}
+.sum .r{display:flex;align-items:center;gap:10px;padding:15px 16px 15px 20px;
+  font-size:15px;line-height:22px;}
+.sum .r + .r{border-top:1px solid var(--line-soft);}
+.sum .k{flex:0 0 auto;font-size:14px;color:var(--app-ink-3);min-width:82px;}
+.sum .v{flex:1 1 auto;min-width:0;color:#000;word-break:keep-all;}
+.sum .v em{font-style:normal;font-variant-numeric:tabular-nums;}
+
+/* ── 오른쪽 해설 ───────────────────────────────────────────── */
+.notes{display:flex;flex-direction:column;gap:16px;min-width:0;}
+.card{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r-surface);padding:18px 20px;}
+.card h2{margin:0 0 4px;font-size:14.5px;line-height:21px;letter-spacing:-.005em;}
+.card .lede{margin:0 0 12px;font-size:12.5px;line-height:19px;color:var(--ink-3);
+  word-break:keep-all;}
+.card ul{margin:0;padding:0 0 0 17px;}
+.card li{font-size:13px;line-height:21px;color:var(--ink-2);margin:0 0 7px;
+  word-break:keep-all;}
+.card li:last-child{margin-bottom:0;}
+.card li b{color:var(--ink);font-weight:600;}
+.card li code{font-family:var(--mono);font-size:11.5px;
+  background:var(--sunken);border:1px solid var(--line-soft);border-radius:3px;
+  padding:1px 5px;color:var(--ink-2);}
+
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+caption{text-align:left;font-size:12.5px;line-height:19px;color:var(--ink-3);
+  padding-bottom:9px;word-break:keep-all;}
+th,td{text-align:left;padding:8px 10px 8px 0;border-bottom:1px solid var(--line-soft);
+  vertical-align:top;line-height:19px;word-break:keep-all;}
+th{font-weight:600;color:var(--ink-3);font-size:11.5px;letter-spacing:.02em;}
+td:first-child{font-weight:600;color:var(--ink);white-space:nowrap;}
+tr:last-child td{border-bottom:0;}
+td .mark{display:inline-block;width:8px;height:8px;border-radius:2px;
+  margin-right:6px;vertical-align:1px;}
+.m-ok{background:var(--st-ok);} .m-part{background:var(--st-part);}
+.m-no{background:var(--st-no);}
+
+.open{border:0;background:none;font:inherit;font-size:12.5px;font-weight:600;
+  color:var(--ink-3);cursor:pointer;padding:0;text-decoration:underline;
+  text-underline-offset:3px;}
+.open:hover{color:var(--ink);}
+.foot{margin-top:26px;font-size:12px;line-height:19px;color:var(--ink-3);
+  word-break:keep-all;}
+.foot code{font-family:var(--mono);font-size:11px;}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <h1>항공편에 맞춰 픽업 · 예약 생성 구간</h1>
+    <p>인천공항을 출발하는 예약에 항공편 기준 픽업 옵션을 붙이는 화면입니다. 편명을 넣으면 도착 예정 시각을 읽어 예상 픽업 시각을 잡고, 항공편이 밀리면 픽업 시각도 따라 옮깁니다. 이번 프로토는 <b>예약을 만드는 구간까지</b>만 담고 이용 내역과 배차 이후는 담지 않습니다.</p>
+    <div class="meta">
+      <span class="tag">PRD <b>TADA-3746</b></span>
+      <span class="tag">PD <b>TADA-9852</b></span>
+      <span class="tag">선행 시안 <b>2025-03</b></span>
+      <span class="tag">프레임 <b>360×780</b></span>
+    </div>
+  </header>
+
+  <div class="rail" role="group" aria-label="상태 전환">
+    <div class="rline">
+      <span class="rname">출발지</span>
+      <div class="seg" id="segOrigin" role="tablist">
+        <button role="tab" data-v="icn1" class="on">인천 T1</button>
+        <button role="tab" data-v="icn2">인천 T2</button>
+        <button role="tab" data-v="gmp">김포</button>
+        <button role="tab" data-v="city">시내</button>
+      </div>
+    </div>
+    <div class="rline">
+      <span class="rname">편명 조회<br>결과</span>
+      <div class="seg" id="segCase" role="tablist">
+        <button role="tab" data-v="ok" class="on">정상</button>
+        <button role="tab" data-v="share">공동운항편</button>
+        <button role="tab" data-v="pending">시각 미확정</button>
+        <button role="tab" data-v="fail">조회 실패</button>
+      </div>
+      <button class="reset" id="reset">처음으로</button>
+    </div>
+  </div>
+
+  <div class="work">
+    <!-- ══════════════ 폰 ══════════════ -->
+    <div class="stage">
+      <div class="phone" id="phone">
+        <div class="statusbar">
+          <span>12:45</span>
+          <span style="display:flex;align-items:center;gap:6px;">
+            <span class="dots"><i></i><i></i><i></i></span>
+            <span class="bat"></span>
+          </span>
+        </div>
+
+        <div class="appbar">
+          <button id="back" aria-label="뒤로">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M12.5 16 6.5 10l6-6" stroke="#000" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <span class="ttl" id="abTitle">예약</span>
+        </div>
+
+        <div class="scroll" id="scroll"></div>
+        <div class="cta" id="cta"></div>
+
+        <div class="sheetwrap" id="sheetwrap">
+          <div class="scrim" id="scrim"></div>
+          <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
+        </div>
+      </div>
+      <p class="steplabel" id="stepLabel">1 / 3 · 예약 화면</p>
+    </div>
+
+    <!-- ══════════════ 해설 ══════════════ -->
+    <div class="notes">
+      <section class="card">
+        <h2>이 프로토가 정하려는 것</h2>
+        <p class="lede">PRD에 요구 사항·와이어프레임 토글이 비어 있어, 아래 다섯 가지는 이 화면이 처음 정하는 값입니다.</p>
+        <ul>
+          <li><b>넛지 자리와 카피.</b> 이동 경로 모듈 바로 아래, 예약 차량 위. 카피는 PRD 용어인 <b>"항공편에 맞춰 픽업"</b>을 씁니다. 2025 시안의 "돌아오는 항공편 정보로 / 항공기 지연 걱정없이 예약하기"는 기능명이 드러나지 않습니다.</li>
+          <li><b>편명은 입력 + 자동완성.</b> 두 글자만 쳐도 그날 인천 도착편 후보가 뜨고 골라서 확정합니다. 2025 시안은 항공사를 먼저 고르고 편명 리스트에서 골랐는데, 화면이 하나 더 들고 외항사가 늘면 리스트가 길어집니다.</li>
+          <li><b>여유 시간은 10분 단위 칩.</b> 30분부터 1시간 30분까지 일곱 개. 칩마다 계산된 픽업 시각을 함께 찍어 "몇 분 뒤"가 아니라 "몇 시"로 읽히게 합니다.</li>
+          <li><b>확정이 아니라 예상.</b> 복귀한 예약 화면에서 예약 일시 자리를 <b>예상 픽업 시각</b>으로 바꾸고, 확정 시각이 아니라는 문장을 붙입니다.</li>
+          <li><b>결항 고지는 만드는 시점에.</b> PRD가 예약 생성 항목에 적어 둔 대로 여유 시간을 고른 직후와 예약 화면 두 곳에서 알립니다.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>분기 네 가지</h2>
+        <p class="lede">레일에서 조회 결과를 바꾸면 같은 편명 입력이 어떻게 갈라지는지 볼 수 있습니다.</p>
+        <table>
+          <caption>PRD 정책 A·B 항목과 맞물리는 지점입니다.</caption>
+          <thead><tr><th>결과</th><th>화면 처리</th><th>근거</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><span class="mark m-ok"></span>정상</td>
+              <td>도착 예정 시각을 보여주고 여유 시간 선택으로 넘어갑니다.</td>
+              <td>PRD 예약 생성</td>
+            </tr>
+            <tr>
+              <td><span class="mark m-part"></span>공동운항편</td>
+              <td>티켓에 적힌 판매사 편명을 넣으면 운항사 편명으로 바꿔 조회하고, 바뀐 사실을 그 자리에서 알립니다.</td>
+              <td>정책 A-4</td>
+            </tr>
+            <tr>
+              <td><span class="mark m-part"></span>시각 미확정</td>
+              <td>스케줄만 있고 실시간 도착 예정이 아직 없는 편. 마지막으로 확인된 시각을 기준으로 잡고 그 사실을 밝힙니다.</td>
+              <td>정책 B-4</td>
+            </tr>
+            <tr>
+              <td><span class="mark m-no"></span>조회 실패</td>
+              <td>옵션을 쓸 수 없습니다. 기존 시각 지정 예약으로 되돌립니다.</td>
+              <td>PRD 예약 생성</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2>넛지가 안 뜨는 경우</h2>
+        <p class="lede">출발지를 바꿔 보면 확인할 수 있습니다.</p>
+        <ul>
+          <li><b>인천 T1 · T2</b>에서만 넛지가 뜹니다.</li>
+          <li><b>김포공항</b>은 국내선이 섞여 있고, 국내선은 도착 예정 시각이 확정되는 시점이 너무 임박해 미배차가 늘 수 있어 제외합니다.</li>
+          <li><b>시내 출발</b>은 공항發이 아니므로 대상이 아닙니다.</li>
+          <li>맞춤예약과 정기예약에도 이 옵션을 붙이지 않습니다.</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>실측과 미해결</h2>
+        <ul>
+          <li>색·간격·타이포는 <code>GaRYpwnJcVbSdwErmqYKT6</code> node <code>3033-48722</code>에서 뽑은 값입니다. primary <code>#19254D</code> r4, 필드 <code>#C0C8D9</code> r8 pad<code>[17,16,17,20]</code>, 화면 좌우 25, 섹션 간 40.</li>
+          <li><b>넛지 일러스트가 없습니다.</b> 2025 시안이 쓰던 에셋은 "100% GUARANTEED" 배지가 박힌 범용 캘린더라, 지연 가능성을 다루는 이 기능에는 메시지가 어긋나 뺐습니다. 전용 에셋이 필요합니다.</li>
+          <li><b>불러주기</b> 대응은 아직 PRD에도 화면에도 없습니다. 예약자와 탑승자가 다를 때 편명을 누가 넣는지 정해야 합니다.</li>
+          <li>여유 시간 상한 1시간 30분은 임의로 잡은 값입니다. 입국 수속·짐 찾기 실측이 있으면 조정해야 합니다.</li>
+          <li>후보 리스트의 편명·시각은 화면 확인용 더미입니다.</li>
+        </ul>
+      </section>
+    </div>
+  </div>
+
+  <p class="foot">타다 라이더 셀 내부 검토용. 폰 프레임 안쪽은 라이트 모드 앱의 사진이라 다크 모드에서도 뒤집지 않습니다.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ── 더미 항공편. 인천 도착 국제선 ───────────────────────── */
+  var FLIGHTS = [
+    {no:"LJ082", air:"진에어",   from:"다낭(DAD)",      term:"T1", eta:"21:35"},
+    {no:"LJ062", air:"진에어",   from:"타이베이(TPE)",  term:"T1", eta:"22:10"},
+    {no:"KE086", air:"대한항공", from:"뉴욕(JFK)",      term:"T2", eta:"05:15"},
+    {no:"KE624", air:"대한항공", from:"마닐라(MNL)",    term:"T2", eta:"04:55"},
+    {no:"KE672", air:"대한항공", from:"다낭(DAD)",      term:"T2", eta:"21:50"},
+    {no:"OZ752", air:"아시아나", from:"방콕(BKK)",      term:"T1", eta:"06:20"},
+    {no:"OZ102", air:"아시아나", from:"로스앤젤레스(LAX)", term:"T1", eta:"05:40"},
+    {no:"7C2604",air:"제주항공", from:"오사카(KIX)",    term:"T1", eta:"20:10"}
+  ];
+  /* 공동운항편. 티켓에는 판매사 편명이 찍히고 운항은 다른 항공사가 한다 */
+  var SHARE  = {no:"UA7304", air:"유나이티드", oper:FLIGHTS[6]};      /* → OZ102, T1 */
+  var PENDING= {no:"TW302",  air:"티웨이",  from:"괌(GUM)", term:"T1", eta:"23:05"};
+
+  var OFFSETS = [30,40,50,60,70,80,90];
+
+  /* ── 상태 ────────────────────────────────────────────────── */
+  var S;
+  function fresh(){
+    return {
+      origin:"icn1",      /* icn1 icn2 gmp city */
+      kase:"ok",          /* ok share pending fail */
+      step:1,             /* 1 예약화면  2 항공편 정보 입력  3 복귀한 예약화면 */
+      sheet:null,         /* term | flight | offset */
+      term:null,
+      date:"12월 16일(월)",
+      flight:null,        /* 확정된 편 */
+      swapped:false,      /* 공동운항편으로 치환됨 */
+      pending:false,      /* 도착 예정 시각 미확정 */
+      offset:null,
+      query:"",
+      vehicle:"next",
+      failed:false        /* 조회 실패를 겪음 */
+    };
+  }
+
+  var $ = function(id){ return document.getElementById(id); };
+  var scroll = $("scroll"), cta = $("cta"), sheet = $("sheet"),
+      wrap = $("sheetwrap"), abTitle = $("abTitle"), stepLabel = $("stepLabel");
+
+  function esc(s){ return String(s).replace(/[&<>"]/g, function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c]; }); }
+
+  function isAirport(){ return S.origin === "icn1" || S.origin === "icn2"; }
+  function originText(){
+    return { icn1:"인천공항 제1터미널 1층 14번 게이트",
+             icn2:"인천공항 제2터미널 1층 3번 게이트",
+             gmp :"김포공항 국제선 1층 2번 게이트",
+             city:"서울 중구 을지로 30" }[S.origin];
+  }
+  function defaultTerm(){ return S.origin === "icn2" ? "인천공항 제2터미널" : "인천공항 제1터미널"; }
+
+  /* 도착 예정 + 여유분 = 예상 픽업 */
+  function addMin(hhmm, min){
+    var p = hhmm.split(":"), t = (+p[0])*60 + (+p[1]) + min;
+    t = ((t % 1440) + 1440) % 1440;
+    return String(Math.floor(t/60)).padStart(2,"0") + ":" + String(t%60).padStart(2,"0");
+  }
+  function korTime(hhmm){
+    var p = hhmm.split(":"), h = +p[0], m = +p[1];
+    var ap = h < 12 ? "오전" : "오후", h12 = h % 12 === 0 ? 12 : h % 12;
+    return ap + " " + h12 + "시" + (m ? " " + m + "분" : "");
+  }
+  function offsetLabel(m){
+    if (m < 60) return m + "분";
+    var h = Math.floor(m/60), r = m % 60;
+    return h + "시간" + (r ? " " + r + "분" : "");
+  }
+  function pickupTime(){
+    if (!S.flight || S.offset == null) return null;
+    return addMin(S.flight.eta, S.offset);
+  }
+
+  /* 모듈 스택은 위에서부터 순차로 채워진다 */
+  function ready(n){
+    if (n <= 1) return true;                       /* 도착 터미널 */
+    if (n === 2) return !!S.term;                  /* 도착 날짜 */
+    if (n === 3) return !!S.term;                  /* 항공편명 */
+    if (n === 4) return !!S.flight;                /* 여유 시간 */
+    return false;
+  }
+  function complete(){ return !!(S.term && S.flight && S.offset != null); }
+
+  var CARET = '<span class="car"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="m7 4 5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
+
+  /* ══════════════════ 화면 ══════════════════ */
+
+  function screenReservation(){
+    var picked = S.step === 3 && complete();
+    var h = [];
+
+    h.push('<div class="body">');
+
+    /* 예약 일시 */
+    h.push('<section class="sec"><h3>' + (picked ? "예상 픽업" : "예약 일시") + '</h3>');
+    if (picked){
+      h.push('<div class="stackgroup">');
+      h.push('<button class="field" type="button" data-act="noop"><span class="val">'
+        + esc(S.date) + " " + esc(korTime(pickupTime())) + '</span>' + CARET + '</button>');
+      h.push('<p class="helper">항공편 지연 여부에 따라 픽업 시각이 자동으로 조정돼요. 확정 시각이 아니라 예상 시각이에요.</p>');
+      h.push('</div>');
+    } else {
+      h.push('<button class="field" type="button" data-act="noop"><span class="val">'
+        + esc(S.date) + ' 오후 11시</span>' + CARET + '</button>');
+    }
+    h.push('</section>');
+
+    /* 이동 경로 */
+    h.push('<section class="sec"><h3>이동 경로</h3><div>');
+    h.push('<button class="field stack-top" type="button" data-act="noop">'
+      + '<span class="pre">출발</span><span class="val">' + esc(originText()) + '</span>' + CARET + '</button>');
+    h.push('<button class="field stack-bot" type="button" data-act="noop">'
+      + '<span class="pre">도착</span><span class="val">신세계백화점 본점</span>' + CARET + '</button>');
+    h.push('</div>');
+
+    /* 넛지 또는 확정된 항공편 블록 */
+    if (picked){
+      h.push('</section><section class="sec"><h3>항공편</h3>');
+      h.push('<div class="sum">');
+      h.push('<div class="r"><span class="k">항공편</span><span class="v">'
+        + esc(S.flight.no) + " " + esc(S.flight.air) + '<br>' + esc(S.flight.from) + ' → 인천</span></div>');
+      h.push('<div class="r"><span class="k">도착 예정</span><span class="v"><em>'
+        + esc(korTime(S.flight.eta)) + '</em>' + (S.pending ? " · 마지막 확인 기준" : "") + '</span></div>');
+      h.push('<div class="r"><span class="k">픽업 여유</span><span class="v"><em>도착 '
+        + esc(offsetLabel(S.offset)) + ' 뒤</em></span></div>');
+      h.push('</div>');
+      h.push('<button class="field" type="button" data-act="edit"><span class="val" style="color:#32A2FA">항공편 정보 변경</span>' + CARET + '</button>');
+      h.push(noteBox("항공편이 결항되면 취소 수수료 없이 예약이 자동으로 취소돼요. 배차 전에는 언제든 무료로 취소할 수 있어요."));
+      h.push(noteBox("도착 예정 시각이 확정된 뒤에 배차를 시작해요. 드라이버는 평소 예약보다 늦게 확정돼요."));
+      h.push('</section>');
+    } else if (isAirport()){
+      h.push('<button class="nudge" type="button" data-act="enter">'
+        + '<span class="txt">'
+        + '<span class="beta">BETA</span>'
+        + '<span class="t1">항공편에 맞춰 픽업</span>'
+        + '<span class="t2">비행기가 늦어도 도착 시간에 맞춰 배차돼요</span>'
+        + '</span>' + CARET.replace("car\"", "car\"") + '</button>');
+      h.push('</section>');
+    } else {
+      h.push('</section>');
+    }
+
+    /* 예약 차량 */
+    h.push('<section class="sec">');
+    h.push('<div class="sechead"><h3>예약 차량</h3><span class="aside">예약 가능 조건</span></div>');
+    h.push('<div style="display:flex;flex-direction:column;gap:10px;">');
+    h.push(vehicle("next", "넓고 쾌적한 넥스트", "최대 5인 · 스타리아, 카니발"));
+    h.push(vehicle("plus", "편안한 플러스", "최대 3인 · 그랜저, K8, K7"));
+    h.push('</div></section>');
+
+    h.push('</div>');
+    return h.join("");
+  }
+
+  function vehicle(id, name, desc){
+    return '<button class="veh" type="button" role="radio" data-act="veh" data-v="' + id
+      + '" aria-checked="' + (S.vehicle === id) + '">'
+      + '<span class="radio"></span><span class="info"><span class="n">' + esc(name)
+      + '</span><span class="d">' + esc(desc) + '</span></span></button>';
+  }
+
+  function noteBox(text, kind){
+    return '<div class="note' + (kind ? " " + kind : "") + '">'
+      + '<span class="ico"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">'
+      + '<circle cx="8" cy="8" r="7" stroke="' + (kind === "alert" ? "#B34141" : "#8A90A3") + '" stroke-width="1.3"/>'
+      + '<path d="M8 4.6v4.2" stroke="' + (kind === "alert" ? "#B34141" : "#8A90A3") + '" stroke-width="1.5" stroke-linecap="round"/>'
+      + '<circle cx="8" cy="11.2" r=".95" fill="' + (kind === "alert" ? "#B34141" : "#8A90A3") + '"/>'
+      + '</svg></span><p>' + esc(text) + '</p></div>';
+  }
+
+  function screenEntry(){
+    var h = [];
+    h.push('<div class="body" style="gap:24px;">');
+
+    h.push('<section class="sec" style="gap:10px;">');
+    h.push('<h3 style="font-size:18px;line-height:26px;">항공편 정보를 입력해 주세요 ✈️</h3>');
+    h.push('<p style="margin:0;font-size:16px;line-height:24px;color:#262A38;word-break:keep-all;">'
+      + '비행기가 지연되면 픽업 시각도 함께 옮겨 드려요. 인천공항에 도착하는 국제선 정기편만 이용할 수 있어요.</p>');
+    h.push('</section>');
+
+    h.push('<div class="fieldset" style="gap:22px;">');
+
+    /* 1. 도착 터미널 */
+    h.push(module("도착 터미널", S.term, "선택해 주세요", "term", true));
+
+    /* 2. 도착 날짜 */
+    if (ready(2)) h.push(module("도착 날짜", S.date, "선택해 주세요", "date", true,
+      "항공편이 지연되면 날짜가 바뀔 수 있어요."));
+
+    /* 3. 항공편명 */
+    if (ready(3)){
+      var fv = null, helper = null, warn = false;
+      if (S.flight){
+        fv = S.flight.no + " (" + S.flight.from + " → 인천)";
+        if (S.swapped) helper = "티켓의 " + SHARE.no + " 대신 실제 운항편 "
+          + S.flight.air + " " + S.flight.no + " 기준으로 조회했어요.";
+        else if (S.pending) helper = "실시간 도착 예정이 아직 없어 마지막으로 확인된 시각을 기준으로 잡았어요.";
+      } else if (S.failed){
+        helper = "조회되지 않는 편명이에요. 시각을 직접 지정해 예약해 주세요.";
+        warn = true;
+      }
+      h.push(module("항공편명", fv, "편명을 입력해 주세요", "flight", true, helper, warn));
+    }
+
+    /* 4. 픽업 여유 시간 */
+    if (ready(4)){
+      var ov = S.offset == null ? null
+        : "도착 " + offsetLabel(S.offset) + " 뒤 · " + korTime(pickupTime()) + " 픽업";
+      h.push(module("픽업 여유 시간", ov, "선택해 주세요", "offset", true));
+    }
+
+    h.push('</div>');
+
+    if (complete()) h.push(noteBox("항공편이 결항되면 취소 수수료 없이 예약이 자동으로 취소돼요."));
+
+    h.push('</div>');
+    return h.join("");
+  }
+
+  function module(label, value, placeholder, act, enabled, helper, warn){
+    var h = '<div class="fieldset" style="gap:20px;"><span class="label">' + esc(label) + '</span>';
+    h += '<div class="stackgroup">';
+    h += '<button class="field' + (value ? "" : " ph") + '" type="button" data-act="open" data-v="'
+      + act + '"' + (enabled ? "" : " disabled") + '>'
+      + '<span class="val">' + esc(value || placeholder) + '</span>' + CARET + '</button>';
+    if (helper) h += '<p class="helper' + (warn ? " warn" : "") + '">' + esc(helper) + '</p>';
+    h += '</div></div>';
+    return h;
+  }
+
+  /* ══════════════════ 시트 ══════════════════ */
+
+  function sheetTerm(){
+    var opts = ["인천공항 제1터미널", "인천공항 제2터미널"];
+    var h = '<header><h2>어느 터미널에 도착하나요?</h2>'
+      + '<p class="sub">터미널이 바뀌면 탑승지도 자동으로 옮겨 드려요.</p></header>';
+    h += '<div class="sbody"><ul class="opts">';
+    opts.forEach(function(o){
+      h += '<li><button type="button" data-act="pick-term" data-v="' + esc(o) + '" role="radio"'
+        + ' aria-checked="' + (S.term === o) + '"><span class="radio"></span>' + esc(o) + '</button></li>';
+    });
+    h += '</ul></div>';
+    return h;
+  }
+
+  /* 고른 터미널에 도착하는 편만 후보로 둔다 */
+  function inTerm(f){
+    var t = S.term === "인천공항 제2터미널" ? "T2" : "T1";
+    return f.term === t;
+  }
+  function candidates(){
+    var q = S.query.trim().toUpperCase();
+    if (!q) return [];
+    if (S.kase === "fail") return [];
+    var base = FLIGHTS.filter(function(f){
+      return f.no.indexOf(q) === 0 && inTerm(f);
+    });
+    if (S.kase === "share" && SHARE.no.indexOf(q) === 0 && inTerm(SHARE.oper))
+      return [{share:true}];
+    if (S.kase === "pending" && PENDING.no.indexOf(q) === 0 && inTerm(PENDING))
+      return [{pending:true}];
+    return base;
+  }
+
+  function sheetFlight(){
+    var list = candidates(), q = S.query.trim();
+    var h = '<header><h2>항공편명을 입력해 주세요</h2>'
+      + '<p class="sub">' + esc(S.date) + ' ' + esc(S.term || defaultTerm()) + ' 도착편에서 찾아 드려요.</p></header>';
+    h += '<div class="sbody">';
+    h += '<div class="entry">'
+      + '<input id="q" type="text" inputmode="latin" autocomplete="off" spellcheck="false"'
+      + ' placeholder="예: KE086" value="' + esc(S.query) + '" aria-label="항공편명" />'
+      + '</div>';
+
+    if (!q){
+      h += '<p class="helper" style="color:#73788B;">티켓에 적힌 편명을 그대로 넣어 주세요. 두 글자만 넣어도 찾아 드려요.</p>';
+    } else if (list.length){
+      h += '<ul class="cand">';
+      list.forEach(function(f){
+        if (f.share){
+          h += '<li><button type="button" data-act="pick-flight" data-v="share">'
+            + '<span class="no">' + esc(SHARE.no) + '</span>'
+            + '<span class="rt">' + esc(SHARE.air) + ' 판매<br>'
+            + esc(SHARE.oper.air) + ' ' + esc(SHARE.oper.no) + ' 운항 · ' + esc(SHARE.oper.from) + '</span>'
+            + '<span class="eta">' + esc(SHARE.oper.eta) + '<small>' + esc(SHARE.oper.term) + ' 도착</small></span></button></li>';
+        } else if (f.pending){
+          h += '<li><button type="button" data-act="pick-flight" data-v="pending">'
+            + '<span class="no">' + esc(PENDING.no) + '</span>'
+            + '<span class="rt">' + esc(PENDING.air) + ' · ' + esc(PENDING.from) + '</span>'
+            + '<span class="eta">' + esc(PENDING.eta) + '<small>예정 미확정</small></span></button></li>';
+        } else {
+          h += '<li><button type="button" data-act="pick-flight" data-v="' + esc(f.no) + '">'
+            + '<span class="no">' + esc(f.no) + '</span>'
+            + '<span class="rt">' + esc(f.air) + ' · ' + esc(f.from) + '</span>'
+            + '<span class="eta">' + esc(f.eta) + '<small>' + esc(f.term) + ' 도착</small></span></button></li>';
+        }
+      });
+      h += '</ul>';
+    } else {
+      /* 편은 있는데 다른 터미널에 내리는 경우를 따로 잡아 준다 */
+      var other = S.kase === "fail" ? null : FLIGHTS.filter(function(f){
+        return f.no.indexOf(q.toUpperCase()) === 0 && !inTerm(f); })[0];
+      if (other){
+        h += '<div class="empty">'
+          + '<p class="t" style="margin:0;">' + esc(other.no) + ' 편은 '
+          + (other.term === "T2" ? "제2터미널" : "제1터미널") + '에 도착해요</p>'
+          + '<p class="d" style="margin:6px 0 0;">고르신 도착 터미널과 달라요. 터미널을 바꾸면 탑승지도 함께 옮겨 드려요.</p>'
+          + '</div>';
+      } else {
+        h += '<div class="empty">'
+          + '<p class="t" style="margin:0;">' + esc(q.toUpperCase()) + ' 편을 찾지 못했어요</p>'
+          + '<p class="d" style="margin:6px 0 0;">' + esc(S.date)
+          + ' 인천공항에 도착하는 국제선 정기편에서만 찾을 수 있어요. 편명을 다시 확인하거나, 시각을 직접 지정해 예약해 주세요.</p>'
+          + '</div>';
+      }
+    }
+    h += '</div>';
+
+    if (q && !list.length){
+      var other2 = S.kase === "fail" ? null : FLIGHTS.filter(function(f){
+        return f.no.indexOf(q.toUpperCase()) === 0 && !inTerm(f); })[0];
+      h += '<div class="sfoot">'
+        + (other2
+            ? '<button class="btn" type="button" data-act="switch-term" data-v="'
+              + esc(other2.term) + '">'
+              + (other2.term === "T2" ? "제2터미널" : "제1터미널") + '로 바꾸기</button>'
+            : '<button class="btn ghost" type="button" data-act="giveup">시각 지정으로 예약하기</button>')
+        + '</div>';
+    }
+    return h;
+  }
+
+  function sheetOffset(){
+    var eta = S.flight.eta;
+    var h = '<header><h2>공항에 도착하고 얼마 뒤에 탈까요?</h2>'
+      + '<p class="sub">입국 수속과 짐 찾기에 걸리는 시간을 함께 생각해 주세요.</p></header>';
+    h += '<div class="sbody">';
+    h += '<div class="chips" role="group" aria-label="픽업 여유 시간">';
+    OFFSETS.forEach(function(m){
+      h += '<button class="chip" type="button" data-act="pick-offset" data-v="' + m + '"'
+        + ' aria-pressed="' + (S.offset === m) + '">'
+        + '<span class="m">' + esc(offsetLabel(m)) + '</span>'
+        + '<span class="t">' + esc(addMin(eta, m)) + '</span></button>';
+    });
+    h += '</div>';
+
+    h += '<div class="calc">';
+    h += '<div class="row"><span>' + esc(S.flight.no) + ' 도착 예정</span><b>' + esc(eta) + '</b></div>';
+    h += '<div class="row"><span>픽업 여유</span><b>'
+      + (S.offset == null ? "-" : "+" + S.offset + "분") + '</b></div>';
+    h += '<div class="tot"><span>예상 픽업</span><b>'
+      + (S.offset == null ? "--:--" : esc(addMin(eta, S.offset))) + '</b></div>';
+    h += '</div>';
+    h += '<p class="helper" style="color:#73788B;">항공편이 밀리면 예상 픽업 시각도 같이 옮겨 드려요. 결항되면 수수료 없이 자동으로 취소돼요.</p>';
+    h += '</div>';
+    h += '<div class="sfoot"><button class="btn" type="button" data-act="confirm-offset"'
+      + (S.offset == null ? " disabled" : "") + '>이 시각으로 정하기</button></div>';
+    return h;
+  }
+
+  /* ══════════════════ 렌더 ══════════════════ */
+
+  function render(){
+    if (S.step === 2){
+      abTitle.textContent = "";
+      scroll.innerHTML = screenEntry();
+      cta.innerHTML = '<button class="btn" type="button" data-act="done"'
+        + (complete() ? "" : " disabled") + '>확인</button>';
+      stepLabel.textContent = "2 / 3 · 항공편 정보 입력";
+    } else {
+      abTitle.textContent = "예약";
+      scroll.innerHTML = screenReservation();
+      cta.innerHTML = '<button class="btn" type="button" data-act="noop">예약</button>';
+      stepLabel.textContent = (S.step === 3 ? "3 / 3 · 예약 화면 (항공편 반영)" : "1 / 3 · 예약 화면");
+    }
+
+    if (S.sheet){
+      wrap.classList.add("on");
+      sheet.innerHTML = S.sheet === "term"   ? sheetTerm()
+                      : S.sheet === "flight" ? sheetFlight()
+                      : S.sheet === "offset" ? sheetOffset() : "";
+      if (S.sheet === "flight"){
+        var q = $("q");
+        if (q){
+          q.focus();
+          try { q.setSelectionRange(q.value.length, q.value.length); } catch(e){}
+        }
+      }
+    } else {
+      wrap.classList.remove("on");
+      sheet.innerHTML = "";
+    }
+
+    /* 레일 동기화 */
+    sync("segOrigin", S.origin);
+    sync("segCase", S.kase);
+  }
+
+  function sync(id, v){
+    var seg = $(id);
+    Array.prototype.forEach.call(seg.querySelectorAll("button"), function(b){
+      b.classList.toggle("on", b.dataset.v === v);
+      b.setAttribute("aria-selected", b.dataset.v === v);
+    });
+  }
+
+  /* ══════════════════ 이벤트 ══════════════════ */
+
+  function act(a, v){
+    switch(a){
+      case "enter":
+        S.step = 2;
+        S.term = defaultTerm();
+        break;
+      case "edit":
+        S.step = 2;
+        break;
+      case "open":
+        if (v === "date") return;              /* 날짜 피커는 이번 범위 밖 */
+        if (v === "flight") S.query = "";
+        S.sheet = v;
+        break;
+      case "pick-term":
+        S.term = v;
+        S.sheet = null;
+        break;
+      case "pick-flight":
+        if (v === "share"){
+          S.flight = SHARE.oper; S.swapped = true; S.pending = false;
+        } else if (v === "pending"){
+          S.flight = PENDING; S.swapped = false; S.pending = true;
+        } else {
+          S.flight = FLIGHTS.filter(function(f){ return f.no === v; })[0];
+          S.swapped = false; S.pending = false;
+        }
+        S.failed = false;
+        S.offset = null;
+        S.sheet = "offset";
+        break;
+      case "pick-offset":
+        S.offset = +v;
+        break;
+      case "confirm-offset":
+        S.sheet = null;
+        break;
+      case "switch-term":
+        S.term = v === "T2" ? "인천공항 제2터미널" : "인천공항 제1터미널";
+        S.origin = v === "T2" ? "icn2" : "icn1";
+        break;
+      case "giveup":
+        S.failed = true;
+        S.flight = null;
+        S.offset = null;
+        S.sheet = null;
+        S.step = 1;
+        break;
+      case "done":
+        S.step = 3;
+        break;
+      case "veh":
+        S.vehicle = v;
+        break;
+      case "close":
+        S.sheet = null;
+        break;
+      case "back":
+        if (S.sheet) S.sheet = null;
+        else if (S.step === 2) S.step = S.flight ? 3 : 1;
+        else if (S.step === 3) S.step = 1;
+        break;
+    }
+    render();
+  }
+
+  document.addEventListener("click", function(e){
+    var t = e.target.closest("[data-act]");
+    if (!t) return;
+    var a = t.dataset.act;
+    if (a === "noop") return;
+    e.preventDefault();
+    act(a, t.dataset.v);
+  });
+
+  $("scrim").addEventListener("click", function(){ act("close"); });
+  $("back").addEventListener("click", function(){ act("back"); });
+
+  scroll.addEventListener("input", function(){});
+  document.addEventListener("input", function(e){
+    if (e.target && e.target.id === "q"){
+      S.query = e.target.value;
+      var pos = e.target.selectionStart;
+      render();
+      var q = $("q");
+      if (q){ q.focus(); try { q.setSelectionRange(pos, pos); } catch(err){} }
+    }
+  });
+
+  $("segOrigin").addEventListener("click", function(e){
+    var b = e.target.closest("button"); if (!b) return;
+    S.origin = b.dataset.v;
+    /* 공항이 아니면 항공편 옵션 자체가 성립하지 않는다 */
+    if (!isAirport()){ S.step = 1; S.flight = null; S.offset = null; S.term = null;
+                       S.sheet = null; S.failed = false; }
+    else { S.term = S.term ? defaultTerm() : null; }
+    render();
+  });
+
+  $("segCase").addEventListener("click", function(e){
+    var b = e.target.closest("button"); if (!b) return;
+    S.kase = b.dataset.v;
+    S.flight = null; S.offset = null; S.failed = false;
+    S.swapped = false; S.pending = false;
+    S.query = "";
+    if (S.step === 3) S.step = 2;
+    render();
+  });
+
+  $("reset").addEventListener("click", function(){ S = fresh(); render(); });
+
+  S = fresh();
+  render();
+})();
+</script>
+</body>
+</html>
