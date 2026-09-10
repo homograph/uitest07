@@ -864,6 +864,38 @@
   .tovb.loc .lcbody{display:none;}
   .dtop2 .tgl2{display:none;}
 
+  /* ══════════════ HUD안 (A+B+D) ══════════════
+     오버레이를 '작은 앱 화면' 이 아니라 HUD 한 줄로 본다.
+     ⓐ 턴 배너 아래 전폭 스트립 · 500m 진입에만 · 탭 없음
+        pointer-events:none 은 안드로이드 FLAG_NOT_TOUCHABLE 대응이다 —
+        이 영역의 터치가 T맵으로 그대로 통과해야 지도 조작을 안 뺏는다.
+     ⓑ 등장할 때 음성이 1채널(기존 speak() 그대로)
+     ⓒ 값이 바뀐 것은 상시 표시가 아니라 사건이라 헤드업 알림으로 뺀다. */
+  .tstrip{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:12px 18px;
+    background:rgba(25,37,77,.95);pointer-events:none;
+    font-size:20px;line-height:24px;font-weight:700;color:var(--ef);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tstrip[hidden]{display:none;}
+  .tstrip .pv{flex:0 0 auto;display:block;width:24px;height:24px;}
+  /* 안드로이드 헤드업 알림 — T맵 위에 뜨고 스스로 사라진다. 터치를 뺏지 않는다. */
+  .hnoti{position:absolute;left:8px;right:8px;top:6px;z-index:50;
+    background:#EFF1F5;border-radius:28px;padding:13px 18px 15px;
+    display:flex;flex-direction:column;gap:2px;
+    box-shadow:0 6px 20px rgba(10,16,36,.28);}
+  .hnoti[hidden]{display:none;}
+  .hn-hd{display:flex;align-items:center;gap:6px;font-size:12px;line-height:16px;color:#5F6368;}
+  .hn-ic{flex:0 0 auto;width:18px;height:18px;display:grid;place-items:center;
+    border-radius:50%;background:#0074D7;overflow:hidden;}
+  .hn-ic .pv{width:18px;height:18px;display:block;}
+  .hn-app{font-weight:700;color:#3C4043;}
+  .hn-b{font-size:15px;line-height:21px;font-weight:700;color:#1F1F1F;}
+  .hn-s{font-size:14px;line-height:20px;color:#3C4043;word-break:keep-all;}
+  /* HUD 켜짐 — 지도 위 카드는 사라진다 */
+  .dscr.hud #tovb-loc{display:none;}
+  .hudb{border:1px solid var(--line);background:#fff;border-radius:9999px;padding:5px 11px;
+    font:inherit;font-size:11.5px;color:var(--ink-2);cursor:pointer;white-space:nowrap;}
+  .hudb.on{background:#0B6E4E;border-color:#0B6E4E;color:#fff;font-weight:600;}
+
   /* ══════════════ 개선안 (.dscr.impr) ══════════════
      하네스의 '개선안' 버튼이 켜고 끈다. 다섯 가지가 한 벌로 움직인다. */
   /* ① 변경됨이 붙어도 '보기' 를 남긴다 — 값이 바뀐 그때가 가장 눌러야 할 순간이다 */
@@ -1150,7 +1182,8 @@
       <span class="dsw" id="dstagesw"><button type="button" class="dswb dstg" data-dg="go">출발 전</button><button
         type="button" class="dswb dstg on" data-dg="arrived">이동 중</button><button
         type="button" class="dswb dstg" data-dg="preview">전체 경로</button></span>
-      <button type="button" class="imprb" id="imprb" title="접힘 값 노출 · 변경됨+보기 · CTA·배지 대비 · 목록 상세 접힘">개선안</button></div>
+      <button type="button" class="imprb" id="imprb" title="접힘 값 노출 · 변경됨+보기 · CTA·배지 대비 · 목록 상세 접힘">개선안</button>
+      <button type="button" class="hudb" id="hudb" title="턴 배너 아래 스트립 · 500m 진입에만 · 터치 통과 · 변경은 헤드업 알림">HUD안</button></div>
     <div class="phbox"><div class="phone">
       <div class="scr on dscr">
         <div class="sb dark"><span class="ic"><i class="wifi"></i><i class="sig"></i><i class="bat"></i></span><span>12:30</span></div>
@@ -1178,6 +1211,12 @@
         <div class="dtmap" id="dtmap" hidden>
           <div class="sb light"><span>12:30</span><span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
           <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
+          <div class="tstrip" id="tstrip" hidden><svg class="pv" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="72" rx="6" fill="#B9DDFD" fill-opacity="0.22"/><path d="M25.5007 51.7503V20.25H37.7508C40.6675 20.25 43.1466 21.2708 45.1883 23.3125C47.23 25.3542 48.2509 27.8334 48.2509 30.7501C48.2509 33.6668 47.23 36.1459 45.1883 38.1876C43.1466 40.2293 40.6675 41.2502 37.7508 41.2502H32.5008V51.7503H25.5007ZM32.5008 34.2501H38.1008C39.0633 34.2501 39.8873 33.9074 40.5727 33.222C41.2581 32.5365 41.6009 31.7125 41.6009 30.7501C41.6009 29.7876 41.2581 28.9636 40.5727 28.2782C39.8873 27.5927 39.0633 27.25 38.1008 27.25H32.5008V34.2501Z" fill="#5CB4FA"/></svg><span id="tstrip-v"></span></div>
+          <div class="hnoti" id="hnoti" hidden>
+            <div class="hn-hd"><span class="hn-ic"><svg class="pv" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="72" rx="6" fill="#B9DDFD" fill-opacity="0.22"/><path d="M25.5007 51.7503V20.25H37.7508C40.6675 20.25 43.1466 21.2708 45.1883 23.3125C47.23 25.3542 48.2509 27.8334 48.2509 30.7501C48.2509 33.6668 47.23 36.1459 45.1883 38.1876C43.1466 40.2293 40.6675 41.2502 37.7508 41.2502H32.5008V51.7503H25.5007ZM32.5008 34.2501H38.1008C39.0633 34.2501 39.8873 33.9074 40.5727 33.222C41.2581 32.5365 41.6009 31.7125 41.6009 30.7501C41.6009 29.7876 41.2581 28.9636 40.5727 28.2782C39.8873 27.5927 39.0633 27.25 38.1008 27.25H32.5008V34.2501Z" fill="#5CB4FA"/></svg></span><span class="hn-app">타다 드라이버</span><span class="hn-dot">·</span><span class="hn-t">지금</span></div>
+            <div class="hn-b" id="hnoti-t"></div>
+            <div class="hn-s" id="hnoti-s"></div>
+          </div>
           <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><button type="button" class="tovb loc" id="tovb-loc" hidden aria-label="픽업 상세 위치"><span class="lochd"><svg class="pv" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="72" rx="6" fill="#B9DDFD" fill-opacity="0.22"/><path d="M25.5007 51.7503V20.25H37.7508C40.6675 20.25 43.1466 21.2708 45.1883 23.3125C47.23 25.3542 48.2509 27.8334 48.2509 30.7501C48.2509 33.6668 47.23 36.1459 45.1883 38.1876C43.1466 40.2293 40.6675 41.2502 37.7508 41.2502H32.5008V51.7503H25.5007ZM32.5008 34.2501H38.1008C39.0633 34.2501 39.8873 33.9074 40.5727 33.222C41.2581 32.5365 41.6009 31.7125 41.6009 30.7501C41.6009 29.7876 41.2581 28.9636 40.5727 28.2782C39.8873 27.5927 39.0633 27.25 38.1008 27.25H32.5008V34.2501Z" fill="#5CB4FA"/></svg><span class="lbw"><span class="lb2" id="tovb-loc-lb2" hidden></span><span class="lb" id="tovb-loc-lb"></span></span><span class="chgb" id="tovb-loc-chg" hidden>변경됨</span><span class="tgl" id="tovb-loc-tgl">보기</span></span><span class="lcbody"><span class="tx" id="tovb-loc-tx"></span><span class="rt" id="tovb-loc-rt"></span></span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
           <div class="tbar"><div class="tb-info"><b>9분</b><span>1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
         </div>
@@ -1776,7 +1815,7 @@
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     drover:false, droverEdit:false, hilite:false, before:null, ro:false,
     drKind:null, ack:true, drTmr:null, tts:false, dtTmr:null, msg:'', msgUnread:false, matchTmr:null, locOpen:false, locTmr:null, locEvent:null,
-    sending:false, sent:false, tmr:null, opened:null, dstage:'arrived', impr:false, chgFlag:false,
+    sending:false, sent:false, tmr:null, opened:null, dstage:'arrived', impr:false, chgFlag:false, hud:false, near:false, hnTmr:null hnKind:null,
 
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
@@ -2485,6 +2524,23 @@
     $$('.dstg').forEach(b=>b.classList.toggle('on', b.dataset.dg===stg));
     $('.dscr').classList.toggle('impr', !!S.impr);
     el('imprb').classList.toggle('on', !!S.impr);
+    $('.dscr').classList.toggle('hud', !!S.hud);
+    el('hudb').classList.toggle('on', !!S.hud);
+    /* ⓐ 스트립 — 500m 안에서만. 층·동까지만 싣는다(라인·찾아오는 길은 정차 후 앱에서). */
+    const strip = el('tstrip');
+    strip.hidden = !(S.hud && show && S.near);
+    if(!strip.hidden){
+      const d=S.current;
+      el('tstrip-v').textContent = (d.lvl==='under'?'지하 ':'지상 ')+d.floor+'층\u2002'
+        + (d.noDong ? '동 없음' : d.dong.trim()+'동');
+    }
+    /* ⓒ 헤드업 알림 — 5초 자동 퇴장 */
+    const hn = el('hnoti');
+    hn.hidden = !(S.hud && show && S.hnKind);
+    if(!hn.hidden){
+      el('hnoti-t').textContent = S.hnKind==='change' ? '픽업 위치가 변경됐어요' : '픽업 위치를 받았어요';
+      el('hnoti-s').textContent = loc(S.current);
+    }
     /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
     $$('.dswb:not(.dstg)').forEach(b=>b.classList.toggle('on',
       b.dataset.ds === (b.dataset.side==='r' ? S.rphase : S.dview)));
@@ -2533,6 +2589,14 @@
     } else {
       if(kind!=='near') S.ack=false;
       if(kind==='change') S.chgFlag=true;
+      if(kind==='near') S.near=true;
+      /* HUD 안 — 값이 바뀐 건 상시 표시가 아니라 사건이다. 카드를 펼치는 대신 헤드업 알림. */
+      if(S.hud && kind!=='near'){
+        clearTimeout(S.hnTmr);
+        S.hnKind=kind;
+        S.hnTmr=setTimeout(()=>{ S.hnKind=null; S.hnTmr=null; render(); }, 5000);
+        render(); speak(); return;
+      }
       S.locEvent=kind; S.locOpen=true;
       clearTimeout(S.locTmr);
       S.locTmr=setTimeout(()=>{
@@ -2582,7 +2646,7 @@
   function setMode(m){
     S.mode=m; S.screen='start';
     clearTimeout(S.tmr); S.tmr=null;
-    S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='arrived'; S.chgFlag=false;
+    S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='arrived'; S.chgFlag=false; S.near=false; clearTimeout(S.hnTmr); S.hnTmr=null;
     S.drover=false; S.hilite=false; S.before=null;
     S.drKind=null; S.ack=true; S.rphase='match'; S.dview='tmap'; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     if(m==='repeat'){
@@ -2658,6 +2722,13 @@
   });
   /* 개선안 토글 — 다섯 가지가 한 벌로 움직인다 */
   el('imprb').addEventListener('click',()=>{ S.impr=!S.impr; render(); });
+  el('hudb').addEventListener('click',()=>{
+    S.hud=!S.hud;
+    /* 카드가 사라지므로 펼침 상태도 접어 둔다 */
+    if(S.hud){ S.locOpen=false; S.locEvent=null; clearTimeout(S.locTmr); }
+    else { clearTimeout(S.hnTmr); S.hnKind=null; }
+    render();
+  });
   /* 메시지는 타다 앱에 들어가면 읽은 것으로 본다 — 대화는 거기 있다. */
   el('drover-ok').addEventListener('click',()=>{ if(S.drKind==='msg'){ S.msgUnread=false; render(); } });
   /* 타다 앱 → 내비. driver-v2 의 cnavrow(이름 + 내비 아이콘)가 그 길이다. */
@@ -2665,7 +2736,7 @@
   /* 지도 위 '내비' 버블도 같은 길이다 — 기사가 내비로 돌아가는 자리는 둘 다 살아 있어야 한다. */
   $('.dbub.nv').addEventListener('click',()=>{ S.dview='tmap'; render(); });
   /* 반경 500m 진입은 기사 쪽 사건이다 — 승객 화면은 그대로고 내비 위 오버레이만 뜬다. */
-  el('d500').addEventListener('click',()=>{ S.dview='tmap'; if(reached()) raiseDrover('near'); else render(); });
+  el('d500').addEventListener('click',()=>{ S.dview='tmap'; S.near=true; if(reached()) raiseDrover('near'); else render(); });
   /* 픽업 카드와 버블 스택은 화면 안에서 Y 를 드래그로 옮긴다(디자이너 지정).
      버블은 언제나 카드보다 아래를 유지한다 — 순서가 뒤집히면 두 층의 관계가 깨진다.
      카드가 펼쳐져 키가 커지면 버블을 아래로 밀어낸다. */
