@@ -2631,7 +2631,8 @@
     window.__reflowOverlays = reflow;
   })();
   el('tb-x').addEventListener('click', backFromTmap);
-  $$('.dswb').forEach(b=>b.addEventListener('click',()=>{
+  /* 단계 칩(.dstg)·T맵 모드 칩(.tth)은 data-ds 가 없다 — 각자 핸들러가 있어 여기서 뷰를 덮지 않는다 */
+  $$('.dswb[data-ds]').forEach(b=>b.addEventListener('click',()=>{
     const prev=S.rphase;
     /* 라이더 칩 = 승객이 아는 것, 드라이버 칩 = 기사 화면(타다 앱 / T맵). 서로 독립이다. */
     if(b.dataset.side==='r'){ if(b.dataset.ds==='match'){ startMatching(); return; } clearTimeout(S.matchTmr); S.rphase=b.dataset.ds; if(S.rphase==='arrived'){ S.hilite=false; S.drover=false; clearTimeout(S.drTmr); } }
