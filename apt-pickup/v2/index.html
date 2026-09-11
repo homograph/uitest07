@@ -53,6 +53,13 @@
   .flowdesc b{color:var(--ink);font-weight:600;}
 
   .stage{max-width:1000px;margin:0 auto;padding:20px 20px 0;display:flex;gap:34px;flex-wrap:wrap;}
+  /* PC(761px~): 라이더·드라이버를 좌우 2단으로 고정한다. 칩 줄이 길어 flex 가 줄바꿈하며 세로로 쌓이던 것을 막는다.
+     두 열이 subgrid 로 행을 공유해 칩 줄(1행)·폰(2행)·설명(3행)의 높이가 같다 — 칩이 몇 줄로 접히든 두 폰의 윗변이 맞는다. */
+  @media (min-width:761px){
+    .stage{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto auto auto;column-gap:40px;row-gap:0;align-items:start;}
+    .stage > div{display:grid;grid-row:span 3;grid-template-rows:subgrid;min-width:0;}
+    .stage .cap{align-self:end;}
+  }
   .cap{display:flex;align-items:center;flex-wrap:wrap;gap:7px;row-gap:6px;margin:0 0 10px 3px;}
   .cap .dot{width:7px;height:7px;border-radius:50%;background:var(--blue-600);}
   .cap .dot.d{background:var(--navy-900);}
