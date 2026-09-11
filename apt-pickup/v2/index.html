@@ -842,10 +842,11 @@
      '운행 시작 전' 두 번째 시안은 알약·버블을 왼쪽 끝에 붙인 모습이다 — 좌우로 끌면 가까운 쪽 끝에 붙는다.
      '운행 시작 후'(04 운행 시작하기 이후)에는 알약이 없다.
      시안과 다르게 둔 것(두 모드 대비 — 앞선 결정 유지):
-      · #FFF 90% → 100% · '고객 요청' #32A2FA → #0074D7 (4.69) · '변경됨' #FE4C00 → #CC3600 (5.13) · 그림자 */
+      · 컨테이너 fill 은 시안대로 #FFF 90% — 내비를 덜 가리는 게 우선이다(사용자 결정 9/11).
+      · 글자색만 대비용으로 둔다: '고객 요청' #32A2FA → #0074D7 · '변경됨' #FE4C00 → #CC3600 · 그림자 */
   .tpill{position:absolute;top:61px;right:0;z-index:6;touch-action:none;
     display:flex;flex-direction:column;align-items:stretch;gap:4px;width:max-content;max-width:220px;box-sizing:border-box;
-    padding:10px;border:1px solid #99a5c0;border-radius:16px;background:#fff;
+    padding:10px;border:1px solid #99a5c0;border-radius:16px;background:rgba(255,255,255,.9);
     box-shadow:0 2px 8px rgba(0,0,0,.18);font:inherit;text-align:left;cursor:pointer;}
   .tpill[hidden]{display:none;}
   .tp-hd{display:flex;align-items:center;gap:8px;}
