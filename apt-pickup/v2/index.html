@@ -856,11 +856,13 @@
   .tpill[hidden]{display:none;}
   .tpill .pv32{flex:0 0 auto;display:block;width:32px;height:32px;border-radius:50%;}
   .tp-tx{min-width:0;font-size:16px;line-height:24px;font-weight:400;color:#000;word-break:keep-all;}
+  /* 두 줄 고정: 1줄 '지하 1층 1902동' / 2줄 '3-4호 라인 (변경됨) 보기'. 폭 236 안에 둘 다 들어간다.
+     조각 안에서는 줄을 바꾸지 않고, 더 긴 값이면 조각 사이 공백에서만 넘어간다. */
+  .tp-a{display:block;}
   .tp-a,.tp-b,.tp-chg,.tp-go{white-space:nowrap;}
-  .tp-a{margin-right:.45em;}
-  .tp-chg{margin-left:.45em;font-weight:700;color:#cc3600;}
+  .tp-chg{font-weight:700;color:#cc3600;}
   .tp-chg[hidden]{display:none;}
-  .tp-go{margin-left:.45em;font-weight:700;color:#0074d7;}
+  .tp-go{font-weight:700;color:#0074d7;}
   #tovb-loc.dragging,.tovr.dragging{cursor:grabbing;}
   /* 소리를 꺼둘 수 있어 '또 바뀌었다' 는 깜빡임이 맡는다 */
   @keyframes chgBlink{0%,100%{opacity:1}25%,75%{opacity:.2}50%{opacity:1}}
@@ -1154,7 +1156,7 @@
 <rect width="96" height="96" rx="16" fill="#0044A6"/>
 <path d="M34.0005 69.0033V27.0029H50.3339C54.2229 27.0029 57.5284 28.364 60.2506 31.0863C62.9729 33.8085 64.334 37.1141 64.334 41.003C64.334 44.892 62.9729 48.1975 60.2506 50.9197C57.5284 53.642 54.2229 55.0031 50.3339 55.0031H43.3339V69.0033H34.0005ZM43.3339 45.6697H50.8006C52.0839 45.6697 53.1825 45.2128 54.0965 44.2989C55.0103 43.3849 55.4673 42.2863 55.4673 41.003C55.4673 39.7197 55.0103 38.6211 54.0965 37.7072C53.1825 36.7932 52.0839 36.3363 50.8006 36.3363H43.3339V45.6697Z" fill="white"/>
 </g>
-</svg><span class="tp-tx"><span class="tp-a" id="tp-a"></span><span class="tp-b" id="tp-b"></span><span class="tp-chg" id="tp-chg" hidden>변경됨</span><span class="tp-go">보기</span></span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
+</svg><span class="tp-tx"><span class="tp-a" id="tp-a"></span> <span class="tp-b" id="tp-b"></span> <span class="tp-chg" id="tp-chg" hidden>변경됨</span> <span class="tp-go">보기</span></span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
           <div class="tbar"><div class="tb-info"><b>9분</b><span>1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
         </div>
         <div class="dtoast" id="dtoast"></div>
@@ -2402,8 +2404,11 @@
     el('plr').hidden = !show;
     if(show){
       const d=S.current, v=dloc(d), k=v.indexOf('\u2002');
-      el('tp-a').textContent = k>0 ? v.slice(0,k) : v;
-      el('tp-b').textContent = k>0 ? v.slice(k+1) : '';
+      /* 알약은 동 뒤에서 줄을 바꾼다 — 층·동이 한 줄, 라인과 상태가 둘째 줄 */
+      const head = k>0 ? v.slice(0,k) : v, rest = k>0 ? v.slice(k+1) : '';
+      const m = rest.match(/^(\S+동)\s+(.+)$/);
+      el('tp-a').textContent = m ? head+' '+m[1] : (/동$/.test(rest) ? head+' '+rest : head);
+      el('tp-b').textContent = m ? m[2] : (/동$/.test(rest) ? '' : rest);
       el('plr-v').textContent = v;
       const w=(d.etc||'').trim();
       el('plr-s').textContent = w || '앞에서 탈게요.';
