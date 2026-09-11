@@ -522,8 +522,9 @@
   .bv::placeholder{color:var(--gray-300);font-weight:400;}
   /* 단위는 고정 문구다. 값보다 한 단계 작게 두면 상자 안에서 무엇이 내용인지 바로 보인다.
      가운데 정렬만 하면 22px 과 16px 의 베이스라인이 어긋나 2px 내려 앉힌다. */
-  /* 지하 층 뒤에 자동으로 붙는 B 표기 — '지하주차장 1층' 이 B1 인지 헷갈린 요청 88건. 칸·선택지는 늘리지 않는다 */
-  .fld .bx{flex:0 0 auto;margin-left:4px;font-size:16px;font-weight:500;color:var(--gray-500);}
+  /* 지하 층 뒤에 자동으로 붙는 B 표기 — '지하주차장 1층' 이 B1 인지 헷갈린 요청 88건. 칸·선택지는 늘리지 않는다.
+     Figma 핸드오프 12086:82640 '입력 필드 / 값' 의 B1: 16/24 Medium #99A5C0, 칸 gap 4 그대로(여백 추가 없음), '층' 과 같은 기준선 */
+  .fld .bx{flex:0 0 auto;font-size:16px;font-weight:500;color:#99a5c0;transform:translateY(2px);}
   .fld .u{flex:0 0 auto;font-size:16px;font-weight:500;color:var(--gray-950);
     transform:translateY(2px);}
   /* 기본 폭은 em 이라 글자 단계가 커지면 같이 커진다.
