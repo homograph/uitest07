@@ -60,7 +60,7 @@
   .cap em{font-style:normal;font-size:11.5px;color:var(--ink-3);}
   .dsw{margin-left:auto;display:flex;flex-wrap:wrap;gap:4px;}
   /* 칩은 줄어들지도, 글자가 접히지도 않는다 — 접히면 타깃이 뭉개진다 */
-  .dswb,.cap .rst,.imprb,.hudb{flex:0 0 auto;white-space:nowrap;}
+  .dswb,.cap .rst{flex:0 0 auto;white-space:nowrap;}
   .cap .dsw{flex:0 1 auto;}
   .dswb{border:1px solid var(--line);background:#fff;border-radius:9999px;padding:5px 11px;
     font:inherit;font-size:11.5px;color:var(--ink-2);cursor:pointer;}
@@ -696,13 +696,9 @@
      같은 줄에 있어야 운전 중에 한 번에 읽힌다. 요청사항 안에 넣으면 한 번 더 열어야 하고,
      그 한 번이 운전 중에는 안 일어난다.
      동작은 걸지 않는다(v2 에서도 아직 안 걸려 있다). */
-  /* Figma "운행 요청사항" — '고객 요청사항 보기' 한 줄이 두 칸짜리 값 행으로 바뀌었다 */
-  .preq2{display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;
-    background:var(--navy700);border-radius:8px;padding:10px;
-    box-shadow:inset 0 0 0 2px #32a2fa;}
-  .preq2 .pf{flex:1 1 0;display:flex;align-items:center;justify-content:center;gap:5px;
-    font-size:18px;line-height:26px;color:var(--ef);}
-  .preq2 .pf img{flex:0 0 auto;width:24px;height:24px;display:block;}
+  /* Figma 12061 — '고객 요청사항 보기' 한 줄로 되돌아왔다 (#293F71 r8 pad10 · 18/26 #EFEFF1 가운데) */
+  .dpass .preq{width:100%;box-sizing:border-box;background:var(--navy700);border-radius:8px;
+    padding:10px;font-size:18px;line-height:26px;color:var(--ef);text-align:center;}
   /* v2 route — 시트는 패딩을 갖지 않는다. 여백은 카드가 margin 으로 만든다. */
   .dsheet{background:var(--navy);border-radius:12px 12px 0 0;padding:0;
     box-shadow:0 -8px 24px rgba(0,0,0,.28);}
@@ -711,7 +707,7 @@
      시트 안에서 '떠 있는 카드' 가 아니라 '한 구간' 으로 읽힌다.
      도착 시점 카드는 테두리가 한 단계 밝다(#31487d). */
   .dcard{margin:0;border:0;border-top:1px solid var(--navy700);border-radius:0;
-    overflow:hidden;display:flex;flex-direction:column;background:var(--navy2);
+    overflow:hidden;display:flex;flex-direction:column;background:rgba(40,56,115,.7);
     box-shadow:0 2px 6px rgba(0,0,0,.2);}
   .dtop{padding:20px 20px 24px;display:flex;flex-direction:column;gap:8px;}
   .dtop .row{display:flex;align-items:flex-start;gap:14px;}
@@ -731,20 +727,22 @@
   .cnav:active .navb{transform:scale(.74);filter:brightness(1.4);}
   .dtop .ci b{font-size:28px;font-weight:700;color:#fff;line-height:42px;}
   .dtop .ci span{font-size:16px;color:var(--n1);line-height:24px;}
-  /* Figma 11903:17227 — 픽업 상세가 승객 카드에서 경로 카드 안, 목적지 바로 아래로 왔다.
-     '출발' 은 채운 배지, '상세' 는 테두리 배지 — 같은 자리에서 급이 갈린다. */
-  .dtop2{display:flex;align-items:flex-start;gap:14px;padding:20px;}
-  .dtop2[hidden]{display:none;}
-  .dbadge2{flex:0 0 auto;width:52px;box-sizing:border-box;display:inline-flex;
-    align-items:center;justify-content:center;border-radius:4px;padding:4px 6px;
-    background:none;box-shadow:inset 0 0 0 1px var(--blue700);
-    font-size:16px;line-height:24px;font-weight:700;color:var(--blue700);}
-  .dtop2 .ci2{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:4px;}
-  /* 값과 조사를 한 문장으로 — 값만 밝고 '에서 탈게요.' 는 한 단 낮다 */
-  .dsent{margin:0;font-size:18px;line-height:26px;font-weight:700;color:var(--dim);word-break:keep-all;}
-  .dsent b{font-weight:700;color:var(--ef);}
-  .dway{margin:0;font-size:16px;line-height:24px;font-weight:400;color:var(--dim);word-break:keep-all;}
-  .dway[hidden]{display:none;}
+  /* ══ 타다 앱 픽업 위치 블록 (Figma 12061:51991 "pickup location request") ══
+     #101A3D · pad20 · gap10 / 머리: P 타일 24 원형 + '고객이 전달한 픽업 위치' 16/24 #99A5C0 (+ 변경됨)
+     / 본문 gap4: 값 20/30 Regular #E6E9EF + 둘째 줄 16/24 #99A5C0.
+     둘째 줄은 찾아오는 길이 있으면 그 문장(시안 h156 변형), 없으면 '앞에서 탈게요.'.
+     자리: 01·03·04 모두 시트 맨 위 — 시안은 03 이 CTA 아래, 04 가 맨 위로 갈렸다.
+     '변경됨' 은 남색 면 위라 시안 색 #FE4C00(5.05:1)이 맞다(#CC3600 은 여기선 3.31). */
+  .plr{display:flex;flex-direction:column;gap:10px;padding:20px;background:var(--navy);}
+  .plr[hidden]{display:none;}
+  .plr-hd{display:flex;align-items:center;gap:10px;}
+  .plr-hd .pv24{flex:0 0 auto;display:block;width:24px;height:24px;border-radius:50%;}
+  .plr-t{flex:1 1 auto;min-width:0;font-size:16px;line-height:24px;color:var(--dim);}
+  .plr-chg{flex:0 0 auto;font-size:15px;line-height:22px;font-weight:700;color:#fe4c00;}
+  .plr-chg[hidden]{display:none;}
+  .plr-bd{display:flex;flex-direction:column;gap:4px;}
+  .plr-v{margin:0;font-size:20px;line-height:30px;font-weight:400;color:#e6e9ef;word-break:keep-all;}
+  .plr-s{margin:0;font-size:16px;line-height:24px;color:var(--dim);word-break:keep-all;}
   /* Figma 11903:17373 — 04 preview. 픽업 상세 행이 '출발' 행 바로 아래에 끼어든다. */
   .dlist{display:flex;flex-direction:column;background:var(--navy);
     box-shadow:inset 0 1px 0 0 var(--navy700);padding:6px 0 24px;}
@@ -761,10 +759,8 @@
   .inav{flex:0 0 auto;width:30px;height:30px;border-radius:15px;background:#2f3f79;
     display:grid;place-items:center;box-shadow:inset 0 0 20px rgba(255,255,255,.04);}
   .inav svg{width:14px;height:17px;display:block;}
-  /* 목록 안의 상세 행은 카드 면(navy2)을 그대로 쓴다 — 한 구간의 부속이라는 표시다 */
-  .dlist .dtop2{background:var(--navy2);}
   /* 01·03 은 CTA 가 카드 안(navy2), 04 는 Footer(fixed)(navy) 다 — 면만 갈린다 */
-  .dfoot{padding:0 20px 22px;background:var(--navy2);}
+  .dfoot{padding:0 20px 24px;background:rgba(40,56,115,.7);}
   .dfoot.prev{padding-bottom:20px;background:var(--navy);}
   .dgo{margin:0;}
   /* v2 cbtn — 카드 밖에 붙은 전폭 바가 아니라 카드 '안' 의 버튼이다.
@@ -842,109 +838,50 @@
     border-radius:999px;background:var(--red);color:#fff;font-size:12px;font-weight:700;line-height:1;
     display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.4);}
   .tovdot[hidden]{display:none;}
-  /* ══ 픽업 상세 카드 (Figma 11781:14165 "tovb loc") ══
-     디자이너가 앱과 T맵을 한 컴포넌트로 합쳤다. 두 곳이 같은 값을 같은 모양으로 말한다.
-     접힘 row h56 pad[16,20,16,16] · 펼침 col gap12 pad16 · 둘 다 #19254D 95% · r8 · 테두리 없음. */
-  .tovb.loc{width:auto;height:auto;flex-direction:row;align-items:center;gap:10px;
-    padding:16px 20px 16px 16px;border:none;border-radius:8px;
-    background:rgba(25,37,77,.95);box-shadow:0 4px 13px rgba(10,16,36,.3);
-    text-align:left;font:inherit;}
-  .tovb.loc .lochd{display:flex;align-items:center;gap:8px;width:100%;}
-  /* 접힘은 타일 32 · 라벨 20 Bold, 펼침은 타일 24 · 라벨 16 Bold */
-  .tovb.loc .pv{flex:0 0 auto;display:block;width:32px;height:32px;}
-  .tovb.loc.open .pv{width:24px;height:24px;}
-  .tovb.loc .lb{flex:0 1 auto;min-width:0;font-size:20px;line-height:30px;font-weight:700;
-    color:var(--ef);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .tovb.loc .tgl{flex:0 0 auto;font-size:16px;line-height:24px;font-weight:400;color:#32a2fa;}
-  .tovb.loc .lbw{flex:0 1 auto;min-width:0;display:flex;flex-direction:column;}
-  .tovb.loc .lb2{display:none;}
-  /* Figma 11910 "뱃지" — #cc3600 r4 pad[0,5,1,5] · 14/20 Bold. 흰 글씨와 5.13:1 */
-  .tovb.loc .chgb{flex:0 0 auto;display:inline-flex;align-items:flex-end;background:#cc3600;
-    border-radius:4px;padding:0 5px 1px;font-size:14px;line-height:20px;font-weight:700;color:#fff;}
-  .tovb.loc .chgb[hidden]{display:none;}
-  /* 시안: 접힘에 배지가 붙으면 '보기' 가 빠진다 (개선안에서 되살린다) */
-  .tovb.loc:not(.open) .chgb:not([hidden]) ~ .tgl{display:none;}
-  .tovb.loc .lcbody{display:none;}
-  .dtop2 .tgl2{display:none;}
-
-  /* ══════════════ HUD안 (A+B+D) ══════════════
-     오버레이를 '작은 앱 화면' 이 아니라 HUD 한 줄로 본다.
-     ⓐ 턴 배너 아래 전폭 스트립 · 500m 진입에만 · 탭 없음
-        pointer-events:none 은 안드로이드 FLAG_NOT_TOUCHABLE 대응이다 —
-        이 영역의 터치가 T맵으로 그대로 통과해야 지도 조작을 안 뺏는다.
-     ⓑ 등장할 때 음성이 1채널(기존 speak() 그대로)
-     ⓒ 값 변경은 스트립 안 '변경됨' 이 맡는다. 500m 밖에서 바뀌면 조용히 반영해 두고
-        500m 진입 때 최신 값 + 변경됨으로 등장, 500m 안에서 바뀌면 제자리 갱신 + 깜빡임 + 짧은 진동.
-        변경됨은 도착 알리기까지 남는다(HUD 는 탭이 없어 '펼쳐 봄' 확인이 성립하지 않는다). */
-  .tstrip{flex:0 0 auto;display:flex;align-items:center;gap:10px;padding:12px 18px;
-    background:rgba(25,37,77,.95);pointer-events:none;
-    font-size:20px;line-height:24px;font-weight:700;color:var(--ef);white-space:nowrap;}
-  .tstrip[hidden]{display:none;}
-  .tstrip .pv{flex:0 0 auto;display:block;width:24px;height:24px;}
-  /* 스트립이 '변경됨' 까지 겸한다. 헤드업 알림은 안드로이드가 항상 최상단에 그려
-     T맵 턴 배너를 덮기 때문에 뺐다(이 프로젝트가 이미 겪은 교훈 — .drover 주석 참고). */
-  #tstrip-v{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;}
-  .tstrip .chgb{flex:0 0 auto;display:inline-flex;align-items:flex-end;background:#cc3600;
-    border-radius:4px;padding:0 5px 1px;font-size:14px;line-height:20px;font-weight:700;color:#fff;}
-  .tstrip .chgb[hidden]{display:none;}
-  /* 500m 안에서 또 바뀌면 다시 깜빡인다 — 소리가 꺼져 있어도 '방금 또 바뀌었다' 가 전달된다 */
-  @keyframes chgBlink{0%,100%{opacity:1}25%,75%{opacity:.2}50%{opacity:1}}
-  .tstrip .chgb.blink{animation:chgBlink .6s ease-in-out 2;}
-  @media (prefers-reduced-motion:reduce){ .tstrip .chgb.blink{animation:none;} }
-  /* HUD 켜짐 — 지도 위 카드는 사라진다 */
-  .dscr.hud #tovb-loc{display:none;}
-  .hudb{border:1px solid var(--line);background:#fff;border-radius:9999px;padding:5px 11px;
-    font:inherit;font-size:11.5px;color:var(--ink-2);cursor:pointer;white-space:nowrap;}
-  .hudb.on{background:#0B6E4E;border-color:#0B6E4E;color:#fff;font-weight:600;}
-
-  /* ══════════════ 개선안 (.dscr.impr) ══════════════
-     하네스의 '개선안' 버튼이 켜고 끈다. 다섯 가지가 한 벌로 움직인다. */
-  /* ① 변경됨이 붙어도 '보기' 를 남긴다 — 값이 바뀐 그때가 가장 눌러야 할 순간이다 */
-  .dscr.impr .tovb.loc:not(.open) .chgb:not([hidden]) ~ .tgl{display:block;}
-  /* ② 접힘이 값을 감추지 않는다 — 라벨 한 줄 + 층·동 한 줄.
-     실측 지하·지상 82.3% · 동 91.1% 라 두 값은 거의 항상 있다. */
-  .dscr.impr .tovb.loc:not(.open){padding:12px 20px 12px 16px;align-items:flex-start;}
-  .dscr.impr .tovb.loc:not(.open) .pv{margin-top:2px;}
-  .dscr.impr .tovb.loc:not(.open) .lb2{display:block;font-size:13px;line-height:20px;
-    font-weight:700;color:#99a5c0;white-space:nowrap;}
-  .dscr.impr .tovb.loc:not(.open) .lb{font-size:20px;line-height:28px;color:var(--ef);}
-  .dscr.impr .tovb.loc:not(.open) .chgb,
-  .dscr.impr .tovb.loc:not(.open) .tgl{margin-top:14px;}
-  /* ③ 흰 글씨를 얹는 파란 면은 blue700 — 2.73:1 → 4.69:1 */
-  .dscr.impr .dgo.arrived{background:var(--blue700);}
-  /* ④ '상세' 배지 테두리·글자를 b300 으로 — 3.17:1 → 6.63:1 */
-  .dscr.impr .dbadge2{box-shadow:inset 0 0 0 1px var(--b300);color:var(--b300);}
-  /* ⑤ 전체 경로에서는 상세가 접힌 한 줄이다 — 60px 행 사이 148px 블록이 목적지를 밀어냈다 */
-  .dscr.impr .dlist .dtop2{align-items:center;gap:14px;padding:12px 20px;}
-  .dscr.impr .dlist .dtop2 .ci2{flex-direction:row;align-items:center;gap:0;}
-  .dscr.impr .dlist .dtop2 .dsent{font-size:16px;line-height:24px;color:var(--ef);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .dscr.impr .dlist .dtop2 .dsent span,
-  .dscr.impr .dlist .dtop2 .dway{display:none;}
-  .dscr.impr .dlist .dtop2 .tgl2{display:block;flex:0 0 auto;font-size:16px;line-height:24px;
-    font-weight:400;color:#32a2fa;}
-  /* 하네스 버튼 */
-  .imprb{border:1px solid var(--line);background:#fff;border-radius:9999px;padding:5px 11px;
-    font:inherit;font-size:11.5px;color:var(--ink-2);cursor:pointer;white-space:nowrap;}
-  .imprb.on{background:#0074d7;border-color:#0074d7;color:#fff;font-weight:600;}
-  /* 펼침 — 헤더 텍스트가 값에서 라벨로 바뀐다(같은 자리, 다른 역할) */
-  .tovb.loc.open{flex-direction:column;align-items:stretch;gap:12px;padding:16px;}
-  .tovb.loc.open .lb{flex:1 1 auto;font-size:16px;line-height:24px;font-weight:700;color:#99a5c0;}
-  .tovb.loc.open .lcbody{display:flex;flex-direction:column;gap:4px;width:100%;}
-  .tovb.loc.open .tx{font-size:22px;line-height:32px;font-weight:700;color:#e6e9ef;
-    white-space:normal;word-break:keep-all;}
-  .tovb.loc.open .rt{font-size:16px;line-height:24px;font-weight:400;color:#99a5c0;
-    white-space:normal;word-break:keep-all;}
-  .tovb.loc.open .rt:empty{display:none;}
-  /* T맵 위에서는 턴 배너 아래, 폭 340 고정(접힘은 내용 폭) */
-  /* 접힘은 화면 가운데(실측 x=52 · 폭 256), 펼침은 좌우 10 여백에 340 */
-  #tovb-loc{position:absolute;left:50%;transform:translateX(-50%);top:9px;z-index:6;touch-action:none;}
-  #tovb-loc.open{left:10px;transform:none;top:10px;width:340px;}
-  #tovb-loc:not(.open){max-width:340px;}
-  /* 드래그 중에는 탭으로 오해하지 않게 커서만 바꾼다 */
+  /* ══ T맵 위 픽업 위치 알약 (Figma 12061:51991 "pickup location request bubble") ══
+     시안: #FFF 90% · 테두리 #99A5C0 1px · r16 · pad[6,16,6,6] · gap12 · P 타일 32 · 16/24 #000.
+     실제 T맵(라이트·다크 둘 다) 기준으로 바꾼 것:
+      · 불투명도 90% → 100%. 다크 지도에선 90% 가 뒤를 비쳐 '변경됨' 4.33 · '보기' 3.96 으로 미달이 된다.
+        불투명하면 모드와 무관하게 5.13 · 4.69 로 고정된다.
+      · '변경됨' #FE4C00 → #CC3600 (3.36 → 5.13) · '보기' #32A2FA → #0074D7 (2.73 → 4.69)
+      · 테두리 #99A5C0 는 라이트 지도와 2.08:1 이라 경계가 흐리다 — 그림자로 띄운다.
+      · 자리: 턴 배너 바로 아래 오른쪽. 경로선·회전 화살표·교통 막대가 지나가지 않는 띠이고,
+        왼쪽 차선 안내칩을 피한다. 폭 236 안에서 층과 동 사이에서만 줄이 바뀐다.
+      · '변경됨' 이 붙어도 '보기' 를 남긴다(시안은 변경됨이 보기를 대신했다).
+      · 단어 중간 줄바꿈 금지 — 시안 렌더에서 '변경 / 됨' 으로 쪼개졌다. */
+  .tpill{position:absolute;top:8px;right:10px;z-index:6;touch-action:none;
+    display:flex;align-items:center;gap:12px;max-width:236px;box-sizing:border-box;
+    padding:6px 16px 6px 6px;border:1px solid #99a5c0;border-radius:16px;background:#fff;
+    box-shadow:0 2px 8px rgba(0,0,0,.18);font:inherit;text-align:left;cursor:pointer;}
+  .tpill[hidden]{display:none;}
+  .tpill .pv32{flex:0 0 auto;display:block;width:32px;height:32px;border-radius:50%;}
+  .tp-tx{min-width:0;font-size:16px;line-height:24px;font-weight:400;color:#000;word-break:keep-all;}
+  .tp-a,.tp-b,.tp-chg,.tp-go{white-space:nowrap;}
+  .tp-a{margin-right:.45em;}
+  .tp-chg{margin-left:.45em;font-weight:700;color:#cc3600;}
+  .tp-chg[hidden]{display:none;}
+  .tp-go{margin-left:.45em;font-weight:700;color:#0074d7;}
   #tovb-loc.dragging,.tovr.dragging{cursor:grabbing;}
-  /* 드라이버 앱 안에서는 승객 카드의 한 칸이다 — 폭을 채우고 그림자가 없다 */
-  .tovb.loc.app{width:100%;box-shadow:none;}
+  /* 소리를 꺼둘 수 있어 '또 바뀌었다' 는 깜빡임이 맡는다 */
+  @keyframes chgBlink{0%,100%{opacity:1}25%,75%{opacity:.2}50%{opacity:1}}
+  .tp-chg.blink,.plr-chg.blink{animation:chgBlink .6s ease-in-out 2;}
+  @media (prefers-reduced-motion:reduce){ .tp-chg.blink,.plr-chg.blink{animation:none;} }
+  /* 실제 T맵은 턴 배너 아래 왼쪽에 차선 안내칩이 붙는다 — 알약이 피해야 하는 자리라 목업에 둔다 */
+  .tlane{position:absolute;top:0;left:0;z-index:5;display:flex;align-items:baseline;gap:6px;
+    padding:8px 12px 8px 10px;background:rgba(11,110,78,.92);color:#fff;border-bottom-right-radius:8px;
+    font-size:22px;line-height:26px;font-weight:700;pointer-events:none;}
+  .tlane span{font-size:18px;} .tlane em{font-style:normal;font-size:14px;font-weight:600;}
+  /* T맵 다크 — 실제 T맵은 시간·설정에 따라 라이트/다크가 바뀐다. 알약은 두 모드에서 대비가 같아야 한다. */
+  .dtmap.dark{background:#2b2f35;}
+  .dtmap.dark .tmapmap{background:#353a40;}
+  .dtmap.dark .tmapmap > svg rect:nth-of-type(1){fill:#353a40;}
+  .dtmap.dark .tmapmap > svg rect:nth-of-type(2),
+  .dtmap.dark .tmapmap > svg rect:nth-of-type(3){fill:#4b5159;}
+  .dtmap.dark .tmapmap > svg rect:nth-of-type(4){fill:#2f4a3a;}
+  .dtmap.dark .tbar{background:#1c1f24;color:#fff;box-shadow:0 -2px 12px rgba(0,0,0,.4);}
+  .dtmap.dark .tb-info b{color:#42c98b;}
+  .dtmap.dark .tb-info span{color:#a9afba;}
+  .dtmap.dark .tb-x{background:#2c3038;color:#d6d9df;}
   /* v2 toast — 도착 알림 등 기사 화면 안내 */
   .dtoast{position:absolute;left:50%;bottom:16%;transform:translate(-50%,10px);max-width:90%;
     white-space:nowrap;background:rgba(13,20,44,.96);color:#fff;font-size:15px;font-weight:600;
@@ -1183,8 +1120,7 @@
       <span class="dsw" id="dstagesw"><button type="button" class="dswb dstg" data-dg="go">출발 전</button><button
         type="button" class="dswb dstg on" data-dg="arrived">이동 중</button><button
         type="button" class="dswb dstg" data-dg="preview">전체 경로</button></span>
-      <button type="button" class="imprb" id="imprb" title="접힘 값 노출 · 변경됨+보기 · CTA·배지 대비 · 목록 상세 접힘">개선안</button>
-      <button type="button" class="hudb" id="hudb" title="턴 배너 아래 스트립 · 500m 진입에만 · 터치 통과 · 변경됨은 스트립이 겸함">HUD안</button></div>
+      <span class="dsw"><button type="button" class="dswb tth on" data-th="light">T맵 라이트</button><button type="button" class="dswb tth" data-th="dark">T맵 다크</button></span></div>
     <div class="phbox"><div class="phone">
       <div class="scr on dscr">
         <div class="sb dark"><span class="ic"><i class="wifi"></i><i class="sig"></i><i class="bat"></i></span><span>12:30</span></div>
@@ -1212,8 +1148,12 @@
         <div class="dtmap" id="dtmap" hidden>
           <div class="sb light"><span>12:30</span><span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
           <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
-          <div class="tstrip" id="tstrip" hidden><svg class="pv" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="72" rx="6" fill="#B9DDFD" fill-opacity="0.22"/><path d="M25.5007 51.7503V20.25H37.7508C40.6675 20.25 43.1466 21.2708 45.1883 23.3125C47.23 25.3542 48.2509 27.8334 48.2509 30.7501C48.2509 33.6668 47.23 36.1459 45.1883 38.1876C43.1466 40.2293 40.6675 41.2502 37.7508 41.2502H32.5008V51.7503H25.5007ZM32.5008 34.2501H38.1008C39.0633 34.2501 39.8873 33.9074 40.5727 33.222C41.2581 32.5365 41.6009 31.7125 41.6009 30.7501C41.6009 29.7876 41.2581 28.9636 40.5727 28.2782C39.8873 27.5927 39.0633 27.25 38.1008 27.25H32.5008V34.2501Z" fill="#5CB4FA"/></svg><span id="tstrip-v"></span><span class="chgb" id="tstrip-chg" hidden>변경됨</span></div>
-          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><button type="button" class="tovb loc" id="tovb-loc" hidden aria-label="픽업 상세 위치"><span class="lochd"><svg class="pv" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="72" rx="6" fill="#B9DDFD" fill-opacity="0.22"/><path d="M25.5007 51.7503V20.25H37.7508C40.6675 20.25 43.1466 21.2708 45.1883 23.3125C47.23 25.3542 48.2509 27.8334 48.2509 30.7501C48.2509 33.6668 47.23 36.1459 45.1883 38.1876C43.1466 40.2293 40.6675 41.2502 37.7508 41.2502H32.5008V51.7503H25.5007ZM32.5008 34.2501H38.1008C39.0633 34.2501 39.8873 33.9074 40.5727 33.222C41.2581 32.5365 41.6009 31.7125 41.6009 30.7501C41.6009 29.7876 41.2581 28.9636 40.5727 28.2782C39.8873 27.5927 39.0633 27.25 38.1008 27.25H32.5008V34.2501Z" fill="#5CB4FA"/></svg><span class="lbw"><span class="lb2" id="tovb-loc-lb2" hidden></span><span class="lb" id="tovb-loc-lb"></span></span><span class="chgb" id="tovb-loc-chg" hidden>변경됨</span><span class="tgl" id="tovb-loc-tgl">보기</span></span><span class="lcbody"><span class="tx" id="tovb-loc-tx"></span><span class="rt" id="tovb-loc-rt"></span></span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
+          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><svg class="pv32" width="32" height="32" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g opacity="0.8">
+<rect width="96" height="96" rx="16" fill="#0044A6"/>
+<path d="M34.0005 69.0033V27.0029H50.3339C54.2229 27.0029 57.5284 28.364 60.2506 31.0863C62.9729 33.8085 64.334 37.1141 64.334 41.003C64.334 44.892 62.9729 48.1975 60.2506 50.9197C57.5284 53.642 54.2229 55.0031 50.3339 55.0031H43.3339V69.0033H34.0005ZM43.3339 45.6697H50.8006C52.0839 45.6697 53.1825 45.2128 54.0965 44.2989C55.0103 43.3849 55.4673 42.2863 55.4673 41.003C55.4673 39.7197 55.0103 38.6211 54.0965 37.7072C53.1825 36.7932 52.0839 36.3363 50.8006 36.3363H43.3339V45.6697Z" fill="white"/>
+</g>
+</svg><span class="tp-tx"><span class="tp-a" id="tp-a"></span><span class="tp-b" id="tp-b"></span><span class="tp-chg" id="tp-chg" hidden>변경됨</span><span class="tp-go">보기</span></span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
           <div class="tbar"><div class="tb-info"><b>9분</b><span>1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
         </div>
         <div class="dtoast" id="dtoast"></div>
@@ -1225,9 +1165,16 @@
         <div class="dbottom">
         <div class="dpass">
           <div class="prow"><span class="pic"><svg class="ic" width="28" height="28" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_0_19_10)"><path fill-rule="evenodd" clip-rule="evenodd" d="M42 84C65.196 84 84 65.196 84 42C84 18.804 65.196 0 42 0C18.804 0 0 18.804 0 42C0 65.196 18.804 84 42 84ZM50.4116 27.5621C50.4116 32.6369 46.4355 36.7492 41.5321 36.7492C36.6285 36.7492 32.6526 32.6369 32.6526 27.5621C32.6526 22.4873 36.6285 18.375 41.5321 18.375C46.4355 18.375 50.4116 22.4873 50.4116 27.5621ZM21 60.375L22.694 43.6772C22.694 43.6772 42.4725 41.4653 61.684 43.4777L63 60.172L21 60.375Z" fill="#C2CADB"/></g><defs><clipPath id="clip0_0_19_10"><rect width="28" height="28" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><b>김지혜</b><span class="tel"><svg class="ic" width="24" height="24" viewBox="0 0 84 84" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M53.4992 53.7L51.5826 65.4C51.5826 65.4 41.9416 61.5557 34.3326 51.75C26.7236 41.9443 22.8326 28.35 22.8326 28.35L34.3326 26.4V3H7.50003V27.6314C7.50003 29.4002 7.73162 31.1559 8.29943 32.831C10.0058 37.8648 14.5411 49.5047 22.8326 59.55C29.4371 67.5515 36.4544 73.7153 40.974 77.3405C44.065 79.82 47.9413 81 51.9039 81H76.5V53.7H53.4992Z" fill="white"/></svg></span></div>
-          <div class="preq2"><span class="pf"><span>대화없이</span><img alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAYAAAA+VemSAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAD3xJREFUeNrsnTFwW7kRht9j6yK65tqj3GdMd9eJGvdnq5QbU8W1J6lNCkpFrpWVNpOR3Nil5fQZy1060ZM+pts0pxRXM9hn0ENLlESRDwss8H0zb3i5mQtFAP/bH9gFUFUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKBBTRPYZjKZ9NzH2sy/6vpnHpfuGX0zAOr6nFZEwBBOoH0vUBHqDzMC7bb8VWP/iMg/Tv83AkfAcD+xyvPIC7SXyJ829pFbhC2CHjlhX9JjCLhksa55sW74z56xnzDyYv4gnwgaAZcgWomqz9zz1Is2J0TM79xz5sQ8prcRcC6ilcj6wgu3W8jPFgGfueeVE/OIUYCALdrjgRdur/DmEAG/cs8pNhsBpy7cZzPRFq4jUfmYlW0EnGK03S3IIrdhsQ/9fJmojICjCXfPC3eNFlkKEe+xe14iZASsJVyJskMfdaE9IYu9PmQFGwGHjLhDH3WBiIyAscpwm5CdiA9oCgS8ingHPup2aY0oiJ3ed0I+oykQ8H2EK7nboyq/aimrnLtnh/nxdTo0wTXxim27QLxJIX3xyfcNEIHnClcGyQl2OXlGPhpTokkE/ibqvke8JpDpzQXRmAg8neueVNQrW47GWyXPjTsFi3fgoy7itR+NB0TgcoQruVxZYR4w/rNCdjvtIOC8xStz3LdE3awt9WZJVVx1QeLtectMNVXeXHoRF7FK3SlEvGKXLxBvEayVNC/uFCDeg+rLSjOUxYnr++w3ntSZi1eEO2AsF03Wi1s14gVEjIARLyBiBIx4AREXK2DEC6WJuEa8gIgRMOIFRByBTgbipa4ZlmHgX/xE4IjiFeFSpAGrIIcDnCJgffHK9SVvGX/QAltWD86rjYqXjQnQJmY3QNQGxbtWsREf2mfsnsfWtiJaXMTiCBwIQdfilMyUgP3OIq7uhFD0rR2WVxsSb99bZ4DQbFq5w7g2It5mk3bFsa+gg8yD1y3Mh61YaA5cB03WKiP1BckL2Od7mfeCNs8sHMtTJy5eeRN+qsj3Qjwr/Tjlg+NTj8AniBciW+kjLDTWGWxb6WTHYZ2oeFl1htSsdJKr0qlG4D3EC4lZ6SEReLHoK8L9xJiBBFlPbUErxQh8xDiBREkuN5xUBKZcEgyQVJllagIW8faTs/V/2qyqf4fvs/r5QVVtD5MfwZPdx1X1n8BbZx/2qvr4IsWff+4EvImFnh99+yn2WL3nnNOD8OnoyeuD8MJYlTeH4f9G19b1brKVjP2UKrRSmgOnW3v6ffeLiDVeZMcJH5TohNu8ZII7kWETgRNmiIC/jb6SKO8mHXl+dH/ik4GKSJool6J11ni5SDv/lPylgt1UonAqEXjXwupF/fNRE42LtNJa1nnPzCGjuwg48bnv3AH2Z51TV5Ky0lrWWdr2gZnS954fu8VH4GFlCVkdfX6gIppUrLTKy0Rs8x/7lTGij92oaSTLVVdqqSVJpcRc0HEvkeDRV16Kv763FH1niVqdFTsC71ZGUUstxbTSWtZ598SqeKNH4WgC9juOBlZ7TS21FMtK/36p8vJoFgYfmj4l+Jkfy8VFYEkd2d6sr5RairEqPXmtsOosc970U0Z3sVZF3LceU8AvqgxQSy1pWmmZ2//jZdjvsJUySnYqGEXAfvGqn0XXaaWWtKy0WOeXCtZZxKvw4lOi58d0MRF4UOWEUmpJw0o31vm/47A/RKYdP2Z3WlKUMR0ljeTeVpI66ubWgyqppZC7dNzf3vyGkMji318vLK8638S4ruv17COwvxo0O/F+tYWhB2YoK61pnR9kedBo14/t7C10vidNKqWWQlhpDevcTDPsVVslPbZjCPhpzj2ollpqc1VaY9VZcr3bwypznmYtYL9Sl/3dvirFCW1ZaQ3rrLgJJDLqq9HaEbhfQi9qnSjRhpXWsc7DnFJGSY1xbQE/LaUXm9Xin8MfsNlY6d+XPG9cwzrb2KBvdowTgUOisUWu2XCwhJXWss75VFuVHYH9EntxF5WpbFKXKHrP/LOKdba1Qb8t1jTTSZoRuF+ViFIUaqLpolZawzrb3KBvbqxrCnij1N5UmQe6aLqQldawzk1p6bAqmEc5CrhXco+qHJW6gJVWsc67JyVa53wjsN/w3C25R9VSS7dZaQXrnMEG/Tboam3y14rAxffoV2sZOrV0k5XWsM55bNA3Nea1BNynPz0aiztzrHRw61xOtVWRAv6B/pyxmQrplW+stIZ13it+3nuVRzkJuEt/XolWoVNLUyst1vkvW2G/68kgxw36Jsa8yoZ+N6Gf0J9z2uVv+zq7gEKe4pHvBv1Vuazr+jvzAvarcb/Rn3OQ6CgnYKR+pehtAyj2wfMpt40jBwtN795mpXft1go3G/QR723Bq5+DgPFWd1hcjV1LQaz59pD+iwwROAWs1Q2TMlqULCIwLGJHDe3c0TrMHtIQMDngRaOahb2zSmd+ZcIfchAwr+r7iCPlUsQyN+gnPX3EQqdmTzV2LRVg87HQEC/KpZhaKnuDftEC5pV9X1JLLVlNdZXg2EJ/AWWUK7Sdxl1LiwwSqq2Wb7vA1VhY6JQ7P4E5Jxv0sdCwynw45qovG/QRMKxIrNQS1VYIGFqysRFSS2zQR8DQZjR88kLv+6RMkg36CBhaQvYNvz7U+z45O+vNIe2OgBtGNPNqNEfiLHuB2bLfGeAS8QIZ5SDgS/pxBZa498jyiyMzLnMQMCyL3Dwo52bFQg7Gi/n9gIBNz3tDnya5CP88rap/ndEfzIHhXvZVIl/gO4wW/lvkjOlE/hZjjHMQ8P/ox3siEU8iX0puIPS1LHnyGQtdGjLvTFEsspBGaqlIC31OM9/Tria68ktqKb3pIxE4JSTCJbB98FYRH++QWlqc4A3F1SoJWdRm/68Fftpjg/9ifFfXdVARa0VgXtm3YW2RSIpLSC3dHR0Di1dTwEyc7pr3GkvTpDxXTwSVuZCWgMf05w1YLZRIpdAkXcY5Cfgz/TkH66WKCheHG+ZzTgI+pz/n2NDQmwVkQ37ggwCaFxCppewtND0cYeDLSR4aB+ORWoo35lUE7FfjmAdrWs/pgXTfd78cyRMS2TX1miqt2fmvxgq0ZgTGRk/RWPy5eiCdxq0KpJaiOE5NAX+kX3XSL/MOpNM4pI7U0lc+5ChgIrBGlJLD6OYdSCdWOnT1FKkl9bGuJmA3JxBbUe7rWWOeeNdB8E8G4U+bJLV06cd6dhG46CissVK7iE1WsdJlp5ZUx7i2gN8VKV6NAX2Tdb5vlDb0wkqUdzkLuLwILHPe0JZS5rf3EeWiYk99ykAE1hWwmxuMq5KKOpR2GS1ji5v/Rm5gCEl5qaWRH+PZRuCibLTKucrL5ni1rHRZqSV1hxlDwGW8kjUOZF+1ykrj+tCyUkuvshewX2IfZ92NSgeyt7Gi3LwAQlvpMlJLY830UcwIHOVNpTrvPVY4XaOt8kgtK51/ainKmI4l4NNs570aA/Vhr92qKvciqJ8fhG+b46zPlj4tRsDZrkYrHche7waImNsKl4jHvuspHOqrz7EjsHCcVRcqHcjeRMpAQgvyYrhKxNsWcxzLMQUsq9HZ5BdU0iUi3O1h0P9/FSud37Wlo+IE7Dc855FSUjqQXSVCaljp/O5a6pYYgQX7tXZNyWD4qBXSOl/7LoVjeFRKTPXYKFLAfuJvd0KkVaQg6aLtod7v0jiGR6y01ErnkVrqFSlg61FY5Q5fpTztNTSO4dHKmYenX6yAXRQ+ryymlCRdpJEy0qiUuum7FfYO55Jamkwm/SIF7LGVUtI6kF2jVjkBK51JaqlXrIBdFJZQNrbSUyppkFjWeZ6VDr13uMoitbRRrIBNzYXf6Cy8NKWSkaxzFCttP7XUK1rAPgqn7aPkDl+FlFET8Z4M0vndWm7Admqp6+bB3WIFnHwU1ooQqVjneS8VDSttO7XUK1rAfkU6ySisdYevil1N3UrbTS1tFC1gT3q9p3W2k1KUW8kdzF7ZEgq7qaVe8QL21VnpTIS0TldM1TpfRSu1ZTO11FfXS5J2dTIRn/bJPdG95GT3sc6q86/vw1c+tWlzf3msU4X290/JTiluYNNPBYu10NOdStGttNoxMBplixbdgrwo7FlpVRtdp9wSLhLLhOtZBWCHMxeAthDwFwF33cdFClYaYEHkdMr1oi30jJWWSdY+YwIMoVrQ0Um9NXyFFle/A/NgiwL2yIIWV7+DFTYQ8LdRWMTL1e9ABDYagadlloeMDTBAHwHPF/FBVeIdw2AOrRM6OgbbRqz0mCEC2GiDAp6ZD7OoBSmzgYBvFrHUN+4wRoAIbBQn4jNEDAmjUtDRsdxCvsjjlLECpUbhjvUWciLeQcRQ6jy4k0MrIWIoNQLXObUW2w8hweASVGOdzNpLIvGIYQMJBZU+Al78bXfpnsfYaSjFRndybDHmxJAQGwgYEQMRuCwBz4iYHUwQk6AFHZ3cW8/vYKJiC7KMwp0SWs9XbMniFhsgIKt5cKeUFvQbIETEpJkgmwhcl9iabk4ip5IPGFegGECCaK1TaGPuVByUB7pBo4+Aw8yLsdRg1kZ3Sm5ROTjeV26RaoLQBFnIqmnXrxZH3pAnVYQ7XqEIgly50qFdv0bjEdEYAhKkoAMBXxfygfuQN+U5rQGpz4MR8M1z482KI2wh8XkwAr5dyHJw3tRWk3KC5CIwi1gL4uYvckfxnnuGtAasEBRa1RwRePGGv5yZH5/SIrBkIOgj4PjzY6ni+g5rvTLSdmeFtWEPAacXkfcrFrvuw9i32bprwy33yMtwyzub3MXc6kIWc+B27ZGciPmi4mTMm5Bo+8ovDt7Vjk99O67l9vJqs6ADAYcRctcPvhcVlV1Sa/5KxCvTjyVfirmJeX2ZtkDAccTcm4nK3YIs8jTajmjLa2zd5UIQcLpi7vuI0s/s5527592ykbYwMb90bbSPgG2Lec2LeMN/WrPaIy/aD/Lp723G5Sz4svOVfgg4M0FPI/Qj/8+pDMaxF+xHP/jOmbKsKLyWCjoQcPrC7vuB2PXCngp9LYBIp8/n6T+nLFbjYt5so20RcB4Cn+W2ufVldeUEEssCNS7mfdf2LxnBAEuI2T1H7vk0icdbLDSA3cjcSkEHAgaIJ+Z1jZQbADY7DH1aGsCumFcWMBYa4P42u1+tXud+6XdhAUAkMctJk3vuuVgi+h7RggA2xXzhK+8AwJCYf/Nz6dbEyxwYILCYK5+SKqXqDQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMub/AgwA1aqeXJBXWSsAAAAASUVORK5CYII="></span><span class="pf"><span>내비따라</span><img alt="" src="data:image/png;base64,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"></span></div>
+          <div class="preq">고객 요청사항 보기</div>
         </div>
         <div class="dsheet">
+          <div class="plr" id="plr" hidden>
+            <div class="plr-hd"><svg class="pv24" width="24" height="24" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="72" height="72" rx="12" fill="#0044A6"/>
+<path d="M25.5 51.7503V20.25H37.7501C40.6668 20.25 43.1459 21.2708 45.1876 23.3125C47.2293 25.3542 48.2502 27.8334 48.2502 30.7501C48.2502 33.6668 47.2293 36.1459 45.1876 38.1876C43.1459 40.2293 40.6668 41.2502 37.7501 41.2502H32.5001V51.7503H25.5ZM32.5001 34.2501H38.1001C39.0626 34.2501 39.8865 33.9074 40.572 33.222C41.2573 32.5365 41.6001 31.7125 41.6001 30.7501C41.6001 29.7876 41.2573 28.9636 40.572 28.2782C39.8865 27.5927 39.0626 27.25 38.1001 27.25H32.5001V34.2501Z" fill="white"/>
+</svg><span class="plr-t">고객이 전달한 픽업 위치</span><span class="plr-chg" id="plr-chg" hidden>변경됨</span></div>
+            <div class="plr-bd"><p class="plr-v" id="plr-v"></p><p class="plr-s" id="plr-s">앞에서 탈게요.</p></div>
+          </div>
           <div class="rhead" id="rhead" hidden>고객 위치로 이동 중</div>
           <div class="dcard">
             <div class="dtop">
@@ -1239,27 +1186,9 @@
                 </div>
               </div>
             </div>
-            <div class="dtop2" id="dtop2">
-              <span class="dbadge2">상세</span>
-              <div class="ci2">
-                <p class="dsent"><b id="d-loc"></b><span>에서 탈게요.</span></p>
-                <p class="dway" id="d-way"></p>
-              </div>
-            </div>
           </div>
           <div class="dlist" id="dlist" hidden>
             <div class="irow sm done"><span class="ibadge">출발</span><b>위워크 삼성역점</b><span class="idone">완료</span><span class="inav"><svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#ffffff"/></svg></span></div>
-            <div class="dtop2" id="dtop2b">
-              <span class="dbadge2">상세</span>
-              <div class="ci2">
-                <p class="dsent"><b id="d-loc-b"></b><span>에서 탈게요.</span></p>
-                <p class="dway" id="d-way-b"></p>
-              </div>
-              <span class="tgl2">보기</span>
-            </div>
-            <div class="irow sm"><span class="ibadge">경유1</span><b>AUCOMMERCE</b><span class="inav"><svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#ffffff"/></svg></span></div>
-            <div class="irow sm"><span class="ibadge">경유2</span><b>성수역 4번 출구</b><span class="inav"><svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#ffffff"/></svg></span></div>
-            <div class="irow sm"><span class="ibadge">경유3</span><b>갤러리아 포레</b><span class="inav"><svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#ffffff"/></svg></span></div>
             <div class="irow sm last"><span class="ibadge">도착</span><b>뚝섬역 1번 출구</b><span class="inav"><svg viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M60 23.9998V3.99976L96 29.9998L60 55.9998V39.9998H56C44.7455 39.9998 40 45.544 40 59.9998V91.9998H24V59.9998C24 37.2119 35.3088 23.9998 56 23.9998H60Z" fill="#ffffff"/></svg></span></div>
           </div>
           <div class="dfoot" id="dfoot"><button class="dgo" id="dgo"></button></div>
@@ -1811,7 +1740,7 @@
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     drover:false, droverEdit:false, hilite:false, before:null, ro:false,
     drKind:null, ack:true, drTmr:null, tts:false, dtTmr:null, msg:'', msgUnread:false, matchTmr:null, locOpen:false, locTmr:null, locEvent:null,
-    sending:false, sent:false, tmr:null, opened:null, dstage:'arrived', impr:false, chgFlag:false, hud:false, near:false, stripBlink:0, blinkSeen:0,
+    sending:false, sent:false, tmr:null, opened:null, dstage:'arrived', chgFlag:false, near:false, chgBlink:0, chgSeen:0, tmapDark:false,
 
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
@@ -2463,21 +2392,24 @@
        기사가 다시 학습해야 한다. 같은 자리 같은 모양이 맞다. */
     /* 화면 자체가 갈린다 — 기사는 nav/near 동안 타다 앱이 아니라 T맵에 있다. */
     el('dtmap').hidden = !onTmap();
-    /* 픽업 상세 카드 — 앱과 T맵이 같은 컴포넌트다(Figma 11781:14165).
-       접힘/펼침 상태도 하나다: 한쪽에서 펼치면 다른 쪽도 펼쳐진 채로 있다. */
-    const lp = el('tovb-loc'), ev = S.locEvent;
+    /* 픽업 위치 — T맵 알약과 타다 앱 블록, 두 자리가 같은 값을 말한다 (Figma 12061:51991).
+       표기는 앱 기준 하나: '지하 1층  1902동 3-4호 라인'. 알약은 층과 동 사이에서만 줄이 바뀐다. */
     const show = !!(got && S.current);
-    lp.hidden = !show;
-    lp.classList.toggle('open', S.locOpen);
-    if(show) paintLoc('tovb-loc', S.locOpen, S.current);
-    /* 타다 앱에서는 경로 카드의 '상세' 행이 그 자리다 — 값이 없으면 행이 통째로 없다 */
-    el('dtop2').hidden = !show;
+    el('tovb-loc').hidden = !show;
+    el('plr').hidden = !show;
     if(show){
-      el('d-loc').textContent = loc(S.current)+' ';
-      const w=(S.current.etc||'').trim();
-      el('d-way').textContent = w; el('d-way').hidden = !w;
+      const d=S.current, v=loc(d), k=v.indexOf('\u2002');
+      el('tp-a').textContent = k>0 ? v.slice(0,k) : v;
+      el('tp-b').textContent = k>0 ? v.slice(k+1) : '';
+      el('plr-v').textContent = v;
+      const w=(d.etc||'').trim();
+      el('plr-s').textContent = w || '앞에서 탈게요.';
+      el('tp-chg').hidden = el('plr-chg').hidden = !S.chgFlag;
+      if(S.chgBlink !== S.chgSeen){
+        S.chgSeen = S.chgBlink;
+        ['tp-chg','plr-chg'].forEach(id=>{ const c=el(id); c.classList.remove('blink'); void c.offsetWidth; c.classList.add('blink'); });
+      }
     }
-    /* 카드가 접히거나 펼쳐지면 버블 스택을 다시 아래로 민다 */
     if(window.__reflowOverlays) window.__reflowOverlays();
     /* 카드는 늘 03 pickup-arrived 다 — 이 기능이 실제로 걸리는 시점이 여기다. */
     const arrived = true;
@@ -2496,7 +2428,7 @@
     const stg = S.dstage || 'arrived';
     const prev = (stg === 'preview');
     el('rhead').hidden = (stg === 'go');
-    el('rhead').textContent = prev ? '남은 경로 5개' : '고객 위치로 이동 중';
+    el('rhead').textContent = prev ? '고객 탑승 대기중' : '고객 위치로 이동 중';
     $('.dcard').hidden = prev;
     el('dlist').hidden = !prev;
     el('dfoot').classList.toggle('prev', prev);
@@ -2510,34 +2442,11 @@
     el('dgo').className = 'dgo'+CTA.cls;
     el('dgo').disabled = false;
     el('dgo').innerHTML = CTA.icon + CTA.label;
-    /* 상세 행은 카드와 목록 두 곳에 있다 — 같은 값을 같이 칠한다 */
-    if(show){
-      el('d-loc-b').textContent = el('d-loc').textContent;
-      el('d-way-b').textContent = el('d-way').textContent;
-      el('d-way-b').hidden = el('d-way').hidden;
-    }
-    el('dtop2b').hidden = !show;
     $$('.dstg').forEach(b=>b.classList.toggle('on', b.dataset.dg===stg));
-    $('.dscr').classList.toggle('impr', !!S.impr);
-    el('imprb').classList.toggle('on', !!S.impr);
-    $('.dscr').classList.toggle('hud', !!S.hud);
-    el('hudb').classList.toggle('on', !!S.hud);
-    /* ⓐ 스트립 — 500m 안에서만. 층·동까지만 싣는다(라인·찾아오는 길은 정차 후 앱에서). */
-    const strip = el('tstrip');
-    strip.hidden = !(S.hud && show && S.near);
-    if(!strip.hidden){
-      const d=S.current;
-      el('tstrip-v').textContent = (d.lvl==='under'?'지하 ':'지상 ')+d.floor+'층\u2002'
-        + (d.noDong ? '동 없음' : d.dong.trim()+'동');
-      const cb = el('tstrip-chg');
-      cb.hidden = !S.chgFlag;
-      if(S.stripBlink !== S.blinkSeen){
-        S.blinkSeen = S.stripBlink;
-        cb.classList.remove('blink'); void cb.offsetWidth; cb.classList.add('blink');
-      }
-    }
+    el('dtmap').classList.toggle('dark', !!S.tmapDark);
+    $$('.tth').forEach(b=>b.classList.toggle('on', (b.dataset.th==='dark')===!!S.tmapDark));
     /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
-    $$('.dswb:not(.dstg)').forEach(b=>b.classList.toggle('on',
+    $$('.dswb:not(.dstg):not(.tth)').forEach(b=>b.classList.toggle('on',
       b.dataset.ds === (b.dataset.side==='r' ? S.rphase : S.dview)));
 
     el('fdesc').innerHTML = S.screen==='start'
@@ -2547,34 +2456,6 @@
              : '운행 화면. 입력 전 필드로 뜹니다. 여기서 넣으면 기사는 이동 중에 받습니다.');
   }
 
-  /* 픽업 상세 이벤트(첫 입력·변경·도착 직전)는 새 화면이 아니라 '픽업 상세 카드' 가
-     펼쳐진 채로 뜨는 것이다. 전엔 전폭 오버레이가 따로 있었는데, 같은 값·같은 자리에
-     모양만 달랐다. 오버레이는 이제 고객 메시지 전용이다 — 그건 위치가 아니라 사람 말이다.
-     타이밍은 driver-v2 핸드오프 확정치: 변경 8초 · 도착 임박 3초, 자동 퇴장. */
-  /* 접힘은 흘긋용이라 층·동까지, 펼침은 문장 전체 + 찾아오는 길.
-     헤더 가운데 슬롯은 접힘일 때 '값', 펼침일 때 '상세 위치' 라벨이다. */
-  function paintLoc(pfx, open, d){
-    const lb=el(pfx+'-lb'), tgl=el(pfx+'-tgl'), tx=el(pfx+'-tx'), rt=el(pfx+'-rt');
-    const lb2=el(pfx+'-lb2'), chg=el(pfx+'-chg');
-    tgl.textContent = open ? '접기' : '보기';
-    /* '변경됨' 은 이벤트가 지나가도 남는다 — 기사가 펼쳐 보기 전까지가 '아직 못 본 값' 이다.
-       (시안에는 소멸 조건이 없어 이 규칙은 제안이다) */
-    chg.hidden = !S.chgFlag;
-    if(open){
-      lb2.hidden = true;
-      lb.textContent = '고객 픽업 위치';
-      tx.textContent = loc(d);
-      rt.textContent = (d.etc||'').trim();
-    } else if(S.impr){
-      /* 개선안 ② — 라벨 한 줄 + 층·동 한 줄. 탭 없이 흘긋 본다. */
-      lb2.hidden = false; lb2.textContent = '고객 픽업 위치';
-      lb.textContent = (d.lvl==='under'?'지하 ':'지상 ')+d.floor+'층\u2002'
-        + (d.noDong ? '동 없음' : d.dong.trim()+'동');
-    } else {
-      lb2.hidden = true;
-      lb.textContent = '고객 픽업 위치';
-    }
-  }
   function raiseDrover(kind){
     S.drKind=kind;
     if(kind==='msg'){
@@ -2583,23 +2464,13 @@
       S.drTmr=setTimeout(()=>{ if(S.drover){ S.drover=false; render(); } }, 8000);
     } else {
       if(kind!=='near') S.ack=false;
-      if(kind==='change') S.chgFlag=true;
       if(kind==='near') S.near=true;
-      /* HUD 안 — 알림으로 끼어들지 않는다. 기사가 이 값을 쓰는 건 500m 안이다.
-         500m 밖: 조용히 반영만 / 500m 안: 스트립 제자리 갱신 + 깜빡임 + 짧은 진동. */
-      if(S.hud && kind!=='near'){
-        if(S.near && kind==='change'){
-          S.stripBlink++;
-          try{ if(navigator.vibrate) navigator.vibrate(120); }catch(e){}
-        }
-        render(); speak(); return;
+      /* 값이 바뀌면 두 자리 모두 '변경됨' 이 켜지고 깜빡인다 + 짧은 진동(무음·방해금지면 막힐 수 있어 보조).
+         '변경됨' 은 도착 알리기까지 남는다. */
+      if(kind==='change'){
+        S.chgFlag=true; S.chgBlink++;
+        try{ if(navigator.vibrate) navigator.vibrate(120); }catch(e){}
       }
-      S.locEvent=kind; S.locOpen=true;
-      clearTimeout(S.locTmr);
-      S.locTmr=setTimeout(()=>{
-        if(S.locEvent!==kind) return;
-        S.locEvent=null; S.locOpen=false; render();
-      }, kind==='near' ? 3000 : 8000);
     }
     render();
     speak();
@@ -2643,7 +2514,7 @@
   function setMode(m){
     S.mode=m; S.screen='start';
     clearTimeout(S.tmr); S.tmr=null;
-    S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='arrived'; S.chgFlag=false; S.near=false; S.stripBlink=0; S.blinkSeen=0;
+    S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='arrived'; S.chgFlag=false; S.near=false; S.chgBlink=0; S.chgSeen=0;
     S.drover=false; S.hilite=false; S.before=null;
     S.drKind=null; S.ack=true; S.rphase='match'; S.dview='tmap'; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     if(m==='repeat'){
@@ -2705,28 +2576,10 @@
   /* T맵 → 타다 복귀. 화면 전환일 뿐 상태가 아니다. */
   const backFromTmap = ()=>{ S.dview='app'; S.msgUnread=false; render(); };
   el('tovb-back').addEventListener('click', backFromTmap);
-  /* 알약을 눌러도 타다로 돌아온다 — tovb.tada 와 같은 동작이라 따로 배울 게 없다. */
-  /* 알약은 앱을 바꾸지 않는다 — 제자리에서 펼치고 접는다.
-     펼친 채로 두면 지도를 가리므로 6초 뒤 스스로 접는다(제안값). */
-  /* 자동 접힘을 뒀었지만 담는 내용이 늘면서 뺐다 — 기사가 멈춰서 읽으려고 직접 연 것이고,
-     읽는 도중에 사라지면 다시 열어야 한다. 닫는 것도 기사가 정한다. */
-  /* 카드 탭 = 보기/접기. 확인 버튼·전화는 새 시안에 없다(아래 보고 참고).
-     이벤트로 떠 있는 걸 누르면 먼저 이벤트만 거두고 펼친 채 남는다. */
-  el('tovb-loc').addEventListener('click',()=>{
-    clearTimeout(S.locTmr);
-    if(S.locEvent){ S.locEvent=null; S.ack=true; render(); return; }
-    /* 펼쳐 본 뒤 접으면 확인한 것이다 — 그때 '변경됨' 이 꺼진다 */
-    if(S.locOpen) S.chgFlag=false;
-    S.locOpen=!S.locOpen; render();
-  });
-  /* 개선안 토글 — 다섯 가지가 한 벌로 움직인다 */
-  el('imprb').addEventListener('click',()=>{ S.impr=!S.impr; render(); });
-  el('hudb').addEventListener('click',()=>{
-    S.hud=!S.hud;
-    /* 카드가 사라지므로 펼침 상태도 접어 둔다 */
-    if(S.hud){ S.locOpen=false; S.locEvent=null; clearTimeout(S.locTmr); }
-    render();
-  });
+  /* 알약 = '보기'. 누르면 타다 앱의 픽업 위치 블록으로 간다. 3px 넘게 끌면 드래그라 가지 않는다. */
+  el('tovb-loc').addEventListener('click',()=>{ S.dview='app'; S.msgUnread=false; render(); });
+  /* 실제 T맵은 라이트/다크가 바뀐다 — 두 모드에서 알약을 확인한다 */
+  $$('.tth').forEach(b=>b.addEventListener('click',()=>{ S.tmapDark = (b.dataset.th==='dark'); S.dview='tmap'; render(); }));
   /* 메시지는 타다 앱에 들어가면 읽은 것으로 본다 — 대화는 거기 있다. */
   el('drover-ok').addEventListener('click',()=>{ if(S.drKind==='msg'){ S.msgUnread=false; render(); } });
   /* 타다 앱 → 내비. driver-v2 의 cnavrow(이름 + 내비 아이콘)가 그 길이다. */
@@ -2768,7 +2621,7 @@
       node.addEventListener('pointerup', end);
       node.addEventListener('pointercancel', end);
       /* 3px 넘게 끌었으면 탭이 아니다 — 보기/접기가 딸려 오지 않게 막는다 */
-      node.addEventListener('click', e=>{ if(moved){ e.stopPropagation(); e.preventDefault(); moved=false; } }, true);
+      node.addEventListener('click', e=>{ if(moved){ e.stopImmediatePropagation(); e.preventDefault(); moved=false; } }, true);
     }
     drag(card, clampCard, reflow);
     drag(bub, clampBub, null);
