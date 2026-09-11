@@ -873,6 +873,7 @@
   .tlane span{font-size:18px;} .tlane em{font-style:normal;font-size:14px;font-weight:600;}
   /* T맵 다크 — 실제 T맵은 시간·설정에 따라 라이트/다크가 바뀐다. 알약은 두 모드에서 대비가 같아야 한다. */
   .dtmap.dark{background:#2b2f35;}
+  .dtmap.dark .sb{color:#fff;background:#1c1f24;}
   .dtmap.dark .tmapmap{background:#353a40;}
   .dtmap.dark .tmapmap > svg rect:nth-of-type(1){fill:#353a40;}
   .dtmap.dark .tmapmap > svg rect:nth-of-type(2),
@@ -1768,6 +1769,8 @@
       (d.lvl==='under' ? '지하 ' : '지상 ') + d.floor + '층',
       (d.noDong ? '' : d.dong.trim()+'동') + (d.line ? ' '+lineText(d.line) : '')
     ].filter(x=>x && x.trim()).join('\u2002');
+  /* 기사 쪽 표기 (Figma 12061 앱 블록): 호수 범위면 '3-4호 라인' — T맵 알약도 같은 표기다. */
+  const dloc = d => !d ? '' : loc(Object.assign({}, d, {line: /^\s*\d+\s*[-~]\s*\d+\s*$/.test(d.line||'') ? d.line.trim()+'호 라인' : d.line}));
   /* 값을 조각으로 갈라 둔다. 어디가 바뀌었는지는 조각 단위로만 말할 수 있다. */
   const partsOf = d => ({
     floor:(d.lvl==='under' ? '지하 ' : '지상 ')+d.floor+'층',
@@ -2349,7 +2352,7 @@
        '무슨 일이 있었다' 는 타이틀이 맡고 24sp 두 줄은 위치에 내준다. */
     el('drover-t').textContent = isMsg ? '고객 메시지' : (near ? '곧 도착' : (S.droverEdit ? '픽업 상세 변경' : '픽업 상세'));
     if(isMsg) el('drover-b').textContent = S.msg;
-    else if(got) el('drover-b').textContent = loc(S.current);
+    else if(got) el('drover-b').textContent = dloc(S.current);
     el('tovdot').hidden = !S.msgUnread;
     /* 메시지야말로 음성이 필요하다 — 값과 달리 언제 올지 모르고, 운전 중엔 읽을 수 없다. */
     el('drover-v').hidden = !(S.drover && (got || isMsg));
@@ -2398,7 +2401,7 @@
     el('tovb-loc').hidden = !show;
     el('plr').hidden = !show;
     if(show){
-      const d=S.current, v=loc(d), k=v.indexOf('\u2002');
+      const d=S.current, v=dloc(d), k=v.indexOf('\u2002');
       el('tp-a').textContent = k>0 ? v.slice(0,k) : v;
       el('tp-b').textContent = k>0 ? v.slice(k+1) : '';
       el('plr-v').textContent = v;
@@ -2487,10 +2490,9 @@
   }
   function voiceLine(){
     if(S.drKind==='msg') return '고객 메시지. '+S.msg;
-    if(S.drKind==='first'||S.drKind==='change'||S.drKind==='near'){}
     if(!S.current) return '';
-    if(S.drKind==='near') return '곧 도착합니다. '+loc(S.current)+'.';
-    return (S.drKind==='change' ? '픽업 상세가 바뀌었습니다. ' : '픽업 상세가 도착했습니다. ')+loc(S.current)+'.';
+    if(S.drKind==='near') return '곧 도착합니다. '+dloc(S.current)+'.';
+    return (S.drKind==='change' ? '픽업 상세가 바뀌었습니다. ' : '픽업 상세가 도착했습니다. ')+dloc(S.current)+'.';
   }
 
   /* v2 toast — 기사 화면 안내. 라이더 토스트(#rtoast)와 자리가 다르다. */
