@@ -522,6 +522,8 @@
   .bv::placeholder{color:var(--gray-300);font-weight:400;}
   /* 단위는 고정 문구다. 값보다 한 단계 작게 두면 상자 안에서 무엇이 내용인지 바로 보인다.
      가운데 정렬만 하면 22px 과 16px 의 베이스라인이 어긋나 2px 내려 앉힌다. */
+  /* 지하 층 뒤에 자동으로 붙는 B 표기 — '지하주차장 1층' 이 B1 인지 헷갈린 요청 88건. 칸·선택지는 늘리지 않는다 */
+  .fld .bx{flex:0 0 auto;margin-left:4px;font-size:16px;font-weight:500;color:var(--gray-500);}
   .fld .u{flex:0 0 auto;font-size:16px;font-weight:500;color:var(--gray-950);
     transform:translateY(2px);}
   /* 기본 폭은 em 이라 글자 단계가 커지면 같이 커진다.
@@ -531,7 +533,7 @@
      좁으면 첫 글자를 칠 때 칸이 줄어든다. */
   .bv.fl{--bw:1.2em;}
   .bv.dg{--bw:1.9em;}
-  .bv.ln{--bw:2.4em;}
+  .bv.ln{--bw:1.7em;}   /* 플레이스홀더 '1-2' 폭 */
   /* 도움말은 지금 손대고 있는 칸의 것만, 한 자리에서.
      공용 자리에 쌓아 두면 어느 칸 얘기인지 화면이 말해 주지 못한다. */
   /* 슬롯은 내용이 있을 때만 자리를 차지한다. 사라진 요소의 자리를 지키는 건 데스크톱 습관이고,
@@ -588,7 +590,7 @@
     .sent{font-size:20px;line-height:40px;}
     .fld{height:42px;padding:0 12px;margin-right:6px;}
     .fld.pick{padding:0 10px 0 12px;gap:6px;}
-    .fld .u{font-size:15px;}
+    .fld .u,.fld .bx{font-size:15px;}
     .fld .nn{font-size:15px;}
     .sent{--r1gap:-4px;}
     .ph-body.sform{padding-left:18px;padding-right:18px;}
@@ -597,7 +599,7 @@
     .sent{font-size:24px;line-height:48px;}
     .fld{height:48px;padding:0 16px;margin-right:10px;}
     .fld.pick{padding:0 14px 0 16px;gap:8px;}
-    .fld .u{font-size:17px;}
+    .fld .u,.fld .bx{font-size:17px;}
     .fld .nn{font-size:17px;}
     .sent{--r1gap:0px;}
     .ph-body.sform{padding-left:26px;padding-right:26px;}
@@ -752,6 +754,8 @@
   .plr-bd{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:10px;}
   .plr-v{margin:0;font-size:20px;line-height:30px;font-weight:400;color:#e6e9ef;word-break:keep-all;}
   .plr-v b{font-weight:700;}
+  /* 층 뒤 B 표기 — 16 Regular 흐린 색. 알약(폭 40%)엔 넣지 않는다: 기사가 B 표기를 보는 건 진입한 뒤라 여기서 충분하다 */
+  .plr-b{font-size:16px;font-weight:400;color:var(--dim);}
   .plr-s{margin:0;font-size:16px;line-height:24px;color:var(--dim);word-break:keep-all;}
 
 
@@ -1070,12 +1074,12 @@
               <button type="button" class="fld pick" id="f-lvl" hidden><span class="roll" id="f-lvl-t"><span class="rw"><span>지하</span><span>지상</span></span></span><svg class="ic" width="14" height="14" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.9999 12.3999L34.4873 25.8873L32.0125 28.3622L20.9999 17.3497L9.98732 28.3622L7.51245 25.8873L20.9999 12.3999Z" fill="currentColor"/></svg></button>
               <span class="w" id="f-w-u">지하</span>
               <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="text"
-                     maxlength="3" placeholder="2" aria-label="몇 층" /><span class="u">층</span></label>
+                     maxlength="3" placeholder="2" aria-label="몇 층" /><span class="u">층</span><span class="bx" id="f-floor-b" hidden></span></label>
               <span class="br" id="f-br1"></span>
               <label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="text" maxlength="5"
                      placeholder="101" aria-label="몇 동" /><span class="u">동</span><span class="nn" id="f-dong-nn" hidden>동 없음</span></label>
-              <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="text" maxlength="5"
-                     placeholder="2-5호" aria-label="호수 라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label>
+              <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="text" maxlength="8"
+                     placeholder="1-2" aria-label="라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label>
             </div>
             <div class="fhint" id="f-hint">
               <p class="ft" id="f-hint-t"></p>
@@ -1132,7 +1136,7 @@
           <div class="dbottom">
             <div class="pinfo"><div class="pcard"><div class="prow"><span class="pav"><svg viewBox="0 0 28 28"><path fill-rule="evenodd" clip-rule="evenodd" d="M14 28C21.732 28 28 21.732 28 14C28 6.26801 21.732 0 14 0C6.26801 0 0 6.26801 0 14C0 21.732 6.26801 28 14 28ZM16.8039 9.18737C16.8039 10.879 15.4785 12.2497 13.844 12.2497C12.2095 12.2497 10.8842 10.879 10.8842 9.18737C10.8842 7.49578 12.2095 6.125 13.844 6.125C15.4785 6.125 16.8039 7.49578 16.8039 9.18737ZM7 20.125L7.56467 14.5591C7.56467 14.5591 14.1575 13.8218 20.5613 14.4926L21 20.0573L7 20.125Z" fill="#C2CADB"/></svg></span><span class="pnm">김지혜</span><span class="pcall"><svg class="i" viewBox="0 0 28 28"><path d="M17.83 17.9L17.19 21.8C17.19 21.8 13.98 20.52 11.44 17.25C8.91 13.98 7.61 9.45 7.61 9.45L11.44 8.8V1H2.5V9.21C2.5 9.8 2.58 10.39 2.77 10.94C3.34 12.62 4.85 16.5 7.61 19.85C9.81 22.52 12.15 24.57 13.66 25.78C14.69 26.61 15.98 27 17.3 27H25.5V17.9H17.83Z"/></svg></span></div></div></div>
             <div class="route">
-          <div class="plr" id="plr" hidden><svg class="pv30" width="30" height="30" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="90" height="90" rx="15" fill="#0044A6" fill-opacity="0.7"/><path d="M31.875 64.6908V25.3154H47.1876C50.8335 25.3154 53.9324 26.5915 56.4845 29.1436C59.0366 31.6957 60.3127 34.7946 60.3127 38.4405C60.3127 42.0864 59.0366 45.1853 56.4845 47.7374C53.9324 50.2895 50.8335 51.5656 47.1876 51.5656H40.6251V64.6908H31.875ZM40.6251 42.8156H47.6251C48.8282 42.8156 49.8582 42.3872 50.715 41.5304C51.5717 40.6736 52.0002 39.6436 52.0002 38.4405C52.0002 37.2374 51.5717 36.2075 50.715 35.3506C49.8582 34.4938 48.8282 34.0655 47.6251 34.0655H40.6251V42.8156Z" fill="white"/></svg><div class="plr-bd"><p class="plr-v"><b id="plr-fl"></b> <span id="plr-v"></span></p><p class="plr-s" id="plr-s">고객이 요청한 픽업 위치</p><span class="plr-chg" id="plr-chg" hidden>변경됨</span></div></div>
+          <div class="plr" id="plr" hidden><svg class="pv30" width="30" height="30" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="90" height="90" rx="15" fill="#0044A6" fill-opacity="0.7"/><path d="M31.875 64.6908V25.3154H47.1876C50.8335 25.3154 53.9324 26.5915 56.4845 29.1436C59.0366 31.6957 60.3127 34.7946 60.3127 38.4405C60.3127 42.0864 59.0366 45.1853 56.4845 47.7374C53.9324 50.2895 50.8335 51.5656 47.1876 51.5656H40.6251V64.6908H31.875ZM40.6251 42.8156H47.6251C48.8282 42.8156 49.8582 42.3872 50.715 41.5304C51.5717 40.6736 52.0002 39.6436 52.0002 38.4405C52.0002 37.2374 51.5717 36.2075 50.715 35.3506C49.8582 34.4938 48.8282 34.0655 47.6251 34.0655H40.6251V42.8156Z" fill="white"/></svg><div class="plr-bd"><p class="plr-v"><b id="plr-fl"></b> <span class="plr-b" id="plr-b" hidden></span> <span id="plr-v"></span></p><p class="plr-s" id="plr-s">고객이 요청한 픽업 위치</p><span class="plr-chg" id="plr-chg" hidden>변경됨</span></div></div>
             <div class="rhd" id="rhead" hidden><span class="t" id="rhead-t">남은 경로 4개</span></div>
             <div class="plist" id="dcardlist"><div class="crd"><div class="crd-top"><span class="badge org">출발</span><div class="cinfo"><div class="cnavrow" id="cnavrow"><div class="cname">래미안원베일리</div><span class="cnav" id="cnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></div><div class="caddr">서울 서초구 반포대로 333</div></div></div><div class="cbtnw"><button type="button" class="cbtn go" id="dgo"></button></div></div></div>
             <div class="plist rows" id="dlist" hidden><div class="irow tap nav done"><span class="badge way">출발</span><div class="nm">래미안원베일리</div><span class="irt"><span class="idone">완료</span><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">경유1</span><div class="nm">AUCOMMERCE</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">경유2</span><div class="nm">성수역 4번 출구</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">경유3</span><div class="nm">갤러리아 포레</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">도착</span><div class="nm">뚝섬역 1번 출구</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div></div>
@@ -1729,6 +1733,25 @@
 
   /* ── 문장 ── */
   const lineText = v => { v=(v||'').trim(); return !v?'':(/라인|현관/.test(v)?v:v+' 라인'); };
+  /* 기사 쪽 라인 표기 — 뜻은 추측하지 않고 표기만 통일한다(결과는 '1,2 라인' / '1-2 라인' 두 형태).
+     '-' 는 '1-2'(1·2호 라인) 일 수도 '11-16'(11~16호) 일 수도 있어 쉼표로 바꾸면 틀린다.
+       '1,2호라인'·'1/2'·'1.2'·'1·2'·'1호 2호' → '1,2 라인'   '1~2'·'11~16' → '1-2 라인'·'11-16 라인'
+       '3-4' 그대로 · '123' 그대로(1·2·3 인지 추측 안 함) · '호' 는 뺀다(시안 9/11) */
+  const dLineText = v => {
+    v=(v||'').trim(); if(!v) return '';
+    if(/현관/.test(v)) return v;
+    let s=v.replace(/(\d)\s+(?=\d)/g,'$1,').replace(/\s+/g,'')
+           .replace(/라인$/,'').replace(/호$/,'').replace(/호(?=[\d,\/.·ㆍ~～〜\-–—])/g,',')
+           .replace(/[\/.·ㆍ、，]/g,',').replace(/[~～〜–—]/g,'-')
+           .replace(/,(?=-)|(?<=-),/g,'').replace(/,+/g,',').replace(/-+/g,'-').replace(/^[,\-]+|[,\-]+$/g,'');
+    return s ? s+' 라인' : '';
+  };
+  /* 지하 층의 B 표기. 숫자 층만 — 'L층' 같은 글자 층이나 지상에는 붙이지 않는다.
+     단지 표지판이 표준과 다른 경우(정문 지층이 B1 등)는 못 푼다 — 그건 찾아오는 길에 쓴다. */
+  const bLevel = d => {
+    const f=String((d && d.floor) || '').trim();
+    return (d && d.lvl==='under' && /^\d{1,2}$/.test(f) && +f>0) ? 'B'+(+f) : '';
+  };
   /* Figma 진입점 카드 실측: '지하 1층 · 1902동 23라인 · 3번 게이트로 들어와주세요'.
      꼬리('앞에서 탈게요')는 빠지고 찾아오는 길이 같은 문장에 · 로 이어진다. */
   const core = d => [
@@ -1741,13 +1764,13 @@
      정보고, 오버레이는 운전 중 흘긋 보는 자리라 위치 한 줄이 들어가야 한다. */
   const loc = d => !d ? '' : [
       (d.lvl==='under' ? '지하 ' : '지상 ') + d.floor + '층',
-      (d.noDong ? '' : d.dong.trim()+'동') + (d.line ? ' '+lineText(d.line) : '')
+      (d.noDong ? '' : d.dong.trim()+'동') + (d.line ? ' '+dLineText(d.line) : '')
     ].filter(x=>x && x.trim()).join('\u2002');
   /* 값을 조각으로 갈라 둔다. 어디가 바뀌었는지는 조각 단위로만 말할 수 있다. */
   const partsOf = d => ({
     floor:(d.lvl==='under' ? '지하 ' : '지상 ')+d.floor+'층',
     dong : d.noDong ? '동 없음' : d.dong.trim()+'동',
-    line : (d.noLine || !d.line.trim()) ? '라인 없음' : lineText(d.line),
+    line : (d.noLine || !d.line.trim()) ? '라인 없음' : dLineText(d.line),
     etc  : (d.etc||'').trim()
   });
   const deltaOf = (a,b) => {
@@ -1927,6 +1950,7 @@
     if(!inline) el('f-w-u').hidden = false;
 
     const fl=el('f-floor'); fl.value = d.floor ? String(d.floor) : '';
+    const bl=bLevel(d); el('f-floor-b').textContent=bl; el('f-floor-b').hidden=!bl;
     const dg=el('f-dong');  dg.value = d.dong;
     el('f-line2').value = d.line;
     /* '라인 없음' 은 빈칸이 아니라 고른 답이다. 칸을 지우고 답을 그 자리에 놓는다 */
@@ -2089,7 +2113,9 @@
       ev.preventDefault();
       S.d.noLine=false; renderSentence(); setTimeout(()=>el('f-line2').focus(),20);
     });
-    /* 문장에 '라인' 이라는 글자가 이미 찍혀 있다. 값에 또 적으면 '3,5호라인 라인' 이 된다 */
+    /* 문장에 '라인' 이라는 글자가 이미 찍혀 있다. 값에 또 적으면 '3,5호라인 라인' 이 된다.
+       그 밖의 표기(쉼표·슬래시·물결·'호')는 막지 않는다 — 입력은 자유롭게, 기사에게 보일 때만 dLineText 로 정리한다.
+       최대 8자: '11,12,13' 이 5자 제한에서 잘렸다. 네이티브는 숫자·기호 자판(iOS numbersAndPunctuation)을 기본으로 — 숫자 패드엔 '-' 가 없다. */
     const ln2=el('f-line2');
     ln2.addEventListener('input',ev=>{
       const v=ev.target.value.replace(/\s*라인\s*$/,'');
@@ -2382,6 +2408,7 @@
       const [fl, rest] = split(loc(d));
       el('tp-fl').textContent = el('plr-fl').textContent = fl;
       el('tp-v').textContent = el('plr-v').textContent = rest;
+      const bl=bLevel(d); el('plr-b').textContent=bl; el('plr-b').hidden=!bl;
       const w=(d.etc||'').trim();
       el('plr-s').textContent = w || '고객이 요청한 픽업 위치';
       el('tp-chg').hidden = el('plr-chg').hidden = !S.chgFlag;
