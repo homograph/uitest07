@@ -881,7 +881,7 @@
      휴대폰 폭에서는 축소가 아니라 세로로 쌓는다. 250px 로 줄이면 어차피 못 읽는다. */
   .phbox{width:var(--pw,360px);height:780px;}
   @media (max-width:920px){
-    .stage{gap:20px;}
+    .stage{column-gap:20px;}
     .phbox{width:calc(var(--pw,360px)*.85);height:663px;}
     .phone{transform:scale(.85);transform-origin:top left;}
     .hd h1{font-size:19px;line-height:27px;}
