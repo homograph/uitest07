@@ -762,10 +762,10 @@
   /* 01·03 은 CTA 가 카드 안(navy2), 04 는 Footer(fixed)(navy) 다 — 면만 갈린다 */
   .dfoot{padding:0 20px 24px;background:rgba(40,56,115,.7);}
   .dfoot.prev{padding-bottom:20px;background:var(--navy);}
-  .dgo{margin:0;}
-  /* v2 cbtn — 카드 밖에 붙은 전폭 바가 아니라 카드 '안' 의 버튼이다.
+  /* v2 cbtn — Figma 12061 button container pad[0,20,24,20] 안의 BarFull: 좌우를 꽉 채운다.
+     여백은 .dfoot 패딩 하나가 맡는다(버튼 margin 을 겹치면 안쪽으로 한 번 더 들어간다).
      높이는 차량 거치 상태에서 누를 것을 전제로 68~78 사이에서 글자 배율을 따라간다. */
-  .dgo{width:auto;margin:0 20px 22px;border:none;border-radius:4px;font:inherit;
+  .dgo{width:100%;box-sizing:border-box;margin:0;border:none;border-radius:4px;font:inherit;
     min-height:clamp(68px,calc(48px + 20px),78px);padding:10px 16px;
     font-size:20px;line-height:30px;font-weight:700;
     background:var(--off);color:var(--ink);display:flex;align-items:center;
@@ -1178,7 +1178,7 @@
 </svg><span class="plr-t">고객이 전달한 픽업 위치</span><span class="plr-chg" id="plr-chg" hidden>변경됨</span></div>
             <div class="plr-bd"><p class="plr-v" id="plr-v"></p><p class="plr-s" id="plr-s">앞에서 탈게요.</p></div>
           </div>
-          <div class="rhead" id="rhead" hidden>고객 위치로 이동 중</div>
+          <div class="rhead" id="rhead" hidden>고객 탑승 대기중</div>
           <div class="dcard">
             <div class="dtop">
               <div class="row">
@@ -2421,8 +2421,6 @@
     if(window.__reflowOverlays) window.__reflowOverlays();
     /* 카드는 늘 03 pickup-arrived 다 — 이 기능이 실제로 걸리는 시점이 여기다. */
     const arrived = true;
-    el('rhead').hidden = false;
-    el('rhead').textContent = '고객 위치로 이동 중';
     el('cnav').hidden = !arrived;
     /* 스펙(driver-v2 핸드오프 상태머신): 픽업 구간의 버튼은 둘뿐이다.
          01 pickup-go      [고객 위치로 출발하기]  → 탭 즉시 pickup-arrived 확정 + T맵
@@ -2435,8 +2433,8 @@
        내비 위 tada 버튼으로 들어와 여기서 본다. CTA 를 누르면 다음 단계로 넘어간다. */
     const stg = S.dstage || 'arrived';
     const prev = (stg === 'preview');
-    el('rhead').hidden = (stg === 'go');
-    el('rhead').textContent = prev ? '고객 탑승 대기중' : '고객 위치로 이동 중';
+    /* RouteHeader 는 04(고객 탑승 대기중)에만 있다 — 01·03 의 '고객 위치로 이동 중' 은 뺐다 */
+    el('rhead').hidden = !prev;
     $('.dcard').hidden = prev;
     el('dlist').hidden = !prev;
     el('dfoot').classList.toggle('prev', prev);
