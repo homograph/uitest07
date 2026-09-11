@@ -484,14 +484,16 @@
   }
   .fld.pick:hover{background:var(--gray-80);}
   .fld.pick:focus{box-shadow:inset 0 0 0 1.5px #000;}
-  .sent{display:flex;flex-wrap:wrap;align-items:center;margin:0;
+  /* Figma row1·row2 = wrap 줄간격 8 — 폭이 모자라 '동'·'라인' 칸이 세로로 접히면 그 사이가 8 이다(전엔 0 이라 붙었다) */
+  .sent{display:flex;flex-wrap:wrap;align-items:center;row-gap:8px;margin:0;
     font-size:22px;line-height:42px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
   .sent .w{flex:0 0 auto;}
   .sent .w:not(.tail2){margin-right:8px;}
   /* 접히는 자리를 고정한다. 우연히 접히면 '1012동'과 '2-5호라인'처럼
      한 덩어리인 주소가 두 줄로 갈라진다. */
   /* 줄바꿈 자리에 실제 높이를 준다. line-height 만으로는 '지하 2층' 과 '87동' 줄이 붙어 보였다 */
-  .sent .br{flex:0 0 100%;height:14px;}
+  /* row1→row2 는 14(sentence gap). 줄간격 8 이 br 위아래로 두 번 붙으므로 br 은 높이 0 · -2 로 맞춘다 */
+  .sent .br{flex:0 0 100%;height:0;margin-bottom:-2px;}
   /* 글꼴을 키우면 한 줄에 두 칸이 안 들어간다. 웹은 줄바꿈이 알아서 한 칸씩 내리지만
      네이티브 HStack 은 안 넘어간다 — 구현할 때 flow 레이아웃이나 fontScale 분기가 필요하다. */
   .sent .br + .fld{margin-left:0;}
@@ -567,6 +569,9 @@
      접기와 지우기를 나누면 '접었는데 값은 남아 있는' 상태가 생기는데,
      그 값은 화면에 안 보이면서 기사에게는 가므로 사용자가 통제를 잃는다. */
   .addetc.open #f-etc-v{display:none;}
+  /* Figma container = [etc-header 50 + text box] 간격 0. .fform 의 gap20 이 둘 사이에 끼지 않게 당긴다 */
+  .addetc + .fopt{margin-top:-20px;}
+  .fopt .askhelp{margin-top:20px;}
   .fopt{width:100%;margin-top:0;padding-top:0;border-top:none;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .fopt .flab3{margin:0 0 9px;display:flex;align-items:center;font-size:15px;line-height:22px;
@@ -582,7 +587,7 @@
     .fld.pick{padding:0 10px 0 12px;gap:6px;}
     .fld .u{font-size:15px;}
     .fld .nn{font-size:15px;}
-    .sent .br{height:12px;}
+    .sent .br{height:0;margin-bottom:-4px;}
     .ph-body.sform{padding-left:18px;padding-right:18px;}
   }
   @container (min-width: 400px){
@@ -591,7 +596,7 @@
     .fld.pick{padding:0 14px 0 16px;gap:8px;}
     .fld .u{font-size:17px;}
     .fld .nn{font-size:17px;}
-    .sent .br{height:16px;}
+    .sent .br{height:0;margin-bottom:0;}
     .ph-body.sform{padding-left:26px;padding-right:26px;}
   }
 
@@ -834,7 +839,7 @@
     display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.4);}
   .tovdot[hidden]{display:none;}
   /* ══ T맵 위 픽업 위치 알약 (Figma 12071 "pickup location request bubble" · 9/11 13:54 수정) ══
-     시안: 세로 pad10 · gap4 · r16 · 폭은 내용에 맞춤(160 / 변경 152)
+     시안: 세로 pad10 · gap4 · r16 · 폭은 내용에 맞춤, 최대 = 화면 가로 40%(사용자 지정 9/11) — 넘치면 줄바꿈, 높이는 내용만큼
        머리 행 gap8: P 타일 24 원형(#0044A6 70%) + 층 '지하 1층' 20/30 Bold #000
        동·라인 '1902동 3-4 라인' 18/26 Regular
        마지막 줄: '고객 요청' 16/24 Bold  ↔  변경 시 '변경됨' 16/24 Bold 가 그 자리를 대신한다.
@@ -845,14 +850,14 @@
       · 컨테이너 fill 은 시안대로 #FFF 90% — 내비를 덜 가리는 게 우선이다(사용자 결정 9/11).
       · 글자색만 대비용으로 둔다: '고객 요청' #32A2FA → #0074D7 · '변경됨' #FE4C00 → #CC3600 · 그림자 */
   .tpill{position:absolute;top:61px;right:0;z-index:6;touch-action:none;
-    display:flex;flex-direction:column;align-items:stretch;gap:4px;width:max-content;max-width:220px;box-sizing:border-box;
+    display:flex;flex-direction:column;align-items:stretch;gap:4px;width:max-content;max-width:40%;box-sizing:border-box;
     padding:10px;border:1px solid #99a5c0;border-radius:16px;background:rgba(255,255,255,.9);
     box-shadow:0 2px 8px rgba(0,0,0,.18);font:inherit;text-align:left;cursor:pointer;}
   .tpill[hidden]{display:none;}
   .tp-hd{display:flex;align-items:center;gap:8px;}
   .tp-hd .tp-ic{flex:0 0 auto;display:block;width:24px;height:24px;border-radius:50%;}
-  .tp-hd b{font-size:20px;line-height:30px;font-weight:700;color:#000;white-space:nowrap;}
-  .tp-v{font-size:18px;line-height:26px;font-weight:400;color:#000;word-break:keep-all;}
+  .tp-hd b{min-width:0;font-size:20px;line-height:30px;font-weight:700;color:#000;word-break:keep-all;overflow-wrap:anywhere;}
+  .tp-v{font-size:18px;line-height:26px;font-weight:400;color:#000;word-break:keep-all;overflow-wrap:anywhere;}
   .tp-v:empty{display:none;}
   .tp-go,.tp-chg{font-size:16px;line-height:24px;font-weight:700;white-space:nowrap;}
   .tp-go{color:#0074d7;}
