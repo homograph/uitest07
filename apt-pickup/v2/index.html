@@ -648,7 +648,7 @@
   .dscr .mbtn{width:40px;height:40px;display:flex;align-items:center;justify-content:center;color:var(--n1);flex:0 0 auto;transition:transform .1s ease,filter .1s ease;}
   .dscr .mbtn svg{width:22px;height:22px;fill:currentColor;}
   .dscr .abr{display:flex;gap:8px;align-items:center;}
-  .dscr .achip{display:flex;align-items:center;gap:6px;background:rgba(35,53,101,.8);color:var(--ef);font-size:16px;font-weight:700;padding:8px 10px;border-radius:8px;white-space:nowrap;}
+  .dscr .achip{display:flex;align-items:center;gap:6px;background:rgba(35,53,101,.8);color:var(--ef);font-size:16px;line-height:20px;font-weight:700;padding:8px 10px;border-radius:8px;white-space:nowrap;}
   .dscr .achip.lm{color:var(--lemon);} .dscr .achip .ld{width:8px;height:8px;border-radius:50%;background:var(--lemon);}
   .dbody{flex:1 1 auto;position:relative;min-height:0;overflow:hidden;background:#E7ECF0;}
   .dmap{position:absolute;inset:0;background:#E7ECF0;}
@@ -2510,12 +2510,15 @@
       S.dstage='preview';
       /* 변경됨은 여기서 꺼진다 — 스트립도 이 순간 할 일이 끝난다 */
       S.chgFlag=false;
-      if(!told()){
+      const first = !told();
+      if(first){
         S.rphase='arrived';
-        dtoast('고객에게 도착을 알렸어요');
         if(S.opened==='voyage' && $('#phscr').classList.contains('on') && S.value) openForm('voyage', true);
       }
-      render(); return;
+      render();
+      /* 04 로 그린 뒤에 띄워야 운행 시작하기 위로 비껴간다(v2 toast) */
+      if(first) dtoast('고객에게 도착을 알렸어요');
+      return;
     }
   });
   /* 04 preview [운행 시작하기] — 이 프로토타입의 범위 밖이다(픽업까지만 다룬다) */
@@ -2552,7 +2555,8 @@
       const min = card.offsetTop + card.offsetHeight + GAP;
       return Math.max(min, Math.min(y, Math.max(min, H()-bub.offsetHeight)));
     };
-    const reflow = () => { bub.style.top = clampBub(bub.offsetTop)+'px'; };
+    /* 숨겨진 동안(타다 앱 보기)엔 offsetTop 이 0 이라 재면 위치가 무너진다 — 보일 때만 맞춘다 */
+    const reflow = () => { if(!bub.offsetParent) return; bub.style.top = clampBub(bub.offsetTop)+'px'; };
     function drag(node, clamp, after){
       let id=null, y0=0, t0=0, moved=false;
       node.addEventListener('pointerdown', e=>{
