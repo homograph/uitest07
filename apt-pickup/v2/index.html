@@ -1756,10 +1756,11 @@
     return (d && d.lvl==='under' && /^\d{1,2}$/.test(f) && +f>0) ? 'B'+(+f) : '';
   };
   /* Figma 진입점 카드 실측: '지하 1층 · 1902동 23라인 · 3번 게이트로 들어와주세요'.
-     꼬리('앞에서 탈게요')는 빠지고 찾아오는 길이 같은 문장에 · 로 이어진다. */
+     꼬리('앞에서 탈게요')는 빠지고 찾아오는 길이 같은 문장에 · 로 이어진다.
+     라인은 카드도 같은 규칙(dLineText) — '3-4 라인' / '1,2 라인'. 가운뎃점은 이 문장의 구간 구분자라 라인 안에 쓰지 않는다(9/11 결정). */
   const core = d => [
       (d.lvl==='under' ? '지하 ' : '지상 ') + d.floor + '층',
-      (d.noDong ? '' : d.dong.trim()+'동') + (d.line ? ' '+lineText(d.line) : ''),
+      (d.noDong ? '' : d.dong.trim()+'동') + (d.line ? ' '+dLineText(d.line) : ''),
       (d.etc||'').trim()
     ].filter(x=>x && x.trim()).join(' · ');
   const sentence = d => !d ? '' : core(d);
