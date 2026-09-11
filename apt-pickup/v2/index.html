@@ -838,7 +838,7 @@
        머리 행 gap8: P 타일 24 원형(#0044A6 70%) + 층 '지하 1층' 20/30 Bold #000
        동·라인 '1902동 3-4 라인' 18/26 Regular
        마지막 줄: '고객 요청' 16/24 Bold  ↔  변경 시 '변경됨' 16/24 Bold 가 그 자리를 대신한다.
-     자리: T맵 지도 위 61 · 오른쪽 끝. 버블 스택은 그 아래 10(지도 위 180).
+     자리: T맵 지도 위 61 · 오른쪽 끝. 버블 스택은 그 아래 9(지도 위 180).
      '운행 시작 전' 두 번째 시안은 알약·버블을 왼쪽 끝에 붙인 모습이다 — 좌우로 끌면 가까운 쪽 끝에 붙는다.
      '운행 시작 후'(04 운행 시작하기 이후)에는 알약이 없다.
      시안과 다르게 둔 것(두 모드 대비 — 앞선 결정 유지):
@@ -2640,7 +2640,8 @@
      버블은 언제나 카드보다 아래를 유지한다 — 순서가 뒤집히면 두 층의 관계가 깨진다.
      카드가 펼쳐져 키가 커지면 버블을 아래로 밀어낸다. */
   (function(){
-    const GAP=10, card=el('tovb-loc'), bub=el('tovr');
+    /* 시안 실측: 알약 아래 끝(지도 위 171) → 버블 180 = 9. 왼쪽 변형도 345 → 354 로 같다 */
+    const GAP=9, card=el('tovb-loc'), bub=el('tovr');
     const H = () => card.parentElement.clientHeight;
     const clampCard = y => Math.max(10, Math.min(y, Math.max(10, H()-card.offsetHeight-GAP-bub.offsetHeight)));
     const clampBub  = y => {
