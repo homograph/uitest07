@@ -740,23 +740,24 @@
   .dscr .barfull{flex:none;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:clamp(68px, calc(48px + 20px), 78px);padding:10px 16px;background:var(--blue);color:#fff;font:inherit;font-size:20px;line-height:30px;font-weight:700;white-space:nowrap;cursor:pointer;position:relative;overflow:hidden;border:none;transition:transform .11s ease,filter .11s ease;-webkit-tap-highlight-color:transparent;user-select:none;}
   .dscr .barfull.round{width:auto;border-radius:4px;margin:0 20px 20px;}
   .dscr .barfull.round:active{transform:scale(.98);filter:brightness(.9);}
-  /* ══ 타다 앱 픽업 위치 블록 (Figma 12071 "pickup location request" · 9/11 13:54 수정) ══
+  /* ══ 타다 앱 픽업 위치 블록 (Figma 12061:51991 "pickup location request" · 9/11 15:14 수정, case 섹션 기준) ══
      가로 pad20 · gap16: P 타일 30 원형(#0044A6 70%) + 세로 묶음 gap10
-       ① '지하 1층 1902동 3-4 라인' 20/30 #E6E9EF — 층만 Bold, 동·라인은 Regular(글자 단위)
-       ② 16/24 #99A5C0 — 찾아오는 길이 있으면 그 문장, 없으면 '고객이 요청한 픽업 위치'
-       ③ '변경됨' 15/22 Bold #FE4C00 (남색 면 위 5.05:1 — 시안 색 그대로)
-     높이 104 · 찾아오는 길 128 · 변경 136 · 둘 다 160. 자리: 01·03·04 시트 맨 위. */
+       ① '지하 1층 1902동 3-4 라인' 20/30 #E6E9EF — 층만 Bold (+ 층 뒤 B 표기, 시안엔 아직 없음)
+       ② 찾아오는 길 18/26 Regular #99A5C0 — 없으면 줄 자체가 없다('고객이 요청한 픽업 위치' 라벨은 빠졌다)
+       ③ 상태 15/22 Bold — '고객이 작성함' #32A2FA ↔ 바뀌면 '고객이 변경함' #FE4C00
+     높이 102 · 찾아오는 길 있으면 164(2줄). ⚠ 시안 03 '상세 위치 변경' 화면 인스턴스는 아직 '작성함' — case 섹션의 '변경O' 를 따른다. */
   .plr{display:flex;align-items:flex-start;gap:16px;padding:20px;background:var(--navy);}
   .plr .pv30{flex:0 0 auto;display:block;width:30px;height:30px;border-radius:50%;}
   .plr[hidden]{display:none;}
-  .plr-chg{align-self:flex-start;font-size:15px;line-height:22px;font-weight:700;color:#fe4c00;}
+  .plr-chg{align-self:flex-start;font-size:15px;line-height:22px;font-weight:700;color:#32a2fa;}
+  .plr-chg.chg{color:#fe4c00;}
   .plr-chg[hidden]{display:none;}
   .plr-bd{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:10px;}
   .plr-v{margin:0;font-size:20px;line-height:30px;font-weight:400;color:#e6e9ef;word-break:keep-all;}
   .plr-v b{font-weight:700;}
   /* 층 뒤 B 표기 — 16 Regular 흐린 색. 알약(폭 40%)엔 넣지 않는다: 기사가 B 표기를 보는 건 진입한 뒤라 여기서 충분하다 */
   .plr-b{font-size:16px;font-weight:400;color:var(--dim);}
-  .plr-s{margin:0;font-size:16px;line-height:24px;color:var(--dim);word-break:keep-all;}
+  .plr-s{margin:0;font-size:18px;line-height:26px;color:var(--dim);word-break:keep-all;}
 
 
   /* ══════ T맵 화면 (ptmap) — driver-v2 에서 그대로 ══════
@@ -1074,9 +1075,9 @@
               <button type="button" class="fld pick" id="f-lvl" hidden><span class="roll" id="f-lvl-t"><span class="rw"><span>지하</span><span>지상</span></span></span><svg class="ic" width="14" height="14" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.9999 12.3999L34.4873 25.8873L32.0125 28.3622L20.9999 17.3497L9.98732 28.3622L7.51245 25.8873L20.9999 12.3999Z" fill="currentColor"/></svg></button>
               <span class="w" id="f-w-u">지하</span>
               <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="text"
-                     maxlength="3" placeholder="2" aria-label="몇 층" /><span class="u">층</span><span class="bx" id="f-floor-b" hidden></span></label>
+                     maxlength="1" placeholder="2" aria-label="몇 층" /><span class="u">층</span><span class="bx" id="f-floor-b" hidden></span></label>
               <span class="br" id="f-br1"></span>
-              <label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="text" maxlength="5"
+              <label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="text" maxlength="8"
                      placeholder="101" aria-label="몇 동" /><span class="u">동</span><span class="nn" id="f-dong-nn" hidden>동 없음</span></label>
               <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="text" maxlength="8"
                      placeholder="1-2" aria-label="라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label>
@@ -1136,7 +1137,7 @@
           <div class="dbottom">
             <div class="pinfo"><div class="pcard"><div class="prow"><span class="pav"><svg viewBox="0 0 28 28"><path fill-rule="evenodd" clip-rule="evenodd" d="M14 28C21.732 28 28 21.732 28 14C28 6.26801 21.732 0 14 0C6.26801 0 0 6.26801 0 14C0 21.732 6.26801 28 14 28ZM16.8039 9.18737C16.8039 10.879 15.4785 12.2497 13.844 12.2497C12.2095 12.2497 10.8842 10.879 10.8842 9.18737C10.8842 7.49578 12.2095 6.125 13.844 6.125C15.4785 6.125 16.8039 7.49578 16.8039 9.18737ZM7 20.125L7.56467 14.5591C7.56467 14.5591 14.1575 13.8218 20.5613 14.4926L21 20.0573L7 20.125Z" fill="#C2CADB"/></svg></span><span class="pnm">김지혜</span><span class="pcall"><svg class="i" viewBox="0 0 28 28"><path d="M17.83 17.9L17.19 21.8C17.19 21.8 13.98 20.52 11.44 17.25C8.91 13.98 7.61 9.45 7.61 9.45L11.44 8.8V1H2.5V9.21C2.5 9.8 2.58 10.39 2.77 10.94C3.34 12.62 4.85 16.5 7.61 19.85C9.81 22.52 12.15 24.57 13.66 25.78C14.69 26.61 15.98 27 17.3 27H25.5V17.9H17.83Z"/></svg></span></div></div></div>
             <div class="route">
-          <div class="plr" id="plr" hidden><svg class="pv30" width="30" height="30" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="90" height="90" rx="15" fill="#0044A6" fill-opacity="0.7"/><path d="M31.875 64.6908V25.3154H47.1876C50.8335 25.3154 53.9324 26.5915 56.4845 29.1436C59.0366 31.6957 60.3127 34.7946 60.3127 38.4405C60.3127 42.0864 59.0366 45.1853 56.4845 47.7374C53.9324 50.2895 50.8335 51.5656 47.1876 51.5656H40.6251V64.6908H31.875ZM40.6251 42.8156H47.6251C48.8282 42.8156 49.8582 42.3872 50.715 41.5304C51.5717 40.6736 52.0002 39.6436 52.0002 38.4405C52.0002 37.2374 51.5717 36.2075 50.715 35.3506C49.8582 34.4938 48.8282 34.0655 47.6251 34.0655H40.6251V42.8156Z" fill="white"/></svg><div class="plr-bd"><p class="plr-v"><b id="plr-fl"></b> <span class="plr-b" id="plr-b" hidden></span> <span id="plr-v"></span></p><p class="plr-s" id="plr-s">고객이 요청한 픽업 위치</p><span class="plr-chg" id="plr-chg" hidden>변경됨</span></div></div>
+          <div class="plr" id="plr" hidden><svg class="pv30" width="30" height="30" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="90" height="90" rx="15" fill="#0044A6" fill-opacity="0.7"/><path d="M31.875 64.6908V25.3154H47.1876C50.8335 25.3154 53.9324 26.5915 56.4845 29.1436C59.0366 31.6957 60.3127 34.7946 60.3127 38.4405C60.3127 42.0864 59.0366 45.1853 56.4845 47.7374C53.9324 50.2895 50.8335 51.5656 47.1876 51.5656H40.6251V64.6908H31.875ZM40.6251 42.8156H47.6251C48.8282 42.8156 49.8582 42.3872 50.715 41.5304C51.5717 40.6736 52.0002 39.6436 52.0002 38.4405C52.0002 37.2374 51.5717 36.2075 50.715 35.3506C49.8582 34.4938 48.8282 34.0655 47.6251 34.0655H40.6251V42.8156Z" fill="white"/></svg><div class="plr-bd"><p class="plr-v"><b id="plr-fl"></b> <span class="plr-b" id="plr-b" hidden></span> <span id="plr-v"></span></p><p class="plr-s" id="plr-s" hidden></p><span class="plr-chg" id="plr-chg">고객이 작성함</span></div></div>
             <div class="rhd" id="rhead" hidden><span class="t" id="rhead-t">남은 경로 4개</span></div>
             <div class="plist" id="dcardlist"><div class="crd"><div class="crd-top"><span class="badge org">출발</span><div class="cinfo"><div class="cnavrow" id="cnavrow"><div class="cname">래미안원베일리</div><span class="cnav" id="cnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></div><div class="caddr">서울 서초구 반포대로 333</div></div></div><div class="cbtnw"><button type="button" class="cbtn go" id="dgo"></button></div></div></div>
             <div class="plist rows" id="dlist" hidden><div class="irow tap nav done"><span class="badge way">출발</span><div class="nm">래미안원베일리</div><span class="irt"><span class="idone">완료</span><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">경유1</span><div class="nm">AUCOMMERCE</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">경유2</span><div class="nm">성수역 4번 출구</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">경유3</span><div class="nm">갤러리아 포레</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">도착</span><div class="nm">뚝섬역 1번 출구</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div></div>
@@ -2065,8 +2066,9 @@
        더 나쁘게는 '여기는 숫자만 되나 보다' 하고 포기한다. */
     const fl=el('f-floor'), dg=el('f-dong');
     fl.addEventListener('input',ev=>{
-      /* 숫자만 남기던 필터를 걷었다. 'L층' 처럼 글자로 된 층이 실제로 있다. */
-      const v=ev.target.value.slice(0,3);
+      /* 숫자만 남기던 필터를 걷었다. 'L층' 처럼 글자로 된 층이 실제로 있다.
+         Figma 주석(핸드오프 12071:77772): 층 최대 1글자 · 동 8글자 · 라인 8글자, 최대로 채우면 다음 빈 칸으로, 엔터도 다음 빈 칸으로. */
+      const v=ev.target.value.slice(0,1);
       ev.target.value=v; S.d.floor = v ? v : null; S.d.floorAuto=false; fitBv(ev.target);
       renderSentence();
       if(v) dg.focus();                       /* 층은 한 자리다. 채우면 바로 넘긴다 */
@@ -2076,6 +2078,7 @@
       ev.target.value=S.d.dong; fitBv(ev.target);
       const ok=ready(S.d), was=!el('f-addetc').hidden || !el('fopt').hidden;
       if(ok!==was) renderSentence(); else paintFoot();
+      if(S.d.dong.length>=8) toNextEmpty('f-dong');
     });
     /* mousedown 을 막아야 링크를 누르는 순간 포커스가 빠져 슬롯이 먼저 사라지지 않는다 */
     const a=el('f-hint-a');
@@ -2120,6 +2123,7 @@
     ln2.addEventListener('input',ev=>{
       const v=ev.target.value.replace(/\s*라인\s*$/,'');
       ev.target.value=v; S.d.line=v; fitBv(ev.target); paintFoot();
+      if(v.length>=8) toNextEmpty('f-line2');
     });
     el('f-lvl').addEventListener('click',()=>setLvl(S.d.lvl==='under'?'ground':'under'));
     el('f-addetc').addEventListener('mousedown',ev=>ev.preventDefault());
@@ -2154,12 +2158,15 @@
       }
       return null;
     }
+    function toNextEmpty(fromId){
+      const nx = nextEmpty(fromId);
+      if(nx){ const t=el(nx); if(!t.hidden) t.focus(); }
+      else el(fromId).blur();
+    }
     [fl,dg,ln2].forEach(i=>i.addEventListener('keydown',ev=>{
       if(ev.key!=='Enter') return;
       ev.preventDefault();
-      const nx = nextEmpty(ev.target.id);
-      if(nx){ const t=el(nx); if(!t.hidden) t.focus(); }
-      else ev.target.blur();
+      toNextEmpty(ev.target.id);
     }));
     el('f-etc').addEventListener('keydown',ev=>{
       if(ev.key==='Enter'){ ev.preventDefault(); ev.target.blur(); }
@@ -2410,8 +2417,10 @@
       el('tp-v').textContent = el('plr-v').textContent = rest;
       const bl=bLevel(d); el('plr-b').textContent=bl; el('plr-b').hidden=!bl;
       const w=(d.etc||'').trim();
-      el('plr-s').textContent = w || '고객이 요청한 픽업 위치';
-      el('tp-chg').hidden = el('plr-chg').hidden = !S.chgFlag;
+      el('plr-s').textContent = w; el('plr-s').hidden = !w;
+      el('tp-chg').hidden = !S.chgFlag;
+      el('plr-chg').textContent = S.chgFlag ? '고객이 변경함' : '고객이 작성함';
+      el('plr-chg').classList.toggle('chg', !!S.chgFlag);
       el('tp-go').hidden = !!S.chgFlag;
       if(S.chgBlink !== S.chgSeen){
         S.chgSeen = S.chgBlink;
