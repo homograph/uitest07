@@ -753,6 +753,34 @@
      타다 앱 위에 뜨는 게 아니라 T맵 위에 뜬다. */
   .dtmap{position:absolute;inset:0;z-index:20;display:flex;flex-direction:column;background:#ECEFF2;}
   .dtmap[hidden]{display:none;}
+  /* driver-v2 tmapsel · appOpen() — 경로 선택 화면은 오른쪽에서 .42s 로 밀려 들어오고, 뒤 화면엔 검은 막이 .46 까지 깔린다 */
+  .dtsel{position:absolute;inset:0;z-index:22;display:flex;flex-direction:column;background:#ECEFF2;box-shadow:-16px 0 46px rgba(0,0,0,.55);will-change:transform;}
+  .dtsel-scrim{position:absolute;inset:0;z-index:21;background:#000;opacity:0;pointer-events:none;}
+  .dtsel[hidden],.dtsel-scrim[hidden]{display:none;}
+  .tsel-hd{flex:none;display:flex;align-items:center;gap:12px;padding:14px 16px;background:#fff;color:#20232B;}
+  .tsel-back{flex:none;font:inherit;font-size:22px;line-height:1;color:#3a3f4a;cursor:pointer;background:none;border:0;padding:0;}
+  .tsel-dst{flex:1;min-width:0;}
+  .tsel-dst .d1{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tsel-dst .d2{font-size:12px;color:#8a8f9c;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .tsel-logo{flex:none;font-size:12px;font-weight:800;color:#0064FF;letter-spacing:.3px;}
+  .tsel-sheet{flex:none;background:#fff;border-top:1px solid #eef0f2;}
+  .tsel-opt{display:flex;align-items:center;gap:12px;padding:14px 18px;cursor:pointer;}
+  .tsel-opt+.tsel-opt{border-top:1px solid #f0f1f3;}
+  .tsel-oi{flex:1;min-width:0;}
+  .tsel-oi b{display:block;font-size:16px;font-weight:700;color:#20232B;}
+  .tsel-oi span{display:block;font-size:12.5px;color:#8a8f9c;margin-top:3px;}
+  .tsel-go{flex:none;display:flex;align-items:center;gap:6px;background:#0064FF;color:#fff;font-size:16px;font-weight:700;padding:11px 17px;border-radius:24px;}
+  .tsel-cd{display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:rgba(255,255,255,.26);font-size:12px;font-weight:700;}
+  .tsel-go2{flex:none;background:#fff;color:#4a4f5a;font-size:16px;font-weight:700;padding:10px 19px;border-radius:24px;border:1.5px solid #d5d8de;}
+  .tsel-go,.tsel-go2,.tsel-back{transition:transform .1s ease,filter .1s ease;}
+  .tsel-opt:active .tsel-go,.tsel-opt:active .tsel-go2{transform:scale(.95);filter:brightness(.89);}
+  .tsel-back:active{transform:scale(.86);filter:brightness(1.2);}
+  .dtsel.dark{background:#2b2f35;}
+  .dtsel.dark .tsel-hd,.dtsel.dark .tsel-sheet{background:#1c1f24;color:#e8eaed;border-top-color:#2c3038;}
+  .dtsel.dark .tsel-oi b{color:#e8eaed;}
+  .dtsel.dark .tsel-back{color:#d6d9df;}
+  .dtsel.dark .tsel-opt+.tsel-opt{border-top-color:#2c3038;}
+  .dtsel.dark .tsel-go2{background:#2c3038;color:#d6d9df;border-color:#3a3f48;}
   .tbt{flex:none;display:flex;align-items:center;gap:13px;padding:16px 18px 15px;background:#0B6E4E;color:#fff;}
   .tbt-a{flex:none;width:37px;height:37px;}
   .tbt-a svg{width:100%;height:100%;display:block;}
@@ -840,12 +868,12 @@
   .tlane span{font-size:18px;} .tlane em{font-style:normal;font-size:14px;font-weight:600;}
   /* T맵 다크 — 실제 T맵은 시간·설정에 따라 라이트/다크가 바뀐다. 알약은 두 모드에서 대비가 같아야 한다. */
   .dtmap.dark{background:#2b2f35;}
-  .dtmap.dark .sb{color:#fff;background:#1c1f24;}
-  .dtmap.dark .tmapmap{background:#353a40;}
-  .dtmap.dark .tmapmap > svg rect:nth-of-type(1){fill:#353a40;}
-  .dtmap.dark .tmapmap > svg rect:nth-of-type(2),
-  .dtmap.dark .tmapmap > svg rect:nth-of-type(3){fill:#4b5159;}
-  .dtmap.dark .tmapmap > svg rect:nth-of-type(4){fill:#2f4a3a;}
+  .dtmap.dark .sb, .dtsel.dark .sb{color:#fff;background:#1c1f24;}
+  .dtmap.dark .tmapmap, .dtsel.dark .tmapmap{background:#353a40;}
+  .dtmap.dark .tmapmap, .dtsel.dark .tmapmap > svg rect:nth-of-type(1){fill:#353a40;}
+  .dtmap.dark .tmapmap, .dtsel.dark .tmapmap > svg rect:nth-of-type(2),
+  .dtmap.dark .tmapmap, .dtsel.dark .tmapmap > svg rect:nth-of-type(3){fill:#4b5159;}
+  .dtmap.dark .tmapmap, .dtsel.dark .tmapmap > svg rect:nth-of-type(4){fill:#2f4a3a;}
   .dtmap.dark .tbar{background:#1c1f24;color:#fff;box-shadow:0 -2px 12px rgba(0,0,0,.4);}
   .dtmap.dark .tb-info b{color:#42c98b;}
   .dtmap.dark .tb-info span{color:#a9afba;}
@@ -1121,6 +1149,15 @@
           <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
           <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><g opacity="0.8"><rect width="72" height="72" rx="12" fill="#0044A6"/><path d="M25.4824 51.7503V20.25H37.7325C40.6492 20.25 43.1283 21.2708 45.17 23.3125C47.2117 25.3542 48.2326 27.8334 48.2326 30.7501C48.2326 33.6668 47.2117 36.1459 45.17 38.1876C43.1283 40.2293 40.6492 41.2502 37.7325 41.2502H32.4825V51.7503H25.4824ZM32.4825 34.2501H38.0825C39.045 34.2501 39.8689 33.9074 40.5544 33.222C41.2398 32.5365 41.5826 31.7125 41.5826 30.7501C41.5826 29.7876 41.2398 28.9636 40.5544 28.2782C39.8689 27.5927 39.045 27.25 38.0825 27.25H32.4825V34.2501Z" fill="white"/></g></svg><b id="tp-fl"></b></span><span class="tp-v" id="tp-v"></span><span class="tp-go" id="tp-go">고객 위치 보기</span><span class="tp-chg" id="tp-chg" hidden>변경됨</span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
           <div class="tbar"><div class="tb-info"><b>9분</b><span>1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
+        </div>
+        <!-- T맵 경로 선택(driver-v2 tmapsel). '고객 위치로 출발하기' → 이 화면이 오른쪽에서 밀려 들어오고,
+             '안내'(15초 뒤 자동)를 누르면 T맵 안내(dtmap)로, ← 를 누르면 타다 앱 03 으로 돌아간다. -->
+        <div class="dtsel-scrim" id="dtsel-scrim" hidden></div>
+        <div class="dtsel" id="dtsel" hidden>
+          <div class="sb light"><span>12:30</span><span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
+          <div class="tsel-hd"><button type="button" class="tsel-back" id="tsel-back" aria-label="뒤로">←</button><div class="tsel-dst"><div class="d1">래미안원베일리</div><div class="d2">서울 서초구 반포대로 333</div></div><span class="tsel-logo">T map</span></div>
+          <div class="tmapmap" id="dtsel-map"></div>
+          <div class="tsel-sheet"><div class="tsel-opt reco" data-guide><div class="tsel-oi"><b>티맵 추천</b><span>9분 · 1.2km · 0원</span></div><div class="tsel-go">안내<span class="tsel-cd" id="navcd">15</span></div></div><div class="tsel-opt" data-guide><div class="tsel-oi"><b>최소시간</b><span>8분 · 1.5km · 통행료 1,200원</span></div><div class="tsel-go2">안내</div></div></div>
         </div>
         <div class="dtoast" id="dtoast"></div>
       </div>
@@ -1669,7 +1706,7 @@
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     drover:false, droverEdit:false, hilite:false, before:null, ro:false,
     drKind:null, ack:true, drTmr:null, tts:false, dtTmr:null, msg:'', msgUnread:false, matchTmr:null, locOpen:false, locTmr:null, locEvent:null,
-    sending:false, sent:false, tmr:null, opened:null, dstage:'arrived', chgFlag:false, near:false, chgBlink:0, chgSeen:0, tmapDark:false,
+    sending:false, sent:false, tmr:null, opened:null, dstage:'go', chgFlag:false, near:false, chgBlink:0, chgSeen:0, tmapDark:false,
 
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
@@ -1678,7 +1715,7 @@
        ── 둘은 다른 사건이다. 기사가 픽업지에 서 있어도 승객은 아직 모른다.
        승객 화면(차량 도착 · 배너 · 수정 불가)은 dstate 가 아니라 notified 를 따른다. */
     /* rphase = 승객이 아는 것(하네스가 움직인다) · dview = 기사 화면(타다 앱 / T맵). */
-    step:null, skipped:{}, routeOpen:null, rphase:'match', dview:'tmap', form:'sform', etcOpen:false, top:'inline', pw:360
+    step:null, skipped:{}, routeOpen:null, rphase:'match', dview:'app', form:'sform', etcOpen:false, top:'inline', pw:360
   };
 
   /* ── 문장 ── */
@@ -2323,6 +2360,8 @@
        기사가 다시 학습해야 한다. 같은 자리 같은 모양이 맞다. */
     /* 화면 자체가 갈린다 — 기사는 nav/near 동안 타다 앱이 아니라 T맵에 있다. */
     el('dtmap').hidden = !onTmap();
+    el('dtsel').hidden = el('dtsel-scrim').hidden = (S.dview !== 'tsel');
+    if(S.dview !== 'tsel') clearNavCd();
     /* 픽업 위치 — T맵 알약과 타다 앱 블록, 두 자리가 같은 값을 말한다 (Figma 12061:51991).
        표기는 앱 기준 하나: '지하 1층  1902동 3-4호 라인'. 알약은 층과 동 사이에서만 줄이 바뀐다. */
     const show = !!(got && S.current);
@@ -2377,6 +2416,7 @@
     paintDmap(prev);
     $$('.dstg').forEach(b=>b.classList.toggle('on', b.dataset.dg===stg));
     el('dtmap').classList.toggle('dark', !!S.tmapDark);
+    el('dtsel').classList.toggle('dark', !!S.tmapDark);
     $$('.tth').forEach(b=>b.classList.toggle('on', (b.dataset.th==='dark')===!!S.tmapDark));
     /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
     $$('.dswb:not(.dstg):not(.tth)').forEach(b=>b.classList.toggle('on',
@@ -2479,9 +2519,9 @@
   function setMode(m){
     S.mode=m; S.screen='start';
     clearTimeout(S.tmr); S.tmr=null;
-    S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='arrived'; S.chgFlag=false; S.near=false; S.chgBlink=0; S.chgSeen=0;
+    S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='go'; S.chgFlag=false; S.near=false; S.chgBlink=0; S.chgSeen=0;
     S.drover=false; S.hilite=false; S.before=null;
-    S.drKind=null; S.ack=true; S.rphase='match'; S.dview='tmap'; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
+    S.drKind=null; S.ack=true; S.rphase='match'; S.dview='app'; S.dstage='go'; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
       S.value=sentence(SAVED_FOR_ADDRESS); S.origin='start';
@@ -2517,8 +2557,8 @@
   el('dgo').addEventListener('click',()=>{
     S.hilite=false; S.ack=true;
     const stg = S.dstage || 'arrived';
-    /* 01 pickup-go [고객 위치로 출발하기] → 03 으로. 승객 화면은 '약 5분 후 도착' 이 된다. */
-    if(stg==='go'){ S.dstage='arrived'; S.rphase='go'; S.dview='tmap'; render(); return; }
+    /* 01 pickup-go [고객 위치로 출발하기] → T맵 경로 선택(v2 goPickupNav). 누르는 순간 앱은 03 pickup-arrived 로 확정된다. */
+    if(stg==='go'){ S.rphase='go'; openTsel(); return; }
     /* 03 pickup-arrived [고객에게 도착 알리기] → 04 preview.
        여기가 승객이 '차량 도착' 을 알게 되는 유일한 지점이고, 상세 위치가 잠기는 것도 이 순간이다. */
     if(stg==='arrived'){
@@ -2550,7 +2590,46 @@
   /* 메시지는 타다 앱에 들어가면 읽은 것으로 본다 — 대화는 거기 있다. */
   el('drover-ok').addEventListener('click',()=>{ if(S.drKind==='msg'){ S.msgUnread=false; render(); } });
   /* 타다 앱 → 내비. driver-v2 의 cnavrow(이름 + 내비 아이콘)가 그 길이다. */
-  el('cnavrow').addEventListener('click',()=>{ S.dview='tmap'; render(); });
+  el('cnavrow').addEventListener('click',()=>openTsel());
+  /* ── T맵 경로 선택 — driver-v2 goPickupNav · appOpen · startNavCd · startGuide · cancelNav ── */
+  function clearNavCd(){ if(S.navCd){ clearInterval(S.navCd); S.navCd=null; } }
+  function slideTsel(open, after){
+    const t=el('dtsel'), sc=el('dtsel-scrim'), E='cubic-bezier(.2,0,0,1)';
+    t.style.transition='none'; sc.style.transition='none';
+    t.style.transform = open ? 'translateX(100%)' : 'translateX(0)';
+    sc.style.opacity = open ? '0' : '.46';
+    void t.offsetWidth;
+    t.style.transition='transform .42s '+E; sc.style.transition='opacity .42s';
+    t.style.transform = open ? 'translateX(0)' : 'translateX(100%)';
+    sc.style.opacity = open ? '.46' : '0';
+    /* rAF 가 아니라 타이머로 끝낸다 — 탭이 숨겨져도 전환이 멈추지 않게(v2 appOpen 과 같은 이유) */
+    setTimeout(()=>{ t.style.transition=''; t.style.transform=''; sc.style.transition=''; sc.style.opacity=''; if(after) after(); }, 460);
+  }
+  function openTsel(){
+    if(S.dview==='tsel') return;
+    S.dstage='arrived'; S.dview='tsel'; render();
+    slideTsel(true);
+    clearNavCd();
+    let n=15; el('navcd').textContent=n;
+    S.navCd=setInterval(()=>{ n--; el('navcd').textContent=Math.max(n,0); if(n<=0) startGuide(); }, 1000);
+  }
+  function startGuide(){ clearNavCd(); if(S.dview!=='tsel') return; S.dview='tmap'; render(); }
+  function cancelTsel(){
+    if(S.dview!=='tsel' || S.tselClosing) return;
+    clearNavCd(); S.tselClosing=true;
+    slideTsel(false, ()=>{ S.tselClosing=false; S.dview='app'; render(); });
+  }
+  $$('#dtsel [data-guide]').forEach(o=>o.addEventListener('click', startGuide));
+  el('tsel-back').addEventListener('click', cancelTsel);
+  /* 지도는 T맵 안내 화면의 것을 그대로 쓴다(v2 tmapMap + tovr) — 알약·속도·차선칩은 안내 중에만 있다 */
+  (function(){
+    const src=$('.dtmap .tmapmap').cloneNode(true);
+    src.querySelectorAll('#tovb-loc,.tspeed,.tlane').forEach(n=>n.remove());
+    src.querySelectorAll('[id]').forEach(n=>n.removeAttribute('id'));
+    src.id='dtsel-map';
+    el('dtsel-map').replaceWith(src);
+    const tada=src.querySelector('.tovb.tada'); if(tada) tada.addEventListener('click', cancelTsel);
+  })();
   /* 지도 위 '내비' 버블도 같은 길이다 — 기사가 내비로 돌아가는 자리는 둘 다 살아 있어야 한다. */
   el('dbub-nav').addEventListener('click',()=>{ S.dview='tmap'; render(); });
   /* 반경 500m 진입은 기사 쪽 사건이다 — 승객 화면은 그대로고 내비 위 오버레이만 뜬다. */
@@ -2647,7 +2726,7 @@
     S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
     S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
     S.drover=false; S.hilite=false;
-    S.drKind=null; S.ack=true; S.rphase='match'; S.dview='tmap'; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
+    S.drKind=null; S.ack=true; S.rphase='match'; S.dview='app'; S.dstage='go'; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     $('#phscr').classList.remove('on');
     render();
     toast(onVoyage ? '상세 위치를 지웠어요. 기사님 화면에서도 사라집니다.'
@@ -2694,7 +2773,8 @@
   /* 매칭 중은 실제로도 지나가는 화면이다 — 이 프로토타입에서 붙들고 있을 이유가 없다.
      1초 뒤 자동으로 운행 화면으로 넘긴다(하네스에서 매칭 중을 다시 눌러도 마찬가지). */
   function startMatching(){
-    S.rphase='match'; render();
+    /* 새 호출이 잡히면 기사 화면은 01 pickup-go(타다 앱)에서 시작한다 — driver-v2 resetState() 의 screen:'pickup', pphase:'go' */
+    S.rphase='match'; S.dstage='go'; S.dview='app'; S.chgFlag=false; render();
     clearTimeout(S.matchTmr);
     S.matchTmr=setTimeout(()=>{ if(S.rphase==='match'){ S.rphase='go'; render(); } }, 1000);
   }
