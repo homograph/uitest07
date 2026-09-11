@@ -674,8 +674,7 @@
   .dscr .pcall{color:var(--e6);padding:0 10px 0 16px;cursor:pointer;display:flex;align-items:center;transition:transform .1s ease,filter .1s ease;}
   .dscr .pcall svg{width:28px;height:28px;display:block;fill:currentColor;}
   .dscr .pcall:active,.dscr .mbtn:active{transform:scale(.86);filter:brightness(1.2);}
-  .dscr .preq{background:var(--navy700);border-radius:8px;padding:10px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--ef);font-size:18px;line-height:26px;cursor:pointer;position:relative;overflow:hidden;}
-  .dscr .preq:active{filter:brightness(1.22);}
+  /* v2 의 '고객 요청사항 보기' 행(.preq)은 시안 9/11 12:41 에서 빠졌다 */
   .dscr .route{flex:1 1 auto;background:var(--navy);border-radius:12px 12px 0 0;box-shadow:0 -8px 24px rgba(0,0,0,.28);display:flex;flex-direction:column;gap:0;padding:0;min-height:0;overflow:hidden;}
   .dscr .rhd{flex:0 0 auto;display:flex;align-items:center;gap:16px;padding:16px 20px;}
   .dscr .rhd[hidden],.dscr .plist[hidden],.dscr .barfull[hidden]{display:none;}
@@ -724,17 +723,17 @@
   .dscr .barfull{flex:none;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:clamp(68px, calc(48px + 20px), 78px);padding:10px 16px;background:var(--blue);color:#fff;font:inherit;font-size:20px;line-height:30px;font-weight:700;white-space:nowrap;cursor:pointer;position:relative;overflow:hidden;border:none;transition:transform .11s ease,filter .11s ease;-webkit-tap-highlight-color:transparent;user-select:none;}
   .dscr .barfull.round{width:auto;border-radius:4px;margin:0 20px 20px;}
   .dscr .barfull.round:active{transform:scale(.98);filter:brightness(.9);}
-  /* ══ 타다 앱 픽업 위치 블록 (Figma 12061:51991 "pickup location request") ══
-     #101A3D · pad20 · gap10 / 머리: P 타일 24 원형 + '고객이 전달한 픽업 위치' 16/24 #99A5C0 (+ 변경됨)
-     / 본문 gap4: 값 20/30 Regular #E6E9EF + 둘째 줄 16/24 #99A5C0.
-     둘째 줄은 찾아오는 길이 있으면 그 문장(시안 h156 변형), 없으면 '앞에서 탈게요.'.
-     자리: 01·03·04 모두 시트 맨 위 — 시안은 03 이 CTA 아래, 04 가 맨 위로 갈렸다.
-     '변경됨' 은 남색 면 위라 시안 색 #FE4C00(5.05:1)이 맞다(#CC3600 은 여기선 3.31). */
+  /* ══ 타다 앱 픽업 위치 블록 (Figma 12061:51991 "pickup location request" · 9/11 12:41 수정) ══
+     #101A3D · pad20 · gap10
+     머리 행 gap10: P 타일 24 원형 + 층 '지하 1층' 20/30 Bold #E6E9EF (+ '변경됨' 15/22 Bold #FE4C00, 층 바로 뒤)
+     본문 gap4: 동·라인 '1902동 3-4호 라인' 20/30 Regular #E6E9EF
+              + 둘째 줄 16/24 #99A5C0 — 찾아오는 길이 있으면 그 문장(h162), 없으면 '고객이 전달한 픽업 위치'(h138).
+     자리: 01·03·04 모두 시트 맨 위. '변경됨' 은 남색 면 위라 시안 색 #FE4C00(5.05:1) 그대로. */
   .plr{display:flex;flex-direction:column;gap:10px;padding:20px;background:var(--navy);}
   .plr[hidden]{display:none;}
   .plr-hd{display:flex;align-items:center;gap:10px;}
+  .plr-fl{font-size:20px;line-height:30px;font-weight:700;color:#e6e9ef;white-space:nowrap;}
   .plr-hd .pv24{flex:0 0 auto;display:block;width:24px;height:24px;border-radius:50%;}
-  .plr-t{flex:1 1 auto;min-width:0;font-size:16px;line-height:24px;color:var(--dim);}
   .plr-chg{flex:0 0 auto;font-size:15px;line-height:22px;font-weight:700;color:#fe4c00;}
   .plr-chg[hidden]{display:none;}
   .plr-bd{display:flex;flex-direction:column;gap:4px;}
@@ -800,26 +799,28 @@
     border-radius:999px;background:var(--red);color:#fff;font-size:12px;font-weight:700;line-height:1;
     display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.4);}
   .tovdot[hidden]{display:none;}
-  /* ══ T맵 위 픽업 위치 알약 (Figma 12066 "pickup location request bubble" · 9/11 수정) ══
-     시안: 세로 — 머리 행[P 타일 24 원형 + '고객 위치' 16/24 Bold] + 본문 16/24 · pad10 · gap10 · r16 · 폭 190 고정.
-     자리: T맵 지도 위 61 · 오른쪽 끝(x170–360). 버블 스택은 그 아래 10(y=179).
+  /* ══ T맵 위 픽업 위치 알약 (Figma 12070 "pickup location request bubble" · 9/11 12:41 수정) ══
+     시안: 세로 pad10 · gap4 · r16 · 폭 153 고정
+       머리 행 gap8: P 타일 24 원형 + 층 '지하 1층' 18/26 Bold #000
+       동·라인 '1902동 3-4 라인' 18/26 Regular (변경 변형 기준 — 기본 변형은 16/24 로 남아 있어 하나로 맞췄다)
+       마지막 줄: '고객 위치 보기' 16/24 Bold  ↔  변경 시 '변경됨' 16/24 Bold 가 그 자리를 대신한다.
+     자리: T맵 지도 위 63 · 오른쪽 끝(x207–360). 버블 스택은 그 아래 10(y=179).
      시안과 다르게 둔 것(두 모드 대비 — 앞선 결정 유지):
-      · #FFF 90% → 100% (다크 지도에서 90% 는 '보기' 3.96 · '변경됨' 4.33 으로 미달)
-      · '보기' #32A2FA → #0074D7 (4.69) · '변경됨' #FE4C00 → #CC3600 (5.13) · 라이트 지도 분리용 그림자
-      · 값 표기는 앱 블록과 같이 '3-4호 라인' · '변경됨' 이 붙어도 '보기' 유지 · 단어 중간 줄바꿈 금지 */
-  .tpill{position:absolute;top:61px;right:0;z-index:6;touch-action:none;
-    display:flex;flex-direction:column;align-items:stretch;gap:10px;width:190px;box-sizing:border-box;
+      · #FFF 90% → 100% · '고객 위치 보기' #32A2FA → #0074D7 (4.69) · '변경됨' #FE4C00 → #CC3600 (5.13) · 그림자 */
+  .tpill{position:absolute;top:63px;right:0;z-index:6;touch-action:none;
+    display:flex;flex-direction:column;align-items:stretch;gap:4px;width:153px;box-sizing:border-box;
     padding:10px;border:1px solid #99a5c0;border-radius:16px;background:#fff;
     box-shadow:0 2px 8px rgba(0,0,0,.18);font:inherit;text-align:left;cursor:pointer;}
   .tpill[hidden]{display:none;}
   .tp-hd{display:flex;align-items:center;gap:8px;}
   .tp-hd .tp-ic{flex:0 0 auto;display:block;width:24px;height:24px;border-radius:50%;}
-  .tp-hd b{font-size:16px;line-height:24px;font-weight:700;color:#000;}
-  .tp-tx{font-size:16px;line-height:24px;font-weight:400;color:#000;word-break:keep-all;}
-  .tp-chg,.tp-go{white-space:nowrap;}
-  .tp-chg{font-weight:700;color:#cc3600;}
-  .tp-chg[hidden]{display:none;}
-  .tp-go{font-weight:700;color:#0074d7;}
+  .tp-hd b{font-size:18px;line-height:26px;font-weight:700;color:#000;white-space:nowrap;}
+  .tp-v{font-size:18px;line-height:26px;font-weight:400;color:#000;word-break:keep-all;}
+  .tp-v:empty{display:none;}
+  .tp-go,.tp-chg{font-size:16px;line-height:24px;font-weight:700;white-space:nowrap;}
+  .tp-go{color:#0074d7;}
+  .tp-chg{color:#cc3600;}
+  .tp-go[hidden],.tp-chg[hidden]{display:none;}
   #tovb-loc.dragging,.tovr.dragging{cursor:grabbing;}
   /* 소리를 꺼둘 수 있어 '또 바뀌었다' 는 깜빡임이 맡는다 */
   @keyframes chgBlink{0%,100%{opacity:1}25%,75%{opacity:.2}50%{opacity:1}}
@@ -1082,11 +1083,11 @@
           <div class="dmap" id="dmap"></div>
           <div class="bubs"><span class="bubw"><div class="bub grad">예약</div><span class="bubdot">3</span></span><div class="bub chg">경로<br>변경</div><div class="bub nav" id="dbub-nav"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="12" fill="#F9F9F9"/><path d="M13.9 19.72L10.65 14.77L4.83 13.66L4.62 12.59L17.36 4.74L14.97 19.51L13.9 19.72Z" fill="#0074D7"/></svg><span>내비</span></div></div>
           <div class="dbottom">
-            <div class="pinfo"><div class="pcard"><div class="prow"><span class="pav"><svg viewBox="0 0 28 28"><path fill-rule="evenodd" clip-rule="evenodd" d="M14 28C21.732 28 28 21.732 28 14C28 6.26801 21.732 0 14 0C6.26801 0 0 6.26801 0 14C0 21.732 6.26801 28 14 28ZM16.8039 9.18737C16.8039 10.879 15.4785 12.2497 13.844 12.2497C12.2095 12.2497 10.8842 10.879 10.8842 9.18737C10.8842 7.49578 12.2095 6.125 13.844 6.125C15.4785 6.125 16.8039 7.49578 16.8039 9.18737ZM7 20.125L7.56467 14.5591C7.56467 14.5591 14.1575 13.8218 20.5613 14.4926L21 20.0573L7 20.125Z" fill="#C2CADB"/></svg></span><span class="pnm">김지혜</span><span class="pcall"><svg class="i" viewBox="0 0 28 28"><path d="M17.83 17.9L17.19 21.8C17.19 21.8 13.98 20.52 11.44 17.25C8.91 13.98 7.61 9.45 7.61 9.45L11.44 8.8V1H2.5V9.21C2.5 9.8 2.58 10.39 2.77 10.94C3.34 12.62 4.85 16.5 7.61 19.85C9.81 22.52 12.15 24.57 13.66 25.78C14.69 26.61 15.98 27 17.3 27H25.5V17.9H17.83Z"/></svg></span></div><div class="preq">고객 요청사항 보기</div></div></div>
+            <div class="pinfo"><div class="pcard"><div class="prow"><span class="pav"><svg viewBox="0 0 28 28"><path fill-rule="evenodd" clip-rule="evenodd" d="M14 28C21.732 28 28 21.732 28 14C28 6.26801 21.732 0 14 0C6.26801 0 0 6.26801 0 14C0 21.732 6.26801 28 14 28ZM16.8039 9.18737C16.8039 10.879 15.4785 12.2497 13.844 12.2497C12.2095 12.2497 10.8842 10.879 10.8842 9.18737C10.8842 7.49578 12.2095 6.125 13.844 6.125C15.4785 6.125 16.8039 7.49578 16.8039 9.18737ZM7 20.125L7.56467 14.5591C7.56467 14.5591 14.1575 13.8218 20.5613 14.4926L21 20.0573L7 20.125Z" fill="#C2CADB"/></svg></span><span class="pnm">김지혜</span><span class="pcall"><svg class="i" viewBox="0 0 28 28"><path d="M17.83 17.9L17.19 21.8C17.19 21.8 13.98 20.52 11.44 17.25C8.91 13.98 7.61 9.45 7.61 9.45L11.44 8.8V1H2.5V9.21C2.5 9.8 2.58 10.39 2.77 10.94C3.34 12.62 4.85 16.5 7.61 19.85C9.81 22.52 12.15 24.57 13.66 25.78C14.69 26.61 15.98 27 17.3 27H25.5V17.9H17.83Z"/></svg></span></div></div></div>
             <div class="route">
           <div class="plr" id="plr" hidden>
-            <div class="plr-hd"><svg class="pv24" width="24" height="24" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><g opacity="0.8"><rect width="72" height="72" rx="12" fill="#0044A6"/><path d="M25.4824 51.7503V20.25H37.7325C40.6492 20.25 43.1283 21.2708 45.17 23.3125C47.2117 25.3542 48.2326 27.8334 48.2326 30.7501C48.2326 33.6668 47.2117 36.1459 45.17 38.1876C43.1283 40.2293 40.6492 41.2502 37.7325 41.2502H32.4825V51.7503H25.4824ZM32.4825 34.2501H38.0825C39.045 34.2501 39.8689 33.9074 40.5544 33.222C41.2398 32.5365 41.5826 31.7125 41.5826 30.7501C41.5826 29.7876 41.2398 28.9636 40.5544 28.2782C39.8689 27.5927 39.045 27.25 38.0825 27.25H32.4825V34.2501Z" fill="white"/></g></svg><span class="plr-t">고객이 전달한 픽업 위치</span><span class="plr-chg" id="plr-chg" hidden>변경됨</span></div>
-            <div class="plr-bd"><p class="plr-v" id="plr-v"></p><p class="plr-s" id="plr-s">앞에서 탈게요.</p></div>
+            <div class="plr-hd"><svg class="pv24" width="24" height="24" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><g opacity="0.8"><rect width="72" height="72" rx="12" fill="#0044A6"/><path d="M25.4824 51.7503V20.25H37.7325C40.6492 20.25 43.1283 21.2708 45.17 23.3125C47.2117 25.3542 48.2326 27.8334 48.2326 30.7501C48.2326 33.6668 47.2117 36.1459 45.17 38.1876C43.1283 40.2293 40.6492 41.2502 37.7325 41.2502H32.4825V51.7503H25.4824ZM32.4825 34.2501H38.0825C39.045 34.2501 39.8689 33.9074 40.5544 33.222C41.2398 32.5365 41.5826 31.7125 41.5826 30.7501C41.5826 29.7876 41.2398 28.9636 40.5544 28.2782C39.8689 27.5927 39.045 27.25 38.0825 27.25H32.4825V34.2501Z" fill="white"/></g></svg><b class="plr-fl" id="plr-fl"></b><span class="plr-chg" id="plr-chg" hidden>변경됨</span></div>
+            <div class="plr-bd"><p class="plr-v" id="plr-v"></p><p class="plr-s" id="plr-s">고객이 전달한 픽업 위치</p></div>
           </div>
             <div class="rhd" id="rhead" hidden><span class="t" id="rhead-t">남은 경로 4개</span></div>
             <div class="plist" id="dcardlist"><div class="crd"><div class="crd-top"><span class="badge org">출발</span><div class="cinfo"><div class="cnavrow" id="cnavrow"><div class="cname">래미안원베일리</div><span class="cnav" id="cnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></div><div class="caddr">서울 서초구 반포대로 333</div></div></div><div class="cbtnw"><button type="button" class="cbtn go" id="dgo"></button></div></div></div>
@@ -1111,7 +1112,7 @@
         <div class="dtmap" id="dtmap" hidden>
           <div class="sb light"><span>12:30</span><span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
           <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
-          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><g opacity="0.8"><rect width="72" height="72" rx="12" fill="#0044A6"/><path d="M25.4824 51.7503V20.25H37.7325C40.6492 20.25 43.1283 21.2708 45.17 23.3125C47.2117 25.3542 48.2326 27.8334 48.2326 30.7501C48.2326 33.6668 47.2117 36.1459 45.17 38.1876C43.1283 40.2293 40.6492 41.2502 37.7325 41.2502H32.4825V51.7503H25.4824ZM32.4825 34.2501H38.0825C39.045 34.2501 39.8689 33.9074 40.5544 33.222C41.2398 32.5365 41.5826 31.7125 41.5826 30.7501C41.5826 29.7876 41.2398 28.9636 40.5544 28.2782C39.8689 27.5927 39.045 27.25 38.0825 27.25H32.4825V34.2501Z" fill="white"/></g></svg><b>고객 위치</b></span><span class="tp-tx"><span id="tp-v"></span> <span class="tp-chg" id="tp-chg" hidden>변경됨</span> <span class="tp-go">보기</span></span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
+          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><g opacity="0.8"><rect width="72" height="72" rx="12" fill="#0044A6"/><path d="M25.4824 51.7503V20.25H37.7325C40.6492 20.25 43.1283 21.2708 45.17 23.3125C47.2117 25.3542 48.2326 27.8334 48.2326 30.7501C48.2326 33.6668 47.2117 36.1459 45.17 38.1876C43.1283 40.2293 40.6492 41.2502 37.7325 41.2502H32.4825V51.7503H25.4824ZM32.4825 34.2501H38.0825C39.045 34.2501 39.8689 33.9074 40.5544 33.222C41.2398 32.5365 41.5826 31.7125 41.5826 30.7501C41.5826 29.7876 41.2398 28.9636 40.5544 28.2782C39.8689 27.5927 39.045 27.25 38.0825 27.25H32.4825V34.2501Z" fill="white"/></g></svg><b id="tp-fl"></b></span><span class="tp-v" id="tp-v"></span><span class="tp-go" id="tp-go">고객 위치 보기</span><span class="tp-chg" id="tp-chg" hidden>변경됨</span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
           <div class="tbar"><div class="tb-info"><b>9분</b><span>1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
         </div>
         <div class="dtoast" id="dtoast"></div>
@@ -2321,13 +2322,20 @@
     el('tovb-loc').hidden = !show;
     el('plr').hidden = !show;
     if(show){
-      const d=S.current, v=dloc(d);
-      /* 알약은 폭 190 안에서 어절 단위로 흐른다(시안). 앱 블록은 층과 동 사이를 넓게 둔다. */
-      el('tp-v').textContent = v.replace('\u2002',' ');
-      el('plr-v').textContent = v;
+      const d=S.current;
+      /* 층은 머리 행, 동·라인은 그 아래 줄 — 두 자리 모두 같은 나눔이다(시안 9/11 12:41).
+         표기: 앱 '3-4호 라인' · 알약 '3-4 라인'(폭 153 고정 안에 한 줄로 들어가게 시안이 뺐다) */
+      const split = s => { const k=s.indexOf('\u2002'); return k<0 ? [s,''] : [s.slice(0,k), s.slice(k+1)]; };
+      const [fl, rest]  = split(loc(d));
+      const [, drest]   = split(dloc(d));
+      el('tp-fl').textContent = el('plr-fl').textContent = fl;
+      el('tp-v').textContent = rest;
+      el('plr-v').textContent = drest;
+      el('plr-v').hidden = !drest;
       const w=(d.etc||'').trim();
-      el('plr-s').textContent = w || '앞에서 탈게요.';
+      el('plr-s').textContent = w || '고객이 전달한 픽업 위치';
       el('tp-chg').hidden = el('plr-chg').hidden = !S.chgFlag;
+      el('tp-go').hidden = !!S.chgFlag;
       if(S.chgBlink !== S.chgSeen){
         S.chgSeen = S.chgBlink;
         ['tp-chg','plr-chg'].forEach(id=>{ const c=el(id); c.classList.remove('blink'); void c.offsetWidth; c.classList.add('blink'); });
