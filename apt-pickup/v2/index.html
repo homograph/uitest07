@@ -756,7 +756,8 @@
   .plr-v{margin:0;font-size:20px;line-height:30px;font-weight:400;color:#e6e9ef;word-break:keep-all;}
   .plr-v b{font-weight:700;}
   /* 층 뒤 B 표기 — 16 Regular 흐린 색. 알약(폭 40%)엔 넣지 않는다: 기사가 B 표기를 보는 건 진입한 뒤라 여기서 충분하다 */
-  .plr-b{font-size:16px;font-weight:400;color:var(--dim);}
+  /* 줄 높이 0 — 글자 크기가 다른 인라인이 섞이면 기준선 정렬로 줄 상자가 30→32 로 커진다 */
+  .plr-b{line-height:0;font-size:16px;font-weight:400;color:var(--dim);}
   .plr-s{margin:0;font-size:18px;line-height:26px;color:var(--dim);word-break:keep-all;}
 
 
