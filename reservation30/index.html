@@ -683,7 +683,6 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 .rail .rline{align-items:center;}
 .rail .rline + .rline{margin-top:12px;}
 .rail .rname{flex:1 0 100%;min-width:0;}
-.rail .rname br{display:none;}
 .rail .seg{flex-wrap:wrap;}
 .rail .seg button{padding:8px 12px;}
 .rail .reset{flex:1 0 100%;margin-left:0;text-align:left;}
@@ -770,20 +769,10 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       <button class="reset" id="reset">처음으로</button>
     </div>
     <div class="rline">
-      <span class="rname">경유지</span>
-      <div class="seg" id="segVia" role="tablist">
-        <button role="tab" data-v="0" class="on">없음</button>
-        <button role="tab" data-v="1">1곳</button>
-      </div>
       <span class="rname">탄력요금</span>
       <div class="seg" id="segSurge" role="tablist">
         <button role="tab" data-v="off" class="on">없음</button>
         <button role="tab" data-v="on">1.2배</button>
-      </div>
-      <span class="rname">요청사항</span>
-      <div class="seg" id="segReq" role="tablist">
-        <button role="tab" data-v="off" class="on">비어 있음</button>
-        <button role="tab" data-v="on">입력됨</button>
       </div>
     </div>
     <div class="rline">
@@ -802,7 +791,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       <button class="reset" id="flyNow">항공편 모드로 바로 보기</button>
     </div>
     <div class="rline">
-      <span class="rname">항공편<br>배치</span>
+      <span class="rname">항공편 배치</span>
       <div class="seg" id="segPlace" role="tablist">
         <button role="tab" data-v="route" class="on">A · 시간&amp;경로 화면</button>
         <button role="tab" data-v="vehicle">B · 차량 선택 부가 서비스</button>
@@ -840,7 +829,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
           <li><b>경로 입력 4화면은 Figma 렌더 이미지</b> 위에 누를 영역을 얹었습니다. 키보드·지도가 대부분인 기존 화면이라 픽셀을 그대로 쓰는 쪽을 택했고, 대신 타이핑·검색·핀 이동은 안 됩니다. 레일의 "누를 영역 표시"로 어디를 누르면 되는지 볼 수 있습니다.</li>
           <li><b>항공편 배치 A/B 전환.</b> A는 시간&amp;경로 화면(안내 카드 넛지 + 픽업 시간 카드 링크), B는 차량 선택의 부가 서비스 카드입니다. B에서 카드를 체크하면 같은 편명·여유 시간 시트가 뜨고, 확정하면 카드에 편명과 예상 픽업이 찍힙니다.</li>
           <li><b>일시 표기와 8주 칩을 Figma "시간 입력 카드"에 맞췄습니다.</b> "12월 16일 (월) 오후 7시 정각", 8주 초과 칩은 "가능한 마지막 시간으로 설정", 날짜 휠은 오늘 ~ 8주 후.</li>
-          <li><b>위쪽 설정 줄을 "⚙ 설정" 버튼으로 바꿨습니다.</b> 네 줄짜리 전환 줄이 폰 화면 위쪽을 덮어서, 오른쪽 위 버튼을 누를 때만 열리는 패널로 옮겼습니다. 넓은 화면에서는 버튼 아래 드롭다운으로, 좁은 화면에서는 아래에서 올라오는 시트로 열립니다. 안에서 고른 뒤 <b>적용</b>을 누르면 반영되고, 취소·✕·바깥을 누르면 열기 직전 상태로 되돌립니다.</li>
+          <li><b>위쪽 설정 줄을 "⚙ 설정" 버튼으로 바꿨습니다.</b> 네 줄짜리 전환 줄이 폰 화면 위쪽을 덮어서, 오른쪽 위 버튼을 누를 때만 열리는 패널로 옮겼습니다. 넓은 화면에서는 버튼 아래 드롭다운으로, 좁은 화면에서는 아래에서 올라오는 시트로 열립니다. 안에서 고른 뒤 <b>적용</b>을 누르면 반영되고, 취소·✕·바깥을 누르면 열기 직전 상태로 되돌립니다. 화면 안에서 직접 되는 것(경유지는 경로 카드의 "+ 경유지", 요청사항은 미리보기의 예시 "입력")은 설정에서 뺐습니다.</li>
           <li>예약 홈은 <code>recurring-entry.html</code> D안, 대기 서비스(TADA-9812)는 제거된 상태 그대로입니다.</li>
         </ul>
       </section>
@@ -1510,8 +1499,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     if (S.toast){ phone.insertAdjacentHTML("beforeend", '<div class="ptoast" role="status">' + esc(S.toast) + '</div>'); S.toast = ""; }
     S.animate = false; S.appear = null;
     stepLabel.textContent = S.screen === "rEdit" ? RE[S.rstep].label : LABEL[S.screen];
-    sync("segScreen", S.screen); sync("segVia", String(S.via));
-    sync("segSurge", S.surge); sync("segReq", S.req);
+    sync("segScreen", S.screen); sync("segSurge", S.surge);
     sync("segOrigin", S.origin); sync("segFkase", S.fkase); sync("segPlace", S.flPlace);
   }
   function sync(id, v){
@@ -1657,9 +1645,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     if (v !== "home"){ S.routeFilled = true; if (!S.timeSet){ setTime(earliest()); S.timeSet = true; } }
     if (v === "route") S.open = "route";
   });
-  segHandler("segVia",   function(v){ S.via = +v; });
   segHandler("segSurge", function(v){ S.surge = v; });
-  segHandler("segReq",   function(v){ S.req = v; S.reqText = v === "on" ? PRESETS[1] : ""; });
   segHandler("segOrigin", function(v){ S.origin = v; S.routeFilled = true; if (v === "city"){ S.flight = null; S.offset = null; S.fsheet = null; S.failed = false; S.term = "T1"; } });
   segHandler("segFkase",  function(v){ S.fkase = v; S.flight = null; S.offset = null; S.foffset = null; S.failed = false;
                                         S.swapped = false; S.fpending = false; S.termSwitched = false; S.fquery = ""; S.fsheet = null; });
