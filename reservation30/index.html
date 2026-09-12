@@ -654,10 +654,9 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
 .tcard .flsum.warn{background:#EFEFF1;}
 .tcard .flsum.warn > span:nth-child(2){color:#FE4C00;}
 /* 유료 전환 자리: 요금 배지 + 캡션 */
-.acard.fl .fee{display:flex;align-items:center;gap:6px;margin-top:2px;}
-.acard.fl .fee .free{background:var(--a-blue-bg);color:#0086EA;border-radius:4px;
-  padding:1px 6px;font-size:12px;line-height:17px;font-weight:700;}
-.acard.fl .fee .cap{font-size:12px;line-height:17px;color:var(--a-ink-7);}
+.acard .cap{font-size:12px;line-height:17px;color:var(--a-ink-7);}
+.acard .d.warn{color:#FE4C00;}
+.beta.soft{margin-left:6px;border-color:var(--a-chip-line);color:var(--a-ink-7);font-weight:400;}
 .fsheet .ffoot .big.soft + .big, .fsheet .ffoot .big + .big.soft{margin-top:8px;}
 .fsheet .ffoot{display:flex;flex-direction:column;}
 
@@ -666,7 +665,7 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
   display:flex;align-items:center;justify-content:center;font-size:26px;line-height:1;}
 .acard.fl .p{color:var(--a-ink-3);}
 .acard.fl .p b{font-weight:700;color:#0086EA;}
-.flcard-act{display:flex;justify-content:flex-end;gap:2px;margin:-4px 0 0;}
+.flcard-act{display:flex;flex-wrap:wrap;gap:2px;margin:-6px 0 0 -10px;}
 
 
 /* ══════════ 레일 = '설정' 패널 ══════════
@@ -682,7 +681,7 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
   background:var(--surface);border:1px solid var(--line);border-radius:var(--r-pill);
   padding:4px 9px;box-shadow:0 2px 6px rgba(18,23,42,.10);}
 .railbar .seg{box-shadow:0 2px 6px rgba(18,23,42,.12),0 10px 24px rgba(18,23,42,.16);}
-body.railopen .railbar{opacity:0;pointer-events:none;}
+body.railopen .railfab{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
 .railfab{display:inline-flex;align-items:center;gap:6px;
   border:1px solid var(--line);background:var(--surface);color:var(--ink);
   font:inherit;font-size:12.5px;font-weight:700;line-height:1;padding:10px 14px;
@@ -692,9 +691,8 @@ body.railopen .railbar{opacity:0;pointer-events:none;}
 .railfab{flex:0 0 auto;}
 .railfab:hover{border-color:var(--ink-3);}
 
-.railscrim{display:block;position:fixed;inset:0;z-index:55;
-  background:rgba(9,13,25,.30);opacity:0;pointer-events:none;transition:opacity .2s;}
-body.railopen .railscrim{opacity:1;pointer-events:auto;}
+/* 스크림은 쓰지 않는다. 설정을 열어 둔 채로 화면을 눌러 보게 한다. */
+.railscrim{display:none;}
 
 .rail{position:fixed;z-index:60;margin:0;overflow:auto;visibility:hidden;opacity:0;
   background:var(--surface);border:1px solid var(--line);
@@ -704,22 +702,28 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
 .railhead{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:2;
   padding:14px 0 10px;background:var(--surface);}
-.railhead b{flex:1 1 auto;font-size:13.5px;line-height:20px;}
+.railhead b{flex:0 0 auto;font-size:13.5px;line-height:20px;}
+.railhead .live{flex:1 1 auto;font-size:11.5px;line-height:16px;color:var(--ink-3);}
 .railhead .x{flex:0 0 auto;border:0;background:none;font:inherit;font-size:19px;
   line-height:1;color:var(--ink-3);padding:4px 6px;cursor:pointer;}
-.rail .rline{align-items:center;}
-.rail .rline + .rline{margin-top:12px;}
-.rail .rname{flex:1 0 100%;min-width:0;}
-.rail .seg{flex-wrap:wrap;}
-.rail .seg button{padding:8px 12px;}
-.rail .reset{flex:1 0 100%;margin-left:0;text-align:left;}
+/* 한 줄에 한 설정. 라벨은 왼쪽 고정 열. 세그먼트는 알약을 벗고 칩 묶음으로
+   (다섯 개가 한 알약 안에서 줄바꿈되면 깨져 보인다). */
+.rail .rline{display:grid;grid-template-columns:58px minmax(0,1fr);gap:10px;align-items:start;}
+.rail .rline + .rline{margin-top:10px;}
+.rail .rname{min-width:0;padding-top:7px;}
+.rail .seg{display:flex;flex-wrap:wrap;gap:6px;border:0;background:none;padding:0;border-radius:0;}
+.rail .seg button{border:1px solid var(--line);background:var(--surface);padding:7px 12px;
+  border-radius:var(--r-pill);}
+.rail .seg button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);}
+.rail .rline.links{grid-template-columns:1fr;gap:6px;margin-top:14px;
+  display:flex;flex-wrap:wrap;gap:14px;}
+.rail .rline.links .reset{margin:0;padding:2px 0;}
 .railfoot{display:flex;gap:8px;position:sticky;bottom:0;z-index:2;
   margin-top:14px;padding:10px 0 4px;background:var(--surface);
   border-top:1px solid var(--line-soft);}
 .railfoot button{border:0;border-radius:10px;font:inherit;font-size:13.5px;
   font-weight:700;padding:13px 10px;cursor:pointer;}
-.railfoot .apply{flex:1 1 auto;background:var(--accent);color:var(--accent-ink);}
-.railfoot .cancel{flex:0 0 auto;background:var(--sunken);color:var(--ink-2);padding:13px 18px;}
+.railfoot .apply{flex:1 1 auto;background:var(--sunken);color:var(--ink-2);}
 
 /* 넓은 화면: 설정 버튼 아래 드롭다운 */
 @media (min-width:721px){
@@ -744,15 +748,13 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   .head h1{font-size:16.5px;line-height:23px;margin-bottom:4px;}
   .head p{font-size:12.5px;line-height:19px;}
   .head .meta{display:none;}
-  body.railopen{overflow:hidden;}
 
   .railbar{top:calc(8px + env(safe-area-inset-top));right:10px;gap:6px;}
   .railbar .lbl{display:none;}   /* 좁으면 A / B 만 */
   .railfab{font-size:12px;padding:9px 12px;}
-  .railscrim{background:rgba(9,13,25,.45);}
   .rail{left:0;right:0;bottom:0;top:auto;width:auto;
     padding:0 14px calc(10px + env(safe-area-inset-bottom));
-    max-height:82vh;-webkit-overflow-scrolling:touch;
+    max-height:66vh;-webkit-overflow-scrolling:touch;
     border-bottom:0;border-radius:16px 16px 0 0;transform:translateY(102%);
     box-shadow:0 -10px 30px rgba(18,23,42,.22);}
   .railhead{margin:0 -14px;padding:14px 14px 10px;}
@@ -791,7 +793,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
   <div class="rail" id="rail" role="group" aria-label="상태 전환">
     <div class="railhead">
-      <b>프로토타입 설정</b>
+      <b>프로토타입 설정</b><span class="live">고르면 바로 반영돼요</span>
       <button class="x" id="railX" aria-label="설정 닫기">✕</button>
     </div>
     <div class="rline">
@@ -803,7 +805,6 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         <button role="tab" data-v="preview">④ 미리보기</button>
         <button role="tab" data-v="rEdit">경로 입력</button>
       </div>
-      <button class="reset" id="reset">처음으로</button>
     </div>
     <div class="rline">
       <span class="rname">출발지</span>
@@ -811,6 +812,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         <button role="tab" data-v="city" class="on">시내 → 인천공항</button>
         <button role="tab" data-v="icn">인천공항 → 시내</button>
       </div>
+    </div>
+    <div class="rline">
       <span class="rname">편명 조회</span>
       <div class="seg" id="segFkase" role="tablist">
         <button role="tab" data-v="ok" class="on">정상</button>
@@ -818,14 +821,14 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         <button role="tab" data-v="pending">시각 미확정</button>
         <button role="tab" data-v="fail">조회 실패</button>
       </div>
-      <button class="reset" id="flyNow">항공편 모드로 바로 보기</button>
     </div>
-    <div class="rline">
+    <div class="rline links">
+      <button class="reset" id="reset">처음으로</button>
+      <button class="reset" id="flyNow">항공편 모드로 바로 보기</button>
       <button class="reset" id="hotToggle" aria-pressed="false">누를 영역 표시</button>
     </div>
     <div class="railfoot">
-      <button class="cancel" id="railCancel">취소</button>
-      <button class="apply" id="railApply">적용</button>
+      <button class="apply" id="railApply">닫기</button>
     </div>
   </div>
 
@@ -884,10 +887,11 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
               <li><b>도착보다 이르거나 20분 이내로 붙으면</b> 요약 줄을 주황으로 바꾸고 카드에서 바로 <b>"도착 + 50분(오후 11시 정각)으로 맞추기"</b>를 누를 수 있게 했습니다.</li>
             </ul>
           </li>
+          <li><b>부가 서비스 카드의 정보량을 드라이버 지정 카드와 같은 수준으로 줄였습니다.</b> 제목 · 한 줄 설명 · "LJ082 · 도착 21:35 기준" 캡션 · "이용료 무료" 한 줄입니다. 계산 내역(도착 + 여유, 예상 픽업)은 2단계 픽업 시간 카드와 미리보기에만 둡니다.</li>
           <li><b>추적을 끄면 상품이 빠진 상태가 그대로 보입니다.</b> 픽업 시각은 고정되고, "예상"이 사라지고, 프리미엄 밴 예약이 다시 가능해지고(시각이 안 바뀌니까), 결항 무료 취소 고지도 사라집니다.</li>
           <li><b>항공편 배치 A/B 전환.</b> A는 시간&amp;경로 화면(안내 카드 넛지 + 픽업 시간 카드 링크), B는 차량 선택의 부가 서비스 카드입니다. B에서 카드를 체크하면 같은 편명·여유 시간 시트가 뜨고, 확정하면 카드에 편명과 예상 픽업이 찍힙니다.</li>
           <li><b>일시 표기와 8주 칩을 Figma "시간 입력 카드"에 맞췄습니다.</b> "12월 16일 (월) 오후 7시 정각", 8주 초과 칩은 "가능한 마지막 시간으로 설정", 날짜 휠은 오늘 ~ 8주 후.</li>
-          <li><b>위쪽 설정 줄을 "⚙ 설정" 버튼으로 바꿨습니다.</b> 네 줄짜리 전환 줄이 폰 화면 위쪽을 덮어서, 오른쪽 위 버튼을 누를 때만 열리는 패널로 옮겼습니다. 넓은 화면에서는 버튼 아래 드롭다운으로, 좁은 화면에서는 아래에서 올라오는 시트로 열립니다. 안에서 고른 뒤 <b>적용</b>을 누르면 반영되고, 취소·✕·바깥을 누르면 열기 직전 상태로 되돌립니다.</li>
+          <li><b>설정은 고르는 즉시 반영되고, 열어 둔 채로 화면을 눌러 볼 수 있습니다.</b> 적용을 누르러 들어갔다 나오는 왕복을 없앴습니다. 어두운 막(스크림)도 없애서 패널을 열어 둔 상태로 폰을 그대로 조작할 수 있고, ⚙를 다시 누르거나 ✕·닫기·Esc로 닫습니다. 되돌리기는 <b>처음으로</b>가 맡습니다. 설정 안은 한 줄에 한 항목(화면 · 출발지 · 편명 조회)으로 정리했습니다.</li>
           <li><b>비교에 쓰지 않는 조절은 뺐습니다.</b> 경유지·요청사항은 화면 안에서 직접 되고(경로 카드의 "+ 경유지", 미리보기의 예시 "입력"), <b>탄력요금</b>은 입력 위치와 상관이 없어 없앴습니다. 지금 프로토는 탄력요금 없는 상태만 보여 줍니다. 대신 <b>배치 A/B 스위치는 설정 밖으로 꺼내</b> 항상 한 번에 바꿀 수 있게 했고, 폰 아래 라벨에 지금 배치가 적힙니다.</li>
           <li>예약 홈은 <code>recurring-entry.html</code> D안, 대기 서비스(TADA-9812)는 제거된 상태 그대로입니다.</li>
         </ul>
@@ -1138,8 +1142,9 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     if (S.swapped)      hint += '<span class="hint">티켓의 ' + SHARE.no + ' 대신 실제 운항편 ' + esc(f.air) + ' ' + esc(f.no) + ' 기준이에요</span>';
     if (S.fpending)     hint += '<span class="hint">실시간 도착 예정이 아직 없어 마지막으로 확인된 시각 기준이에요</span>';
     if (S.termSwitched) hint += '<span class="hint">' + (f.term === "T2" ? "제2터미널" : "제1터미널") + '에 도착하는 편이라 탑승지를 옮겼어요</span>';
-    return '<div class="flsum' + (gapBand() === "tight" ? " warn" : "") + '"><span class="no">' + esc(f.no) + ' ' + esc(f.air) + '</span>'
-      + '<span>' + esc(f.from) + ' → 인천 ' + esc(f.term) + ' · ' + esc(flBase()) + '</span>'
+    return '<div class="flsum' + (gapBand() === "tight" ? " warn" : "") + '">'
+      + '<span class="no">' + esc(f.no) + ' ' + esc(f.air) + ' · ' + esc(f.from) + ' → 인천 ' + esc(f.term) + '</span>'
+      + '<span>' + esc(flBase()) + '</span>'
       + (flBandHint() ? '<span class="hint">' + esc(flBandHint()) + '</span>' : '') + hint + '</div>'
       + (placeC() && !S.track ? '<p class="fhint" style="margin:0 20px 8px;">차량 선택에서 지연 자동 조정을 꺼 뒀어요. 이 시각으로 고정돼요.</p>' : '')
       + '<div class="flact">' + (gapBand() === "tight" ? flFixBtn() : '')
@@ -1513,23 +1518,25 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     if (placeC() && eligible()){
       /* 유료가 될 상품은 이 카드 하나다. 시각을 다시 묻지 않고 켜기/끄기만 한다. */
       var has = !!S.flight, tr = trackOn(), f2 = S.flight;
+      /* 카드에서는 한 줄만 말한다. 자세한 계산은 2단계 카드와 미리보기에 있다. */
+      var band = has ? gapBand() : "", d1, cap = "";
+      if (!has)                   d1 = "편명을 넣으면 켤 수 있어요";
+      else if (band === "tight")  d1 = "도착보다 이르거나 너무 붙어 있어요";
+      else if (band === "loose")  d1 = "도착에서 한참 뒤라 지연 영향이 거의 없어요";
+      else if (!tr)               d1 = "꺼져 있어요 · 픽업 " + korHM(pickMin()) + " 고정";
+      else                        d1 = "늦어지면 픽업 시각을 함께 옮겨요";
+      if (has) cap = f2.no + " · 도착 " + (S.fpending ? "예정 " : "") + f2.eta + " 기준";
       h.push('<button class="acard fl" data-act="trackToggle" role="checkbox" aria-checked="' + tr + '">'
         + '<span class="imgwrap" aria-hidden="true">✈️</span><span class="row"><span class="tx">'
-        + '<span class="n">항공편 지연 자동 조정<span class="beta">BETA</span></span>'
-        + '<span class="d">' + (has
-            ? (gapBand() === "tight" ? "고른 시각이 도착보다 이르거나 너무 붙어 있어요"
-               : gapBand() === "loose" ? "도착에서 한참 뒤라 지연이 생겨도 픽업 시각은 거의 영향받지 않아요. 켜 두면 결항 시 무료 취소는 적용돼요"
-               : tr ? "비행기가 늦으면 픽업 시각을 함께 옮기고, 그 시각에도 차를 보내 드려요"
-                  : "지금은 꺼져 있어요. 픽업 시각 " + esc(korHM(pickMin())) + "으로 고정되고, 늦어져도 옮기지 않아요")
-            : "편명을 넣으면 켤 수 있어요. 고른 시각은 그대로 두고 늦어질 때만 옮겨 드려요") + '</span>'
-        + '<span class="p">' + (has
-            ? esc(f2.no + " " + f2.air + " · " + flBase())
-            : "픽업 시간 " + esc(S.timeSet ? korHM(chosenMin()) : "미정")) + '</span>'
-        + '<span class="fee"><b class="free">무료</b><span class="cap">베타 기간</span></span></span>'
+        + '<span class="n">항공편 지연 자동 조정</span>'
+        + '<span class="d' + (band === "tight" ? " warn" : "") + '">' + esc(d1) + '</span>'
+        + (cap ? '<span class="cap">' + esc(cap) + '</span>' : '')
+        + '<span class="p">이용료 무료<span class="beta soft">BETA 기간</span></span></span>'
         + '<span class="ck">' + (tr ? SVG.checkOn : SVG.checkOff) + '</span></span></button>');
-      if (has) h.push('<div class="flcard-act">' + (gapBand() === "tight" ? flFixBtn() : '')
+      if (has) h.push('<div class="flcard-act">' + (band === "tight" ? flFixBtn() : '')
         + '<button class="ghost" data-act="fOpen">항공편 바꾸기</button></div>');
-      if (has && !tr) h.push('<p class="addnote" style="margin:-4px 0 0;">끄면 결항 시 무료 취소도 적용되지 않아요</p>');
+      if (has && band === "loose") h.push('<p class="addnote" style="margin:-2px 0 0;">결항 시 무료 취소는 그대로 적용돼요</p>');
+      if (has && !tr) h.push('<p class="addnote" style="margin:-2px 0 0;">끄면 결항 시 무료 취소도 적용되지 않아요</p>');
     }
     ADDONS.forEach(function(a){
       var on = S.addons[a.id];
@@ -1916,36 +1923,24 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   });
 
   /* 모바일 설정 시트. flight 는 참조를 유지해야 해서 얕은 복사 + addons 만 따로 뜬다. */
-  function snapS(){
-    var c = {}, k; for (k in S) c[k] = S[k];
-    c.addons = {driver:S.addons.driver, carseat:S.addons.carseat};
-    return c;
-  }
-  var railSnap = null, railHot = false;
+  /* 설정은 고르는 즉시 반영된다. 스크림이 없어 열어 둔 채로 화면을 눌러 볼 수 있고,
+     ⚙ 를 다시 누르거나 ✕·닫기·Esc 로 닫는다. 되돌리기는 '처음으로'가 맡는다. */
   function railOpen(){
-    railSnap = snapS(); railHot = document.body.classList.contains("showhot");
     document.body.classList.add("railopen");
     $("railFab").setAttribute("aria-expanded", "true");
     $("rail").scrollTop = 0;
   }
-  function railClose(revert){
+  function railClose(){
     document.body.classList.remove("railopen");
     $("railFab").setAttribute("aria-expanded", "false");
-    if (revert && railSnap){
-      var place = S.flPlace;      /* 배치 스위치는 설정 밖이라 되돌리지 않는다 */
-      S = railSnap; S.flPlace = place;
-      document.body.classList.toggle("showhot", railHot); setHotLabel();
-      scroll.onscroll = null; render();
-    }
-    railSnap = null;
   }
-  $("railFab").addEventListener("click", railOpen);
-  $("railScrim").addEventListener("click", function(){ railClose(true); });
-  $("railX").addEventListener("click", function(){ railClose(true); });
-  $("railCancel").addEventListener("click", function(){ railClose(true); });
-  $("railApply").addEventListener("click", function(){ railClose(false); });
+  $("railFab").addEventListener("click", function(){
+    document.body.classList.contains("railopen") ? railClose() : railOpen();
+  });
+  $("railX").addEventListener("click", railClose);
+  $("railApply").addEventListener("click", railClose);
   document.addEventListener("keydown", function(e){
-    if (e.key === "Escape" && document.body.classList.contains("railopen")) railClose(true);
+    if (e.key === "Escape" && document.body.classList.contains("railopen")) railClose();
   });
   window.addEventListener("resize", function(){
     var r = $("rail"); if (r.scrollTop > r.scrollHeight) r.scrollTop = 0;
