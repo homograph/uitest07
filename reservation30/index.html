@@ -650,11 +650,64 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
 .flcard-act{display:flex;justify-content:flex-end;gap:2px;margin:-4px 0 0;}
 
 
-/* ══════════ 모바일 · 레일을 '설정' 시트로 ══════════
-   좁은 화면에서는 4줄짜리 레일이 폰 화면을 덮는다. 레일 DOM 은 그대로 두고
-   (핸들러 하나로 데스크톱/모바일을 같이 쓴다) 위치만 바텀시트로 바꾼다.
-   열 때 상태를 찍어 두고 '적용'이면 유지, 취소·닫기면 되돌린다. */
-.railfab,.railscrim,.railhead,.railfoot{display:none;}
+/* ══════════ 레일 = '설정' 패널 ══════════
+   상태 전환 줄이 4줄이라 sticky 로 두면 폰 위쪽을 덮는다(데스크톱·모바일 모두).
+   레일 DOM 과 핸들러는 그대로 두고 위치만 패널로 바꾼다 — 넓으면 오른쪽 위
+   드롭다운, 좁으면 바텀시트. 열 때 상태를 찍어 두고 '적용'이면 유지,
+   취소·✕·바깥이면 되돌린다. */
+.railfab{display:inline-flex;align-items:center;gap:6px;position:fixed;
+  top:calc(12px + env(safe-area-inset-top));right:14px;z-index:58;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  font:inherit;font-size:12.5px;font-weight:700;line-height:1;padding:10px 14px;
+  border-radius:var(--r-pill);cursor:pointer;
+  box-shadow:0 2px 6px rgba(18,23,42,.12),0 10px 24px rgba(18,23,42,.16);}
+.railfab .g{font-size:13px;}
+.railfab:hover{border-color:var(--ink-3);}
+body.railopen .railfab{opacity:0;pointer-events:none;}
+
+.railscrim{display:block;position:fixed;inset:0;z-index:55;
+  background:rgba(9,13,25,.30);opacity:0;pointer-events:none;transition:opacity .2s;}
+body.railopen .railscrim{opacity:1;pointer-events:auto;}
+
+.rail{position:fixed;z-index:60;margin:0;overflow:auto;visibility:hidden;opacity:0;
+  background:var(--surface);border:1px solid var(--line);
+  backdrop-filter:none;-webkit-backdrop-filter:none;
+  transition:transform .22s cubic-bezier(.215,.61,.355,1), opacity .18s, visibility .22s;}
+body.railopen .rail{visibility:visible;opacity:1;transform:none;}
+
+.railhead{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:2;
+  padding:14px 0 10px;background:var(--surface);}
+.railhead b{flex:1 1 auto;font-size:13.5px;line-height:20px;}
+.railhead .x{flex:0 0 auto;border:0;background:none;font:inherit;font-size:19px;
+  line-height:1;color:var(--ink-3);padding:4px 6px;cursor:pointer;}
+.rail .rline{align-items:center;}
+.rail .rline + .rline{margin-top:12px;}
+.rail .rname{flex:1 0 100%;min-width:0;}
+.rail .rname br{display:none;}
+.rail .seg{flex-wrap:wrap;}
+.rail .seg button{padding:8px 12px;}
+.rail .reset{flex:1 0 100%;margin-left:0;text-align:left;}
+.railfoot{display:flex;gap:8px;position:sticky;bottom:0;z-index:2;
+  margin-top:14px;padding:10px 0 4px;background:var(--surface);
+  border-top:1px solid var(--line-soft);}
+.railfoot button{border:0;border-radius:10px;font:inherit;font-size:13.5px;
+  font-weight:700;padding:13px 10px;cursor:pointer;}
+.railfoot .apply{flex:1 1 auto;background:var(--accent);color:var(--accent-ink);}
+.railfoot .cancel{flex:0 0 auto;background:var(--sunken);color:var(--ink-2);padding:13px 18px;}
+
+/* 넓은 화면: 설정 버튼 아래 드롭다운 */
+@media (min-width:721px){
+  .rail{top:58px;right:14px;left:auto;bottom:auto;
+    width:min(560px, calc(100vw - 28px));max-height:calc(100vh - 78px);
+    padding:0 18px 12px;border-radius:14px;transform:translateY(-10px);
+    box-shadow:0 18px 44px rgba(18,23,42,.24);}
+  .railhead{margin:0 -18px;padding:14px 18px 10px;}
+  .railfoot{margin:14px -18px 0;padding:10px 18px 4px;}
+  .stage{top:16px;}
+  .page{padding-top:20px;}
+}
+
+/* 좁은 화면: 바텀시트 */
 @media (max-width:720px){
   .page{padding:16px 6px 28px;}
   .work{gap:18px;}
@@ -667,49 +720,15 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
   .head .meta{display:none;}
   body.railopen{overflow:hidden;}
 
-  .railfab{display:inline-flex;align-items:center;gap:5px;position:fixed;
-    top:calc(8px + env(safe-area-inset-top));right:10px;z-index:58;
-    border:1px solid var(--line);background:var(--surface);color:var(--ink);
-    font:inherit;font-size:12px;font-weight:700;line-height:1;padding:9px 12px;
-    border-radius:var(--r-pill);cursor:pointer;
-    box-shadow:0 2px 6px rgba(18,23,42,.14),0 10px 24px rgba(18,23,42,.18);}
-  .railfab .g{font-size:13px;}
-  body.railopen .railfab{opacity:0;pointer-events:none;}
-
-  .railscrim{display:block;position:fixed;inset:0;z-index:55;
-    background:rgba(9,13,25,.45);opacity:0;pointer-events:none;transition:opacity .24s;}
-  body.railopen .railscrim{opacity:1;pointer-events:auto;}
-
-  .rail{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:60;margin:0;
+  .railfab{top:calc(8px + env(safe-area-inset-top));right:10px;font-size:12px;padding:9px 12px;}
+  .railscrim{background:rgba(9,13,25,.45);}
+  .rail{left:0;right:0;bottom:0;top:auto;width:auto;
     padding:0 14px calc(10px + env(safe-area-inset-bottom));
-    max-height:82vh;overflow:auto;-webkit-overflow-scrolling:touch;
-    background:var(--surface);border:1px solid var(--line);border-bottom:0;
-    border-radius:16px 16px 0 0;backdrop-filter:none;-webkit-backdrop-filter:none;
-    box-shadow:0 -10px 30px rgba(18,23,42,.22);visibility:hidden;
-    transform:translateY(102%);transition:transform .26s cubic-bezier(.215,.61,.355,1),
-      visibility .26s;}
-  body.railopen .rail{transform:none;visibility:visible;}
-
-  .railhead{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:2;
-    margin:0 -14px;padding:14px 14px 10px;background:var(--surface);}
-  .railhead b{flex:1 1 auto;font-size:13.5px;line-height:20px;}
-  .railhead .x{flex:0 0 auto;border:0;background:none;font:inherit;font-size:19px;
-    line-height:1;color:var(--ink-3);padding:4px 6px;cursor:pointer;}
-  .rline{align-items:center;}
-  .rline + .rline{margin-top:12px;}
-  .rname{flex:1 0 100%;min-width:0;}
-  .rname br{display:none;}
-  .seg{flex-wrap:wrap;}
-  .seg button{padding:8px 12px;}
-  .rline .reset{flex:1 0 100%;margin-left:0;text-align:left;}
-
-  .railfoot{display:flex;gap:8px;position:sticky;bottom:0;z-index:2;
-    margin:14px -14px 0;padding:10px 14px 4px;background:var(--surface);
-    border-top:1px solid var(--line-soft);}
-  .railfoot button{border:0;border-radius:10px;font:inherit;font-size:13.5px;
-    font-weight:700;padding:13px 10px;cursor:pointer;}
-  .railfoot .apply{flex:1 1 auto;background:var(--accent);color:var(--accent-ink);}
-  .railfoot .cancel{flex:0 0 auto;background:var(--sunken);color:var(--ink-2);padding:13px 18px;}
+    max-height:82vh;-webkit-overflow-scrolling:touch;
+    border-bottom:0;border-radius:16px 16px 0 0;transform:translateY(102%);
+    box-shadow:0 -10px 30px rgba(18,23,42,.22);}
+  .railhead{margin:0 -14px;padding:14px 14px 10px;}
+  .railfoot{margin:14px -14px 0;padding:10px 14px 4px;}
 }
 @media (prefers-reduced-motion:reduce){.rail,.railscrim{transition:none;}}
 
@@ -821,7 +840,7 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
           <li><b>경로 입력 4화면은 Figma 렌더 이미지</b> 위에 누를 영역을 얹었습니다. 키보드·지도가 대부분인 기존 화면이라 픽셀을 그대로 쓰는 쪽을 택했고, 대신 타이핑·검색·핀 이동은 안 됩니다. 레일의 "누를 영역 표시"로 어디를 누르면 되는지 볼 수 있습니다.</li>
           <li><b>항공편 배치 A/B 전환.</b> A는 시간&amp;경로 화면(안내 카드 넛지 + 픽업 시간 카드 링크), B는 차량 선택의 부가 서비스 카드입니다. B에서 카드를 체크하면 같은 편명·여유 시간 시트가 뜨고, 확정하면 카드에 편명과 예상 픽업이 찍힙니다.</li>
           <li><b>일시 표기와 8주 칩을 Figma "시간 입력 카드"에 맞췄습니다.</b> "12월 16일 (월) 오후 7시 정각", 8주 초과 칩은 "가능한 마지막 시간으로 설정", 날짜 휠은 오늘 ~ 8주 후.</li>
-          <li><b>모바일에서는 위쪽 설정 줄이 사라집니다.</b> 화면 폭이 720px 이하면 오른쪽 위 "⚙ 설정" 버튼만 뜨고, 누르면 같은 설정이 아래에서 올라오는 시트로 열립니다. 안에서 고른 뒤 <b>적용</b>을 누르면 반영되고, 취소·✕·바깥을 누르면 열기 직전 상태로 되돌립니다.</li>
+          <li><b>위쪽 설정 줄을 "⚙ 설정" 버튼으로 바꿨습니다.</b> 네 줄짜리 전환 줄이 폰 화면 위쪽을 덮어서, 오른쪽 위 버튼을 누를 때만 열리는 패널로 옮겼습니다. 넓은 화면에서는 버튼 아래 드롭다운으로, 좁은 화면에서는 아래에서 올라오는 시트로 열립니다. 안에서 고른 뒤 <b>적용</b>을 누르면 반영되고, 취소·✕·바깥을 누르면 열기 직전 상태로 되돌립니다.</li>
           <li>예약 홈은 <code>recurring-entry.html</code> D안, 대기 서비스(TADA-9812)는 제거된 상태 그대로입니다.</li>
         </ul>
       </section>
@@ -1690,7 +1709,7 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
     if (e.key === "Escape" && document.body.classList.contains("railopen")) railClose(true);
   });
   window.addEventListener("resize", function(){
-    if (window.innerWidth > 720 && document.body.classList.contains("railopen")) railClose(false);
+    var r = $("rail"); if (r.scrollTop > r.scrollHeight) r.scrollTop = 0;
   });
   $("flyNow").addEventListener("click", function(){
     var place = S.flPlace;
