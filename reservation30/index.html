@@ -649,6 +649,70 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
 .acard.fl .p b{font-weight:700;color:#0086EA;}
 .flcard-act{display:flex;justify-content:flex-end;gap:2px;margin:-4px 0 0;}
 
+
+/* ══════════ 모바일 · 레일을 '설정' 시트로 ══════════
+   좁은 화면에서는 4줄짜리 레일이 폰 화면을 덮는다. 레일 DOM 은 그대로 두고
+   (핸들러 하나로 데스크톱/모바일을 같이 쓴다) 위치만 바텀시트로 바꾼다.
+   열 때 상태를 찍어 두고 '적용'이면 유지, 취소·닫기면 되돌린다. */
+.railfab,.railscrim,.railhead,.railfoot{display:none;}
+@media (max-width:720px){
+  .page{padding:16px 6px 28px;}
+  .work{gap:18px;}
+  .stage{position:static;gap:8px;}
+  .notes{padding:0 4px;}
+  /* 폰이 먼저 보이도록 머리글을 줄인다. 파일·노드 번호 칩은 노트 카드에도 있다. */
+  .head{padding:0 8px;}
+  .head h1{font-size:16.5px;line-height:23px;margin-bottom:4px;}
+  .head p{font-size:12.5px;line-height:19px;}
+  .head .meta{display:none;}
+  body.railopen{overflow:hidden;}
+
+  .railfab{display:inline-flex;align-items:center;gap:5px;position:fixed;
+    top:calc(8px + env(safe-area-inset-top));right:10px;z-index:58;
+    border:1px solid var(--line);background:var(--surface);color:var(--ink);
+    font:inherit;font-size:12px;font-weight:700;line-height:1;padding:9px 12px;
+    border-radius:var(--r-pill);cursor:pointer;
+    box-shadow:0 2px 6px rgba(18,23,42,.14),0 10px 24px rgba(18,23,42,.18);}
+  .railfab .g{font-size:13px;}
+  body.railopen .railfab{opacity:0;pointer-events:none;}
+
+  .railscrim{display:block;position:fixed;inset:0;z-index:55;
+    background:rgba(9,13,25,.45);opacity:0;pointer-events:none;transition:opacity .24s;}
+  body.railopen .railscrim{opacity:1;pointer-events:auto;}
+
+  .rail{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:60;margin:0;
+    padding:0 14px calc(10px + env(safe-area-inset-bottom));
+    max-height:82vh;overflow:auto;-webkit-overflow-scrolling:touch;
+    background:var(--surface);border:1px solid var(--line);border-bottom:0;
+    border-radius:16px 16px 0 0;backdrop-filter:none;-webkit-backdrop-filter:none;
+    box-shadow:0 -10px 30px rgba(18,23,42,.22);visibility:hidden;
+    transform:translateY(102%);transition:transform .26s cubic-bezier(.215,.61,.355,1),
+      visibility .26s;}
+  body.railopen .rail{transform:none;visibility:visible;}
+
+  .railhead{display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:2;
+    margin:0 -14px;padding:14px 14px 10px;background:var(--surface);}
+  .railhead b{flex:1 1 auto;font-size:13.5px;line-height:20px;}
+  .railhead .x{flex:0 0 auto;border:0;background:none;font:inherit;font-size:19px;
+    line-height:1;color:var(--ink-3);padding:4px 6px;cursor:pointer;}
+  .rline{align-items:center;}
+  .rline + .rline{margin-top:12px;}
+  .rname{flex:1 0 100%;min-width:0;}
+  .rname br{display:none;}
+  .seg{flex-wrap:wrap;}
+  .seg button{padding:8px 12px;}
+  .rline .reset{flex:1 0 100%;margin-left:0;text-align:left;}
+
+  .railfoot{display:flex;gap:8px;position:sticky;bottom:0;z-index:2;
+    margin:14px -14px 0;padding:10px 14px 4px;background:var(--surface);
+    border-top:1px solid var(--line-soft);}
+  .railfoot button{border:0;border-radius:10px;font:inherit;font-size:13.5px;
+    font-weight:700;padding:13px 10px;cursor:pointer;}
+  .railfoot .apply{flex:1 1 auto;background:var(--accent);color:var(--accent-ink);}
+  .railfoot .cancel{flex:0 0 auto;background:var(--sunken);color:var(--ink-2);padding:13px 18px;}
+}
+@media (prefers-reduced-motion:reduce){.rail,.railscrim{transition:none;}}
+
 </style>
 </head>
 <body>
@@ -666,7 +730,15 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
     </div>
   </header>
 
-  <div class="rail" role="group" aria-label="상태 전환">
+  <button class="railfab" id="railFab" aria-expanded="false" aria-controls="rail">
+    <span class="g" aria-hidden="true">⚙</span>설정</button>
+  <div class="railscrim" id="railScrim"></div>
+
+  <div class="rail" id="rail" role="group" aria-label="상태 전환">
+    <div class="railhead">
+      <b>프로토타입 설정</b>
+      <button class="x" id="railX" aria-label="설정 닫기">✕</button>
+    </div>
     <div class="rline">
       <span class="rname">화면</span>
       <div class="seg" id="segScreen" role="tablist">
@@ -718,6 +790,10 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
       </div>
       <button class="reset" id="hotToggle" aria-pressed="false">누를 영역 표시</button>
     </div>
+    <div class="railfoot">
+      <button class="cancel" id="railCancel">취소</button>
+      <button class="apply" id="railApply">적용</button>
+    </div>
   </div>
 
   <div class="work">
@@ -745,6 +821,7 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
           <li><b>경로 입력 4화면은 Figma 렌더 이미지</b> 위에 누를 영역을 얹었습니다. 키보드·지도가 대부분인 기존 화면이라 픽셀을 그대로 쓰는 쪽을 택했고, 대신 타이핑·검색·핀 이동은 안 됩니다. 레일의 "누를 영역 표시"로 어디를 누르면 되는지 볼 수 있습니다.</li>
           <li><b>항공편 배치 A/B 전환.</b> A는 시간&amp;경로 화면(안내 카드 넛지 + 픽업 시간 카드 링크), B는 차량 선택의 부가 서비스 카드입니다. B에서 카드를 체크하면 같은 편명·여유 시간 시트가 뜨고, 확정하면 카드에 편명과 예상 픽업이 찍힙니다.</li>
           <li><b>일시 표기와 8주 칩을 Figma "시간 입력 카드"에 맞췄습니다.</b> "12월 16일 (월) 오후 7시 정각", 8주 초과 칩은 "가능한 마지막 시간으로 설정", 날짜 휠은 오늘 ~ 8주 후.</li>
+          <li><b>모바일에서는 위쪽 설정 줄이 사라집니다.</b> 화면 폭이 720px 이하면 오른쪽 위 "⚙ 설정" 버튼만 뜨고, 누르면 같은 설정이 아래에서 올라오는 시트로 열립니다. 안에서 고른 뒤 <b>적용</b>을 누르면 반영되고, 취소·✕·바깥을 누르면 열기 직전 상태로 되돌립니다.</li>
           <li>예약 홈은 <code>recurring-entry.html</code> D안, 대기 서비스(TADA-9812)는 제거된 상태 그대로입니다.</li>
         </ul>
       </section>
@@ -1572,9 +1649,48 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
     S.flPlace = v; S.flight = null; S.offset = null; S.foffset = null; S.fsheet = null;
     S.failed = false; S.swapped = false; S.fpending = false; S.termSwitched = false;
   });
+  function setHotLabel(){
+    var on = document.body.classList.contains("showhot"), b = $("hotToggle");
+    b.setAttribute("aria-pressed", on);
+    b.textContent = on ? "누를 영역 숨기기" : "누를 영역 표시";
+  }
   $("hotToggle").addEventListener("click", function(){
-    var on = document.body.classList.toggle("showhot"); this.setAttribute("aria-pressed", on);
-    this.textContent = on ? "누를 영역 숨기기" : "누를 영역 표시";
+    document.body.classList.toggle("showhot"); setHotLabel();
+  });
+
+  /* 모바일 설정 시트. flight 는 참조를 유지해야 해서 얕은 복사 + addons 만 따로 뜬다. */
+  function snapS(){
+    var c = {}, k; for (k in S) c[k] = S[k];
+    c.addons = {driver:S.addons.driver, carseat:S.addons.carseat};
+    return c;
+  }
+  var railSnap = null, railHot = false;
+  function railOpen(){
+    railSnap = snapS(); railHot = document.body.classList.contains("showhot");
+    document.body.classList.add("railopen");
+    $("railFab").setAttribute("aria-expanded", "true");
+    $("rail").scrollTop = 0;
+  }
+  function railClose(revert){
+    document.body.classList.remove("railopen");
+    $("railFab").setAttribute("aria-expanded", "false");
+    if (revert && railSnap){
+      S = railSnap;
+      document.body.classList.toggle("showhot", railHot); setHotLabel();
+      scroll.onscroll = null; render();
+    }
+    railSnap = null;
+  }
+  $("railFab").addEventListener("click", railOpen);
+  $("railScrim").addEventListener("click", function(){ railClose(true); });
+  $("railX").addEventListener("click", function(){ railClose(true); });
+  $("railCancel").addEventListener("click", function(){ railClose(true); });
+  $("railApply").addEventListener("click", function(){ railClose(false); });
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape" && document.body.classList.contains("railopen")) railClose(true);
+  });
+  window.addEventListener("resize", function(){
+    if (window.innerWidth > 720 && document.body.classList.contains("railopen")) railClose(false);
   });
   $("flyNow").addEventListener("click", function(){
     var place = S.flPlace;
