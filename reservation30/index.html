@@ -651,6 +651,14 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
   padding:7px 13px;font:inherit;font-size:13px;line-height:19px;color:var(--a-ink-6);cursor:pointer;}
 .tmode button[aria-selected="true"]{background:var(--a-chip-on);border-color:var(--a-chip-on);
   color:#fff;font-weight:700;}
+.refempty{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;
+  background:var(--a-sunken);border-radius:8px;margin:12px 20px 0;width:calc(100% - 40px);
+  padding:14px 16px;font:inherit;cursor:pointer;}
+.refempty .emo{flex:0 0 auto;font-size:20px;line-height:1;}
+.refempty .tx{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.refempty .t1{font-size:14px;line-height:20px;font-weight:700;color:var(--a-ink-3);}
+.refempty .t2{font-size:12px;line-height:17px;color:var(--a-ink-6);}
+.refempty .arr{flex:0 0 auto;width:16px;height:16px;color:var(--a-ink-7);}
 .tcard .flsum.warn{background:#EFEFF1;}
 .tcard .flsum.warn > span:nth-child(2){color:#FE4C00;}
 /* 유료 전환 자리: 요금 배지 + 캡션 */
@@ -769,7 +777,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
   <header class="head">
     <h1>항공편 입력 위치 비교 · 예약 3.0</h1>
-    <p><b>"항공편에 맞춰 픽업"을 어떤 상품으로, 어디에 둘지</b> 눌러 보며 고르는 프로토타입입니다. 오른쪽 위 <b>배치 A / B / C / D</b>로 한 번에 바꿉니다. A·B·C는 <b>우리가 픽업 시각을 정해 주는</b> 안이고, <b>D는 시각을 유저에게 맡기고 항공편을 참고값으로만 쓰면서 "결항 무료 취소 + 지연 배차"를 상품으로 파는 안</b>입니다. 예약 3.0 핸드오프 보드의 네 화면을 한 흐름으로 이었고, 색·간격·타이포는 Figma REST 실측값입니다.</p>
+    <p><b>"항공편에 맞춰 픽업"을 어떤 상품으로, 어디에 둘지</b> 눌러 보며 고르는 프로토타입입니다. <b>기본은 D안 · 인천공항 출발</b>입니다. 예약 홈에서 일반예약을 누르면 곧바로 <b>픽업 시간을 고르는 화면</b>이 열리고, 그 안에 항공편 참고 영역이 함께 있습니다. 오른쪽 위 <b>배치 A / B / C / D</b>로 다른 안과 비교할 수 있습니다. A·B·C는 <b>우리가 픽업 시각을 정해 주는</b> 안입니다. 예약 3.0 핸드오프 보드의 네 화면을 한 흐름으로 이었고, 색·간격·타이포는 Figma REST 실측값입니다.</p>
     <div class="meta">
       <span class="htag">파일 <code>pgHS64des…</code></span>
       <span class="htag">예약 홈 <code>recurring-entry D안</code></span>
@@ -782,10 +790,10 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   <div class="railbar">
     <span class="k">배치</span>
     <div class="seg" id="segPlace" role="tablist" aria-label="항공편 입력 위치">
-      <button role="tab" data-v="route" class="on">A<span class="lbl"> · 시간&amp;경로</span></button>
+      <button role="tab" data-v="route">A<span class="lbl"> · 시간&amp;경로</span></button>
       <button role="tab" data-v="vehicle">B<span class="lbl"> · 차량 선택</span></button>
       <button role="tab" data-v="split">C<span class="lbl"> · 나눠 붙이기</span></button>
-      <button role="tab" data-v="ref">D<span class="lbl"> · 참고값</span></button>
+      <button role="tab" data-v="ref" class="on">D<span class="lbl"> · 참고값</span></button>
     </div>
     <button class="railfab" id="railFab" aria-expanded="false" aria-controls="rail">
       <span class="g" aria-hidden="true">⚙</span>설정</button>
@@ -804,14 +812,14 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         <button role="tab" data-v="route">② 시간&amp;경로</button>
         <button role="tab" data-v="vehicle">③ 차량 선택</button>
         <button role="tab" data-v="preview">④ 미리보기</button>
-        <button role="tab" data-v="rEdit">경로 입력</button>
+        <button role="tab" data-v="rEdit">경로 입력(빈 상태부터)</button>
       </div>
     </div>
     <div class="rline">
       <span class="rname">출발지</span>
       <div class="seg" id="segOrigin" role="tablist">
-        <button role="tab" data-v="city" class="on">시내 → 인천공항</button>
-        <button role="tab" data-v="icn">인천공항 → 시내</button>
+        <button role="tab" data-v="city">시내 → 인천공항</button>
+        <button role="tab" data-v="icn" class="on">인천공항 → 시내</button>
       </div>
     </div>
     <div class="rline">
@@ -870,6 +878,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         </table>
         </div>
         <ul>
+          <li><b>D안과 공항 출발을 기본 흐름으로 바꿨습니다(2026-09-12).</b> 예약 홈 → 일반예약을 누르면 <b>인천공항 제1터미널 출발 · 경로가 채워진 예약</b>으로 들어가고 <b>픽업 시간 카드가 열린 상태</b>로 시작합니다(Figma는 경로 카드부터 열립니다 — 경로가 이미 있는 예약이라 시간부터 고르게 했습니다). 항공편 참고는 넛지로 권하지 않고 <b>픽업 시간 카드 안의 기본 구성</b>이 되었습니다("항공편을 넣으면 도착 시각을 참고할 수 있어요 / 결항·지연 보장도 여기서 켤 수 있어요"). 안내 카드 자리는 원래의 시간 예약 안내로 돌아갔습니다.</li>
+          <li><b>빈 상태와 경로 입력 4화면</b>은 기본 흐름에서 빠졌습니다. 설정의 <b>화면 → 경로 입력(빈 상태부터)</b>으로 들어가면 "어디로 가세요?"부터 이미지 4화면까지 그대로 볼 수 있습니다(이미지가 시내 → 인천공항이라 그 흐름은 시내 출발로 바뀝니다).</li>
           <li><b>D안이 나눈 기준(2026-09-12 사용자 제안).</b> 우리가 시각을 정해 주는 순간 기준이 둘로 갈라져서 덮어쓰기·역산·10분 단위 어긋남이 계속 생깁니다. D안은 시각을 유저 것 하나로 두고, 예약을 만든 뒤의 리스크만 팝니다 — <b>결항이면 수수료 없이 취소, 도착이 늦으면 늦게 배차.</b> 편명은 그 사건을 알기 위한 필수 입력이 되므로 넣을 이유가 분명해집니다. 재배차 파이프라인을 처음부터 만들 필요도 없습니다.</li>
           <li><b>D안에서 정해야 할 것.</b> "지연 배차"가 ① 우리가 알아서 옮김 ② 알림으로 묻고 원탭 승인 ③ 배차만 미룸 중 무엇인지에 따라 원가와 기대가 달라집니다. 이 프로토는 <b>②를 가정</b>했습니다(미리보기 안내에 "옮길지 알림으로 확인"). 중대 지연의 무료 취소 판정선도 필요합니다.</li>
           <li><b>C안이 나눈 기준.</b> 편명으로 시각을 <b>계산</b>하는 건 무료여야 합니다(유저가 직접 조회해도 되고, 요금을 붙이면 편명 자체가 안 들어와 지연 대응 데이터도 못 받습니다). 팔 수 있는 건 예약을 만든 뒤의 보장입니다 — 시각이 바뀌어도 차가 오는 것(재수락 비용), 자동 조정(취소·재예약 불필요), 결항 시 무료 취소.</li>
@@ -1044,13 +1054,15 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   var S;
   function fresh(){
     return {
-      screen:"home", tab:"normal", open:"route", appear:null, toast:"",
-      routeFilled:false, rstep:"empty", flPlace:"route",
+      /* 기본 흐름 = 인천공항 출발 · 경로가 채워진 예약 · D안(참고값).
+         공항 출발이 이 기능의 대상이고, 픽업 시간을 고르는 화면이 메인이다. */
+      screen:"home", tab:"normal", open:"time", appear:null, toast:"",
+      routeFilled:true, rstep:"empty", flPlace:"ref",
       via:0, surge:"off", req:"off", reqText:"",
       di:0, hi:9, mi:0, timeSet:false,
       lineup:"next", addons:{driver:true, carseat:true},
       animate:false,
-      origin:"city", term:"T1", fkase:"ok", flight:null, offset:null, foffset:null,
+      origin:"icn", term:"T1", fkase:"ok", flight:null, offset:null, foffset:null,
       fsheet:null, fquery:"", swapped:false, fpending:false, termSwitched:false, failed:false,
       track:false, fintent:"set", anchor:"clock", pend:null
       /* track: 지연 추적 부가 서비스(C안) · fintent: 편명 입력 의도
@@ -1167,6 +1179,13 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       + '<button class="ghost" data-act="fOpen">항공편 바꾸기</button>' + (extra || '') + '</div>';
   }
   /* D안 참고 블록: 도착 시각과 추천만. 시각을 바꾸지는 않는다. */
+  /* 편명을 넣기 전의 참고 영역. 메인 플로우라서 넛지가 아니라 카드의 기본 구성이다. */
+  function refEmpty(){
+    return '<button class="refempty" data-act="refOpen"><span class="emo" aria-hidden="true">✈️</span>'
+      + '<span class="tx"><span class="t1">항공편을 넣으면 도착 시각을 참고할 수 있어요</span>'
+      + '<span class="t2">결항·지연 보장도 여기서 켤 수 있어요</span></span>'
+      + '<span class="arr">' + SVG.erArrow + '</span></button>';
+  }
   function refBlock(){
     var f = S.flight, sug = refSuggest(), tight = chosenMin() < mins(f.eta);
     return '<div class="flsum' + (tight ? " warn" : "") + '">'
@@ -1347,7 +1366,10 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         + '<div class="wheelwrap">' + wheel() + '</div>'
         + '<div class="chipbox" id="fastbox"' + (err ? '' : ' hidden') + '><button class="fastest" data-act="fastest">'
         + (/8주/.test(err) ? "가능한 마지막 시간으로 설정" : "가장 빠른 시간으로 설정") + '</button></div>'
-        + (flightOn() ? (placeD() ? refBlock() : flSumBlock()) : '')
+        + (flightOn() ? (placeD() ? refBlock() : flSumBlock())
+            : eligible() && placeD() ? refEmpty()
+            : eligible() && placeA() ? '<div class="flentry"><button class="ghost" data-act="fOpen">✈️ 항공편 도착에 맞춰 입력</button></div>'
+            : '')
         + '</div>');
     } else {
       h.push('<div class="tcard' + ap("time") + '">' + tmode
@@ -1355,7 +1377,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         + '<span class="v">' + (S.timeSet ? esc(timeLong()) : "언제 출발하세요?") + '</span></button>'
         + (flightOn() ? (placeD() ? refBlock() : flSumBlock()) : '')
         + (!flightOn() && eligible() && placeA() ? '<div class="flentry"><button class="ghost" data-act="fOpen">✈️ 항공편 도착에 맞춰 입력</button></div>' : '')
-        + (!flightOn() && eligible() && placeD() ? '<div class="flentry"><button class="ghost" data-act="refOpen">✈️ 항공편 도착 시각 참고하기</button></div>' : '')
+        + (!flightOn() && eligible() && placeD() ? refEmpty() : '')
         + '</div>');
     }
 
@@ -1377,10 +1399,6 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       h.push('<div class="icard"><img src="' + ASSET.clock + '" alt="" />'
         + '<span class="tx"><span class="t1">고른 시각에 맞춰 평소처럼 배차해요</span>'
         + '<span class="t2">항공편이 늦어져도 시각은 옮기지 않아요</span></span></div>');
-    } else if (eligible() && placeD() && !S.via){
-      h.push('<button class="icard" data-act="refOpen"><span class="emo">✈️</span>'
-        + '<span class="tx"><span class="t1">항공편 도착 시각을 참고할까요?<span class="beta">BETA</span></span>'
-        + '<span class="t2">편명을 넣으면 도착 시각과 추천 픽업 시각을 보여 드려요</span></span></button>');
     } else if (eligible() && (placeA() || placeC()) && !S.via){
       /* C안 넛지는 '무료로 시각을 잡아 준다'까지만 말한다. 늦어질 때 옮기는 건 3단계 상품이다. */
       h.push('<button class="icard" data-act="' + (placeC() ? "tmode" : "fOpen") + '"' + (placeC() ? ' data-v="flight"' : '') + '><span class="emo">✈️</span>'
@@ -1831,7 +1849,11 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         break;
       case "homeGo":
         if (v === "custom" || v === "recur"){ S.toast = (v === "custom" ? "맞춤예약" : "정기예약") + "은 이 프로토 범위 밖이에요"; break; }
-        S.tab = v === "time" ? "time" : "normal"; S.open = "route"; go("route"); break;
+        S.tab = v === "time" ? "time" : "normal";
+        go("route");
+        /* 경로가 이미 채워진 예약이라 시간부터 고른다(Figma 는 경로부터 열린다) */
+        if (S.routeFilled) openTime(); else S.open = "route";
+        break;
       case "tab":       S.tab = v; break;
       case "via":       S.via = S.via ? 0 : 1; break;
       case "openRoute": S.open = "route"; S.appear = "route"; break;
@@ -1990,10 +2012,13 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     });
   }
   segHandler("segScreen", function(v){
-    if (v === "rEdit"){ S.screen = "rEdit"; S.rstep = "empty"; S.fsheet = null; return; }
+    if (v === "rEdit"){   /* 빈 상태 → 경로 입력 4화면까지 */
+      S.routeFilled = false; S.origin = "city"; S.flight = null; S.track = false;
+      S.timeSet = false; S.open = "route"; S.fsheet = null; go("route"); return;
+    }
     go(v);
     if (v !== "home"){ S.routeFilled = true; if (!S.timeSet){ setTime(earliest()); S.timeSet = true; } }
-    if (v === "route") S.open = "route";
+    if (v === "route") S.open = S.routeFilled ? "time" : "route";
   });
   segHandler("segOrigin", function(v){ S.origin = v; S.routeFilled = true; if (v === "city"){ S.flight = null; S.offset = null; S.fsheet = null; S.failed = false; S.term = "T1"; } });
   segHandler("segFkase",  function(v){ S.fkase = v; S.flight = null; S.offset = null; S.foffset = null; S.failed = false;
