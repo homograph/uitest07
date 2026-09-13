@@ -172,6 +172,22 @@
   /* 손으로 그리지 않고 Figma 원본을 --svg 로 추출해 넣었다(viewBox 44). */
   .pico svg{display:block;width:14px;height:14px;}
   .pico svg path{fill:var(--blue-500);}
+  /* ── 진입점 P 모션 (실험 · Figma 에셋 없음, 하네스 'P 모션 / P 정지' 로 비교) ──
+     뜻: 'P(주차장) 가 아래로 내려가 B1(지하)' — 흔들기가 아니라 '지하로 오게 할 수 있다' 를 말하는 움직임.
+     규칙: 출발지 화면 진입점에서만 · 값이 비어 있을 때만 · 2.4초 × 2회 후 P 로 정지(WCAG 2.2.2 5초 이내 멈춤)
+           · 타일(24) 안에서만 움직여 카드 높이 불변 · '움직임 줄이기' 설정이면 재생하지 않음.
+     운행 화면 진입점엔 넣지 않는다 — 기사가 오는 중에 '지금 바꿔야 하나' 로 읽힌다. */
+  #pk-start .pico{position:relative;overflow:hidden;}
+  #pk-start .pico svg{position:relative;}
+  .pm-b1{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;line-height:1;font-weight:800;
+    letter-spacing:-.2px;color:var(--blue-500);opacity:0;pointer-events:none;}
+  #pk-start .pico.pm-play svg{animation:pmP 2.4s cubic-bezier(.4,0,.2,1) 2;}
+  #pk-start .pico.pm-play .pm-b1{animation:pmB 2.4s cubic-bezier(.4,0,.2,1) 2;}
+  @keyframes pmP{0%,18%{transform:translateY(0);opacity:1}40%{transform:translateY(10px);opacity:0}
+    76%{transform:translateY(-10px);opacity:0}96%,100%{transform:translateY(0);opacity:1}}
+  @keyframes pmB{0%,30%{transform:translateY(10px);opacity:0}48%,68%{transform:translateY(0);opacity:1}
+    86%,100%{transform:translateY(-10px);opacity:0}}
+  @media (prefers-reduced-motion:reduce){ #pk-start .pico.pm-play svg,#pk-start .pico.pm-play .pm-b1{animation:none;} }
   /* 남은 두 채널이 각자 한 가지만 말한다:
        면 + 값 색 = 이 값이 기사에게 가 있는가  (파란 면 + 검정 / 회색 면 + #4b5064)
        오른쪽     = 지금 할 수 있는 일          (입력 · 수정 · 스피너 · 없음)
@@ -1011,7 +1027,9 @@
     <div class="cap"><span class="dot"></span><b>라이더 앱</b><em>유저</em><em id="pwlab">360</em>
       <span class="dsw"><button type="button" class="dswb on" data-side="r" data-ds="match">매칭 중</button><button
         type="button" class="dswb" data-side="r" data-ds="go">이동 중</button><button
-        type="button" class="dswb" data-side="r" data-ds="arrived">차량 도착</button></span></div>
+        type="button" class="dswb" data-side="r" data-ds="arrived">차량 도착</button></span>
+      <span class="dsw"><button type="button" class="dswb pmc on" data-pm="motion">P 모션</button><button
+        type="button" class="dswb pmc" data-pm="static">P 정지</button></span></div>
     <div class="phbox" id="riderbox"><div class="phone" id="rider">
 
       <!-- 출발지 설정 -->
@@ -1029,7 +1047,7 @@
               <span>차량이 도착하는 위치를 확인해주세요.</span>
             </div>
             <div class="fields">
-              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="픽업 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="ph" id="pk-start-tx">지상·지하 주차장에서 타시나요?</span><span class="pact" id="pk-start-act">입력</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></button>
+              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="픽업 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg><span class="pm-b1" aria-hidden="true">B1</span></span><span class="ph" id="pk-start-tx">지상·지하 주차장에서 타시나요?</span><span class="pact" id="pk-start-act">입력</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></button>
 
             </div>
           </div>
@@ -1772,7 +1790,7 @@
        ── 둘은 다른 사건이다. 기사가 픽업지에 서 있어도 승객은 아직 모른다.
        승객 화면(차량 도착 · 배너 · 수정 불가)은 dstate 가 아니라 notified 를 따른다. */
     /* rphase = 승객이 아는 것(하네스가 움직인다) · dview = 기사 화면(타다 앱 / T맵). */
-    step:null, skipped:{}, routeOpen:null, rphase:'match', dview:'app', form:'sform', etcOpen:false, top:'inline', pw:360
+    step:null, skipped:{}, routeOpen:null, rphase:'match', dview:'app', pmotion:'motion', pmPlayed:false, form:'sform', etcOpen:false, top:'inline', pw:360
   };
 
   /* ── 문장 ── */
@@ -2366,6 +2384,9 @@
   function render(){
     $$('.tab[data-mode]').forEach(t=>t.classList.toggle('on',t.dataset.mode===S.mode));
     const rscr = S.screen==='start' ? 's-start' : (S.rphase==='match' ? 's-match' : 's-voyage');
+    /* 진입점 P 모션: 출발지 화면이 보이고 아직 값이 없을 때 한 번만 */
+    if(S.pmotion==='motion' && !S.pmPlayed && S.screen==='start' && !S.value){ S.pmPlayed=true; playPm(); }
+    if(S.pmotion!=='motion' || S.value){ const pi=$('#pk-start .pico'); if(pi) pi.classList.remove('pm-play'); }
     $$('#rider .scr').forEach(x=>x.classList.toggle('on',x.id===rscr));
     const has=!!S.value;
     paintField('pk-start-tx');
@@ -2523,7 +2544,7 @@
     el('dtsel').classList.toggle('dark', !!S.tmapDark);
     $$('.tth').forEach(b=>b.classList.toggle('on', (b.dataset.th==='dark')===!!S.tmapDark));
     /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
-    $$('.dswb:not(.dstg):not(.tth)').forEach(b=>b.classList.toggle('on',
+    $$('.dswb:not(.dstg):not(.tth):not(.pmc)').forEach(b=>b.classList.toggle('on',
       b.dataset.ds === (b.dataset.side==='r' ? S.rphase : S.dview)));
 
     el('fdesc').innerHTML = S.screen==='start'
@@ -2621,7 +2642,7 @@
   }
 
   function setMode(m){
-    S.mode=m; S.screen='start';
+    S.mode=m; S.screen='start'; S.pmPlayed=false;
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='go'; S.chgFlag=false; S.near=false; S.chgBlink=0; S.chgSeen=0;
     S.drover=false; S.hilite=false; S.before=null;
@@ -2885,6 +2906,18 @@
   }));
   /* 매칭 중은 실제로도 지나가는 화면이다 — 이 프로토타입에서 붙들고 있을 이유가 없다.
      1초 뒤 자동으로 운행 화면으로 넘긴다(하네스에서 매칭 중을 다시 눌러도 마찬가지). */
+  function playPm(){
+    const pi=$('#pk-start .pico'); if(!pi) return;
+    pi.classList.remove('pm-play'); void pi.offsetWidth; pi.classList.add('pm-play');
+  }
+  /* 두 번 돈 뒤 클래스를 거둔다 — 남겨 두면 다음 렌더에서 다시 붙일 때 재생되지 않는다 */
+  document.addEventListener('animationend', e=>{ if(e.animationName==='pmP') e.target.closest('.pico')?.classList.remove('pm-play'); });
+  $$('.pmc').forEach(b=>b.addEventListener('click',()=>{
+    S.pmotion=b.dataset.pm;
+    $$('.pmc').forEach(x=>x.classList.toggle('on', x===b));
+    /* 'P 모션' 을 누르면 다시 재생해서 볼 수 있게 한다 */
+    S.pmPlayed=false; render();
+  }));
   function startMatching(){
     /* 새 호출이 잡히면 기사 화면은 01 pickup-go(타다 앱)에서 시작한다 — driver-v2 resetState() 의 screen:'pickup', pphase:'go' */
     S.rphase='match'; S.dstage='go'; S.dview='app'; S.driving=false; S.chgFlag=false; render();
