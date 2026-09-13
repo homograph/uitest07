@@ -275,7 +275,16 @@
      하단에 두면 '이 위치로 보내기' 바로 위라 정반대 결과의 두 버튼이 붙는다.
      헤더 우측은 스크롤과 무관하게 늘 보이고, 확정 액션에서 물리적으로 가장 멀다. */
   .ph-bar .sp{flex:1 1 auto;}
-  .phdel{font-size:14px !important;color:var(--gray-700) !important;}
+  /* Figma Appbar 'Sub button' — 16 Regular #868B9C · pad10 (입력 내용이 있는 채로 다시 들어왔을 때만) */
+  .phdel{font-size:16px !important;line-height:24px;color:#868b9c !important;padding:10px !important;}
+  .pdim{position:absolute;inset:0;z-index:80;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;}
+  .pdim[hidden]{display:none;}
+  .pdlg{width:280px;background:#fff;border-radius:4px;box-shadow:0 30px 60px rgba(0,0,0,.3);overflow:hidden;}
+  .pdlg-t{margin:0;padding:30px 25px 20px;font-size:15px;line-height:22px;color:#262a38;white-space:pre-line;word-break:keep-all;}
+  .pdlg-b{display:flex;}
+  .pdlg-b button{flex:1 1 0;height:60px;border:0;background:#fff;font:inherit;font-size:15px;line-height:22px;cursor:pointer;}
+  .pdlg-b button[hidden]{display:none;}
+  #pdlg-no{color:#73788b;font-weight:400;} #pdlg-yes{color:#32a2fa;font-weight:700;}
   .phdel[hidden]{display:none;}
   .savechk{display:flex;align-items:center;gap:8px;cursor:pointer;line-height:18px;}
   .savechk input{position:absolute;opacity:0;width:0;height:0;}
@@ -358,6 +367,8 @@
   /* 수정 불가에서는 ＋/− 자체가 없다 — 접거나 펼 수 없으니 아이콘도 남기지 않는다. */
   .ph-scr.ro .addetc .tg{display:none;}
   .ph-scr.ro .bv,.ph-scr.ro .fld .u,.ph-scr.ro .fld .nn,.ph-scr.ro .fld.pick{color:var(--gray-500);}
+  /* Figma 입력 필드 '비활성화': 배경 #EFEFF1 · 값·단위 #73788B (지하 칩도 같은 면으로 맞췄다) */
+  .ph-scr.ro .fld{background:#efeff1;}
   .ph-scr.ro .fld:focus-within,.ph-scr.ro .fld.pick:focus,.ph-scr.ro .fld.pick:hover{
     background:var(--gray-30);box-shadow:none;}
   /* 찾아오는 길 칸만 한 톤 더 눌러 둔다(#f5f6f7 → #efeff1). 여기만 '입력란' 이라
@@ -1091,7 +1102,9 @@
       <div class="ph-scr" id="phscr">
         <div class="sb light"><span>12:45</span>
           <span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
-        <div class="ph-bar"><button id="phclose"><svg class="ic" width="15.0" height="15" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M22.4999 26.7669L4.26702 44.9997L0 40.7327L18.2328 22.4999L1.79841e-07 4.26702L4.26702 1.25889e-06L22.4999 18.2328L40.7327 0L44.9997 4.26702L26.7669 22.4999L44.9997 40.7327L40.7327 44.9997L22.4999 26.7669Z" fill="black"/></svg></button><b id="ph-title">상세 위치 입력</b><span class="sp"></span><button type="button" class="phdel" id="ph-del" hidden>지우기</button></div>
+        <div class="ph-bar"><button id="phclose"><svg class="ic" width="15.0" height="15" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M22.4999 26.7669L4.26702 44.9997L0 40.7327L18.2328 22.4999L1.79841e-07 4.26702L4.26702 1.25889e-06L22.4999 18.2328L40.7327 0L44.9997 4.26702L26.7669 22.4999L44.9997 40.7327L40.7327 44.9997L22.4999 26.7669Z" fill="black"/></svg></button><b id="ph-title">상세 위치 입력</b><span class="sp"></span><button type="button" class="phdel" id="ph-del" hidden>사용 안함</button></div>
+        <!-- Figma 핸드오프 Dialog 280 · Dim #000 40% -->
+        <div class="pdim" id="pdlg" hidden><div class="pdlg" role="dialog" aria-modal="true"><p class="pdlg-t" id="pdlg-t"></p><div class="pdlg-b"><button type="button" id="pdlg-no">아니오</button><button type="button" id="pdlg-yes">예</button></div></div></div>
         <div class="ph-body">
           <div class="answers" id="answers"></div>
           <div class="ask" id="ask">
@@ -1104,12 +1117,12 @@
             <div class="sent" id="f-sent">
               <button type="button" class="fld pick" id="f-lvl" hidden><span class="roll" id="f-lvl-t"><span class="rw"><span>지하</span><span>지상</span></span></span><svg class="ic" width="14" height="14" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.9999 12.3999L34.4873 25.8873L32.0125 28.3622L20.9999 17.3497L9.98732 28.3622L7.51245 25.8873L20.9999 12.3999Z" fill="currentColor"/></svg></button>
               <span class="w" id="f-w-u">지하</span>
-              <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="text"
+              <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="numeric"
                      maxlength="1" placeholder="2" aria-label="몇 층" /><span class="u">층</span><span class="bx" id="f-floor-b" hidden></span></label>
               <span class="br" id="f-br1"></span>
-              <label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="text" maxlength="8"
+              <label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="numeric" maxlength="8"
                      placeholder="101" aria-label="몇 동" /><span class="u">동</span><span class="nn" id="f-dong-nn" hidden>동 없음</span></label>
-              <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="text" maxlength="8"
+              <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="numeric" maxlength="8"
                      placeholder="1-2" aria-label="라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label>
             </div>
             <div class="fhint" id="f-hint">
@@ -1191,7 +1204,7 @@
         <div class="dtmap" id="dtmap" hidden>
           <div class="sb light"><span>12:30</span><span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
           <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
-          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="72" rx="12" fill="#0044A6" fill-opacity="0.7"/><path d="M25.5 51.7503V20.25H37.7501C40.6668 20.25 43.1459 21.2708 45.1876 23.3125C47.2293 25.3542 48.2502 27.8334 48.2502 30.7501C48.2502 33.6668 47.2293 36.1459 45.1876 38.1876C43.1459 40.2293 40.6668 41.2502 37.7501 41.2502H32.5001V51.7503H25.5ZM32.5001 34.2501H38.1001C39.0626 34.2501 39.8865 33.9074 40.572 33.222C41.2573 32.5365 41.6001 31.7125 41.6001 30.7501C41.6001 29.7876 41.2573 28.9636 40.572 28.2782C39.8865 27.5927 39.0626 27.25 38.1001 27.25H32.5001V34.2501Z" fill="white"/></svg><b id="tp-fl"></b></span><span class="tp-v" id="tp-v"></span><span class="tp-go" id="tp-go">고객 요청</span><span class="tp-chg" id="tp-chg" hidden>변경됨</span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
+          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="72" height="72" rx="12" fill="#0044A6" fill-opacity="0.7"/><path d="M25.5 51.7503V20.25H37.7501C40.6668 20.25 43.1459 21.2708 45.1876 23.3125C47.2293 25.3542 48.2502 27.8334 48.2502 30.7501C48.2502 33.6668 47.2293 36.1459 45.1876 38.1876C43.1459 40.2293 40.6668 41.2502 37.7501 41.2502H32.5001V51.7503H25.5ZM32.5001 34.2501H38.1001C39.0626 34.2501 39.8865 33.9074 40.572 33.222C41.2573 32.5365 41.6001 31.7125 41.6001 30.7501C41.6001 29.7876 41.2573 28.9636 40.572 28.2782C39.8865 27.5927 39.0626 27.25 38.1001 27.25H32.5001V34.2501Z" fill="white"/></svg><b id="tp-fl"></b></span><span class="tp-v" id="tp-v"></span><span class="tp-go" id="tp-go">고객이 작성함</span><span class="tp-chg" id="tp-chg" hidden>고객이 변경함</span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
           <div class="tbar"><div class="tb-info"><b>9분</b><span>1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
         </div>
         <!-- T맵 경로 선택(driver-v2 tmapsel). '고객 위치로 출발하기' → 이 화면이 오른쪽에서 밀려 들어오고,
@@ -2015,7 +2028,7 @@
          입구는 정문 94 > 게이트 61 이지만 정문은 내비 기본 목적지라 정보가 없어 게이트로 든다(표기도 '게이트N' 이 한국어 중 최다).
          말투는 기사에게 쓰는 존댓말 — 진입 동사 들어오셔서 76 · 들어오시면 41 · 진입후 26 · 들어와서 20.
          지상: 후문·쪽문은 입주민·보행자 전용인 단지가 있어 특정 문을 예로 들지 않는다. */
-      et.placeholder = S.d.lvl==='ground'?'예: 경비실 지나셔서 바로 좌회전':'예: 게이트2로 들어오셔서 좌회전';
+      et.placeholder = S.d.lvl==='ground'?'예 : 경비실 지나셔서 바로 좌회전':'예 : 게이트2로 들어오셔서 좌회전';
       paintFEtc();
     }
     paintFoot();
@@ -2048,14 +2061,23 @@
     },40);
   }
   /* 지금 포커스된 칸의 안내만 띄운다. 슬롯 높이는 고정이라 오갈 때 아래가 튀지 않는다 */
+  /* Figma hint-slot: 포커스한 칸 아래 칩. 숫자 키패드가 기본이고 '문자로 입력' ↔ '숫자로 입력' 으로 전환한다
+     (동 '관리동'·'타운하우스동', 층 'L', 라인 '-'·'~' 같은 값). iOS 는 .numbersAndPunctuation 도 고려 가능(주석). */
+  const kbLabel = k => (S.kb && S.kb[k]==='text') ? '숫자로 입력' : '문자로 입력';
+  function toggleKb(id,k){
+    S.kb[k] = S.kb[k]==='text' ? 'numeric' : 'text';
+    const i=el(id); i.inputMode=S.kb[k];
+    /* 모바일 키보드는 포커스를 다시 받아야 바뀐다 */
+    i.blur(); i.focus();
+  }
   const HINT = {
-    /* 키패드 전환 칩은 없앴다. 모든 칸이 문자로 열린다 —
-       동에는 '관리동'·'타운하우스동', 층에는 'L' 같은 값이 실제로 있다.
-       숫자·문자가 한 화면에 있는 키패드가 최선이지만 없는 플랫폼에서는 전환이 사용자 몫이다. */
+    floor:{ t:'', a:()=>kbLabel('floor'), go:()=>toggleKb('f-floor','floor') },
     dong: { t:'', a:()=>'동이 없어요',
-            go:()=>{ S.d.noDong=true; S.d.dong=''; S.focus=null; renderSentence(); paintFoot(); } },
+            go:()=>{ S.d.noDong=true; S.d.dong=''; S.focus=null; renderSentence(); paintFoot(); },
+            a2:()=>kbLabel('dong'), go2:()=>toggleKb('f-dong','dong') },
     line: { t:'', a:()=>'라인이 없어요',
-            go:()=>{ S.d.noLine=true; S.d.line=''; S.focus=null; renderSentence(); paintFoot(); } }
+            go:()=>{ S.d.noLine=true; S.d.line=''; S.focus=null; renderSentence(); paintFoot(); },
+            a2:()=>kbLabel('line'), go2:()=>toggleKb('f-line2','line') }
   };
   /* 값이 기본 폭을 넘칠 때만 늘린다. 늘 내용에 딱 맞추면 한 글자마다 옆 칸이 밀린다 */
   let MEAS=null;
@@ -2096,7 +2118,8 @@
   }
   /* 문장형 빈칸은 한 번만 묶어 둔다. 매 렌더마다 다시 그리면 포커스가 날아간다 */
   function bindSentence(){
-    /* 세 칸 모두 문자로 연다. 어느 칸도 숫자만은 아니기 때문이다 —
+    /* (9/13 Figma 로 바뀜: 숫자 키패드 기본 + 칸마다 '문자로 입력' 칩 — HINT 참고. 아래는 그 전 판단의 기록)
+       세 칸 모두 문자로 연다. 어느 칸도 숫자만은 아니기 때문이다 —
        층 'L층', 동 '관리동'·'타운하우스동', 라인 '-'/'~'/'호'.
        숫자로 열어 두면 그런 값을 넣으려는 사람이 매번 전환을 눌러야 하고,
        더 나쁘게는 '여기는 숫자만 되나 보다' 하고 포기한다. */
@@ -2226,9 +2249,9 @@
        재편집에만 두던 취소가 이제 상시다 — 빈 상태에서도 '안 쓸래' 로 나갈 길이 생긴다.
        reedit 은 저장 버튼의 활성 조건(바꾼 게 있는가)에만 계속 쓴다. */
     const reedit = S.opened==='start' ? !!S.value : !!(S.value && S.confirmed);
-    /* 9/6 Figma: 취소도 지우기도 없다. 나가는 길은 ✕ 하나다. */
+    /* 9/13 Figma: 입력 내용이 있는 채로 다시 들어오면 상단 오른쪽에 '사용 안함'. 처음 입력·읽기 전용엔 없다. */
     el('ph-cancel').hidden = true;
-    el('ph-del').hidden = true;
+    el('ph-del').hidden = !(S.current && !S.ro);
     el('chk-save').checked = S.always;
     if(sf){
       el('ph-skip').hidden = true;
@@ -2260,6 +2283,11 @@
     /* 이미 쓴 길 안내가 있으면 펼친 채로 연다 — 접힌 채 열면 안 보이는 값이 된다 */
     S.etcOpen = !!(S.current && S.current.etc && S.current.etc.trim());
     S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false};
+    S.d0 = flat(S.d);   /* 닫을 때 '바꾼 게 있나' 의 기준 */
+    el('pdlg').hidden = true;
+    /* 숫자 키패드가 기본(Figma '입력 필드 & 키패드') — 칸마다 '문자로 입력' 으로 전환 */
+    S.kb = {floor:'numeric', dong:'numeric', line:'numeric'};
+    [['f-floor','floor'],['f-dong','dong'],['f-line2','line']].forEach(([id,k])=>{ el(id).inputMode='numeric'; });
     /* Figma 24개 변형 모두 제목이 '상세 위치 입력' 이다 — 상태별로 나누지 않기로 했다.
        (첫 입력/변경/수정 불가를 제목으로 구분하던 것을 되돌렸다) */
     el('ph-title').textContent = '상세 위치 입력';
@@ -2804,35 +2832,26 @@
   });
   /* 체크 토글 토스트 2종은 Figma 에서 삭제됐다(전엔 있었다). 토스트는 두 개만 남는다. */
   el('chk-save').addEventListener('change',()=>{ S.always=el('chk-save').checked; });
-  /* 헤더에 두면 누르기 쉬워진 만큼 안전장치가 필요하다.
-     확인 다이얼로그로 막는 대신 즉시 지우고 되돌릴 수 있게 한다 — 마찰 없이 되돌아간다. */
+  /* Figma 핸드오프 Dialog — '예/아니오' 또는 '확인' 하나 */
+  function askDialog(text, onYes, single){
+    const d=el('pdlg'); el('pdlg-t').textContent=text;
+    el('pdlg-no').hidden=!!single; el('pdlg-yes').textContent = single ? '확인' : '예';
+    const close=()=>{ d.hidden=true; el('pdlg-yes').onclick=null; el('pdlg-no').onclick=null; };
+    el('pdlg-yes').onclick=()=>{ close(); if(onYes) onYes(); };
+    el('pdlg-no').onclick=close;
+    d.hidden=false;
+  }
+  /* '사용 안함' (Figma '사용 안함 1·2')
+     매칭 전: 삭제 확인 다이얼로그 → 예 면 지우고 닫는다(되돌리기 토스트는 다이얼로그가 대신하므로 뗐다).
+     매칭 후: 지울 수 없다 — 차량이 이미 그 값을 보고 오고 있다. 내용 변경만 된다. */
   el('ph-del').addEventListener('click',()=>{
-    const onVoyage = S.opened==='voyage' && S.confirmed;
-    clearTimeout(S.tmr); S.tmr=null;
-    const undo = {value:S.value, current:S.current&&Object.assign({},S.current), saved:S.saved&&Object.assign({},S.saved),
-                  confirmed:S.confirmed, always:S.always, fromSaved:S.fromSaved, origin:S.origin,
-                  sending:S.sending, sent:S.sent, edited:S.edited};
-    S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
-    S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
-    S.drover=false; S.hilite=false;
-    S.drKind=null; S.ack=true; S.rphase='match'; S.dview='app'; S.dstage='go'; S.driving=false; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
-    $('#phscr').classList.remove('on');
-    render();
-    toast(onVoyage ? '상세 위치를 지웠어요. 기사님 화면에서도 사라집니다.'
-                   : '상세 위치를 지웠어요. 저장해 둔 값도 함께 지웠습니다.', ()=>{
-      Object.assign(S, undo);
-      /* 보내던 중에 지웠다면 되돌리기는 '전송을 이어서' 하는 것이다.
-         안 그러면 라이더 필드는 살아나는데 기사 화면은 비어 있는 상태로 남는다. */
-      if(S.sending){
-        clearTimeout(S.tmr);
-        S.tmr=setTimeout(()=>{
-          S.tmr=null; S.sending=false; S.sent=true;
-          S.droverEdit=S.edited; raiseDrover(S.edited ? 'change' : 'first');
-          render();
-          toast(S.edited ? '바뀐 위치를 전달했어요. 이미 이동 중이라 경로가 바뀔 수 있어요.'
-                         : '기사님에게 전달했어요. 지금 이동 중이라 경로가 바뀔 수 있어요.');
-        },1200);
-      }
+    if(S.opened==='voyage'){ askDialog('차량이 출발지로 이동 중입니다. 지금은 내용 변경만 가능합니다.', null, true); return; }
+    askDialog('입력했던 상세 위치를 삭제합니다.\n계속하시겠습니까?', ()=>{
+      clearTimeout(S.tmr); S.tmr=null;
+      S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
+      S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
+      S.drover=false; S.hilite=false;
+      $('#phscr').classList.remove('on');
       render();
     });
   });
@@ -2843,7 +2862,12 @@
        열려 있는 동안 띄우면 아무도 못 본다. */
     if(S.ro){ S.ro=false; toast('차량이 도착했습니다. 픽업 위치 변경이 필요하다면 드라이버와 통화해주세요.'); }
   }
-  $('#phclose').addEventListener('click', closeSheet);
+  /* 입력 내용이 바뀐 채로 닫으면 묻는다(Figma 뒤로가기_1·2). 안 바꿨으면 바로 닫는다. 읽기 전용은 묻지 않는다. */
+  function tryClose(){
+    if(!S.ro && S.d0!=null && flat(S.d)!==S.d0){ askDialog('변경 사항이 적용되지 않습니다.\n계속하시겠습니까?', closeSheet); return; }
+    closeSheet();
+  }
+  $('#phclose').addEventListener('click', tryClose);
   /* 값은 '저장' 에서만 커밋된다. 그래서 취소는 그냥 닫으면 편집분이 버려진다. */
   el('ph-cancel').addEventListener('click',()=>$('#phscr').classList.remove('on'));
   $$('[data-open]').forEach(n=>n.addEventListener('click',()=>{
