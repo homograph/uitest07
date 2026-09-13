@@ -673,8 +673,13 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
 .dfrow .no{font-size:14px;line-height:20px;font-weight:700;color:var(--a-ink-2);}
 .dfrow .s{font-size:13px;line-height:19px;color:var(--a-ink-5);font-variant-numeric:tabular-nums;}
 .dcoll{margin:12px -20px 0;}
-.dsug{margin:0;padding:12px 20px 0;font-size:13px;line-height:19px;color:#0086EA;}
-.dsug[hidden]{display:none;}
+.dbuf{padding:14px 20px 0;display:flex;flex-direction:column;gap:8px;}
+.dbh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;line-height:19px;color:var(--a-ink-5);}
+#dgap{color:#0086EA;font-variant-numeric:tabular-nums;}
+.dchips{display:flex;gap:6px;}
+.dchip{flex:0 0 auto;border:1px solid var(--a-chip-line);background:#fff;border-radius:9999px;padding:7px 11px;
+  font:inherit;font-size:13px;line-height:19px;color:var(--a-ink-3);cursor:pointer;white-space:nowrap;}
+.dchip[aria-pressed="true"]{background:var(--a-chip-on);border-color:var(--a-chip-on);color:#fff;font-weight:700;}
 .dnote{margin:0;padding:8px 20px 0;font-size:13px;line-height:19px;color:var(--a-ink-6);word-break:keep-all;}
 .rsum{flex-wrap:wrap;row-gap:6px;}
 .rsum .v{flex-basis:0;}   /* 줄바꿈을 허용해도 '경로 | 주소'는 한 줄에 */
@@ -911,9 +916,10 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
             <ul>
               <li><b>편명 먼저.</b> 공항 출발이면 픽업 시간 카드 맨 위가 "항공편명 입력"이고, 휠은 "편명 없이 직접 고를게요"를 눌렀을 때만 열립니다. 둘 다 고르기 전에는 설정 완료가 잠깁니다.</li>
               <li><b>날짜별 도착편.</b> 편명 검색은 3일 안에 도착하는 편을 날짜별로 보여 주고(이미 도착한 날은 뺍니다), 고르면 픽업 날짜도 그 날로 맞춥니다.</li>
-              <li><b>추천 기본값.</b> 휠을 아직 안 만졌을 때만 "도착 + 50분"(10분 단위 올림)을 채우고 "맞춰 뒀어요"를 보여 줍니다. 이미 굴렸다면 시각은 그대로 둡니다.</li>
+              <li><b>여유 시간 칩(2026-09-13 추가).</b> 편명 줄 아래 "도착 후 여유 [30분][50분][1시간][1시간 30분]". 누르면 휠이 "도착 + N분"(10분 단위 올림)으로 굴러갑니다. 오른쪽에는 실제 차이("도착 35분 뒤")를 적습니다. 처음 편명을 넣으면 50분이 골라진 상태이고, 휠을 직접 굴리면 칩 선택이 풀립니다.</li>
+              <li><b>편명을 바꾸면</b> 여유를 칩으로 골랐으면 새 편에 같은 여유를 적용하고, 휠을 직접 굴렸으면 시각을 그대로 두고 날짜만 따라갑니다.</li>
               <li><b>터미널 변경 안내.</b> 도착편 터미널이 다르면 경로 요약 바로 아래에 "제2터미널 도착편이라 탑승지를 옮겼어요".</li>
-              <li><b>도착 전 시각은 막습니다.</b> 기존 "30분 이후부터 예약 가능" 오류 패턴 그대로 — 주황 문구, 회색 밴드, "도착 + 50분으로 설정" 칩, 설정 완료 비활성.</li>
+              <li><b>도착 전 시각은 막습니다.</b> 기존 오류 패턴의 주황 문구·회색 밴드·설정 완료 비활성은 그대로이고, 고치는 칩은 따로 띄우지 않습니다(바로 위 여유 칩이 해결책).</li>
               <li><b>보장은 기본 꺼짐</b>, 약속은 한 문장("결항되면 수수료 없이 취소, 늦으면 픽업 시간 변경을 알림으로 물어봐요"). 차량 선택의 "항공편 바꾸기"·중복 안내, 미리보기의 "참고" 칩, 2단계의 "보장도 여기서 켤 수 있어요"를 뺐고, 미리보기의 보장 영역은 켰을 때만 보입니다.</li>
             </ul>
           </li>
@@ -1104,7 +1110,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       origin:"icn", term:"T1", fkase:"ok", flight:null, offset:null, foffset:null,
       fsheet:null, fquery:"", swapped:false, fpending:false, termSwitched:false, failed:false,
       track:false, fintent:"set", anchor:"clock", pend:null,
-      fdi:null, touched:false, manual:false, suggested:false
+      fdi:null, touched:false, manual:false, buf:null
       /* track: 지연 추적 부가 서비스(C안) · fintent: 편명 입력 의도
          anchor: 픽업 시각의 기준. "clock" = 내가 고른 시각이 진짜 값,
                  "flight" = 도착 + 여유로 계산된 값이 진짜 값.
@@ -1181,9 +1187,22 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   /* 공항 출발 D안에서 편명도, '직접 고를게요'도 아직 고르지 않은 상태 */
   function dNeedsInput(){ return placeD() && eligible() && !S.flight && !S.manual; }
   function chipLabel(err){ return /8주/.test(err) ? "가능한 마지막 시간으로 설정" : /도착/.test(err) ? "도착 + 50분으로 설정" : "가장 빠른 시간으로 설정"; }
-  function refDateObj(){
-    var x = DATES[fdiOf()], m = mins(S.flight.eta) + 50;
+  /* 도착 + 여유를 10분 단위로 올린 픽업 시각(휠이 10분 단위라서) */
+  function bufDate(b){
+    var x = DATES[fdiOf()], m = mins(S.flight.eta) + b;
     return new Date(x.y, x.m - 1, x.d + (m >= 1440 ? 1 : 0), 0, ceil10(m));
+  }
+  function refDateObj(){ return bufDate(50); }
+  var BUFS = [30, 50, 60, 90];   /* 360 폭 카드에 한 줄로 들어가는 만큼 */
+  /* 지금 휠 시각과 같은 칩. 여러 칩이 같은 시각으로 올림되면 작은 쪽 */
+  function bufOn(){
+    var s = selDate().getTime();
+    for (var i = 0; i < BUFS.length; i++) if (bufDate(BUFS[i]).getTime() === s) return BUFS[i];
+    return null;
+  }
+  function gapText(){
+    var g = Math.round((selDate() - arrDate()) / 60000);
+    return g < 0 ? "" : "도착 " + (g === 0 ? "시각" : offLabel(g) + " 뒤");
   }
   function pickDate(){   /* 도착 + 여유가 자정을 넘기면 다음 날 */
     var x = DATES[S.di], d = new Date(x.y, x.m - 1, x.d + (S.anchor === "flight" && pickMin() >= 1440 ? 1 : 0));
@@ -1245,7 +1264,11 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   }
   function dTop(){
     if (!S.flight) return '';
-    return dRow() + '<p id="refsug" class="dsug"' + (S.suggested ? '' : ' hidden') + '>도착 ' + S.flight.eta + ' + 50분으로 맞춰 뒀어요</p>';
+    var on = bufOn();
+    return dRow() + '<div class="dbuf"><div class="dbh"><span>도착 후 여유</span><span id="dgap">' + esc(gapText()) + '</span></div>'
+      + '<div class="dchips" role="group" aria-label="도착 후 여유">'
+      + BUFS.map(function(b){ return '<button class="dchip" data-act="refBuf" data-v="' + b + '" aria-pressed="' + (on === b) + '">' + offLabel(b) + '</button>'; }).join("")
+      + '</div></div>';
   }
   function flFixBtn(){
     return '<button class="ghost" data-act="fFix">도착 + 50분(' + esc(korHM(mins(S.flight.eta) + 50)) + ')으로 맞추기</button>';
@@ -1422,7 +1445,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         + (eligible() && S.failed ? '<p class="fhint" style="margin:0 20px 8px;">조회되지 않는 편명이었어요. 픽업 시간을 직접 골라 주세요.</p>' : '')
         + (placeD() && eligible() ? dTop() : '')
         + '<div class="wheelwrap">' + wheel() + '</div>'
-        + '<div class="chipbox" id="fastbox"' + (err ? '' : ' hidden') + '><button class="fastest" data-act="fastest">'
+        + '<div class="chipbox" id="fastbox"' + (err && !/도착/.test(err) ? '' : ' hidden') + '><button class="fastest" data-act="fastest">'
         + chipLabel(err) + '</button></div>'
         + (placeD() ? (eligible() && !S.flight ? '<div class="flentry"><button class="ghost" data-act="refOpen"><span class="pl">' + PLANE + '</span>항공편명 입력</button></div>' : '')
             : flightOn() ? flSumBlock()
@@ -1481,8 +1504,13 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     var err = wheelErr(), p = $("tval"), w = scroll.querySelector(".tcard.open .wheel"), chip = $("fastbox"), btn = foot.querySelector(".big");
     if (p){ p.textContent = err || timeLong(); p.classList.toggle("err", !!err); }
     if (w){ w.classList.toggle("err", !!err); w.querySelector(".band").classList.toggle("err", !!err); }
-    if (chip){ chip.hidden = !err; chip.firstChild.textContent = chipLabel(err); }
-    var sg = $("refsug"); if (sg) sg.hidden = !S.suggested;
+    if (chip){ chip.hidden = !err || /도착/.test(err); chip.firstChild.textContent = chipLabel(err); }
+    var dg = $("dgap");
+    if (dg){
+      dg.textContent = gapText();
+      var on = bufOn();
+      Array.prototype.forEach.call(scroll.querySelectorAll(".dchip"), function(c){ c.setAttribute("aria-pressed", +c.dataset.v === on); });
+    }
     if (btn && S.screen === "route" && S.open === "time") btn.disabled = !!err;
   }
 
@@ -1876,7 +1904,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         t = setTimeout(function(){
           if (rolling || !el.isConnected) return;   /* 다음 화면으로 넘어간 뒤 도착한 콜백 */
           var i = Math.max(0, Math.min(el.children.length - 3, Math.round(el.scrollTop / item)));
-          if (i !== S[p[1]]){ S.touched = true; S.suggested = false; }
+          if (i !== S[p[1]]){ S.touched = true; S.buf = null; }
           S[p[1]] = i; markSel(el, i);
           if (onChange) onChange();
         }, 90);
@@ -1926,7 +1954,6 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         /* Figma: 누르는 순간 날짜·시간 열을 가장 빠른 시각으로 자동 롤링, 오류 문구는 즉시 복구, 칩은 사라진다 */
         var fe = wheelErr();
         setTime(/8주/.test(fe) ? latestValid() : /도착/.test(fe) ? refDateObj() : earliest());
-        if (/도착/.test(fe)) S.suggested = true;
         refreshTimeUI(); rolling = true;
         var cols = [["d","di"],["h","hi"],["m","mi"]].map(function(p){
           var el = scroll.querySelector('.tcard.open [data-col="' + p[0] + '"]');
@@ -1951,6 +1978,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
                         S.fintent = S.flight ? "change" : "set"; break;
       case "refOpen":   S.fsheet = "flight"; S.fquery = ""; S.fintent = "ref"; break;
       case "refManual": S.manual = true; openTime(); S.appear = null; break;
+      case "refBuf":    /* 여유만 바꾼다. 휠을 대신 굴려 줄 뿐, 시각은 여전히 유저가 고른 값 */
+        S.buf = +v; S.touched = true; setTime(bufDate(S.buf)); S.timeSet = true; S.open = "time"; break;
       case "guardToggle":
         /* 편명이 없으면 편명 입력은 2단계에서만 한다 */
         if (!S.flight){ go("route"); openTime(); S.fsheet = "flight"; S.fquery = ""; S.fintent = "ref"; }
@@ -2010,8 +2039,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
              보장은 기본으로 꺼 둔다(유료가 되면 미리 체크된 유료 옵션이 되므로). */
           S.flight = f; S.fdi = fdiPick == null ? S.di : fdiPick; S.failed = false; S.anchor = "clock";
           S.track = false; S.manual = false; S.fsheet = null; S.open = "time";
-          if (!S.touched){ setTime(refDateObj()); S.suggested = true; }
-          else { S.di = S.fdi; S.suggested = false; }
+          if (S.buf != null || !S.touched){ if (S.buf == null) S.buf = 50; setTime(bufDate(S.buf)); }
+          else S.di = S.fdi;
           S.timeSet = true;
           break;
         }
@@ -2095,7 +2124,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   segHandler("segPlace", function(v){
     S.flPlace = v; S.flight = null; S.offset = null; S.foffset = null; S.fsheet = null;
     S.failed = false; S.swapped = false; S.fpending = false; S.termSwitched = false; S.track = false;
-    S.anchor = "clock"; S.pend = null; S.fdi = null; S.manual = false; S.suggested = false;
+    S.anchor = "clock"; S.pend = null; S.fdi = null; S.manual = false; S.buf = null;
   });
   function setHotLabel(){
     var on = document.body.classList.contains("showhot"), b = $("hotToggle");
@@ -2136,7 +2165,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     if (place === "ref"){
       S.anchor = "clock"; S.track = false; S.open = "time"; S.fdi = 0;
       while (S.fdi < 2 && arrDate() <= new Date()) S.fdi++;   /* 아직 도착하지 않은 가장 가까운 날 */
-      setTime(refDateObj()); S.suggested = true;
+      S.buf = 50; setTime(bufDate(S.buf));
     }
     else { S.offset = 50; S.anchor = "flight"; }
     go(place === "vehicle" ? "vehicle" : "route"); scroll.onscroll = null; render();
