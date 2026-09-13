@@ -197,7 +197,11 @@
      몇 동인지 확인할 때)에 값을 흐릴 이유가 없다. */
   .pkbox .ph,.pkbox .fill{font-size:14px;line-height:20px;flex:1 1 auto;min-width:0;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .pkbox .ph{color:var(--gray-700);}
+  /* 9/14: 빈 상태가 꺼진 칸처럼 보였다 — 글자 한 단계 진하게(gray-700 → gray-800), P 는 blue-500 → blue-600(타일 위 2.3 → 4.0:1).
+     값이 있는 상태·전송 중은 그대로 둔다. */
+  .pkbox .ph{color:var(--gray-800);}
+  .pkbox:not(.filled):not(.sending) .pico svg path{fill:var(--blue-600);}
+  .pkbox:not(.filled):not(.sending) .pm-b1{color:var(--blue-600);}
   .pkbox .fill{color:#000;}
   .pkbox.sending .fill{color:var(--gray-700);}
   /* 액션 글자 — 빈 상태 '입력', 찬 상태 '수정'. 전송 중엔 스피너가 대신하고
@@ -1053,7 +1057,7 @@
               <span>차량이 도착하는 위치를 확인해주세요.</span>
             </div>
             <div class="fields">
-              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="픽업 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg><span class="pm-b1" aria-hidden="true">B1</span></span><span class="ph" id="pk-start-tx">지상·지하 주차장에서 타시나요?</span><span class="pact" id="pk-start-act">입력</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></button>
+              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="픽업 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg><span class="pm-b1" aria-hidden="true">B1</span></span><span class="ph" id="pk-start-tx">지하 몇 층, 몇 동에서 타시나요?</span><span class="pact" id="pk-start-act">입력</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></button>
 
             </div>
           </div>
@@ -1096,7 +1100,7 @@
             <button class="obtn">경로 변경</button>
           </div>
           <div class="vpk">
-            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="픽업 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="ph" id="pk-voy-tx">지상·지하 주차장에서 타시나요?</span><span class="pact" id="pk-voy-act">입력</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span><span class="sr" id="pk-voy-sr"></span></button>
+            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="픽업 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="ph" id="pk-voy-tx">지하 몇 층, 몇 동에서 타시나요?</span><span class="pact" id="pk-voy-act">입력</span><span class="ipw load" aria-hidden="true"><span class="spin"></span></span><span class="sr" id="pk-voy-sr"></span></button>
 
           </div>
           <div class="vdiv"></div>
@@ -1779,7 +1783,9 @@
   const el = id => document.getElementById(id);
 
   const FLOORS=[1,2,3,4,5];
-  const PH='지상·지하 주차장에서 타시나요?';
+  /* 9/14: 예/아니오 질문 대신 채울 값(층·동 = 필수 두 칸)을 묻는다. 아파트 요청의 지하 82% · 지상 0.8% 라 지하를 앞에 둔다.
+     지상 사용자는 입력 화면 첫 칩에서 바꿀 수 있어 막히지 않는다. (이전: '지상·지하 주차장에서 타시나요?') */
+  const PH='지하 몇 층, 몇 동에서 타시나요?';
   const SENT_AT='12:46';
   const SAVED_FOR_ADDRESS={lvl:'under',floor:'4',dong:'1901',line:'',etc:'엘리베이터 앞',noLine:true};
 
