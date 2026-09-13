@@ -1163,8 +1163,8 @@
             <div class="fopt" id="fopt" hidden>
 
               <div class="tinwrap">
-                <input class="tin" id="f-etc" maxlength="20" />
-                <span class="tcnt"><b id="f-etc-c">0</b>/20</span>
+                <input class="tin" id="f-etc" maxlength="30" />
+                <span class="tcnt"><b id="f-etc-c">0</b>/30</span>
               </div>
               <p class="askhelp" id="f-etc-help"></p>
             </div>
@@ -1836,7 +1836,8 @@
       (d.etc||'').trim()
     ].filter(x=>x && x.trim()).join(' · ');
   const sentence = d => !d ? '' : core(d);
-  /* 오버레이 본문에는 위치만 쓴다. 찾아오는 길(20자)은 기사가 '멈췄을 때' 펼쳐 보는
+  /* 9/14: 찾아오는 길 최대 20 → 30자 — 요청사항 데이터에서 경로 구절 중간값 39자 · 20자 이하 6%. 기사 앱 블록(18px)은 2줄에 약 30자.
+     오버레이 본문에는 위치만 쓴다. 찾아오는 길은 기사가 '멈췄을 때' 펼쳐 보는
      정보고, 오버레이는 운전 중 흘긋 보는 자리라 위치 한 줄이 들어가야 한다. */
   const loc = d => !d ? '' : [
       (d.lvl==='under' ? '지하 ' : '지상 ') + d.floor + '층',
