@@ -601,7 +601,8 @@
   .fhint .fa[hidden]{display:none;}
   /* 키패드 전환 칩 — Figma '입력 필드 & 키패드': 칸에 포커스가 있을 때(키패드가 올라와 있을 때) 키패드 바로 위 가운데.
      스타일은 hint-slot 칩과 같은 chip_button(흰 면 · #E3E4E8 1px · r9999 · pad10/14 · 13 #383D4F) */
-  .kbsw{align-self:center;margin:auto 0 12px;border:0;box-shadow:inset 0 0 0 1px var(--gray-80);background:#fff;border-radius:9999px;
+  /* ph-body 아래 여백(24)을 12 만큼 되돌려 키패드 위 간격을 12 로 */
+  .kbsw{align-self:center;margin:auto 0 -12px;border:0;box-shadow:inset 0 0 0 1px var(--gray-80);background:#fff;border-radius:9999px;
     padding:10px 14px;font:inherit;font-size:13px;line-height:18px;font-weight:400;color:#383d4f;cursor:pointer;}
   .kbsw[hidden]{display:none;}
   /* Figma: 힌트 액션이 밑줄 링크에서 DS chip_button / Neutral Weak Outline 으로 바뀌었다.
