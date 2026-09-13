@@ -1427,7 +1427,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     if (p){ p.textContent = err || timeLong(); p.classList.toggle("err", !!err); }
     if (w){ w.classList.toggle("err", !!err); w.querySelector(".band").classList.toggle("err", !!err); }
     if (chip){ chip.hidden = !err; chip.firstChild.textContent = /8주/.test(err) ? "가능한 마지막 시간으로 설정" : "가장 빠른 시간으로 설정"; }
-    if (btn && S.open === "time") btn.disabled = !!err;
+    if (btn && S.screen === "route" && S.open === "time") btn.disabled = !!err;
   }
 
   /* ══════════ 경로 입력: Figma 렌더 이미지 + 누를 영역 (좌표는 360×760 기준) ══════════ */
@@ -1811,7 +1811,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       el.addEventListener("scroll", function(){
         clearTimeout(t);
         t = setTimeout(function(){
-          if (rolling) return;
+          if (rolling || !el.isConnected) return;   /* 다음 화면으로 넘어간 뒤 도착한 콜백 */
           var i = Math.max(0, Math.min(el.children.length - 3, Math.round(el.scrollTop / item)));
           S[p[1]] = i; markSel(el, i);
           if (onChange) onChange();
