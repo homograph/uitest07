@@ -822,7 +822,7 @@
   .dscr .cnavrow:active .cnav{transform:scale(.74);filter:brightness(1.4);}
   /* 01 pickup-go 는 v2 에서 이름이 cnavrow 가 아닌 cname 단독이다 — 눌리지 않는다 */
   .dscr .cnavrow.off{pointer-events:none;}
-  .dscr .cbtnw{padding:0 20px 22px;display:flex;flex-direction:column;}
+  .dscr .cbtnw{padding:0 20px 24px;display:flex;flex-direction:column;}
   .dscr .cbtn{flex:0 0 auto;min-height:clamp(68px, calc(48px + 20px), 78px);display:flex;align-items:center;justify-content:center;gap:10px;padding:10px 16px;font:inherit;font-size:20px;line-height:30px;font-weight:700;cursor:pointer;white-space:nowrap;position:relative;overflow:hidden;border:none;border-radius:4px;transition:filter .12s ease;-webkit-tap-highlight-color:transparent;user-select:none;}
   .dscr .cbtn:active{filter:brightness(.86);}
   .dscr .cbtn.go{background:var(--ef);color:var(--ink);}
@@ -847,12 +847,12 @@
   .plr-chg.chg{color:#fe4c00;}
   .plr-chg[hidden]{display:none;}
   .plr-bd{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px;}   /* 9/14 Info Container gap8 · Address Container gap4 */
-  .plr-v{margin:0;font-size:20px;line-height:30px;font-weight:400;color:#e6e9ef;word-break:keep-all;}
+  .plr-v{margin:0;font-size:20px;line-height:30px;font-weight:400;color:#e6e9ef;word-break:keep-all;overflow-wrap:anywhere;}
   .plr-v b{font-weight:700;}
   /* 층 뒤 B 표기 — 16 Regular 흐린 색. 알약(폭 40%)엔 넣지 않는다: 기사가 B 표기를 보는 건 진입한 뒤라 여기서 충분하다 */
   /* 줄 높이 0 — 글자 크기가 다른 인라인이 섞이면 기준선 정렬로 줄 상자가 30→32 로 커진다 */
   .plr-b{line-height:0;font-size:16px;font-weight:400;color:var(--dim);}
-  .plr-s{margin:-4px 0 0;font-size:18px;line-height:26px;color:var(--dim);word-break:keep-all;}
+  .plr-s{margin:-4px 0 0;font-size:18px;line-height:26px;color:var(--dim);word-break:keep-all;overflow-wrap:anywhere;}   /* 9/14 공백 없는 30자도 폭에서 줄바꿈 */
 
 
   /* ══════ T맵 화면 (ptmap) — driver-v2 에서 그대로 ══════
@@ -953,18 +953,18 @@
       · 컨테이너 fill 은 시안대로 #FFF 90% — 내비를 덜 가리는 게 우선이다(사용자 결정 9/11).
       · 글자색만 대비용으로 둔다: '고객 요청' #32A2FA → #0074D7 · '변경됨' #FE4C00 → #CC3600 · 그림자 */
   .tpill{position:absolute;top:61px;right:0;z-index:6;touch-action:none;
-    display:flex;flex-direction:column;align-items:stretch;gap:4px;width:max-content;max-width:40%;box-sizing:border-box;
+    display:flex;flex-direction:column;align-items:stretch;gap:4px;width:max-content;max-width:40%;min-width:min-content;box-sizing:border-box;   /* 9/14 Figma case: 40% 를 넘는 한 단어(87654321동)는 쪼개지 않고 말풍선이 넓어진다 */
     padding:14px;border:1px solid #99a5c0;border-radius:16px;background:rgba(255,255,255,.9);   /* 9/14 여백 10 → 14 */
     box-shadow:0 2px 8px rgba(0,0,0,.18);font:inherit;text-align:left;cursor:pointer;}
   .tpill[hidden]{display:none;}
   .tp-hd{display:flex;align-items:center;gap:8px;}
   .tp-hd .tp-ic{flex:0 0 auto;display:block;width:24px;height:24px;border-radius:50%;}
-  .tp-hd b{min-width:0;font-size:20px;line-height:30px;font-weight:700;color:#000;word-break:keep-all;overflow-wrap:anywhere;}
-  .tp-v{font-size:18px;line-height:26px;font-weight:400;color:#000;word-break:keep-all;overflow-wrap:anywhere;}
+  .tp-hd b{min-width:0;font-size:20px;line-height:30px;font-weight:700;color:#000;word-break:keep-all;white-space:nowrap;}
+  .tp-v{font-size:18px;line-height:26px;font-weight:400;color:#000;word-break:keep-all;overflow-wrap:normal;}
   .tp-v:empty{display:none;}
   .tp-go,.tp-chg{font-size:16px;line-height:24px;font-weight:700;white-space:nowrap;}
-  .tp-go{color:#0074d7;}
-  .tp-chg{color:#cc3600;}
+  .tp-go{color:#32a2fa;}   /* 9/14 Figma 값 */
+  .tp-chg{color:#fe4c00;}
   .tp-go[hidden],.tp-chg[hidden]{display:none;}
   #tovb-loc.dragging,.tovr.dragging{cursor:grabbing;}
   /* 왼쪽 끝에 붙인 상태(시안 '운행 시작 전' 두 번째) */
@@ -2589,7 +2589,9 @@
     const prev = (stg === 'preview');
     /* RouteHeader: 01 없음(v2) · 03 없음(사용자 지시) · 04 '남은 경로 4개'(v2).
        픽업 위치 블록이 있으면 04 도 헤더를 뺀다 — 시안 04 는 블록이 헤더 자리를 대신한다. */
-    el('rhead').hidden = !prev || show;
+    /* 9/14 Figma: 블록이 없을 때만 헤더 — 03 '고객 위치로 이동 중' · 04 '고객 탑승 대기중' · 01 없음 */
+    el('rhead').hidden = show || !(prev || stg==='arrived');
+    el('rhead-t').textContent = prev ? '고객 탑승 대기중' : '고객 위치로 이동 중';
     el('dcardlist').hidden = prev;
     el('dlist').hidden = !prev;
     el('dstart').hidden = !prev;
