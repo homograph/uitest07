@@ -2996,6 +2996,7 @@
   function icoNext(pi){
     const k=pi._q.shift(); if(!k){ return; }
     if(k==='restore'){ icoStill(pi, pi._st||'empty'); return; }   /* 데모 재생 뒤 카드 상태로 복귀 */
+    if(k==='hintLoop'){ const a=pi._anim; pi._mode='hint'; pi._loops=0; a.loop=true; a.playSegments(SEG.hint,true); return; }
     const a=pi._anim; pi._mode=k; a.loop=(k==='spin' && !pi._q.length);
     a.playSegments(SEG[k],true);
   }
@@ -3037,6 +3038,8 @@
     const pi=$('#pk-start .pico'); if(!pi || RM()) return;
     if(icoAnim(pi)){
       if(pi._st && pi._st!=='empty') return;
+      /* '사용 안함' 직후엔 clear 가 끝난 뒤에 힌트를 잇는다(덮어쓰면 비워지는 모습이 안 보인다) */
+      if(pi._mode==='clear'){ pi._q=['hintLoop']; return; }
       pi._q=[]; pi._mode='hint'; pi._loops=0; pi._anim.loop=true; pi._anim.playSegments(SEG.hint,true);
       return;
     }
