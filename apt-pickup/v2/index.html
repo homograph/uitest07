@@ -143,7 +143,7 @@
      stroke 는 안쪽으로 그려져 전체 48 을 유지하므로 padding 은 14/16 에서 1 을 뺀다.
      (렌더 배율 4.0 에서 테두리 4px·박스 192px 를 실측해 1px·48 로 확인했다 —
       stroke 불투명도는 REST 에 안 찍히므로 픽셀로 재야 한다.) */
-  .addr{background:#fff;box-shadow:inset 0 0 0 1px var(--gray-80);border:none;border-radius:4px;
+  .addr{background:#fff;box-shadow:inset 0 0 0 1px var(--gray-200);   /* 9/14 #E3E4E8 → #C0C8D9 */border:none;border-radius:4px;
     padding:14px 16px;display:flex;align-items:center;gap:15px;}
   .addr span{font-size:14px;line-height:20px;color:#000;}
   .ipw{width:20px;height:20px;display:grid;place-items:center;flex:0 0 auto;}
@@ -194,9 +194,11 @@
      lottie-web 을 못 불러오면 위 CSS 모션으로 대체한다. */
   .pm-lot{position:absolute;inset:0;display:none;pointer-events:none;}
   .pm-lot svg{display:block;width:24px!important;height:24px!important;}
-  #pk-start .pico.pm-lotplay{background:transparent;}
-  #pk-start .pico.pm-lotplay > svg,#pk-start .pico.pm-lotplay .pm-b1{visibility:hidden;}
-  #pk-start .pico.pm-lotplay .pm-lot{display:block;}
+  /* 9/14: 아이콘 전 상태를 로티 한 파일(p-motion.json)로 — 마커 hint(0–144)·fill(144–172), 정지 프레임 0=빈 칸 · 171=완료.
+     로티가 타일까지 그리므로 칸 배경·정적 SVG 는 숨긴다(채운 카드의 파란 배경 규칙보다 이겨야 해서 !important). */
+  .pkbox .pico.lot{position:relative;overflow:hidden;background:transparent!important;}
+  .pico.lot > svg,.pico.lot .pm-b1{visibility:hidden;}
+  .pico.lot .pm-lot{display:block;}
   /* 남은 두 채널이 각자 한 가지만 말한다:
        면 + 값 색 = 이 값이 기사에게 가 있는가  (파란 면 + 검정 / 회색 면 + #4b5064)
        오른쪽     = 지금 할 수 있는 일          (입력 · 수정 · 스피너 · 없음)
@@ -215,7 +217,7 @@
   .pktx .l2[hidden]{display:none;}
   .pktx.ph .l1{font-weight:700;color:var(--gray-800);}
   .pktx.ph .l2{color:var(--gray-600);}
-  .pktx.fill .l1{color:#000;}
+  .pktx.fill .l1{color:#000;font-weight:500;}   /* 9/14 Body_3_Medium (전송 중도 같은 굵기) */
   .pktx.fill .l2{color:var(--gray-600);}
   .pkbox.sending .pktx.fill .l1{color:var(--gray-600);}
   .pkbox.sending .pktx.fill .l2{color:var(--gray-600);}
@@ -312,7 +314,7 @@
   .footrow{padding:10px;}
   /* 수정 불가에서는 체크박스 자리를 안내가 대신한다. 주황 경고였던 것이 파란 안내로 바뀌었다
      (#fe4c00 → #32a2fa) — 잘못한 게 아니라 시점이 지난 것이므로 톤이 맞다. */
-  .rowarn{margin:0;padding:20px 20px 10px;font-size:13px;line-height:19px;color:#32a2fa;word-break:keep-all;}
+  .rowarn{margin:0;padding:20px 24px 10px;font-size:14px;line-height:20px;color:#32a2fa;word-break:keep-all;}
   .rowarn[hidden]{display:none;}
   .prev2{display:flex;align-items:flex-start;gap:8px;background:var(--gray-30);border-radius:8px;
     padding:11px 12px;min-height:44px;}
@@ -415,6 +417,7 @@
   .ph-scr.ro .fld,.ph-scr.ro .addetc{cursor:default;}
   /* 수정 불가에서는 ＋/− 자체가 없다 — 접거나 펼 수 없으니 아이콘도 남기지 않는다. */
   .ph-scr.ro .addetc .tg{display:none;}
+  .ph-scr.ro .fld.pick svg{display:none;}   /* 9/14 Figma: 비활성 지상/지하 칩엔 화살표 없음 */
   .ph-scr.ro .bv,.ph-scr.ro .fld .u,.ph-scr.ro .fld .nn,.ph-scr.ro .fld.pick{color:var(--gray-500);}
   /* Figma 입력 필드 '비활성화': 배경 #EFEFF1 · 값·단위 #73788B (지하 칩도 같은 면으로 맞췄다) */
   .ph-scr.ro .fld{background:#efeff1;}
@@ -544,7 +547,7 @@
   /* 위치는 값이 아니라 선택지다. 같은 채움·높이·라운드로 가족 안에 두되
      ⌄ 표식으로 '고르는 자리' 임을 표시한다. */
   /* 위치는 타이핑이 아니라 고르는 자리다. 같은 상자를 쓰되 ⌄ 로 구분한다 */
-  .fld.pick{gap:6px;padding:6px 12px 6px 14px;border:none;font:inherit;font-weight:700;
+  .fld.pick{gap:6px;padding:8px 12px 8px 14px;border:none;font:inherit;font-weight:700;
     color:var(--navy-800);cursor:pointer;}
   /* 이 칩은 두 값 사이 토글이다. 화살표는 '누르면 어디로 가는지' 를 가리킨다 —
      지하일 땐 위(지상)로, 지상일 땐 아래(지하)로. */
@@ -568,7 +571,7 @@
   .fld.pick:focus{box-shadow:inset 0 0 0 1.5px #000;}
   /* Figma row1·row2 = wrap 줄간격 8 — 폭이 모자라 '동'·'라인' 칸이 세로로 접히면 그 사이가 8 이다(전엔 0 이라 붙었다) */
   .sent{display:flex;flex-wrap:wrap;align-items:center;row-gap:8px;margin:0;
-    font-size:22px;line-height:42px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
+    font-size:22px;line-height:46px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
   .sent .w{flex:0 0 auto;}
   .sent .w:not(.tail2){margin-right:8px;}
   /* 접히는 자리를 고정한다. 우연히 접히면 '1012동'과 '2-5호라인'처럼
@@ -591,7 +594,7 @@
   /* Figma 가 '입력 필드 / 값' DS 컴포넌트로 갈아끼우면서 값이 바뀌었다:
      pad[0,14] → [6,14] · 높이 44 → 42 · 안쪽 gap 5 → 4. */
   .fld{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;
-    height:42px;margin:0 8px 0 0;padding:6px 14px;box-sizing:border-box;
+    height:46px;margin:0 8px 0 0;padding:8px 14px;box-sizing:border-box;   /* 9/14 Figma 입력 필드 스펙: pad 6→8, 42→46 */
     background:var(--gray-30);border-radius:6px;cursor:text;}
   .fld:focus-within{box-shadow:inset 0 0 0 1.5px #000;}
   /* 가운데 정렬이면 빈 칸의 커서가 플레이스홀더 한가운데(2-5|호)에 찍힌다.
@@ -601,7 +604,7 @@
     font:inherit;font-size:22px;font-weight:700;color:var(--navy-800);}
   /* 예시는 값과 확실히 갈라져야 한다. gray-500(3.82:1)까지 올리니 22px 에서는
      입력된 값처럼 읽혔다. gray-300 은 2.15:1 로 무게 400 과 함께 값(navy 700)과 구분된다. */
-  .bv::placeholder{color:var(--gray-300);font-weight:400;}
+  .bv::placeholder{color:var(--gray-300);font-weight:500;}   /* 9/14 Heading_2_Medium */
   /* 단위는 고정 문구다. 값보다 한 단계 작게 두면 상자 안에서 무엇이 내용인지 바로 보인다.
      가운데 정렬만 하면 22px 과 16px 의 베이스라인이 어긋나 2px 내려 앉힌다. */
   /* 지하 층 뒤에 자동으로 붙는 B 표기 — '지하주차장 1층' 이 B1 인지 헷갈린 요청 88건. 칸·선택지는 늘리지 않는다.
@@ -645,7 +648,7 @@
   .fld .nn{flex:0 0 auto;font-size:16px;font-weight:500;color:var(--gray-500);}
   /* '없음' 만 남은 칸은 22px 값이 빠져 16px 한 줄이 된다. DS 는 이때 위아래 여백을
      6 → 12 로 늘려 42 대신 48 로 세운다(pad[12,14] · 91×48). */
-  .fld.nnonly{height:48px;padding:12px 14px;}
+  .fld.nnonly{height:40px;padding:8px 14px;}   /* 9/14 스펙 '사용 안함' 칸: 16/24 + pad 8 = 40 */
   /* 필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면 문장을 쓰는 도중에 방해가 된다.
      한 줄짜리 링크만 조용히 나타나고, 필요한 사람(26.9%)이 눌렀을 때 필드를 연다. */
   /* 토글은 오른쪽 끝. 펼침 컨트롤이 관습적으로 있는 자리이기도 하고,
@@ -676,8 +679,8 @@
   /* ── 폭 단계. 좁은 폰(320)은 한 단계 줄이고, 넓은 폰(414+)은 한 단계 키운다.
      칩 높이·패딩·본문·단위가 한 벌로 움직여야 비율이 유지된다. */
   @container (max-width: 344px){
-    .sent{font-size:20px;line-height:40px;}
-    .fld{height:42px;padding:0 12px;margin-right:6px;}
+    .sent{font-size:20px;line-height:44px;}
+    .fld{height:44px;padding:0 12px;margin-right:6px;}
     .fld.pick{padding:0 10px 0 12px;gap:6px;}
     .fld .u,.fld .bx{font-size:15px;}
     .fld .nn{font-size:15px;}
@@ -685,8 +688,8 @@
     .ph-body.sform{padding-left:18px;padding-right:18px;}
   }
   @container (min-width: 400px){
-    .sent{font-size:24px;line-height:48px;}
-    .fld{height:48px;padding:0 16px;margin-right:10px;}
+    .sent{font-size:24px;line-height:50px;}
+    .fld{height:50px;padding:0 16px;margin-right:10px;}
     .fld.pick{padding:0 14px 0 16px;gap:8px;}
     .fld .u,.fld .bx{font-size:17px;}
     .fld .nn{font-size:17px;}
@@ -841,13 +844,13 @@
   .plr-chg{align-self:flex-start;font-size:15px;line-height:22px;font-weight:700;color:#32a2fa;}
   .plr-chg.chg{color:#fe4c00;}
   .plr-chg[hidden]{display:none;}
-  .plr-bd{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:10px;}
+  .plr-bd{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px;}   /* 9/14 Info Container gap8 · Address Container gap4 */
   .plr-v{margin:0;font-size:20px;line-height:30px;font-weight:400;color:#e6e9ef;word-break:keep-all;}
   .plr-v b{font-weight:700;}
   /* 층 뒤 B 표기 — 16 Regular 흐린 색. 알약(폭 40%)엔 넣지 않는다: 기사가 B 표기를 보는 건 진입한 뒤라 여기서 충분하다 */
   /* 줄 높이 0 — 글자 크기가 다른 인라인이 섞이면 기준선 정렬로 줄 상자가 30→32 로 커진다 */
   .plr-b{line-height:0;font-size:16px;font-weight:400;color:var(--dim);}
-  .plr-s{margin:0;font-size:18px;line-height:26px;color:var(--dim);word-break:keep-all;}
+  .plr-s{margin:-4px 0 0;font-size:18px;line-height:26px;color:var(--dim);word-break:keep-all;}
 
 
   /* ══════ T맵 화면 (ptmap) — driver-v2 에서 그대로 ══════
@@ -1159,7 +1162,7 @@
       <div class="ph-scr" id="phscr">
         <div class="sb light"><span>12:45</span>
           <span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
-        <div class="ph-bar"><button id="phclose"><svg class="ic" width="15.0" height="15" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M22.4999 26.7669L4.26702 44.9997L0 40.7327L18.2328 22.4999L1.79841e-07 4.26702L4.26702 1.25889e-06L22.4999 18.2328L40.7327 0L44.9997 4.26702L26.7669 22.4999L44.9997 40.7327L40.7327 44.9997L22.4999 26.7669Z" fill="black"/></svg></button><b id="ph-title">상세 위치 입력</b><span class="sp"></span><button type="button" class="phdel" id="ph-del" hidden>사용 안함</button></div>
+        <div class="ph-bar"><button id="phclose"><svg class="ic" width="15.0" height="15" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M22.4999 26.7669L4.26702 44.9997L0 40.7327L18.2328 22.4999L1.79841e-07 4.26702L4.26702 1.25889e-06L22.4999 18.2328L40.7327 0L44.9997 4.26702L26.7669 22.4999L44.9997 40.7327L40.7327 44.9997L22.4999 26.7669Z" fill="black"/></svg></button><b id="ph-title">상세 위치</b><span class="sp"></span><button type="button" class="phdel" id="ph-del" hidden>사용 안함</button></div>
         <!-- Figma 핸드오프 Dialog 280 · Dim #000 40% -->
         <div class="pdim" id="pdlg" hidden><div class="pdlg" role="dialog" aria-modal="true"><p class="pdlg-t" id="pdlg-t"></p><div class="pdlg-b"><button type="button" id="pdlg-no">아니오</button><button type="button" id="pdlg-yes">예</button></div></div></div>
         <div class="ph-body">
@@ -1175,7 +1178,7 @@
               <button type="button" class="fld pick" id="f-lvl" hidden><span class="roll" id="f-lvl-t"><span class="rw"><span>지하</span><span>지상</span></span></span><svg class="ic" width="14" height="14" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.9999 12.3999L34.4873 25.8873L32.0125 28.3622L20.9999 17.3497L9.98732 28.3622L7.51245 25.8873L20.9999 12.3999Z" fill="currentColor"/></svg></button>
               <span class="w" id="f-w-u">지하</span>
               <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="numeric"
-                     maxlength="1" placeholder="2" aria-label="몇 층" /><span class="u">층</span><span class="bx" id="f-floor-b" hidden></span></label>
+                     maxlength="1" placeholder="1" aria-label="몇 층" /><span class="u">층</span><span class="bx" id="f-floor-b" hidden></span></label>
               <span class="br" id="f-br1"></span>
               <label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="numeric" maxlength="8"
                      placeholder="101" aria-label="몇 동" /><span class="u">동</span><span class="nn" id="f-dong-nn" hidden>동 없음</span></label>
@@ -1202,7 +1205,7 @@
         </div>
         <div class="ph-foot">
           <div class="prev2" id="prev2"><span id="prev2-tx">고르면 기사님께 갈 문장이 여기 만들어져요</span></div>
-          <p class="rowarn" id="rowarn" hidden>차량이 도착했습니다. 픽업 위치 변경이 필요하다면 드라이버와 통화해주세요.</p>
+          <p class="rowarn" id="rowarn" hidden>차량이 도착해 수정할 수 없습니다.<br>위치 변경이 필요하면 드라이버와 통화해주세요.</p>
           <label class="savechk" id="savewrap" hidden><input type="checkbox" id="chk-save" /><svg class="cb" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M27 54C12.0883 54 0 41.9117 0 27C0 12.0883 12.0883 0 27 0C41.9117 0 54 12.0883 54 27C54 41.9117 41.9117 54 27 54Z" fill="currentColor"/><path d="M23.6252 30.897L38.5115 16.0107L42.4889 19.9882L23.6252 38.852L11.5115 26.7382L15.4889 22.7607L23.6252 30.897Z" fill="white"/></svg>
             <span>이 주소에서 항상 이렇게 보내기</span></label>
           <p class="nearnote" id="nearnote" hidden><span>⚠</span><span>기사님이 이미 진입 중일 수 있어요.</span></p>
@@ -1238,7 +1241,7 @@
           <div class="dbottom">
             <div class="pinfo"><div class="pcard"><div class="prow"><span class="pav"><svg viewBox="0 0 28 28"><path fill-rule="evenodd" clip-rule="evenodd" d="M14 28C21.732 28 28 21.732 28 14C28 6.26801 21.732 0 14 0C6.26801 0 0 6.26801 0 14C0 21.732 6.26801 28 14 28ZM16.8039 9.18737C16.8039 10.879 15.4785 12.2497 13.844 12.2497C12.2095 12.2497 10.8842 10.879 10.8842 9.18737C10.8842 7.49578 12.2095 6.125 13.844 6.125C15.4785 6.125 16.8039 7.49578 16.8039 9.18737ZM7 20.125L7.56467 14.5591C7.56467 14.5591 14.1575 13.8218 20.5613 14.4926L21 20.0573L7 20.125Z" fill="#C2CADB"/></svg></span><span class="pnm">김지혜</span><span class="pcall"><svg class="i" viewBox="0 0 28 28"><path d="M17.83 17.9L17.19 21.8C17.19 21.8 13.98 20.52 11.44 17.25C8.91 13.98 7.61 9.45 7.61 9.45L11.44 8.8V1H2.5V9.21C2.5 9.8 2.58 10.39 2.77 10.94C3.34 12.62 4.85 16.5 7.61 19.85C9.81 22.52 12.15 24.57 13.66 25.78C14.69 26.61 15.98 27 17.3 27H25.5V17.9H17.83Z"/></svg></span></div></div></div>
             <div class="route">
-          <div class="plr" id="plr" hidden><svg class="pv30" width="30" height="30" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="90" height="90" rx="15" fill="#0044A6" fill-opacity="0.7"/><path d="M31.875 64.6908V25.3154H47.1876C50.8335 25.3154 53.9324 26.5915 56.4845 29.1436C59.0366 31.6957 60.3127 34.7946 60.3127 38.4405C60.3127 42.0864 59.0366 45.1853 56.4845 47.7374C53.9324 50.2895 50.8335 51.5656 47.1876 51.5656H40.6251V64.6908H31.875ZM40.6251 42.8156H47.6251C48.8282 42.8156 49.8582 42.3872 50.715 41.5304C51.5717 40.6736 52.0002 39.6436 52.0002 38.4405C52.0002 37.2374 51.5717 36.2075 50.715 35.3506C49.8582 34.4938 48.8282 34.0655 47.6251 34.0655H40.6251V42.8156Z" fill="white"/></svg><div class="plr-bd"><p class="plr-v"><b id="plr-fl"></b> <span class="plr-b" id="plr-b" hidden></span> <span id="plr-v"></span></p><p class="plr-s" id="plr-s" hidden></p><span class="plr-chg" id="plr-chg">고객이 작성함</span></div></div>
+          <div class="plr" id="plr" hidden><svg class="pv30" width="30" height="30" viewBox="0 0 90 90" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="90" height="90" rx="15" fill="#0044A6" fill-opacity="0.7"/><path d="M31.875 64.6908V25.3154H47.1876C50.8335 25.3154 53.9324 26.5915 56.4845 29.1436C59.0366 31.6957 60.3127 34.7946 60.3127 38.4405C60.3127 42.0864 59.0366 45.1853 56.4845 47.7374C53.9324 50.2895 50.8335 51.5656 47.1876 51.5656H40.6251V64.6908H31.875ZM40.6251 42.8156H47.6251C48.8282 42.8156 49.8582 42.3872 50.715 41.5304C51.5717 40.6736 52.0002 39.6436 52.0002 38.4405C52.0002 37.2374 51.5717 36.2075 50.715 35.3506C49.8582 34.4938 48.8282 34.0655 47.6251 34.0655H40.6251V42.8156Z" fill="white"/></svg><div class="plr-bd"><p class="plr-v"><b id="plr-fl"></b> <span class="plr-b" id="plr-b" hidden></span> <span id="plr-v"></span></p><p class="plr-s" id="plr-s" hidden></p><span class="plr-chg" id="plr-chg">고객이 작성한 위치</span></div></div>
             <div class="rhd" id="rhead" hidden><span class="t" id="rhead-t">남은 경로 4개</span></div>
             <div class="plist" id="dcardlist"><div class="crd"><div class="crd-top"><span class="badge org">출발</span><div class="cinfo"><div class="cnavrow" id="cnavrow"><div class="cname">래미안원베일리</div><span class="cnav" id="cnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></div><div class="caddr">서울 서초구 반포대로 333</div></div></div><div class="cbtnw"><button type="button" class="cbtn go" id="dgo"></button></div></div></div>
             <div class="plist rows" id="dlist" hidden><div class="irow tap nav done"><span class="badge way">출발</span><div class="nm">래미안원베일리</div><span class="irt"><span class="idone">완료</span><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">경유1</span><div class="nm">AUCOMMERCE</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">경유2</span><div class="nm">성수역 4번 출구</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">경유3</span><div class="nm">갤러리아 포레</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div><div class="irow tap"><span class="badge way">도착</span><div class="nm">뚝섬역 1번 출구</div><span class="irt"><span class="rnav"><svg viewBox="0 0 24 24"><path d="M15 6V1L24 7.5L15 14V10H14C11.19 10 10 11.39 10 15V23H6V15C6 9.3 8.83 6 14 6H15Z"/></svg></span></span></div></div>
@@ -1806,7 +1809,7 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie_light.min.js"></script>
-<script type="application/json" id="pm-lottie-data">{"v":"5.9.0","fr":60,"ip":0,"op":144.0,"w":24,"h":24,"nm":"animation-loop","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"b1-text","sr":1,"ks":{"o":{"a":0,"k":100.0},"r":{"a":0,"k":0},"p":{"a":0,"k":[0,0,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","nm":"b1-text","bm":0,"hd":false,"it":[{"ty":"sh","ind":0,"ks":{"a":0,"k":{"i":[[0.0,0.0],[0.0,0.0],[0.0,0.0],[-0.196,0.1573],[0.0,0.2967],[0.0,0.0],[0.09,0.132],[0.1713,0.0687],[0.2467,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[-0.1813,0.1427],[0.0,0.2467],[0.0,0.0],[0.1687,0.142],[0.304,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[-0.332,-0.1407],[-0.178,-0.262],[0.0,-0.3627],[0.0,0.0],[0.1153,-0.214],[0.196,-0.142],[0.25,-0.0347],[0.0,0.0],[-0.2467,-0.152],[-0.1447,-0.2453],[0.0,-0.2967],[0.0,0.0],[0.2013,-0.3047],[0.3673,-0.1667],[0.504,0.0]],"o":[[0.0,0.0],[0.0,0.0],[0.3707,0.0],[0.1967,-0.158],[0.0,0.0],[0.0,-0.1927],[-0.0893,-0.1327],[-0.1713,-0.0687],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.3267,0.0],[0.1807,-0.1427],[0.0,0.0],[0.0,-0.2487],[-0.1687,-0.142],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.4707,0.0],[0.332,0.1413],[0.1773,0.262],[0.0,0.0],[0.0,0.2513],[-0.1153,0.2133],[-0.196,0.1413],[0.0,0.0],[0.3073,0.014],[0.2467,0.1513],[0.1447,0.2453],[0.0,0.0],[0.0,0.4107],[-0.2013,0.304],[-0.3673,0.1667],[0.0,0.0]],"v":[[7.561,15.779],[7.561,14.512],[9.54,14.512],[10.39,14.276],[10.685,13.594],[10.685,13.584],[10.55,13.097],[10.159,12.795],[9.532,12.692],[7.561,12.692],[7.561,11.606],[9.403,11.606],[10.165,11.392],[10.436,10.808],[10.436,10.799],[10.183,10.213],[9.474,10.0],[7.561,10.0],[7.561,8.733],[9.951,8.733],[11.155,8.944],[11.92,9.549],[12.186,10.486],[12.186,10.496],[12.013,11.194],[11.546,11.727],[10.877,11.991],[10.877,12.084],[11.708,12.333],[12.295,12.928],[12.512,13.741],[12.512,13.75],[12.21,14.823],[11.357,15.529],[10.05,15.779]],"c":true}},"nm":"b1-text-path0"},{"ty":"sh","ind":1,"ks":{"a":0,"k":{"i":[[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]],"o":[[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]],"v":[[6.665,15.779],[6.665,8.733],[8.457,8.733],[8.457,15.779]],"c":true}},"nm":"b1-text-path1"},{"ty":"sh","ind":2,"ks":{"a":0,"k":{"i":[[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]],"o":[[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]],"v":[[15.274,15.779],[15.274,10.35],[15.181,10.35],[13.483,11.499],[13.483,9.954],[15.276,8.733],[17.067,8.733],[17.067,15.779]],"c":true}},"nm":"b1-text-path2"},{"ty":"fl","nm":"fill","bm":0,"r":1,"c":{"a":0,"k":[0.0,0.5804,0.9765,1]},"o":{"a":0,"k":100.0}},{"ty":"tr","nm":"transform","a":{"a":0,"k":[12,12]},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0.0,"s":[12,22],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":43.2,"s":[12,22],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":69.12,"s":[12,12],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":97.92,"s":[12,12],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":123.84,"s":[12,2],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":143.94,"s":[12,2],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144.0,"s":[12,22]}]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":1,"k":[{"t":0.0,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":43.2,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":69.12,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":97.92,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":123.84,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":143.94,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144.0,"s":[0]}]}}]}],"ip":0,"op":144.0,"st":0,"bm":0,"hasMask":false},{"ddd":0,"ind":2,"ty":4,"nm":"p-glyph","sr":1,"ks":{"o":{"a":0,"k":100.0},"r":{"a":0,"k":0},"p":{"a":0,"k":[0,0,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","nm":"p-glyph","bm":0,"hd":false,"it":[{"ty":"sh","ind":0,"ks":{"a":0,"k":{"i":[[0,0],[0,0],[0,0],[-0.7,-0.7],[0.0,-1.0],[0.7,-0.7],[1.0,0.0],[0,0],[0,0]],"o":[[0,0],[0,0],[1.0,0.0],[0.7,0.7],[0.0,1.0],[-0.7,0.7],[0,0],[0,0],[0,0]],"v":[[8.3999,17.4003],[8.3999,6.6003],[12.5999,6.6003],[15.1499,7.6503],[16.1999,10.2003],[15.1499,12.7503],[12.5999,13.8003],[10.7999,13.8003],[10.7999,17.4003]],"c":true}},"nm":"p-glyph-path0"},{"ty":"sh","ind":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0],[-0.235,0.235],[0.0,0.33],[0.235,0.235],[0.33,0.0],[0,0]],"o":[[0,0],[0.33,0.0],[0.235,-0.235],[0.0,-0.33],[-0.235,-0.235],[0,0],[0,0]],"v":[[10.7999,11.4003],[12.7199,11.4003],[13.5674,11.0478],[13.9199,10.2003],[13.5674,9.3528],[12.7199,9.0003],[10.7999,9.0003]],"c":true}},"nm":"p-glyph-path1"},{"ty":"fl","nm":"fill","bm":0,"r":1,"c":{"a":0,"k":[0.0,0.5804,0.9765,1]},"o":{"a":0,"k":100.0}},{"ty":"tr","nm":"transform","a":{"a":0,"k":[12,12]},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0.0,"s":[12,12],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":25.92,"s":[12,12],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":57.6,"s":[12,22],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":109.44,"s":[12,2],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":138.24,"s":[12,12],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144.0,"s":[12,12]}]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":1,"k":[{"t":0.0,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":25.92,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":57.6,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":109.44,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":138.24,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144.0,"s":[100]}]}}]}],"ip":0,"op":144.0,"st":0,"bm":0,"hasMask":false},{"ddd":0,"ind":3,"ty":4,"nm":"tile","sr":1,"ks":{"o":{"a":0,"k":100.0},"r":{"a":0,"k":0},"p":{"a":0,"k":[0,0,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","nm":"tile","bm":0,"hd":false,"it":[{"ty":"sh","ind":0,"ks":{"a":0,"k":{"i":[[-2.651,0.0],[0.0,0.0],[0.0,-2.651],[0.0,0.0],[2.651,0.0],[0.0,0.0],[0.0,2.651],[0.0,0.0]],"o":[[0.0,0.0],[2.651,0.0],[0.0,0.0],[0.0,2.651],[0.0,0.0],[-2.651,0.0],[0.0,0.0],[0.0,-2.651]],"v":[[4.8,0.0],[19.2,0.0],[24.0,4.8],[24.0,19.2],[19.2,24.0],[4.8,24.0],[0.0,19.2],[0.0,4.8]],"c":true}},"nm":"tile-path0"},{"ty":"fl","nm":"fill","bm":0,"r":1,"c":{"a":0,"k":[0.7254901960784313,0.8666666666666667,0.9921568627450981,1]},"o":{"a":0,"k":60.0}},{"ty":"tr","nm":"transform","a":{"a":0,"k":[12,12]},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0},"p":{"a":0,"k":[12,12]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100}}]}],"ip":0,"op":144.0,"st":0,"bm":0,"hasMask":false}],"markers":[]}</script>
+<script type="application/json" id="pm-lottie-data">{"v":"5.9.0","fr":60,"ip":0,"op":172,"w":24,"h":24,"nm":"p-motion","ddd":0,"assets":[],"layers":[{"ddd":0,"ind":1,"ty":4,"nm":"b1-text","sr":1,"ks":{"o":{"a":0,"k":100.0},"r":{"a":0,"k":0},"p":{"a":0,"k":[0,0,0]},"a":{"a":0,"k":[0,0,0]},"s":{"a":0,"k":[100,100,100]}},"ao":0,"shapes":[{"ty":"gr","nm":"b1-text","bm":0,"hd":false,"it":[{"ty":"sh","ind":0,"ks":{"a":0,"k":{"i":[[0.0,0.0],[0.0,0.0],[0.0,0.0],[-0.196,0.1573],[0.0,0.2967],[0.0,0.0],[0.09,0.132],[0.1713,0.0687],[0.2467,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[-0.1813,0.1427],[0.0,0.2467],[0.0,0.0],[0.1687,0.142],[0.304,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[-0.332,-0.1407],[-0.178,-0.262],[0.0,-0.3627],[0.0,0.0],[0.1153,-0.214],[0.196,-0.142],[0.25,-0.0347],[0.0,0.0],[-0.2467,-0.152],[-0.1447,-0.2453],[0.0,-0.2967],[0.0,0.0],[0.2013,-0.3047],[0.3673,-0.1667],[0.504,0.0]],"o":[[0.0,0.0],[0.0,0.0],[0.3707,0.0],[0.1967,-0.158],[0.0,0.0],[0.0,-0.1927],[-0.0893,-0.1327],[-0.1713,-0.0687],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.3267,0.0],[0.1807,-0.1427],[0.0,0.0],[0.0,-0.2487],[-0.1687,-0.142],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.4707,0.0],[0.332,0.1413],[0.1773,0.262],[0.0,0.0],[0.0,0.2513],[-0.1153,0.2133],[-0.196,0.1413],[0.0,0.0],[0.3073,0.014],[0.2467,0.1513],[0.1447,0.2453],[0.0,0.0],[0.0,0.4107],[-0.2013,0.304],[-0.3673,0.1667],[0.0,0.0]],"v":[[7.561,15.779],[7.561,14.512],[9.54,14.512],[10.39,14.276],[10.685,13.594],[10.685,13.584],[10.55,13.097],[10.159,12.795],[9.532,12.692],[7.561,12.692],[7.561,11.606],[9.403,11.606],[10.165,11.392],[10.436,10.808],[10.436,10.799],[10.183,10.213],[9.474,10.0],[7.561,10.0],[7.561,8.733],[9.951,8.733],[11.155,8.944],[11.92,9.549],[12.186,10.486],[12.186,10.496],[12.013,11.194],[11.546,11.727],[10.877,11.991],[10.877,12.084],[11.708,12.333],[12.295,12.928],[12.512,13.741],[12.512,13.75],[12.21,14.823],[11.357,15.529],[10.05,15.779]],"c":true}},"nm":"b1-text-path0"},{"ty":"sh","ind":1,"ks":{"a":0,"k":{"i":[[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]],"o":[[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]],"v":[[6.665,15.779],[6.665,8.733],[8.457,8.733],[8.457,15.779]],"c":true}},"nm":"b1-text-path1"},{"ty":"sh","ind":2,"ks":{"a":0,"k":{"i":[[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]],"o":[[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0],[0.0,0.0]],"v":[[15.274,15.779],[15.274,10.35],[15.181,10.35],[13.483,11.499],[13.483,9.954],[15.276,8.733],[17.067,8.733],[17.067,15.779]],"c":true}},"nm":"b1-text-path2"},{"ty":"fl","nm":"fill","bm":0,"r":1,"c":{"a":0,"k":[0.0,0.5804,0.9765,1]},"o":{"a":0,"k":100.0}},{"ty":"tr","nm":"transform","a":{"a":0,"k":[12,12]},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0.0,"s":[12,22],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":43.2,"s":[12,22],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":69.12,"s":[12,12],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":97.92,"s":[12,12],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":123.84,"s":[12,2],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":143.94,"s":[12,2],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144.0,"s":[12,22],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":172,"s":[12,22]}]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":1,"k":[{"t":0.0,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":43.2,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":69.12,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":97.92,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":123.84,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":143.94,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144.0,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":172,"s":[0]}]}}]}],"ip":0,"op":172,"st":0,"bm":0,"hasMask":false},{"ddd":0,"ind":2,"ty":4,"nm":"p-glyph","sr":1,"ks":{"o":{"a":0,"k":100.0},"r":{"a":0,"k":0},"p":{"a":0,"k":[12,12,0]},"a":{"a":0,"k":[12,12,0]},"s":{"a":1,"k":[{"t":0,"s":[100,100,100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144,"s":[100,100,100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":152,"s":[90,90,100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":168,"s":[100,100,100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":172,"s":[100,100,100]}]}},"ao":0,"shapes":[{"ty":"gr","nm":"p-glyph","bm":0,"hd":false,"it":[{"ty":"sh","ind":0,"ks":{"a":0,"k":{"i":[[0,0],[0,0],[0,0],[-0.7,-0.7],[0.0,-1.0],[0.7,-0.7],[1.0,0.0],[0,0],[0,0]],"o":[[0,0],[0,0],[1.0,0.0],[0.7,0.7],[0.0,1.0],[-0.7,0.7],[0,0],[0,0],[0,0]],"v":[[8.3999,17.4003],[8.3999,6.6003],[12.5999,6.6003],[15.1499,7.6503],[16.1999,10.2003],[15.1499,12.7503],[12.5999,13.8003],[10.7999,13.8003],[10.7999,17.4003]],"c":true}},"nm":"p-glyph-path0"},{"ty":"sh","ind":1,"ks":{"a":0,"k":{"i":[[0,0],[0,0],[-0.235,0.235],[0.0,0.33],[0.235,0.235],[0.33,0.0],[0,0]],"o":[[0,0],[0.33,0.0],[0.235,-0.235],[0.0,-0.33],[-0.235,-0.235],[0,0],[0,0]],"v":[[10.7999,11.4003],[12.7199,11.4003],[13.5674,11.0478],[13.9199,10.2003],[13.5674,9.3528],[12.7199,9.0003],[10.7999,9.0003]],"c":true}},"nm":"p-glyph-path1"},{"ty":"fl","nm":"fill","bm":0,"r":1,"c":{"a":1,"k":[{"t":0,"s":[0.0,0.5804,0.9765,1],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144,"s":[0.0,0.5804,0.9765,1],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":168,"s":[1.0,1.0,1.0,1],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":172,"s":[1.0,1.0,1.0,1]}]},"o":{"a":0,"k":100.0}},{"ty":"tr","nm":"transform","a":{"a":0,"k":[12,12]},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0},"p":{"a":1,"k":[{"t":0.0,"s":[12,12],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":25.92,"s":[12,12],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":57.6,"s":[12,22],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":109.44,"s":[12,2],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":138.24,"s":[12,12],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144.0,"s":[12,12],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":172,"s":[12,12]}]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":1,"k":[{"t":0.0,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":25.92,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":57.6,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":109.44,"s":[0],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":138.24,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144.0,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":172,"s":[100]}]}}]}],"ip":0,"op":172,"st":0,"bm":0,"hasMask":false},{"ddd":0,"ind":3,"ty":4,"nm":"tile","sr":1,"ks":{"o":{"a":0,"k":100.0},"r":{"a":0,"k":0},"p":{"a":0,"k":[12,12,0]},"a":{"a":0,"k":[12,12,0]},"s":{"a":1,"k":[{"t":0,"s":[100,100,100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144,"s":[100,100,100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":152,"s":[90,90,100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":168,"s":[100,100,100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":172,"s":[100,100,100]}]}},"ao":0,"shapes":[{"ty":"gr","nm":"tile","bm":0,"hd":false,"it":[{"ty":"sh","ind":0,"ks":{"a":0,"k":{"i":[[-2.651,0.0],[0.0,0.0],[0.0,-2.651],[0.0,0.0],[2.651,0.0],[0.0,0.0],[0.0,2.651],[0.0,0.0]],"o":[[0.0,0.0],[2.651,0.0],[0.0,0.0],[0.0,2.651],[0.0,0.0],[-2.651,0.0],[0.0,0.0],[0.0,-2.651]],"v":[[4.8,0.0],[19.2,0.0],[24.0,4.8],[24.0,19.2],[19.2,24.0],[4.8,24.0],[0.0,19.2],[0.0,4.8]],"c":true}},"nm":"tile-path0"},{"ty":"fl","nm":"fill","bm":0,"r":1,"c":{"a":1,"k":[{"t":0,"s":[0.7255,0.8667,0.9922,1],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144,"s":[0.7255,0.8667,0.9922,1],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":168,"s":[0.1961,0.6353,0.9804,1],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":172,"s":[0.1961,0.6353,0.9804,1]}]},"o":{"a":1,"k":[{"t":0,"s":[60],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":144,"s":[60],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":168,"s":[100],"o":{"x":[0.4],"y":[0]},"i":{"x":[0.2],"y":[1]}},{"t":172,"s":[100]}]}},{"ty":"tr","nm":"transform","a":{"a":0,"k":[12,12]},"sk":{"a":0,"k":0},"sa":{"a":0,"k":0},"p":{"a":0,"k":[12,12]},"s":{"a":0,"k":[100,100]},"r":{"a":0,"k":0},"o":{"a":0,"k":100}}]}],"ip":0,"op":172,"st":0,"bm":0,"hasMask":false}],"markers":[{"tm":0,"cm":"hint","dr":144},{"tm":144,"cm":"fill","dr":28}]}</script>
 <script>
 (function(){
   const $  = s => document.querySelector(s);
@@ -2058,7 +2061,8 @@
     if(!inline) el('f-w-u').hidden = false;
 
     const fl=el('f-floor'); fl.value = d.floor ? String(d.floor) : '';
-    const bl=bLevel(d); el('f-floor-b').textContent=bl; el('f-floor-b').hidden=!bl;
+    /* 9/14 Figma: 편집 화면의 B1 표기는 숨김 — 차량 도착 후 읽기 전용 화면에만 남는다 */
+    const bl=bLevel(d); el('f-floor-b').textContent=bl; el('f-floor-b').hidden=!bl || !S.ro;
     const dg=el('f-dong');  dg.value = d.dong;
     el('f-line2').value = d.line;
     /* '라인 없음' 은 빈칸이 아니라 고른 답이다. 칸을 지우고 답을 그 자리에 놓는다 */
@@ -2359,7 +2363,7 @@
     [['f-floor','floor'],['f-dong','dong'],['f-line2','line']].forEach(([id,k])=>{ el(id).inputMode='numeric'; });
     /* Figma 24개 변형 모두 제목이 '상세 위치 입력' 이다 — 상태별로 나누지 않기로 했다.
        (첫 입력/변경/수정 불가를 제목으로 구분하던 것을 되돌렸다) */
-    el('ph-title').textContent = '상세 위치 입력';
+    el('ph-title').textContent = '상세 위치';
     /* 값이 이미 있으면 전부 답한 상태로 열어 요약만 보여준다 */
     if(S.current){ Object.keys(ASK).forEach(k=>{ if(ASK[k].skip && !S.d[k].trim()) S.skipped[k]=true; }); }
     advance();
@@ -2442,8 +2446,6 @@
     $$('.tab[data-mode]').forEach(t=>t.classList.toggle('on',t.dataset.mode===S.mode));
     const rscr = S.screen==='start' ? 's-start' : (S.rphase==='match' ? 's-match' : 's-voyage');
     /* 진입점 P 모션: 출발지 화면이 보이고 아직 값이 없을 때 한 번만 */
-    if(S.pmotion==='motion' && !S.pmPlayed && S.screen==='start' && !S.value){ S.pmPlayed=true; playPm(); }
-    if(S.pmotion!=='motion' || S.value) stopPm();
     $$('#rider .scr').forEach(x=>x.classList.toggle('on',x.id===rscr));
     const has=!!S.value;
     paintField('pk-start-tx');
@@ -2453,6 +2455,10 @@
        (그래서 체크를 3초 뒤 걷어내던 이전 판단은 접었다.) */
     const sr=el('pk-voy-sr');
     el('pk-voy').classList.toggle('sending', !!(has && S.confirmed && S.sending));
+    /* 아이콘: 값이 기사에게 가 있으면(채움·전송 중 아님) 완료 프레임. 바뀌는 순간에만 fill 구간을 재생 */
+    ['pk-start','pk-voy'].forEach(id=>{ const b=el(id); icoSync(b.querySelector('.pico'), b.classList.contains('filled') && !b.classList.contains('sending')); });
+    if(S.pmotion==='motion' && !S.pmPlayed && S.screen==='start' && !S.value){ S.pmPlayed=true; playPm(); }
+    if(S.pmotion!=='motion') stopPm();
     /* 차량이 도착하면 상세 위치는 제 역할을 끝냈다. Figma "차량 도착 후" 는
        배지를 파랑에서 회색으로 내린다 — 값은 그대로 진하게 남는다.
        그리고 도착 뒤에는 더 이상 고칠 수 없다. 기사가 이미 그 자리에 와 있으니
@@ -2559,7 +2565,7 @@
       const w=(d.etc||'').trim();
       el('plr-s').textContent = w; el('plr-s').hidden = !w;
       el('tp-chg').hidden = !S.chgFlag;
-      el('plr-chg').textContent = S.chgFlag ? '고객이 변경함' : '고객이 작성함';
+      el('plr-chg').textContent = S.chgFlag ? '고객이 변경한 위치' : '고객이 작성한 위치';
       el('plr-chg').classList.toggle('chg', !!S.chgFlag);
       el('tp-go').hidden = !!S.chgFlag;
       if(S.chgBlink !== S.chgSeen){
@@ -2936,7 +2942,7 @@
     /* 읽기 전용으로 열었던 거라면, 닫히고 나서 왜 못 고쳤는지와 그럼 어떻게 하는지를 말한다.
        Figma 의 토스트는 지도 위에 그려져 있다 — 시트(z40)가 토스트(z30)를 덮으므로
        열려 있는 동안 띄우면 아무도 못 본다. */
-    if(S.ro){ S.ro=false; toast('차량이 도착했습니다. 픽업 위치 변경이 필요하다면 드라이버와 통화해주세요.'); }
+    if(S.ro){ S.ro=false; toast('차량이 도착해 수정할 수 없습니다. 위치 변경이 필요하면 드라이버와 통화해주세요.'); }
   }
   /* 입력 내용이 바뀐 채로 닫으면 묻는다(Figma 뒤로가기_1·2). 안 바꿨으면 바로 닫는다. 읽기 전용은 묻지 않는다. */
   function tryClose(){
@@ -2961,23 +2967,41 @@
   }));
   /* 매칭 중은 실제로도 지나가는 화면이다 — 이 프로토타입에서 붙들고 있을 이유가 없다.
      1초 뒤 자동으로 운행 화면으로 넘긴다(하네스에서 매칭 중을 다시 눌러도 마찬가지). */
-  var pmAnim=null, pmLoops=0;
+  /* 로티 아이콘 — 카드마다 인스턴스 하나. _f: 지금 보여주는 상태(null=아직 안 그림) */
+  const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const LOT_END=171;
+  function icoAnim(pi){
+    if(!window.lottie || !pi) return null;
+    if(pi._anim) return pi._anim;
+    const box=document.createElement('span'); box.className='pm-lot'; box.setAttribute('aria-hidden','true'); pi.appendChild(box);
+    const a=lottie.loadAnimation({container:box,renderer:'svg',loop:false,autoplay:false,
+      animationData:JSON.parse(el('pm-lottie-data').textContent)});
+    pi._anim=a; pi._f=null; pi._mode='still'; pi._loops=0; pi.classList.add('lot');
+    /* hint 는 2.4초 × 2회 후 0프레임(P)에서 멈춘다 */
+    a.addEventListener('loopComplete',()=>{ if(pi._mode==='hint' && ++pi._loops>=2) icoStill(pi,false); });
+    return a;
+  }
+  function icoStill(pi,f){
+    const a=pi._anim; pi._mode='still'; a.loop=false; a.resetSegments(true); a.goToAndStop(f?LOT_END:0,true);
+  }
+  function icoSync(pi,filled){
+    if(!icoAnim(pi)) return;
+    if(pi._f===null || RM()){ if(pi._f!==filled || pi._mode!=='hint') icoStill(pi,filled); pi._f=filled; return; }
+    if(pi._f===filled) return;
+    pi._f=filled; pi._mode='fill'; pi._anim.loop=false;
+    /* 채워질 땐 fill 정방향, '사용 안함' 으로 비울 땐 역방향 */
+    pi._anim.playSegments(filled ? [144,172] : [LOT_END,144], true);
+  }
   function stopPm(){
-    const pi=$('#pk-start .pico'); if(pi) pi.classList.remove('pm-play','pm-lotplay');
-    if(pmAnim) pmAnim.goToAndStop(0,true);
+    const pi=$('#pk-start .pico'); if(!pi) return;
+    pi.classList.remove('pm-play');
+    if(pi._anim && pi._mode==='hint') icoStill(pi,false);
   }
   function playPm(){
-    const pi=$('#pk-start .pico'); if(!pi) return;
-    if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if(window.lottie){
-      if(!pmAnim){
-        const box=document.createElement('span'); box.className='pm-lot'; box.setAttribute('aria-hidden','true'); pi.appendChild(box);
-        pmAnim=lottie.loadAnimation({container:box,renderer:'svg',loop:true,autoplay:false,
-          animationData:JSON.parse(el('pm-lottie-data').textContent)});
-        /* 2.4초 × 2회 후 0프레임(P)에서 멈춘다 */
-        pmAnim.addEventListener('loopComplete',()=>{ if(++pmLoops>=2) stopPm(); });
-      }
-      pmLoops=0; pi.classList.remove('pm-play'); pi.classList.add('pm-lotplay'); pmAnim.goToAndPlay(0,true);
+    const pi=$('#pk-start .pico'); if(!pi || RM()) return;
+    if(icoAnim(pi)){
+      if(pi._f) return;
+      pi._mode='hint'; pi._loops=0; pi._anim.loop=true; pi._anim.playSegments([0,144],true);
       return;
     }
     pi.classList.remove('pm-play'); void pi.offsetWidth; pi.classList.add('pm-play');
