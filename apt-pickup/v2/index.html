@@ -170,24 +170,25 @@
   .pico{flex:0 0 auto;width:24px;height:24px;border-radius:4.8px;display:grid;place-items:center;
     background:rgba(185,221,253,.6);}
   /* 손으로 그리지 않고 Figma 원본을 --svg 로 추출해 넣었다(viewBox 44). */
-  .pico svg{display:block;width:14px;height:14px;}
-  .pico svg path{fill:var(--blue-500);}
+  /* 9/14: '> svg' 로 한정 — 자손 선택자(.pico svg path)가 로티 SVG 경로까지 CSS fill 로 덮어써 타일이 #0094f9 60% 로 진해졌다(속성 fill 보다 CSS 가 이긴다) */
+  .pico > svg{display:block;width:14px;height:14px;}
+  .pico > svg path{fill:var(--blue-500);}
   /* ── 진입점 P 모션 (실험 · Figma 에셋 없음, 하네스 'P 모션 / P 정지' 로 비교) ──
      뜻: 'P(주차장) 가 아래로 내려가 B1(지하)' — 흔들기가 아니라 '지하로 오게 할 수 있다' 를 말하는 움직임.
      규칙: 출발지 화면 진입점에서만 · 값이 비어 있을 때만 · 2.4초 × 2회 후 P 로 정지(WCAG 2.2.2 5초 이내 멈춤)
            · 타일(24) 안에서만 움직여 카드 높이 불변 · '움직임 줄이기' 설정이면 재생하지 않음.
      운행 화면 진입점엔 넣지 않는다 — 기사가 오는 중에 '지금 바꿔야 하나' 로 읽힌다. */
   #pk-start .pico{position:relative;overflow:hidden;}
-  #pk-start .pico svg{position:relative;}
+  #pk-start .pico > svg{position:relative;}
   .pm-b1{position:absolute;inset:0;display:grid;place-items:center;font-size:10px;line-height:1;font-weight:800;
     letter-spacing:-.2px;color:var(--blue-500);opacity:0;pointer-events:none;}
-  #pk-start .pico.pm-play svg{animation:pmP 2.4s cubic-bezier(.4,0,.2,1) 2;}
+  #pk-start .pico.pm-play > svg{animation:pmP 2.4s cubic-bezier(.4,0,.2,1) 2;}
   #pk-start .pico.pm-play .pm-b1{animation:pmB 2.4s cubic-bezier(.4,0,.2,1) 2;}
   @keyframes pmP{0%,18%{transform:translateY(0);opacity:1}40%{transform:translateY(10px);opacity:0}
     76%{transform:translateY(-10px);opacity:0}96%,100%{transform:translateY(0);opacity:1}}
   @keyframes pmB{0%,30%{transform:translateY(10px);opacity:0}48%,68%{transform:translateY(0);opacity:1}
     86%,100%{transform:translateY(-10px);opacity:0}}
-  @media (prefers-reduced-motion:reduce){ #pk-start .pico.pm-play svg,#pk-start .pico.pm-play .pm-b1{animation:none;} }
+  @media (prefers-reduced-motion:reduce){ #pk-start .pico.pm-play > svg,#pk-start .pico.pm-play .pm-b1{animation:none;} }
   /* 9/14: 실제 전달용 로티(animation-loop.json · 24×24 · 60fps · 2.4초 1회분)를 lottie-web 으로 2회 재생.
      로티 안에 타일이 들어 있으므로(9/14: tile-clip 마스크 제거 — iOS Safari 에서 마스크가 도형에 합쳐져 색이 반전돼 보였다) 재생 중엔 칸 배경과 정적 P 를 숨긴다. 0프레임 = 정적 상태라 전환이 보이지 않는다.
      lottie-web 을 못 불러오면 위 CSS 모션으로 대체한다. */
@@ -226,10 +227,10 @@
      값이 있는 상태·전송 중은 그대로 둔다. */
   .pkbox .ph{color:var(--gray-800);}
   /* 9/14 Figma 아이콘 두 벌: 빈 칸·전송 중 = 연파랑 타일 + #0094f9 P(로티와 같은 색) / 값·도착 후 = #32a2fa 타일 + 흰 P */
-  .pkbox .pico svg path{fill:#0094f9;}
+  .pkbox .pico > svg path{fill:#0094f9;}
   .pkbox .pm-b1{color:#0094f9;}
   .pkbox.filled:not(.sending) .pico{background:var(--blue-500);}
-  .pkbox.filled:not(.sending) .pico svg path{fill:#fff;}
+  .pkbox.filled:not(.sending) .pico > svg path{fill:#fff;}
   .pkbox .fill{color:#000;}
   .pkbox.sending .fill{color:var(--gray-700);}
   /* 액션 글자 — 빈 상태 '입력', 찬 상태 '수정'. 전송 중엔 스피너가 대신하고
