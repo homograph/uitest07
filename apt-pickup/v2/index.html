@@ -3002,9 +3002,14 @@
     a.playSegments(SEG[k],true);
   }
   function icoRun(pi,keys){
-    const busySpin = pi._mode==='spin';
     pi._q=keys.slice();
-    if(busySpin && keys[0]==='done'){ return; }      /* 돌던 한 바퀴가 끝나면 loopComplete 가 이어 받는다 */
+    /* 전송 흐름(clear → spinIn → spin) 도중에 완료가 오면 끊지 않고 뒤에 잇는다 — 스피너가 최소 한 바퀴는 보인다 */
+    if(keys[0]==='done' && ['clear','spinIn','spin'].includes(pi._mode)){
+      if(pi._mode==='clear') pi._q=['spinIn','spin','done'];
+      else if(pi._mode==='spinIn') pi._q=['spin','done'];
+      if(pi._mode==='spin') pi._anim.loop=false;     /* 돌던 한 바퀴가 끝나면 complete 가 이어 받는다 */
+      return;
+    }
     icoNext(pi);
   }
   function icoSync(pi,st){
