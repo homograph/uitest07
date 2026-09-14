@@ -2061,8 +2061,8 @@
     if(!inline) el('f-w-u').hidden = false;
 
     const fl=el('f-floor'); fl.value = d.floor ? String(d.floor) : '';
-    /* 9/14 Figma: 편집 화면의 B1 표기는 숨김 — 차량 도착 후 읽기 전용 화면에만 남는다 */
-    const bl=bLevel(d); el('f-floor-b').textContent=bl; el('f-floor-b').hidden=!bl || !S.ro;
+    /* 9/14: B 층 병기는 라이더 앱 전체에서 삭제(편집·읽기 전용 모두) */
+    el('f-floor-b').textContent=''; el('f-floor-b').hidden=true;
     const dg=el('f-dong');  dg.value = d.dong;
     el('f-line2').value = d.line;
     /* '라인 없음' 은 빈칸이 아니라 고른 답이다. 칸을 지우고 답을 그 자리에 놓는다 */
