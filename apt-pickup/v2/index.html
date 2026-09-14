@@ -2562,7 +2562,7 @@
       const [fl, rest] = split(loc(d));
       el('tp-fl').textContent = el('plr-fl').textContent = fl;
       el('tp-v').textContent = el('plr-v').textContent = rest;
-      const bl=bLevel(d); el('plr-b').textContent=bl; el('plr-b').hidden=!bl;
+      el('plr-b').textContent=''; el('plr-b').hidden=true;   /* 9/14: 드라이버 앱 B 층 병기 삭제(Figma 에 없음) */
       const w=(d.etc||'').trim();
       el('plr-s').textContent = w; el('plr-s').hidden = !w;
       el('tp-chg').hidden = !S.chgFlag;
