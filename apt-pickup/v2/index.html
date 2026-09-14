@@ -1047,20 +1047,11 @@
     <button class="rst" id="tts">음성 안내 끔</button>
     <button class="rst" id="rst">처음부터</button>
   </div>
-  <div class="tabs">
-    <button class="tab on" data-form="sform">1안 · 한 화면 문장형</button>
-    <button class="tab" data-form="seq">2안 · 순차 쌓기</button>
-  </div>
   <div class="tabs" id="wrow">
     <span class="tlab">화면 너비</span>
     <button class="tab" data-pw="320">좁게 320</button>
     <button class="tab on" data-pw="360">기본 360</button>
     <button class="tab" data-pw="414">넓게 414</button>
-  </div>
-  <div class="tabs" id="toprow">
-    <span class="tlab">상단 구성</span>
-    <button class="tab on" data-top="inline">가 · 위치를 문장 안에</button>
-    <button class="tab" data-top="seg">나 · 세그먼트 유지</button>
   </div>
   <p class="flowdesc" id="fdesc"></p>
 </div>
@@ -1073,7 +1064,13 @@
         type="button" class="dswb" data-side="r" data-ds="go">이동 중</button><button
         type="button" class="dswb" data-side="r" data-ds="arrived">차량 도착</button></span>
       <span class="dsw"><button type="button" class="dswb pmc on" data-pm="motion">P 모션</button><button
-        type="button" class="dswb pmc" data-pm="static">P 정지</button></span></div>
+        type="button" class="dswb pmc" data-pm="static">P 정지</button></span>
+      <!-- 9/14: 로티 구간을 보이는 카드 아이콘에서 바로 재생 — 끝나면 카드의 원래 상태로 돌아간다 -->
+      <span class="dsw" id="pmdemo"><button type="button" class="dswb pmd" data-seq="hint">▶ 힌트</button><button
+        type="button" class="dswb pmd" data-seq="spin">▶ 전송 중</button><button
+        type="button" class="dswb pmd" data-seq="done">▶ 체크 완료</button><button
+        type="button" class="dswb pmd" data-seq="clear">▶ 비우기</button><button
+        type="button" class="dswb pmd" data-seq="all">▶ 전체 흐름</button></span></div>
     <div class="phbox" id="riderbox"><div class="phone" id="rider">
 
       <!-- 출발지 설정 -->
@@ -2608,7 +2605,7 @@
     el('dtsel').classList.toggle('dark', !!S.tmapDark);
     $$('.tth').forEach(b=>b.classList.toggle('on', (b.dataset.th==='dark')===!!S.tmapDark));
     /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
-    $$('.dswb:not(.dstg):not(.tth):not(.pmc)').forEach(b=>b.classList.toggle('on',
+    $$('.dswb:not(.dstg):not(.tth):not(.pmc):not(.pmd)').forEach(b=>b.classList.toggle('on',
       b.dataset.ds === (b.dataset.side==='r' ? S.rphase : S.dview)));
 
     el('fdesc').innerHTML = S.screen==='start'
@@ -2974,7 +2971,7 @@
      hint 0–144 · spin-in 144–156 · spin 156–204(반복) · done 204–270(체크→P) · clear 270–294
      정지 프레임: 빈 칸 0 · 전송 중 156 · 완료 269. _st: 목표 상태(null=아직 안 그림) */
   const RM=()=>matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const SEG={hint:[0,144], spinIn:[144,156], spin:[156,204], done:[204,270], clear:[270,294]};
+  const SEG={hint:[0,144], spinIn:[144,156], spin:[156,204], spin1:[156,204], done:[204,270], clear:[270,294]};
   const STILL={empty:0, spin:156, filled:269};
   function icoAnim(pi){
     if(!window.lottie || !pi) return null;
@@ -2998,6 +2995,7 @@
   /* 큐의 다음 구간을 재생. 'spin' 은 반복하며, 뒤에 무언가 쌓이면 한 바퀴 끝에서 넘어간다 */
   function icoNext(pi){
     const k=pi._q.shift(); if(!k){ return; }
+    if(k==='restore'){ icoStill(pi, pi._st||'empty'); return; }   /* 데모 재생 뒤 카드 상태로 복귀 */
     const a=pi._anim; pi._mode=k; a.loop=(k==='spin' && !pi._q.length);
     a.playSegments(SEG[k],true);
   }
@@ -3044,6 +3042,20 @@
   }
   /* 두 번 돈 뒤 클래스를 거둔다 — 남겨 두면 다음 렌더에서 다시 붙일 때 재생되지 않는다 */
   document.addEventListener('animationend', e=>{ if(e.animationName==='pmP') e.target.closest('.pico')?.classList.remove('pm-play'); });
+  const DEMO={
+    hint:['hint','hint','restore'],
+    spin:['spinIn','spin1','spin1','spin1','restore'],
+    done:['done','restore'],
+    clear:['clear','restore'],
+    all:['hint','spinIn','spin1','spin1','done','clear','restore']
+  };
+  $$('.pmd').forEach(b=>b.addEventListener('click',()=>{
+    /* 지금 보이는 라이더 화면의 카드에서 재생(매칭 중 화면엔 카드가 없어 출발지 카드를 쓴다) */
+    const onVoy = el('s-voyage').classList.contains('on') && !el('pk-voy').hidden;
+    const pi = (onVoy ? el('pk-voy') : el('pk-start')).querySelector('.pico');
+    if(!icoAnim(pi)) return;
+    pi._q=DEMO[b.dataset.seq].slice(); icoNext(pi);
+  }));
   $$('.pmc').forEach(b=>b.addEventListener('click',()=>{
     S.pmotion=b.dataset.pm;
     $$('.pmc').forEach(x=>x.classList.toggle('on', x===b));
