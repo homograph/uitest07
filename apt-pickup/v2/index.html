@@ -933,6 +933,27 @@
   /* 타다로 돌아오는 버튼. T맵 위에 떠 있는 타다 표면은 전부 이 한 벌(navy2 + b300 2px)이다 */
   /* Figma 11781:18770 "ic_bubble_tmap" — 62×134. 두 버튼 사이는 빈 간격이 아니라
      connector(32×10 navy2)가 잇는다. 실측 x=298(우측 끝) · y=293. */
+  /* ── 9/15 T맵 하단 배너안(기존 오버레이 컴포넌트 12400:533657 · 제안) ─────────────
+     말풍선 대신 하단 검정 띠 하나. Figma banner: 360×88 · #000 · pad20 · gap20 · SP/32 Bold #fff 32/48.
+     문구는 위치만('지하 1층 102동 3-4라인') — '에서 탈게요' 는 뺀다. × 대신 '자세히' 하나(누르면 타다 앱 카드).
+     흐름: 뜰 때·위치 변경·300m 진입 때만 2바퀴 흐르고 맨 앞에서 멈춘다. 넘치면 끝을 흐린다.
+     배너 전체가 누르는 자리다 — 주행 중 작은 버튼을 겨누지 않게. */
+  .tbn{position:absolute;left:0;right:0;bottom:0;z-index:7;display:flex;align-items:center;gap:20px;
+    height:88px;padding:0 20px;box-sizing:border-box;background:#000;color:#fff;cursor:pointer;}
+  .tbn[hidden]{display:none;}
+  .tbn-chg{flex:0 0 auto;padding:2px 8px;border-radius:9999px;background:#fe4c00;color:#fff;font-size:16px;line-height:24px;font-weight:700;margin-right:-8px;}
+  .tbn-chg[hidden]{display:none;}
+  .tbn-win{flex:1 1 auto;min-width:0;overflow:hidden;white-space:nowrap;}
+  .tbn.ovf:not(.run) .tbn-win{-webkit-mask-image:linear-gradient(90deg,#000 80%,transparent);mask-image:linear-gradient(90deg,#000 80%,transparent);}
+  .tbn-trk{display:inline-flex;gap:var(--mq-gap,48px);will-change:transform;}
+  .tbn-t{font-size:32px;line-height:48px;font-weight:700;color:#fff;}
+  .tbn-t2{display:none;}
+  .tbn.run .tbn-t2{display:inline;}
+  .tbn.run .tbn-trk{animation:mq var(--mq-dur,6s) linear 2;}
+  @keyframes mq{from{transform:translateX(0)}to{transform:translateX(calc(-1 * var(--mq-d,0px)))}}
+  .tbn-more{flex:0 0 auto;height:50px;padding:0 18px;display:flex;align-items:center;border:1px solid #fff;border-radius:9999px;
+    font-size:18px;line-height:26px;font-weight:700;color:#fff;}
+  @media (prefers-reduced-motion:reduce){ .tbn.run .tbn-trk{animation:none;} }
   .tovr{position:absolute;right:0;top:180px;width:62px;display:flex;flex-direction:column;
     align-items:center;gap:0;z-index:7;touch-action:none;}
   .tovb{width:62px;height:62px;border-radius:15px;box-sizing:border-box;display:flex;flex-direction:column;
@@ -1255,6 +1276,7 @@
       <span class="dsw" id="dstagesw"><button type="button" class="dswb dstg" data-dg="go">출발 전</button><button
         type="button" class="dswb dstg on" data-dg="arrived">이동 중</button><button
         type="button" class="dswb dstg" data-dg="preview">전체 경로</button></span>
+      <span class="dsw" title="T맵 위 픽업 위치 표시 방식 비교"><button type="button" class="dswb tov on" data-ov="banner">하단 배너</button><button type="button" class="dswb tov" data-ov="bubble">말풍선</button></span>
       <span class="dsw"><button type="button" class="dswb tth on" data-th="light">T맵 라이트</button><button type="button" class="dswb tth" data-th="dark">T맵 다크</button></span></div>
     <div class="phbox"><div class="phone">
       <div class="scr on dscr">
@@ -1294,6 +1316,7 @@
           <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
           <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6.4" fill="#0044A6" fill-opacity="0.7"/><path d="M8.5 17.2501V6.75H12.5834C13.5556 6.75 14.382 7.09028 15.0625 7.77084C15.7431 8.4514 16.0834 9.27779 16.0834 10.25C16.0834 11.2223 15.7431 12.0486 15.0625 12.7292C14.382 13.4098 13.5556 13.7501 12.5834 13.7501H10.8334V17.2501H8.5ZM10.8334 11.4167H12.7C13.0209 11.4167 13.2955 11.3025 13.524 11.074C13.7524 10.8455 13.8667 10.5708 13.8667 10.25C13.8667 9.9292 13.7524 9.65455 13.524 9.42606C13.2955 9.19757 13.0209 9.08334 12.7 9.08334H10.8334V11.4167Z" fill="white"/></svg><b id="tp-fl"></b><i class="tp-spk" id="tp-spk" hidden aria-label="음성 안내 중"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 9.5h3L11 6v12l-4-3.5H4v-5Z" fill="currentColor"/><path class="w1" d="M15 9a4 4 0 0 1 0 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="w2" d="M17.8 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></i></span><span class="tp-v" id="tp-v"></span><span class="tp-etc" id="tp-etc" hidden></span><span class="tp-go" id="tp-go">고객이 작성함</span><span class="tp-chg" id="tp-chg" hidden>고객이 변경함</span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
           <div class="tbar"><div class="tb-info"><b id="tb-eta">9분</b><span id="tb-sub">1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
+          <div class="tbn" id="tbn" hidden role="button" tabindex="0" aria-label="고객 픽업 위치 자세히 보기"><span class="tbn-chg" id="tbn-chg" hidden>변경</span><span class="tbn-win" id="tbn-win"><span class="tbn-trk" id="tbn-trk"><span class="tbn-t" id="tbn-t"></span><span class="tbn-t tbn-t2" id="tbn-t2" aria-hidden="true"></span></span></span><span class="tbn-more">자세히</span></div>
         </div>
         <!-- T맵 경로 선택(driver-v2 tmapsel). '고객 위치로 출발하기' → 이 화면이 오른쪽에서 밀려 들어오고,
              '안내'(15초 뒤 자동)를 누르면 T맵 안내(dtmap)로, ← 를 누르면 타다 앱 03 으로 돌아간다. -->
@@ -2585,7 +2608,8 @@
     /* 픽업 위치 — T맵 알약과 타다 앱 블록, 두 자리가 같은 값을 말한다 (Figma 12061:51991).
        표기는 앱 기준 하나: '지하 1층  1902동 3-4호 라인'. 알약은 층과 동 사이에서만 줄이 바뀐다. */
     const show = !!(got && S.current);
-    el('tovb-loc').hidden = !show || !!S.driving;
+    const bnMode = (S.ovMode||'banner')==='banner';
+    el('tovb-loc').hidden = !show || !!S.driving || bnMode;
     el('plr').hidden = !show;
     if(show){
       const d=S.current;
@@ -2608,6 +2632,8 @@
       }
     }
     paintAppr(show);
+    paintBanner(show && !S.driving && onTmap() && bnMode);
+    $$('.tov').forEach(b=>b.classList.toggle('on', b.dataset.ov===(S.ovMode||'banner')));
     if(window.__reflowOverlays) window.__reflowOverlays();
     /* 카드는 늘 03 pickup-arrived 다 — 이 기능이 실제로 걸리는 시점이 여기다. */
     /* 스펙(driver-v2 핸드오프 상태머신): 픽업 구간의 버튼은 둘뿐이다.
@@ -2642,7 +2668,7 @@
     el('dtsel').classList.toggle('dark', !!S.tmapDark);
     $$('.tth').forEach(b=>b.classList.toggle('on', (b.dataset.th==='dark')===!!S.tmapDark));
     /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
-    $$('.dswb:not(.dstg):not(.tth):not(.pmc):not(.pmd)').forEach(b=>b.classList.toggle('on',
+    $$('.dswb:not(.dstg):not(.tth):not(.tov):not(.pmc):not(.pmd)').forEach(b=>b.classList.toggle('on',
       b.dataset.ds === (b.dataset.side==='r' ? S.rphase : S.dview)));
 
     el('fdesc').innerHTML = S.screen==='start'
@@ -2753,6 +2779,7 @@
     el('tovb-loc').classList.toggle('open', open);
     el('tp-spk').hidden = !(on && S.appr.speaking);
     el('dstop').hidden = el('dreplay').hidden = !S.appr;
+    if((S.ovMode||'banner')==='banner') el('dstop').hidden = true;   /* 정차 펼침(B)은 말풍선안 전용 */
     if(S.appr) el('dstop').textContent = S.appr.stopped ? '출발' : '정차';
     el('d300').textContent = S.appr ? '시뮬레이션 끝' : '300m 진입';
     if(S.appr){
@@ -2760,12 +2787,36 @@
       el('tb-eta').textContent = Math.max(1,Math.round(m/12))+'초';
       el('tb-sub').textContent = m+'m · '+(S.appr.stopped?'정차 중':'주행 중')+' · 래미안원베일리';
       el('dstep').innerHTML = '<b>추천안 시뮬레이션</b> — 300m 진입 시 음성 1회 · '
-        + (S.appr.stopped ? (w ? '정차 중이라 말풍선에 찾아오는 길을 펼쳤습니다. [출발]을 누르면 접힙니다.' : '정차 중이지만 찾아오는 길이 없어 펼칠 것이 없습니다.')
+        + ((S.ovMode||'banner')==='banner' ? '하단 배너가 한 번 더 흐릅니다. 배너를 누르면 타다 앱 카드(찾아오는 길 포함)로 갑니다.' : S.appr.stopped ? (w ? '정차 중이라 말풍선에 찾아오는 길을 펼쳤습니다. [출발]을 누르면 접힙니다.' : '정차 중이지만 찾아오는 길이 없어 펼칠 것이 없습니다.')
                           : '[정차]를 누르면 말풍선에 찾아오는 길이 펼쳐집니다.')
         + (S.appr.said ? '<br>🔊 “'+S.appr.said.replace(/[<>&]/g,'')+'”' : '');
     } else {
       el('tb-eta').textContent=TB0.eta; el('tb-sub').textContent=TB0.sub;
     }
+  }
+  /* 하단 배너 — 흐를지(넘칠 때만) 재고, 뜰 때·값/변경 표시가 바뀔 때·300m 진입 때 2바퀴 흘린다 */
+  function mqPlay(){
+    const b=el('tbn'); if(b.hidden) return;
+    const win=el('tbn-win'), t=el('tbn-t');
+    const over = t.scrollWidth > win.clientWidth + 1;
+    b.classList.toggle('ovf', over);
+    b.classList.remove('run');
+    if(!over) return;
+    const gap=48, d=t.scrollWidth+gap;
+    b.style.setProperty('--mq-gap', gap+'px');
+    b.style.setProperty('--mq-d', d+'px');
+    b.style.setProperty('--mq-dur', (d/90).toFixed(2)+'s');   /* 초당 90px */
+    void b.offsetWidth; b.classList.add('run');
+  }
+  function paintBanner(on){
+    const b=el('tbn'); const was=!b.hidden;
+    b.hidden=!on;
+    if(!on){ b.classList.remove('run'); S.bnKey=null; return; }
+    const txt=loc(S.current).replace(/\u2002/g,' ');
+    el('tbn-t').textContent=el('tbn-t2').textContent=txt;
+    el('tbn-chg').hidden=!S.chgFlag;
+    const key=txt+'|'+(S.chgFlag?S.chgBlink:0)+'|'+(S.appr?'a':'');
+    if(!was || key!==S.bnKey){ S.bnKey=key; requestAnimationFrame(mqPlay); }
   }
   function voiceLine(){
     if(S.drKind==='msg') return '고객 메시지. '+S.msg;
@@ -2930,8 +2981,12 @@
     },400);
     render(); apprSpeak('first');
   });
+  el('tbn').addEventListener('click',()=>{ S.dview='app'; S.msgUnread=false; render(); });
+  el('tbn').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el('tbn').click(); } });
+  el('tbn-trk').addEventListener('animationend',()=>el('tbn').classList.remove('run'));
+  $$('.tov').forEach(b=>b.addEventListener('click',()=>{ S.ovMode=b.dataset.ov; if(S.appr) S.appr.stopped=false; render(); }));
   el('dstop').addEventListener('click',()=>{ if(!S.appr) return; S.appr.stopped=!S.appr.stopped; render(); });
-  el('dreplay').addEventListener('click',()=>apprSpeak('first'));
+  el('dreplay').addEventListener('click',()=>{ apprSpeak('first'); mqPlay(); });
   /* 픽업 알약과 버블 스택은 화면 안에서 끌어 옮긴다 — 세로는 자유, 가로는 가까운 쪽 끝(좌/우)에 붙는다(시안 '운행 시작 전' 두 변형).
      둘은 늘 같은 쪽에 선다.
      버블은 언제나 카드보다 아래를 유지한다 — 순서가 뒤집히면 두 층의 관계가 깨진다.
