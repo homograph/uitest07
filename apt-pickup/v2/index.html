@@ -550,7 +550,7 @@
      ⌄ 표식으로 '고르는 자리' 임을 표시한다. */
   /* 위치는 타이핑이 아니라 고르는 자리다. 같은 상자를 쓰되 ⌄ 로 구분한다 */
   .fld.pick{gap:6px;padding:8px 12px 8px 14px;border:none;font:inherit;font-weight:700;
-    color:var(--navy-800);cursor:pointer;}
+    color:var(--gray-950);cursor:pointer;}   /* 9/15: 지하/지상 #19254D → #171A24 */
   /* 이 칩은 두 값 사이 토글이다. 화살표는 '누르면 어디로 가는지' 를 가리킨다 —
      지하일 땐 위(지상)로, 지상일 땐 아래(지하)로. */
   .fld.pick svg{color:var(--gray-500);transition:transform .2s cubic-bezier(.22,.61,.36,1);}
@@ -604,7 +604,7 @@
      왼쪽 정렬이면 커서가 플레이스홀더 앞에, 값이 있을 땐 글자 뒤에 놓인다.
      칸이 이미 내용 폭으로 붙으므로 가운데/왼쪽의 시각차는 거의 없다. */
   .bv{border:none;outline:none;background:none;padding:0;text-align:left;
-    font:inherit;font-size:22px;font-weight:700;color:var(--navy-800);}
+    font:inherit;font-size:22px;font-weight:700;color:var(--gray-950);}   /* 9/15 Figma 12371:523337: 값 #19254D → #171A24 */
   /* 예시는 값과 확실히 갈라져야 한다. gray-500(3.82:1)까지 올리니 22px 에서는
      입력된 값처럼 읽혔다. gray-300 은 2.15:1 로 무게 400 과 함께 값(navy 700)과 구분된다. */
   .bv::placeholder{color:var(--gray-300);font-weight:500;}   /* 9/14 Heading_2_Medium */
@@ -613,7 +613,7 @@
   /* 지하 층 뒤에 자동으로 붙는 B 표기 — '지하주차장 1층' 이 B1 인지 헷갈린 요청 88건. 칸·선택지는 늘리지 않는다.
      Figma 핸드오프 12086:82640 '입력 필드 / 값' 의 B1: 16/24 Medium #99A5C0, 칸 gap 4 그대로(여백 추가 없음), '층' 과 같은 기준선 */
   .fld .bx{flex:0 0 auto;font-size:16px;font-weight:500;color:#99a5c0;transform:translateY(2px);}
-  .fld .u{flex:0 0 auto;font-size:16px;font-weight:500;color:var(--gray-950);
+  .fld .u{flex:0 0 auto;font-size:16px;font-weight:500;color:var(--gray-900);   /* 9/15: 단위 #171A24 → #262A38 */
     transform:translateY(2px);}
   /* 기본 폭은 em 이라 글자 단계가 커지면 같이 커진다.
      내용이 기본을 넘을 때만 --gw 로 늘어난다(고정 폭은 1012A·11-16호라 를 잘랐다). */
@@ -630,7 +630,13 @@
      비어 있을 때 86px 을 남겨 두면 그 구멍이 상시 보인다 — 아래엔 이미 231px 이 남아 있다. */
   /* Figma: 쉴 때 12, 포커스 시 38(칩 한 줄). body gap 20 이 위아래 간격을 맡으므로
      여기서 margin 을 또 주지 않는다. 예전의 min-height 52 는 안내문이 있던 시절의 값이다. */
-  .fhint{min-height:12px;margin-top:0;}
+  /* 9/15 Figma 12371:523337 '에서 탈게요.' — sentence 안 row2 아래 gap14 · Body_1 Medium 16/24 #73788B · 늘 보인다(편집·읽기 전용 같은 색).
+     '사는 층' 을 적는 실수를 막는 틀이다: 이 칸들이 '차에 타는 곳' 이라는 걸 문장이 말한다.
+     .fform gap20 을 14 로 당긴다. 칩(hint-slot)은 이 줄을 대신하지 않고 아래에 붙는다 */
+  .stail{margin:-6px 0 0;font-size:16px;line-height:24px;font-weight:500;color:var(--gray-500);}
+  /* Figma: 쉴 때 hint-slot 이 아예 없다(예전 12 → 0). 포커스일 때만 칩 한 줄(38) + body gap20 */
+  .fhint{margin-top:0;}
+  .fhint[hidden]{display:none;}
   .fhint .ft{margin:0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
   .fhint .ft b{color:var(--gray-700);font-weight:600;}
   .fhint .ft:empty{display:none;}
@@ -656,16 +662,16 @@
      한 줄짜리 링크만 조용히 나타나고, 필요한 사람(26.9%)이 눌렀을 때 필드를 연다. */
   /* 토글은 오른쪽 끝. 펼침 컨트롤이 관습적으로 있는 자리이기도 하고,
      아이콘이 사라질 때(값이 있을 때) 라벨이 밀리지 않는다 — 왼쪽에 두면 21px 왼쪽으로 튄다. */
-  /* Figma etc-header: 312×50 · 위쪽 stroke #e3e4e8 · gap8.
-     위 선은 inset 으로 그려 50 을 지킨다(테두리가 자리를 먹으면 51 이 된다). */
-  .addetc{display:flex;align-items:center;gap:8px;
-    width:100%;margin-top:0;border:none;background:none;padding:14px 0;
-    font:inherit;font-size:15px;line-height:22px;font-weight:500;color:var(--gray-800);text-align:left;cursor:pointer;
+  /* Figma etc-header(9/15 12371:523337): 312×60 · 위쪽 stroke #e3e4e8 · pad 20/0/20 · gap4 ·
+     '찾아오는 길' 14/20 Bold #262A38 + '(선택)' 14/20 Regular #73788B.
+     위 선은 inset 으로 그려 60 을 지킨다(테두리가 자리를 먹으면 61 이 된다). */
+  .addetc{display:flex;align-items:center;gap:4px;
+    width:100%;margin-top:0;border:none;background:none;padding:20px 0;
+    font:inherit;font-size:14px;line-height:20px;font-weight:700;color:var(--gray-900);text-align:left;cursor:pointer;
     box-shadow:inset 0 1px 0 0 var(--gray-80);border-radius:0;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .addetc>span:first-child{flex:1 1 auto;min-width:0;}
-  /* 9/15 Figma etc-header: '찾아오는 길 (선택)' — '(선택)' 만 글자 단위 색 #73788b, 굵기·크기는 같다 */
-  .addetc em{font-style:normal;color:var(--gray-500);}
+  .addetc em{font-style:normal;font-weight:400;color:var(--gray-500);margin-left:4px;}
   .addetc[hidden]{display:none;}
   /* − 는 '안 쓸래' 다. 쓴 내용이 있어도 살아 있고, 누르면 접히면서 내용을 비운다.
      접기와 지우기를 나누면 '접었는데 값은 남아 있는' 상태가 생기는데,
@@ -689,6 +695,7 @@
     .fld.pick{padding:0 10px 0 12px;gap:6px;}
     .fld .u,.fld .bx{font-size:15px;}
     .fld .nn{font-size:15px;}
+    .stail{font-size:15px;}
     .sent{--r1gap:-4px;}
     .ph-body.sform{padding-left:18px;padding-right:18px;}
   }
@@ -698,6 +705,7 @@
     .fld.pick{padding:0 14px 0 16px;gap:8px;}
     .fld .u,.fld .bx{font-size:17px;}
     .fld .nn{font-size:17px;}
+    .stail{font-size:17px;}
     .sent{--r1gap:0px;}
     .ph-body.sform{padding-left:26px;padding-right:26px;}
   }
@@ -1186,13 +1194,14 @@
               <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="numeric" maxlength="8"
                      placeholder="1-2" aria-label="라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label>
             </div>
-            <div class="fhint" id="f-hint">
+            <p class="stail" id="f-tail">에서 탈게요.</p>
+            <div class="fhint" id="f-hint" hidden>
               <p class="ft" id="f-hint-t"></p>
               <span class="fas"><button type="button" class="fa" id="f-hint-a" hidden></button><button
                 type="button" class="fa" id="f-hint-a2" hidden></button></span>
             </div>
 
-            <button type="button" class="addetc" id="f-addetc" hidden><span>찾아오는 길 <em>(선택)</em></span><svg class="ic tg" id="f-etc-ic" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect id="f-etc-v" x="9" y="4" width="2" height="12" rx="1" fill="currentColor"/><rect x="4" y="9" width="12" height="2" rx="1" fill="currentColor"/></svg></button>
+            <button type="button" class="addetc" id="f-addetc" hidden><span>찾아오는 길<em>(선택)</em></span><svg class="ic tg" id="f-etc-ic" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect id="f-etc-v" x="9" y="4" width="2" height="12" rx="1" fill="currentColor"/><rect x="4" y="9" width="12" height="2" rx="1" fill="currentColor"/></svg></button>
             <div class="fopt" id="fopt" hidden>
 
               <div class="tinwrap">
@@ -2179,6 +2188,7 @@
     a2.hidden = !(cfg && cfg.a2);
     if(cfg && cfg.a2) a2.textContent = cfg.a2();
     el('f-hint').classList.add('on');
+    el('f-hint').hidden = !(el('f-hint-t').innerHTML || !a.hidden || !a2.hidden);
     const kb=el('f-kbsw'), onKb = !!KB_FIELD[S.focus] && !S.ro;
     kb.hidden = !onKb;
     if(onKb) kb.textContent = kbLabel(S.focus);
