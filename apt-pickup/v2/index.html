@@ -977,6 +977,21 @@
   .tp-go{color:#32a2fa;}   /* 9/14 Figma 값 */
   .tp-chg{color:#fe4c00;}
   .tp-go[hidden],.tp-chg[hidden]{display:none;}
+  /* ── 9/15 추천안 시뮬레이션(Figma 미정 · 제안) ──────────────────────────────
+     A 음성: 300m 진입 시 한 번 읽는다. 읽는 동안만 머리 행 오른쪽에 스피커 표시(소리가 꺼진 데모에서도 보이게).
+     B 정차 펼침: 500m 안에서 속도 0 이면 찾아오는 길을 말풍선 안에 펼치고, 출발하면 접는다.
+       펼칠 때만 폭 제한을 30% → min(260px, 75%) 로 푼다 — 30%(≈108px)에 30자를 넣으면 6줄이 된다. */
+  .tp-spk{margin-left:auto;padding-left:6px;display:flex;color:#32a2fa;font-style:normal;}
+  .tp-spk[hidden]{display:none;}
+  .tp-spk .w1,.tp-spk .w2{animation:spkW 1s ease-in-out infinite;}
+  .tp-spk .w2{animation-delay:.2s;}
+  @keyframes spkW{0%,100%{opacity:.25}50%{opacity:1}}
+  .tp-etc{margin-top:2px;padding-top:6px;border-top:1px solid #e3e4e8;font-size:16px;line-height:24px;font-weight:400;color:#383d4f;
+    word-break:keep-all;overflow-wrap:anywhere;animation:tpEtcIn .22s cubic-bezier(.22,.61,.36,1);}
+  .tp-etc[hidden]{display:none;}
+  @keyframes tpEtcIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .tpill.open{max-width:min(260px,75%);}
+  @media (prefers-reduced-motion:reduce){ .tp-spk .w1,.tp-spk .w2,.tp-etc{animation:none;} }
   #tovb-loc.dragging,.tovr.dragging{cursor:grabbing;}
   /* 왼쪽 끝에 붙인 상태(시안 '운행 시작 전' 두 번째) */
   .tmapmap.ov-left #tovb-loc,.tmapmap.ov-left #tovr{right:auto;left:0;}
@@ -1234,7 +1249,9 @@
     <div class="cap"><span class="dot d"></span><b>드라이버 앱</b><em>기사님</em>
       <span class="dsw"><button type="button" class="dswb on" data-side="d" data-ds="tmap">T맵 내비</button><button
         type="button" class="dswb" data-side="d" data-ds="app">타다 앱</button><button
-        type="button" class="rst" id="d500" style="padding:5px 11px;font-size:11.5px">500m 진입</button></span>
+        type="button" class="rst" id="d300" style="padding:5px 11px;font-size:11.5px" title="추천안 시뮬레이션: 300m 진입 시 음성 안내 1회 + 정차하면 말풍선에 찾아오는 길">300m 진입</button><button
+        type="button" class="rst" id="dstop" style="padding:5px 11px;font-size:11.5px" hidden>정차</button><button
+        type="button" class="rst" id="dreplay" style="padding:5px 11px;font-size:11.5px" hidden>다시 듣기</button></span>
       <span class="dsw" id="dstagesw"><button type="button" class="dswb dstg" data-dg="go">출발 전</button><button
         type="button" class="dswb dstg on" data-dg="arrived">이동 중</button><button
         type="button" class="dswb dstg" data-dg="preview">전체 경로</button></span>
@@ -1275,8 +1292,8 @@
         <div class="dtmap" id="dtmap" hidden>
           <div class="sb light"><span>12:30</span><span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
           <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
-          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6.4" fill="#0044A6" fill-opacity="0.7"/><path d="M8.5 17.2501V6.75H12.5834C13.5556 6.75 14.382 7.09028 15.0625 7.77084C15.7431 8.4514 16.0834 9.27779 16.0834 10.25C16.0834 11.2223 15.7431 12.0486 15.0625 12.7292C14.382 13.4098 13.5556 13.7501 12.5834 13.7501H10.8334V17.2501H8.5ZM10.8334 11.4167H12.7C13.0209 11.4167 13.2955 11.3025 13.524 11.074C13.7524 10.8455 13.8667 10.5708 13.8667 10.25C13.8667 9.9292 13.7524 9.65455 13.524 9.42606C13.2955 9.19757 13.0209 9.08334 12.7 9.08334H10.8334V11.4167Z" fill="white"/></svg><b id="tp-fl"></b></span><span class="tp-v" id="tp-v"></span><span class="tp-go" id="tp-go">고객이 작성함</span><span class="tp-chg" id="tp-chg" hidden>고객이 변경함</span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
-          <div class="tbar"><div class="tb-info"><b>9분</b><span>1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
+          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6.4" fill="#0044A6" fill-opacity="0.7"/><path d="M8.5 17.2501V6.75H12.5834C13.5556 6.75 14.382 7.09028 15.0625 7.77084C15.7431 8.4514 16.0834 9.27779 16.0834 10.25C16.0834 11.2223 15.7431 12.0486 15.0625 12.7292C14.382 13.4098 13.5556 13.7501 12.5834 13.7501H10.8334V17.2501H8.5ZM10.8334 11.4167H12.7C13.0209 11.4167 13.2955 11.3025 13.524 11.074C13.7524 10.8455 13.8667 10.5708 13.8667 10.25C13.8667 9.9292 13.7524 9.65455 13.524 9.42606C13.2955 9.19757 13.0209 9.08334 12.7 9.08334H10.8334V11.4167Z" fill="white"/></svg><b id="tp-fl"></b><i class="tp-spk" id="tp-spk" hidden aria-label="음성 안내 중"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 9.5h3L11 6v12l-4-3.5H4v-5Z" fill="currentColor"/><path class="w1" d="M15 9a4 4 0 0 1 0 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="w2" d="M17.8 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></i></span><span class="tp-v" id="tp-v"></span><span class="tp-etc" id="tp-etc" hidden></span><span class="tp-go" id="tp-go">고객이 작성함</span><span class="tp-chg" id="tp-chg" hidden>고객이 변경함</span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
+          <div class="tbar"><div class="tb-info"><b id="tb-eta">9분</b><span id="tb-sub">1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
         </div>
         <!-- T맵 경로 선택(driver-v2 tmapsel). '고객 위치로 출발하기' → 이 화면이 오른쪽에서 밀려 들어오고,
              '안내'(15초 뒤 자동)를 누르면 T맵 안내(dtmap)로, ← 를 누르면 타다 앱 03 으로 돌아간다. -->
@@ -2590,6 +2607,7 @@
         ['tp-chg','plr-chg'].forEach(id=>{ const c=el(id); c.classList.remove('blink'); void c.offsetWidth; c.classList.add('blink'); });
       }
     }
+    paintAppr(show);
     if(window.__reflowOverlays) window.__reflowOverlays();
     /* 카드는 늘 03 pickup-arrived 다 — 이 기능이 실제로 걸리는 시점이 여기다. */
     /* 스펙(driver-v2 핸드오프 상태머신): 픽업 구간의 버튼은 둘뿐이다.
@@ -2675,6 +2693,7 @@
          '변경됨' 은 도착 알리기까지 남는다. */
       if(kind==='change'){
         S.chgFlag=true; S.chgBlink++;
+        if(S.appr) setTimeout(()=>apprSpeak('change'),0);   /* 발동 뒤에 바뀌면 한 번 더 알린다 */
         try{ if(navigator.vibrate) navigator.vibrate(120); }catch(e){}
       }
     }
@@ -2690,6 +2709,63 @@
       const u=new SpeechSynthesisUtterance(voiceLine()); u.lang='ko-KR'; u.rate=1.05;
       speechSynthesis.speak(u);
     }catch(e){}
+  }
+  /* ── 9/15 추천안 시뮬레이션: 300m 진입 → 음성 1회(A) · 정차 시 말풍선 펼침(B) ─────────────
+     실제 앱: 발동은 '도착 60초 전 또는 500m 중 먼저'를 권장. T맵 음성이 끝난 뒤 재생(여기선 T맵 음성 없음).
+     여기선 300m 에서 시작해 초당 약 12m(≈45km/h)로 줄어든다. 정차 중엔 거리가 멈춘다. */
+  const TB0 = { eta:'9분', sub:'1.2km · 오후 3:52 · 래미안원베일리' };
+  function apprLine(kind){
+    const d=S.current; if(!d) return '';
+    const where = loc(d).replace(/\u2002/g,' ');
+    const w=(d.etc||'').trim();
+    return (kind==='change' ? '고객이 위치를 변경했어요. ' : '고객 요청 위치, ') + where + '.' + (w ? ' '+w+'.' : '');
+  }
+  function apprSpeak(kind){
+    if(!S.appr) return;
+    const line=apprLine(kind); S.appr.said=line; S.appr.speaking=true; render();
+    const done=()=>{ if(S.appr){ S.appr.speaking=false; render(); } };
+    clearTimeout(S.appr.spkTmr);
+    try{
+      if(window.speechSynthesis){
+        speechSynthesis.cancel();
+        const u=new SpeechSynthesisUtterance(line); u.lang='ko-KR'; u.rate=1.0;
+        u.onend=done; u.onerror=done; speechSynthesis.speak(u);
+      }
+    }catch(e){}
+    /* 소리가 막힌 환경에서도 표시가 끝나도록 — 글자 수로 대략 잰다 */
+    S.appr.spkTmr=setTimeout(done, Math.max(2500, line.length*190));
+  }
+  function apprEnd(silent){
+    if(!S.appr) return;
+    clearInterval(S.appr.tick); clearTimeout(S.appr.spkTmr);
+    try{ if(window.speechSynthesis) speechSynthesis.cancel(); }catch(e){}
+    S.appr=null;
+    if(!silent) render();
+  }
+  function paintAppr(show){
+    const a=S.appr;
+    if(a && !onTmap()){ apprEnd(true); }
+    const on=!!(S.appr && show);
+    const w=(S.current&&S.current.etc||'').trim();
+    const open=!!(on && S.appr.stopped && w);
+    el('tp-etc').textContent = open ? w : '';
+    el('tp-etc').hidden = !open;
+    el('tovb-loc').classList.toggle('open', open);
+    el('tp-spk').hidden = !(on && S.appr.speaking);
+    el('dstop').hidden = el('dreplay').hidden = !S.appr;
+    if(S.appr) el('dstop').textContent = S.appr.stopped ? '출발' : '정차';
+    el('d300').textContent = S.appr ? '시뮬레이션 끝' : '300m 진입';
+    if(S.appr){
+      const m=Math.max(0,Math.round(S.appr.dist));
+      el('tb-eta').textContent = Math.max(1,Math.round(m/12))+'초';
+      el('tb-sub').textContent = m+'m · '+(S.appr.stopped?'정차 중':'주행 중')+' · 래미안원베일리';
+      el('dstep').innerHTML = '<b>추천안 시뮬레이션</b> — 300m 진입 시 음성 1회 · '
+        + (S.appr.stopped ? (w ? '정차 중이라 말풍선에 찾아오는 길을 펼쳤습니다. [출발]을 누르면 접힙니다.' : '정차 중이지만 찾아오는 길이 없어 펼칠 것이 없습니다.')
+                          : '[정차]를 누르면 말풍선에 찾아오는 길이 펼쳐집니다.')
+        + (S.appr.said ? '<br>🔊 “'+S.appr.said.replace(/[<>&]/g,'')+'”' : '');
+    } else {
+      el('tb-eta').textContent=TB0.eta; el('tb-sub').textContent=TB0.sub;
+    }
   }
   function voiceLine(){
     if(S.drKind==='msg') return '고객 메시지. '+S.msg;
@@ -2725,7 +2801,7 @@
     S.mode=m; S.screen='start'; S.pmPlayed=false;
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='go'; S.chgFlag=false; S.near=false; S.chgBlink=0; S.chgSeen=0;
-    S.drover=false; S.hilite=false; S.before=null;
+    S.drover=false; S.hilite=false; S.before=null; apprEnd(true);
     S.drKind=null; S.ack=true; S.rphase='match'; S.dview='app'; S.dstage='go'; S.driving=false; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
@@ -2840,11 +2916,22 @@
   /* 지도 위 '내비' 버블도 같은 길이다 — 기사가 내비로 돌아가는 자리는 둘 다 살아 있어야 한다. */
   el('dbub-nav').addEventListener('click',()=>{ S.dview='tmap'; render(); });
   /* 반경 500m 진입은 기사 쪽 사건이다 — 승객 화면은 그대로고 내비 위 오버레이만 뜬다. */
-  el('d500').addEventListener('click',()=>{
-    S.dview='tmap'; S.near=true;
-    if(reached()){ raiseDrover('near'); }
-    else { render(); dtoast('전달된 픽업 위치가 없어 표시할 것이 없습니다'); }
+  el('d300').addEventListener('click',()=>{
+    if(S.appr){ apprEnd(); return; }
+    S.dview='tmap'; S.driving=false; S.near=true;
+    if(!reached()){ render(); dtoast('전달된 픽업 위치가 없어 음성·펼침이 없습니다'); return; }
+    S.appr={dist:300, stopped:false, speaking:false, said:''};
+    S.appr.tick=setInterval(()=>{
+      const a=S.appr; if(!a) return;
+      if(a.stopped) return;
+      a.dist-=5;
+      if(a.dist<=0){ apprEnd(); dtoast('픽업 위치에 도착했어요'); return; }
+      paintAppr(!el('tovb-loc').hidden);
+    },400);
+    render(); apprSpeak('first');
   });
+  el('dstop').addEventListener('click',()=>{ if(!S.appr) return; S.appr.stopped=!S.appr.stopped; render(); });
+  el('dreplay').addEventListener('click',()=>apprSpeak('first'));
   /* 픽업 알약과 버블 스택은 화면 안에서 끌어 옮긴다 — 세로는 자유, 가로는 가까운 쪽 끝(좌/우)에 붙는다(시안 '운행 시작 전' 두 변형).
      둘은 늘 같은 쪽에 선다.
      버블은 언제나 카드보다 아래를 유지한다 — 순서가 뒤집히면 두 층의 관계가 깨진다.
