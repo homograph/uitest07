@@ -1023,7 +1023,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
           <tr><th>차량 선택 [다음]</th><td>확인 화면과 브릿지를 <b>한 번에</b> 그리고 슬라이드 <b>320ms</b> (우&rarr;좌)</td></tr>
           <tr><th>흰 베일</th><td><b>180ms</b> 에 페이드 시작, 480ms 에 완성</td></tr>
           <tr><th>문구까지 등장 완료</th><td><b>780ms</b></td></tr>
-          <tr><th>요일 선택으로</th><td><b>2600ms</b> (정지 구간 1820ms)</td></tr>
+          <tr><th>요일 선택으로</th><td><b>3500ms</b> (정지 구간 2720ms)</td></tr>
         </table>
         <p class="dd-n"><b>레이아웃</b> 아이콘 120dp &middot; 아이콘~텍스트 gap 32dp &middot;
           헤드라인~서브 gap 16dp &middot; 좌우 패딩 24dp &middot; 세로 가운데 정렬.
@@ -1049,7 +1049,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
 서브       rise   380ms  cubic(.45,0,.25,1)    delay  400ms
 
 rise = opacity 0 -&gt; 1, translateY(12dp) -&gt; 0</code></pre>
-        <p class="dd-n">마지막 요소가 <b>400 + 380 = 780ms</b> 에 끝납니다. 남은 <b>1820ms</b> 가 정지 구간입니다.
+        <p class="dd-n">마지막 요소가 <b>400 + 380 = 780ms</b> 에 끝납니다. 남은 <b>2720ms</b> 가 정지 구간입니다.
           아이콘은 등장 뒤 2초 주기로 8dp 위아래 부유합니다(delay 640ms).
           ⚠ 등장 커브는 <b>양끝이 누운 cubic-bezier(.45,0,.25,1)</b> 입니다. 화면 전환용 감속 커브
           (.2,.8,.3,1)를 쓰면 시작부터 최고 속도라 급하게 보입니다. 커브만 바꾸고 지속시간을
@@ -1065,7 +1065,7 @@ rise = opacity 0 -&gt; 1, translateY(12dp) -&gt; 0</code></pre>
 
 전이
   car      --[다음]-----------&gt;  bridge    confirm 과 한 번에 그림, 우-&gt;좌 push 320ms
-  bridge   --자동------------&gt;  weekday   기본 2600ms · 모션 축소 1820ms
+  bridge   --자동------------&gt;  weekday   기본 3500ms · 모션 축소 2720ms
                                          스크린 리더 켜짐이면 자동 전환 없음
   bridge   --탭(어디든)------&gt;  weekday   진입 후 300ms 는 무시(가드)
   bridge   --Android back---&gt;  confirm   배너 promo, 자동 전환 없음
@@ -1108,7 +1108,7 @@ navigationController?.interactivePopGestureRecognizer?.isEnabled = (step != .bri
             왼쪽 프로토타입에서는 <b>Esc</b> 가 이 자리입니다</td></tr>
           <tr><th><b>iOS</b> edge swipe</th><td>브릿지 구간에만 <b>비활성</b>.
             <code class="i">interactivePopGestureRecognizer.isEnabled = false</code></td></tr>
-          <tr><th>모션 축소</th><td>등장&middot;부유&middot;슬라이드 off. <b>총 1820ms</b> 로 단축</td></tr>
+          <tr><th>모션 축소</th><td>등장&middot;부유&middot;슬라이드 off. <b>총 2720ms</b> 로 단축</td></tr>
         </table>
         <p class="dd-n">back 은 &ldquo;닫기&rdquo;, edge swipe 는 &ldquo;이전 화면으로&rdquo;라 의미가 다릅니다.
           브릿지 같은 오버레이에서는 <b>같게 맞추는 쪽이 오히려 어색합니다.</b>
@@ -1145,7 +1145,7 @@ navigationController?.interactivePopGestureRecognizer?.isEnabled = (step != .bri
           <tr><th>최소 터치 영역</th><td>쿠폰 <code class="i">[보기]</code> 는 시각 34dp 라 <b>히트 영역만 48dp</b> 로 확장.
             보이는 크기는 Figma 그대로</td></tr>
         </table>
-        <p class="dd-n">정지 구간 1820ms 로도 TalkBack/VoiceOver 가 헤드라인과 서브를 다 읽는다는 보장이 없습니다.
+        <p class="dd-n">정지 구간 2720ms 로도 TalkBack/VoiceOver 가 헤드라인과 서브를 다 읽는다는 보장이 없습니다.
           자동 전환을 그대로 두면 <b>읽는 도중 화면이 넘어갑니다.</b>
           WCAG 2.2.1(Timing Adjustable) 관점에서도 자동 전환은 조정 가능해야 합니다.</p>
         <p class="dd-n">⚠ 접근성 서비스 감지는 <b>실행 중에도 바뀝니다.</b> 브릿지 진입 시점에 한 번만 읽지 말고
@@ -1808,9 +1808,10 @@ function layout(){
 /* bridgeStay 는 '읽는 시간'이 아니라 차량 선택에서 [다음] 을 누른 순간부터
    요일 선택으로 넘어갈 때까지의 총 시간이다.
    타임라인: 0 슬라이드 시작 / 180 베일 시작 / 480 베일 완성 / 780 문구까지
-   등장 완료 / 2600 요일 선택. 실제 정지 구간은 2600 - 780 = 1820ms 다.
+   등장 완료 / 3500 요일 선택. 실제 정지 구간은 3500 - 780 = 2720ms 다.
 
-   2026-09-15 실기기 시연에서 1900ms(정지 1120)가 '납치당하는 느낌'이라 늘렸다.
+   2026-09-15 실기기 시연에서 1900ms(정지 1120)가 '납치당하는 느낌'이라 2600 으로,
+   그래도 짧다는 피드백에 3500 으로 다시 늘렸다.
    예전 2000ms 에서 '멈춘 것 같다'던 건 아이콘 부유가 없던 때라 조건이 달랐다.
    지금은 부유(8dp, 2초 주기)가 살아 있어 길게 둬도 멈춤으로 읽힐 위험이 낮다.
    ⚠ 앱에서는 타이머를 [다음] 탭 시점이 아니라 '브릿지가 화면에 뜬 시점'부터 센다.
@@ -1823,10 +1824,10 @@ function layout(){
    오히려 더 급해 보인다. 그래서 260 -> 380ms 로 같이 늘렸다.
    등장 지연은 CSS(.fw-breaker 계열 animation-delay)가 쥐고 있으므로 이 값만
    바꾸면 정지 구간이 늘고 준다. */
-const FLOW_T = { bridgeStay: 2600, bridgeStayReduced: 1820 };
+const FLOW_T = { bridgeStay: 3500, bridgeStayReduced: 2720 };
 /* 모션 축소는 '움직임'을 끄자는 설정이지 '읽는 속도'를 바꾸자는 게 아니다.
    등장 780ms 가 사라지면 그만큼 총 시간도 줄여야 한다. 그대로 두면 애니메이션을
-   끈 사람에게 정지 화면을 780ms 더 보여주는 셈이 된다. 정지 구간 1820ms 는 동일. */
+   끈 사람에게 정지 화면을 780ms 더 보여주는 셈이 된다. 정지 구간 2720ms 는 동일. */
 const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 let flowTimers = [];
 function clearFlowTimers(){ flowTimers.forEach(clearTimeout); flowTimers = []; }
