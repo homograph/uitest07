@@ -2781,7 +2781,7 @@
       el('tb-eta').textContent=TB0.eta; el('tb-sub').textContent=TB0.sub;
     }
   }
-  /* 하단 배너 — 흐를지(넘칠 때만) 재고, 뜰 때·값/변경 표시가 바뀔 때·300m 진입 때 처음부터 다시 (루프)바퀴 흘린다 */
+  /* 하단 배너 — 흐를지(넘칠 때만) 재고, 뜰 때·값/변경 표시가 바뀔 때·300m 진입 때 처음부터 다시 흘린다(넘치면 무한 루프) */
   function mqPlay(){
     const b=el('tbn'); if(b.hidden) return;
     const win=el('tbn-win'), t=el('tbn-t');
