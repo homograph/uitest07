@@ -656,6 +656,11 @@ body.mock.flowopen{overflow:hidden;}
 .fw-cta .b{flex:1 1 auto;height:52px;border-radius:8px;background:#19254d;color:#fff;
   display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;cursor:pointer;}
 .fw-cta.pay .b{flex:0 0 auto;padding:0 38px;}
+/* 브릿지 바로 이동 버튼: 차량 선택 [다음] 과 같은 하단 자리·같은 스타일.
+   문구 블록은 버튼 영역(88dp)만큼 위에서 가운데 정렬되도록 아래 패딩을 준다. */
+.fw-breaker{padding:0 24px 88px;box-sizing:border-box;}
+.fw-breaker .bk-ctawrap{position:absolute;left:0;right:0;bottom:0;background:transparent;}
+.fw-breaker .bk-cta{border:0;font-family:inherit;}
 .fw-cta .p{flex:1 1 auto;display:flex;flex-direction:column;gap:2px;}
 .fw-cta .p i{font-style:normal;font-size:13px;color:#73788b;}
 .fw-cta .p b{font-size:18px;font-weight:700;color:#171a24;}
@@ -1031,7 +1036,8 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
         <table class="dd-t dd-log">
           <tr><th>브릿지 체류</th><td><span class="dd-was">1900ms (정지 1120)</span> &rarr; <span class="dd-now">3500ms (정지 2720)</span><span class="dd-why">실기기에서 너무 짧아 &ldquo;납치당하는 느낌&rdquo;. 2600ms 도 짧아 한 번 더 늘림</span></td></tr>
           <tr><th>모션 축소 체류</th><td><span class="dd-was">1120ms</span> &rarr; <span class="dd-now">2720ms</span><span class="dd-why">정지 구간과 같게 유지</span></td></tr>
-          <tr><th>서브 문구</th><td><span class="dd-was">탭하면 바로 이동</span> &rarr; <span class="dd-now">잠시 후 자동으로 이동해요 · 탭하면 바로</span><span class="dd-why">탭 방법만 알려주면, 누르지도 않았는데 넘어가는 게 납치로 느껴짐. 자동 이동을 먼저 예고</span></td></tr>
+          <tr><th>서브 문구</th><td><span class="dd-was">탭하면 바로 이동</span> &rarr; <span class="dd-now">잠시 후 자동으로 이동해요</span><span class="dd-why">탭 방법만 알려주면, 누르지도 않았는데 넘어가는 게 납치로 느껴짐. 자동 이동을 예고. 탭 안내는 아래 버튼이 대신함</span></td></tr>
+          <tr><th>바로 이동 방법</th><td><span class="dd-was">화면 아무 곳 탭 (문구로만 안내)</span> &rarr; <span class="dd-now">하단 CTA 버튼 [요일 선택하기]</span><span class="dd-why">보이지 않는 조작이라 알기 어려움. [다음] 과 같은 자리라 엄지를 옮기지 않음. 화면 탭은 보조로 유지</span></td></tr>
           <tr><th>타이머 시작점</th><td><span class="dd-was">[다음] 탭 시점</span> &rarr; <span class="dd-now">브릿지가 화면에 뜬 시점</span><span class="dd-why">탭 시점부터 세면 API 응답 대기만큼 브릿지가 잘려 보임</span></td></tr>
         </table>
         <p class="dd-when">2026-08 · 핸드오프 정리</p>
@@ -1058,13 +1064,15 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
           <tr><th>요일 선택으로</th><td><b>3500ms</b> (정지 구간 2720ms)</td></tr>
         </table>
         <p class="dd-n"><b>레이아웃</b> 아이콘 120dp &middot; 아이콘~텍스트 gap 32dp &middot;
-          헤드라인~서브 gap 16dp &middot; 좌우 패딩 24dp &middot; 세로 가운데 정렬.
+          헤드라인~서브 gap 16dp &middot; 좌우 패딩 24dp &middot; 세로 가운데 정렬(버튼 영역 88dp 제외).
+          <b>하단 CTA <code class="i">[요일 선택하기]</code></b> 는 차량 선택 <code class="i">[다음]</code> 과 같은 자리&middot;스타일
+          (높이 52dp, r8, <code class="i">#19254d</code>, 16sp Bold, 영역 패딩 12/16/24).
           <b>베일은 단색이 아니라 세로 그라디언트</b>입니다 (위 <code class="i">rgba(255,255,255,.5)</code>,
           50% 지점부터 <code class="i">#ffffff</code> 불투명). 뒤 확인 화면이 위쪽에 비쳐야 합니다.</p>
         <p class="dd-n">⚠ <b>자동 전환 타이머는 [다음] 탭 시점이 아니라 브릿지가 화면에 뜬 시점부터</b> 셉니다.
           탭 시점부터 세면 API 응답을 기다린 만큼 브릿지가 잘려 보여, 실기기에서 &ldquo;납치당하는 느낌&rdquo;이 납니다.
-          서브 문구 <code class="i">잠시 후 자동으로 이동해요 · 탭하면 바로</code> 는 자동 이동을 <b>예고</b>하는 장치라
-          &ldquo;탭하면 바로 이동&rdquo;처럼 수동 경로만 남기면 안 됩니다.</p>
+          서브 문구 <code class="i">잠시 후 자동으로 이동해요</code> 는 자동 이동을 <b>예고</b>하는 장치입니다.
+          버튼이 있으면 &ldquo;눌러야 넘어간다&rdquo;로 읽히므로, <b>버튼만 두고 이 문구를 지우면 오히려 더 놀랍니다.</b></p>
         <p class="dd-n">확인 화면은 브릿지 뒤에 비치는 배경이지 읽으라고 두는 화면이 아닙니다.
           베일을 슬라이드가 끝난 뒤에 띄우지 말고 <b>도중(180ms)부터 겹치게</b> 하세요.
           ⚠ 확인 화면을 먼저 그린 뒤 나중에 브릿지를 덧그리는 방식은 피해야 합니다.
@@ -1099,7 +1107,7 @@ rise = opacity 0 -&gt; 1, translateY(12dp) -&gt; 0</code></pre>
   car      --[다음]-----------&gt;  bridge    confirm 과 한 번에 그림, 우-&gt;좌 push 320ms
   bridge   --자동------------&gt;  weekday   기본 3500ms · 모션 축소 2720ms
                                          스크린 리더 켜짐이면 자동 전환 없음
-  bridge   --탭(어디든)------&gt;  weekday   진입 후 300ms 는 무시(가드)
+  bridge   --[요일 선택하기]--&gt;  weekday   화면 아무 곳 탭도 동일, 진입 후 300ms 는 무시(가드)
   bridge   --Android back---&gt;  confirm   배너 promo, 자동 전환 없음
   bridge   --화면 가려짐-----&gt;  bridge    다시 보일 때 처음부터 재생
   confirm  --[설정]----------&gt;  weekday
@@ -1170,10 +1178,10 @@ navigationController?.interactivePopGestureRecognizer?.isEnabled = (step != .bri
           <tr><th>스크린 리더 켜짐</th><td><b>자동 전환을 끕니다.</b> 사용자가 직접 눌러 진행<br>
             Android <code class="i">AccessibilityManager.isTouchExplorationEnabled</code><br>
             iOS <code class="i">UIAccessibility.isVoiceOverRunning</code></td></tr>
-          <tr><th>브릿지 오버레이</th><td>화면 전체가 탭 타깃이지만 <b>포커스 가능한 버튼</b>으로 노출.
-            진입 시 포커스를 옮겨 헤드라인이 읽히게 합니다</td></tr>
+          <tr><th>포커스</th><td>진입 시 포커스를 <b>[요일 선택하기] 버튼</b>으로. 화면 전체 탭은 보조 경로라
+            스크린 리더에 따로 노출하지 않습니다</td></tr>
           <tr><th>탭 스킵 가드</th><td>진입 후 <b>300ms</b> 는 탭 무시. 앞 화면 <code class="i">[다음]</code> 연타가
-            그대로 스킵으로 새는 걸 막습니다</td></tr>
+            그대로 스킵으로 새는 걸 막습니다. <b>버튼이 [다음] 과 같은 자리라 연타가 그대로 떨어지므로 필수</b></td></tr>
           <tr><th>최소 터치 영역</th><td>쿠폰 <code class="i">[보기]</code> 는 시각 34dp 라 <b>히트 영역만 48dp</b> 로 확장.
             보이는 크기는 Figma 그대로</td></tr>
         </table>
@@ -1417,25 +1425,25 @@ function fConfirm(kind){
    이 시점엔 아직 확정된 게 없어서(요일 선택에서 취소하면 경고 배너가 "아직
    완료되지 않았습니다"라고 말한다) 사실과 어긋나는 약속이 된다.
 
-   서브는 '자동 이동 예고 + 탭 안내'다. 한때 "탭하면 바로 이동" 만 두었는데, 그러면
-   수동 경로만 설명해서 사용자는 '누르면 넘어가겠구나' 하고 있다가 누르지도 않았는데
-   넘어가는 걸 겪는다. 실기기 시연에서 이게 '납치'로 느껴졌다. 자동으로 넘어간다는
-   사실을 먼저 말하고, 앞당기는 방법을 뒤에 붙인다.
+   서브는 '자동 이동 예고'다. 한때 "탭하면 바로 이동" 만 두었는데, 수동 경로만
+   설명해서 누르지도 않았는데 넘어가는 게 실기기 시연에서 '납치'로 느껴졌다.
+   ⚠ 버튼이 생긴 뒤로는 더더욱 지우면 안 된다. 버튼은 '눌러야 넘어간다'로 읽혀서,
+   예고 없이 넘어가면 지금보다 더 놀란다.
 
-   자동으로 넘어가되 탭하면 즉시 넘어간다. 강제 대기는 느린 사람을 위한 배려인데
-   빠른 사람에겐 세금이라, 둘 다 만족시키려면 건너뛸 수 있어야 한다. 오버레이
-   자신이 data-flow 를 가지므로 어디를 눌러도 넘어간다. pointer-events:none 으로
-   두면 안 된다. 탭이 뒤 화면의 뒤로가기로 새어 들어간다.
+   바로 가는 방법은 하단 CTA [요일 선택하기]. '화면 어디든 탭'은 보이지 않는 조작이라
+   문구로만 알 수 있었다. 버튼은 차량 선택 [다음] 과 같은 자리·같은 스타일이라 엄지를
+   옮기지 않고 이어서 누른다(그래서 [다음] 연타가 그대로 떨어지니 300ms 가드가 중요).
+   화면 아무 곳 탭도 보조 경로로 남긴다. 오버레이를 pointer-events:none 으로 두면
+   탭이 뒤 화면의 뒤로가기로 새므로 안 된다.
 
    진행바는 두지 않는다. 로딩이 없는 구간의 진행바는 가짜 로딩이고, 앱의 진짜
    진행바까지 신뢰를 깎는다. 정지감은 아이콘 부유로만 준다. */
 function fBridge(){
-  /* 오버레이 전체가 탭 타깃이지만, 스크린 리더에는 '누를 수 있는 것'으로 보여야 한다.
-     그래서 role/label/tabindex 를 주고 진입 시 여기로 포커스를 옮긴다(wireFlow). */
-  return `${fConfirm()}<div class="fw-breaker" data-flow="weekday" role="button" tabindex="0"
-       aria-label="마지막으로, 반복할 날짜를 알려주세요. 잠시 후 요일 선택으로 이동합니다. 바로 이동하려면 누르세요">
+  // 스크린 리더 포커스는 화면 전체가 아니라 진짜 버튼에 준다(wireFlow). 화면 탭은 보조 경로.
+  return `${fConfirm()}<div class="fw-breaker" data-flow="weekday">
     <img src="${A.icCal}" alt="">
-    <div class="bk-tx"><b>마지막으로,<br>반복할 날짜를 알려주세요</b><span>잠시 후 자동으로 이동해요 · 탭하면 바로</span></div>
+    <div class="bk-tx"><b>마지막으로,<br>반복할 날짜를 알려주세요</b><span>잠시 후 자동으로 이동해요</span></div>
+    <div class="fw-cta bk-ctawrap"><button type="button" class="b bk-cta" data-flow="weekday">요일 선택하기</button></div>
   </div>`;
 }
 
@@ -1951,13 +1959,8 @@ function wireFlow(){
     });
   });
   // 브릿지는 스크린 리더가 읽을 수 있도록 포커스를 받고, 키보드로도 진행된다
-  const bk = stage.querySelector('.fwlayer .fw-breaker');
-  if (bk){
-    bk.focus({preventScroll:true});
-    bk.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); goStep('weekday'); }
-    });
-  }
+  const bkBtn = stage.querySelector('.fwlayer .bk-cta');
+  if (bkBtn) bkBtn.focus({preventScroll:true});
   // 요일 칩 토글. 최소 하나는 남긴다.
   stage.querySelectorAll('.fwlayer [data-day]').forEach(chip => {
     chip.addEventListener('click', e => {
