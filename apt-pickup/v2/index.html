@@ -925,20 +925,37 @@
      아랫줄 = 위치만, 폭 전체(360 에서 320). 높이 88 → 98(pad 14/20/12 · gap 2). */
   .tbn{position:absolute;left:0;right:0;bottom:0;z-index:7;display:flex;flex-direction:column;gap:2px;
     padding:14px 20px 12px;box-sizing:border-box;background:#000;color:#fff;cursor:pointer;}
-  .tbn-top{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .tbn-top{display:flex;align-items:center;justify-content:space-between;gap:12px;height:22px;}
+  .tbn-lead{display:flex;align-items:center;gap:6px;min-width:0;}
+  .tbn-dot{font-size:15px;line-height:22px;color:#73788b;}
+  /* 9/15 접기: × 는 현장결제 배너와 같은 자리(오른쪽). 보이는 크기 20, 누르는 영역 44(윗줄 22 에 겹쳐 잡는다) */
+  .tbn-x{position:relative;flex:0 0 auto;width:20px;height:20px;padding:0;border:0;background:none;color:#c0c8d9;cursor:pointer;display:grid;place-items:center;}
+  .tbn-x::after{content:"";position:absolute;inset:-12px;}
+  .tbn.drag{transition:none;}
+  .tbn{transition:transform .22s cubic-bezier(.22,.61,.36,1);}
+  /* 접힌 자리 — 새 요소를 띄우지 않고 '타다 운행중' 버튼 왼쪽 위에 P 뱃지만. 누르는 영역 44 */
+  .tovp{position:absolute;top:-10px;left:-10px;width:28px;height:28px;border-radius:8px;background:#fff;display:grid;place-items:center;
+    box-shadow:0 1px 4px rgba(0,0,0,.4);cursor:pointer;animation:tovpIn .2s ease-out;}
+  .tovp::after{content:"";position:absolute;inset:-8px;}
+  .tovp[hidden]{display:none;}
+  .tovp-chg{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#fe4c00;border:2px solid #fff;}
+  .tovp-chg[hidden]{display:none;}
+  @keyframes tovpIn{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
   .tbn-st{font-size:15px;line-height:22px;font-weight:700;color:#32a2fa;}
   .tbn-st.chg{color:#fe4c00;}
   .tbn[hidden]{display:none;}
   /* 9/15: 넘치면 계속 흐른다(무한 루프). 창을 좌우 여백(20)까지 넓혀 글자가 배너 끝까지 흐르고,
      잘리는 양 끝 24px 에 그라데이션을 준다. 넘치지 않으면 멈춘 채 그라데이션도 없다. */
   .tbn-win{display:block;min-width:0;overflow:hidden;white-space:nowrap;margin:0 -20px;padding:0 20px;}
-  .tbn.ovf .tbn-win{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);
+  /* 6바퀴 뒤 멈추면 글자 시작이 왼쪽 여백 안이라 왼쪽 흐림은 거둔다 */
+  .tbn.ovf.rest .tbn-win{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent 100%);mask-image:linear-gradient(90deg,#000 calc(100% - 24px),transparent 100%);}
+  .tbn.ovf:not(.rest) .tbn-win{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);
     mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);}
   .tbn-trk{display:inline-flex;gap:var(--mq-gap,48px);will-change:transform;}
   .tbn-t{font-size:32px;line-height:48px;font-weight:700;color:#fff;}
   .tbn-t2{display:none;}
   .tbn.run .tbn-t2{display:inline;}
-  .tbn.run .tbn-trk{animation:mq var(--mq-dur,6s) linear infinite;}
+  .tbn.run .tbn-trk{animation:mq var(--mq-dur,6s) linear var(--mq-n,infinite);}
   @keyframes mq{from{transform:translateX(0)}to{transform:translateX(calc(-1 * var(--mq-d,0px)))}}
   .tbn-more{flex:0 0 auto;display:flex;align-items:center;gap:2px;font-size:15px;line-height:22px;font-weight:700;color:#c0c8d9;}
   @media (prefers-reduced-motion:reduce){ .tbn.run .tbn-trk{animation:none;} }
@@ -1264,6 +1281,7 @@
         type="button" class="dswb dstg on" data-dg="arrived">이동 중</button><button
         type="button" class="dswb dstg" data-dg="preview">전체 경로</button></span>
       <span class="dsw" title="T맵 위 픽업 위치 표시 방식 비교"><button type="button" class="dswb tov on" data-ov="banner">하단 배너</button><button type="button" class="dswb tov" data-ov="bubble">말풍선</button></span>
+      <span class="dsw" title="하단 배너 흐름 반복"><button type="button" class="dswb tlp on" data-lp="inf">배너 무한 루프</button><button type="button" class="dswb tlp" data-lp="6">6바퀴 후 멈춤</button></span>
       <span class="dsw"><button type="button" class="dswb tth on" data-th="light">T맵 라이트</button><button type="button" class="dswb tth" data-th="dark">T맵 다크</button></span></div>
     <div class="phbox"><div class="phone">
       <div class="scr on dscr">
@@ -1301,9 +1319,9 @@
         <div class="dtmap" id="dtmap" hidden>
           <div class="sb light"><span>12:30</span><span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
           <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
-          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6.4" fill="#0044A6" fill-opacity="0.7"/><path d="M8.5 17.2501V6.75H12.5834C13.5556 6.75 14.382 7.09028 15.0625 7.77084C15.7431 8.4514 16.0834 9.27779 16.0834 10.25C16.0834 11.2223 15.7431 12.0486 15.0625 12.7292C14.382 13.4098 13.5556 13.7501 12.5834 13.7501H10.8334V17.2501H8.5ZM10.8334 11.4167H12.7C13.0209 11.4167 13.2955 11.3025 13.524 11.074C13.7524 10.8455 13.8667 10.5708 13.8667 10.25C13.8667 9.9292 13.7524 9.65455 13.524 9.42606C13.2955 9.19757 13.0209 9.08334 12.7 9.08334H10.8334V11.4167Z" fill="white"/></svg><b id="tp-fl"></b><i class="tp-spk" id="tp-spk" hidden aria-label="음성 안내 중"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 9.5h3L11 6v12l-4-3.5H4v-5Z" fill="currentColor"/><path class="w1" d="M15 9a4 4 0 0 1 0 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="w2" d="M17.8 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></i></span><span class="tp-v" id="tp-v"></span><span class="tp-etc" id="tp-etc" hidden></span><span class="tp-go" id="tp-go">고객이 작성함</span><span class="tp-chg" id="tp-chg" hidden>고객이 변경함</span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
+          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6.4" fill="#0044A6" fill-opacity="0.7"/><path d="M8.5 17.2501V6.75H12.5834C13.5556 6.75 14.382 7.09028 15.0625 7.77084C15.7431 8.4514 16.0834 9.27779 16.0834 10.25C16.0834 11.2223 15.7431 12.0486 15.0625 12.7292C14.382 13.4098 13.5556 13.7501 12.5834 13.7501H10.8334V17.2501H8.5ZM10.8334 11.4167H12.7C13.0209 11.4167 13.2955 11.3025 13.524 11.074C13.7524 10.8455 13.8667 10.5708 13.8667 10.25C13.8667 9.9292 13.7524 9.65455 13.524 9.42606C13.2955 9.19757 13.0209 9.08334 12.7 9.08334H10.8334V11.4167Z" fill="white"/></svg><b id="tp-fl"></b><i class="tp-spk" id="tp-spk" hidden aria-label="음성 안내 중"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 9.5h3L11 6v12l-4-3.5H4v-5Z" fill="currentColor"/><path class="w1" d="M15 9a4 4 0 0 1 0 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="w2" d="M17.8 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></i></span><span class="tp-v" id="tp-v"></span><span class="tp-etc" id="tp-etc" hidden></span><span class="tp-go" id="tp-go">고객이 작성함</span><span class="tp-chg" id="tp-chg" hidden>고객이 변경함</span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span><span class="tovp" id="tovp" role="button" tabindex="0" hidden aria-label="픽업 위치 배너 펼치기"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect width="24" height="24" rx="6.4" fill="#0044A6" fill-opacity="0.7"/><path d="M8.5 17.2501V6.75H12.5834C13.5556 6.75 14.382 7.09028 15.0625 7.77084C15.7431 8.4514 16.0834 9.27779 16.0834 10.25C16.0834 11.2223 15.7431 12.0486 15.0625 12.7292C14.382 13.4098 13.5556 13.7501 12.5834 13.7501H10.8334V17.2501H8.5ZM10.8334 11.4167H12.7C13.0209 11.4167 13.2955 11.3025 13.524 11.074C13.7524 10.8455 13.8667 10.5708 13.8667 10.25C13.8667 9.9292 13.7524 9.65455 13.524 9.42606C13.2955 9.19757 13.0209 9.08334 12.7 9.08334H10.8334V11.4167Z" fill="white"/></svg><i class="tovp-chg" id="tovp-chg" hidden></i></span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
           <div class="tbar"><div class="tb-info"><b id="tb-eta">9분</b><span id="tb-sub">1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
-          <div class="tbn" id="tbn" hidden role="button" tabindex="0" aria-label="고객 픽업 위치 자세히 보기"><span class="tbn-top"><span class="tbn-st" id="tbn-st">고객이 작성함</span><span class="tbn-more">자세히<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><span class="tbn-win" id="tbn-win"><span class="tbn-trk" id="tbn-trk"><span class="tbn-t" id="tbn-t"></span><span class="tbn-t tbn-t2" id="tbn-t2" aria-hidden="true"></span></span></span></div>
+          <div class="tbn" id="tbn" hidden role="button" tabindex="0" aria-label="고객 픽업 위치 자세히 보기"><span class="tbn-top"><span class="tbn-lead"><span class="tbn-st" id="tbn-st">고객이 작성함</span><span class="tbn-dot" aria-hidden="true">·</span><span class="tbn-more">자세히<svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></span><button type="button" class="tbn-x" id="tbn-x" aria-label="배너 접기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button></span><span class="tbn-win" id="tbn-win"><span class="tbn-trk" id="tbn-trk"><span class="tbn-t" id="tbn-t"></span><span class="tbn-t tbn-t2" id="tbn-t2" aria-hidden="true"></span></span></span></div>
         </div>
         <!-- T맵 경로 선택(driver-v2 tmapsel). '고객 위치로 출발하기' → 이 화면이 오른쪽에서 밀려 들어오고,
              '안내'(15초 뒤 자동)를 누르면 T맵 안내(dtmap)로, ← 를 누르면 타다 앱 03 으로 돌아간다. -->
@@ -2655,7 +2673,7 @@
     el('dtsel').classList.toggle('dark', !!S.tmapDark);
     $$('.tth').forEach(b=>b.classList.toggle('on', (b.dataset.th==='dark')===!!S.tmapDark));
     /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
-    $$('.dswb:not(.dstg):not(.tth):not(.tov):not(.pmc):not(.pmd)').forEach(b=>b.classList.toggle('on',
+    $$('.dswb:not(.dstg):not(.tth):not(.tov):not(.tlp):not(.pmc):not(.pmd)').forEach(b=>b.classList.toggle('on',
       b.dataset.ds === (b.dataset.side==='r' ? S.rphase : S.dview)));
 
     el('fdesc').innerHTML = S.screen==='start'
@@ -2787,18 +2805,29 @@
     const win=el('tbn-win'), t=el('tbn-t');
     const over = t.scrollWidth > win.clientWidth - 40 + 1;   /* 창은 좌우 여백 20씩 넓혀 두었다 */
     b.classList.toggle('ovf', over);
-    b.classList.remove('run');
+    b.classList.remove('run','rest');
     if(!over) return;
     const gap=48, d=t.scrollWidth+gap;
     b.style.setProperty('--mq-gap', gap+'px');
     b.style.setProperty('--mq-d', d+'px');
     b.style.setProperty('--mq-dur', (d/90).toFixed(2)+'s');   /* 초당 90px */
+    b.style.setProperty('--mq-n', S.bnLoop==='6' ? '6' : 'infinite');
     void b.offsetWidth; b.classList.add('run');
   }
   function paintBanner(on){
     const b=el('tbn'); const was=!b.hidden;
-    b.hidden=!on;
-    if(!on){ b.classList.remove('run'); S.bnKey=null; return; }
+    /* 9/15 접기: 드라이버가 접으면(S.bnMin) 배너 대신 '타다 운행중' 버튼의 P 뱃지만.
+       위치 변경·300m 진입 때만 저절로 다시 펼친다. 같은 호출 동안 그 밖에는 접은 채로 둔다. */
+    const chgN = S.chgFlag ? S.chgBlink : 0, apprOn = !!S.appr;
+    if(on && S.bnMin && S.bnEvKey){
+      if(chgN > S.bnEvKey.chg || (apprOn && !S.bnEvKey.appr)) S.bnMin=false;   /* 새 변경 · 300m 진입만 */
+    }
+    S.bnEvKey={chg:chgN, appr:apprOn};
+    const show = on && !S.bnMin;
+    el('tovp').hidden = !(on && S.bnMin);
+    el('tovp-chg').hidden = !(on && S.bnMin && S.chgFlag);
+    b.hidden=!show;
+    if(!show){ b.classList.remove('run'); S.bnKey=null; return; }
     const txt=loc(S.current).replace(/\u2002/g,' ');
     el('tbn-t').textContent=el('tbn-t2').textContent=txt;
     el('tbn-st').textContent = S.chgFlag ? '고객이 변경함' : '고객이 작성함';
@@ -2840,7 +2869,7 @@
     S.mode=m; S.screen='start'; S.pmPlayed=false;
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='go'; S.chgFlag=false; S.near=false; S.chgBlink=0; S.chgSeen=0;
-    S.drover=false; S.hilite=false; S.before=null; apprEnd(true);
+    S.drover=false; S.hilite=false; S.before=null; apprEnd(true); S.bnMin=false; S.bnEvKey=null;
     S.drKind=null; S.ack=true; S.rphase='match'; S.dview='app'; S.dstage='go'; S.driving=false; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
@@ -2969,7 +2998,22 @@
     },400);
     render(); apprSpeak('first');
   });
-  el('tbn').addEventListener('click',()=>{ S.dview='app'; S.msgUnread=false; render(); });
+  el('tbn').addEventListener('click',e=>{ if(e.target.closest('#tbn-x')) return; if(S.bnSwiped){ S.bnSwiped=false; return; } S.dview='app'; S.msgUnread=false; render(); });
+  el('tbn-trk').addEventListener('animationend',()=>el('tbn').classList.add('rest'));
+  const bnCollapse=()=>{ S.bnMin=true; render(); };
+  el('tbn-x').addEventListener('click',e=>{ e.stopPropagation(); bnCollapse(); });
+  /* 아래로 밀어 접기 — 운전 중엔 작은 × 보다 배너 전체를 쓸어내리는 쪽이 정확하다 */
+  (function(){
+    const b=el('tbn'); let y0=null, id=null, dy=0;
+    b.addEventListener('pointerdown',e=>{ if(e.target.closest('#tbn-x')) return; y0=e.clientY; id=e.pointerId; dy=0; b.classList.add('drag'); });
+    b.addEventListener('pointermove',e=>{ if(y0===null||e.pointerId!==id) return; dy=Math.max(0,e.clientY-y0); if(dy>4){ try{b.setPointerCapture(id);}catch(_){} } b.style.transform='translateY('+dy+'px)'; });
+    const end=()=>{ if(y0===null) return; b.classList.remove('drag'); b.style.transform=''; if(dy>4) S.bnSwiped=true; if(dy>36){ bnCollapse(); } y0=null; };
+    b.addEventListener('pointerup',end); b.addEventListener('pointercancel',end);
+  })();
+  const bnExpand=e=>{ e.stopPropagation(); e.preventDefault(); S.bnMin=false; render(); };
+  el('tovp').addEventListener('click',bnExpand);
+  el('tovp').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' ') bnExpand(e); });
+  $$('.tlp').forEach(b=>b.addEventListener('click',()=>{ S.bnLoop=b.dataset.lp; $$('.tlp').forEach(x=>x.classList.toggle('on',x===b)); S.bnKey=null; render(); }));
   el('tbn').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el('tbn').click(); } });
   $$('.tov').forEach(b=>b.addEventListener('click',()=>{ S.ovMode=b.dataset.ov; if(S.appr) S.appr.stopped=false; render(); }));
   el('dstop').addEventListener('click',()=>{ if(!S.appr) return; S.appr.stopped=!S.appr.stopped; render(); });
