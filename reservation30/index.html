@@ -673,6 +673,10 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
 .dfrow .no{font-size:14px;line-height:20px;font-weight:700;color:var(--a-ink-2);}
 .dfrow .s{font-size:13px;line-height:19px;color:var(--a-ink-5);font-variant-numeric:tabular-nums;}
 .dcoll{margin:12px -20px 0;}
+.enote{margin:0;padding:12px 20px 20px;font-size:13px;line-height:19px;color:var(--a-ink-6);word-break:keep-all;}
+.fcand button.off{cursor:default;}
+.fcand button.off .no,.fcand button.off .eta,.fcand button.off .eta small,.fcand button.off .rt .dt{color:#C0C2CC;}
+.fcand button.off .rt{color:var(--a-ink-6);}
 .dbuf{padding:14px 20px 0;display:flex;flex-direction:column;gap:8px;}
 .dbh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;line-height:19px;color:var(--a-ink-5);}
 #dgap{color:#0086EA;font-variant-numeric:tabular-nums;}
@@ -828,6 +832,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       <button role="tab" data-v="vehicle">B<span class="lbl"> · 차량 선택</span></button>
       <button role="tab" data-v="split">C<span class="lbl"> · 나눠 붙이기</span></button>
       <button role="tab" data-v="ref" class="on">D<span class="lbl"> · 참고값</span></button>
+      <button role="tab" data-v="server">E<span class="lbl"> · 서버 모델</span></button>
     </div>
     <button class="railfab" id="railFab" aria-expanded="false" aria-controls="rail">
       <span class="g" aria-hidden="true">⚙</span>설정</button>
@@ -893,6 +898,19 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     </div>
 
     <div class="notes">
+      <section class="card">
+        <h2>E · 서버 모델 (2026-09-15 슬랙 논의 반영)</h2>
+        <p class="lede">오른쪽 위 배치 스위치의 E, 또는 주소 끝에 <code>?place=server</code>. A~D안은 그대로 두었습니다.</p>
+        <ul>
+          <li><b>입력은 편명 + 도착일 + 여유 N분.</b> 휠이 없고, 픽업 시간 카드에는 "9월 14일 (월) 오전 6시 10분 예상"처럼 예상값만 보입니다. 여유는 40분 · 50분 · 1시간 · 1시간 30분(40분 이상 유도), 처음엔 50분.</li>
+          <li><b>확정 시점을 한 줄로.</b> "도착 2시간 전쯤 실제 도착 예상에 맞춰 픽업 시각을 확정해요". 서버 흐름(지연이 기록되고 도착까지 120분 이내면 배차, 픽업 = 도착 예상 + N분, 10분 올림)을 유저 말로 옮긴 것입니다.</li>
+          <li><b>지원 안 되는 편.</b> 데이터에 없는 편명은 기존 "찾지 못했어요 → 픽업 시간 직접 고르기". 베타 시간대 밖(00:00~05:59 도착)은 검색 결과에 회색으로 "심야 도착편은 아직 지원하지 않아요"로 보이고 누를 수 없습니다.</li>
+          <li><b>차량 선택</b>은 알약에 "예상 06:10 · 편명", 시각이 바뀔 수 있어 프리미엄 밴 불가. 별도 보장 스위치는 없습니다(서비스 자체가 상품).</li>
+          <li><b>미리보기</b>의 항공편 카드에 "이렇게 진행돼요" 네 줄: 확정 시점, 배차 뒤 늦으면 기사님 대기(대기요금 없음), 20분 넘게 일찍 오면 앞당겨 재배차, 결항 자동 취소. 요금 명세는 "항공편에 맞춰 픽업 0원 · 베타 기간 무료".</li>
+          <li><b>제가 정한 것.</b> 심야 미지원 범위 00:00~05:59, 여유 선택지, "이렇게 진행돼요" 문구, 대기요금 문구(슬랙에선 '우리가 지연을 미리 못 잡은 경우만 우리가 부담'으로 계산 중이라 확정이 아닙니다). 편명 없이 직접 고르는 길은 일반 예약과 같습니다.</li>
+        </ul>
+      </section>
+
       <section class="card">
         <h2>무엇을 비교하나요</h2>
         <p class="lede">인천공항 출발 · 일반 예약일 때만 나오는 입력 자리입니다. 오른쪽 위 배치 스위치로 바꿔 보세요.</p>
@@ -1097,12 +1115,16 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   for (var m = 0; m < 60; m += 10) MINS.push(m);
 
   var S;
+  var INIT_PLACE = (function(){
+    try { var m = /[?&]place=(route|vehicle|split|ref|server)\b/.exec(location.search); return m ? m[1] : "ref"; }
+    catch(e){ return "ref"; }
+  })();
   function fresh(){
     return {
       /* 기본 흐름 = 인천공항 출발 · 경로가 채워진 예약 · D안(참고값).
          공항 출발이 이 기능의 대상이고, 픽업 시간을 고르는 화면이 메인이다. */
       screen:"home", tab:"normal", open:"time", appear:null, toast:"",
-      routeFilled:true, rstep:"empty", flPlace:"ref",
+      routeFilled:true, rstep:"empty", flPlace:INIT_PLACE,
       via:0, surge:"off", req:"off", reqText:"",
       di:0, hi:9, mi:0, timeSet:false,
       lineup:"next", addons:{driver:true, carseat:true},
@@ -1151,6 +1173,10 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   function placeB(){ return S.flPlace === "vehicle"; }
   function placeC(){ return S.flPlace === "split"; }
   function placeD(){ return S.flPlace === "ref"; }   /* 참고값 안: 시각은 언제나 유저가 정한다 */
+  /* E안(서버 모델, 2026-09-15 슬랙 논의): 입력은 편명 + 도착일 + 여유 N분.
+     픽업은 도착 2시간 전쯤 서버가 '도착 예상 + N분'(10분 올림)으로 확정한다. 휠이 없다. */
+  function placeE(){ return S.flPlace === "server"; }
+  function placeDE(){ return placeD() || placeE(); }
   function flightOn(){ return !!(S.flight && eligible() && (S.anchor === "clock" || S.offset != null)); }
   /* C안: 편명으로 시각을 잡는 것(무료)과 지연 추적(유료 예정)을 나눈다.
      추적이 꺼지면 시각은 그대로 두고 '예상'이 아닌 확정 시각이 되므로
@@ -1185,7 +1211,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   function arrDate(){ var x = DATES[fdiOf()]; return new Date(x.y, x.m - 1, x.d, 0, mins(S.flight.eta)); }
   function dLong(di){ var x = DATES[di]; return x.m + "월 " + x.d + "일 (" + x.w + ")"; }
   /* 공항 출발 D안에서 편명도, '직접 고를게요'도 아직 고르지 않은 상태 */
-  function dNeedsInput(){ return placeD() && eligible() && !S.flight && !S.manual; }
+  function dNeedsInput(){ return placeDE() && eligible() && !S.flight && !S.manual; }
   function chipLabel(err){ return /8주/.test(err) ? "가능한 마지막 시간으로 설정" : /도착/.test(err) ? "도착 + 50분으로 설정" : "가장 빠른 시간으로 설정"; }
   /* 도착 + 여유를 10분 단위로 올린 픽업 시각(휠이 10분 단위라서) */
   function bufDate(b){
@@ -1194,10 +1220,14 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   }
   function refDateObj(){ return bufDate(50); }
   var BUFS = [30, 50, 60, 90];   /* 360 폭 카드에 한 줄로 들어가는 만큼 */
+  var BUFS_E = [40, 50, 60, 90]; /* E안: 40분 이상 유도 */
+  function curBufs(){ return placeE() ? BUFS_E : BUFS; }
+  function lateNight(eta){ return mins(eta) < 360; }   /* E안 베타: 00:00~05:59 도착편은 미지원(가정) */
   /* 지금 휠 시각과 같은 칩. 여러 칩이 같은 시각으로 올림되면 작은 쪽 */
   function bufOn(){
     var s = selDate().getTime();
-    for (var i = 0; i < BUFS.length; i++) if (bufDate(BUFS[i]).getTime() === s) return BUFS[i];
+    var L = curBufs();
+    for (var i = 0; i < L.length; i++) if (bufDate(L[i]).getTime() === s) return L[i];
     return null;
   }
   function gapText(){
@@ -1248,7 +1278,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   /* D안 ① 편명을 먼저 받는다. 휠은 '직접 고를게요'를 눌렀을 때만 */
   function dFirst(){
     return '<div class="tcard open' + (S.appear === "time" ? " appear" : "") + '"><div class="thead"><h2>픽업 시간</h2>'
-      + '<p class="muted">편명을 넣으면 도착에 맞춰 추천해 드려요</p></div>'
+      + '<p class="muted">' + (placeE() ? '편명을 넣으면 도착 시각에 맞춰 픽업해 드려요' : '편명을 넣으면 도착에 맞춰 추천해 드려요') + '</p></div>'
       + '<button class="efield dfl" data-act="refOpen"><span class="pl">' + PLANE + '</span><span>항공편명 입력</span>' + ico("erArrow") + '</button>'
       + '<div class="dalt"><button class="ghost" data-act="refManual">편명 없이 직접 고를게요</button></div></div>';
   }
@@ -1269,6 +1299,22 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       + '<div class="dchips" role="group" aria-label="도착 후 여유">'
       + BUFS.map(function(b){ return '<button class="dchip" data-act="refBuf" data-v="' + b + '" aria-pressed="' + (on === b) + '">' + offLabel(b) + '</button>'; }).join("")
       + '</div></div>';
+  }
+  /* E안 ③: 휠 없이 '예상 픽업'만. 여유가 유일한 입력이다 */
+  function eCard(){
+    var on = bufOn();
+    return '<div class="tcard open' + (S.appear === "time" ? " appear" : "") + '"><div class="thead"><h2>픽업 시간</h2>'
+      + '<p id="tval">' + esc(timeLong()) + ' 예상</p></div>'
+      + dRow()
+      + '<div class="dbuf"><div class="dbh"><span>도착 후 여유</span><span id="dgap">' + esc(gapText()) + '</span></div>'
+      + '<div class="dchips" role="group" aria-label="도착 후 여유">'
+      + BUFS_E.map(function(b){ return '<button class="dchip" data-act="refBuf" data-v="' + b + '" aria-pressed="' + (on === b) + '">' + offLabel(b) + '</button>'; }).join("")
+      + '</div></div>'
+      + '<p class="enote">도착 2시간 전쯤 실제 도착 예상에 맞춰 픽업 시각을 확정해요</p></div>';
+  }
+  function ePill(){
+    var x = DATES[S.di];
+    return x.m + "." + x.d + " 예상 " + String(HOURS[S.hi]).padStart(2,"0") + ":" + String(MINS[S.mi]).padStart(2,"0") + " · " + S.flight.no;
   }
   function flFixBtn(){
     return '<button class="ghost" data-act="fFix">도착 + 50분(' + esc(korHM(mins(S.flight.eta) + 50)) + ')으로 맞추기</button>';
@@ -1413,7 +1459,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     } else {
       var summ = [routeFrom()].concat(S.via ? ["서울역"] : []).concat([routeTo()]).join(", ");
       h.push('<button class="rsum" data-act="openRoute"><span class="k">경로</span><span class="v">' + esc(summ) + '</span>'
-        + (placeD() && flightOn() && S.termSwitched
+        + (placeDE() && flightOn() && S.termSwitched
             ? '<span class="hint">' + ico("info") + '제' + (S.term === "T2" ? "2" : "1") + '터미널 도착편이라 탑승지를 옮겼어요</span>' : '')
         + '</button>');
     }
@@ -1438,6 +1484,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     } else if (!S.routeFilled){
       /* Figma: 출도착지 중 하나라도 없으면 픽업 시간 필드 비활성 */
       h.push('<div class="tcard dis"><div class="trow"><span class="k">픽업 시간</span><span class="v">언제 출발하세요?</span></div></div>');
+    } else if (placeE() && eligible() && flightOn() && S.open === "time"){
+      h.push(eCard());
     } else if (S.open === "time"){
       var err = wheelErr();
       h.push('<div class="tcard open' + ap("time") + '">' + tmode + '<div class="thead"><h2>픽업 시간</h2>'
@@ -1447,7 +1495,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         + '<div class="wheelwrap">' + wheel() + '</div>'
         + '<div class="chipbox" id="fastbox"' + (err && !/도착/.test(err) ? '' : ' hidden') + '><button class="fastest" data-act="fastest">'
         + chipLabel(err) + '</button></div>'
-        + (placeD() ? (eligible() && !S.flight ? '<div class="flentry"><button class="ghost" data-act="refOpen"><span class="pl">' + PLANE + '</span>항공편명 입력</button></div>' : '')
+        + (placeDE() ? (eligible() && !S.flight ? '<div class="flentry"><button class="ghost" data-act="refOpen"><span class="pl">' + PLANE + '</span>항공편명 입력</button></div>' : '')
             : flightOn() ? flSumBlock()
             : eligible() && placeA() ? '<div class="flentry"><button class="ghost" data-act="fOpen">✈️ 항공편 도착에 맞춰 입력</button></div>'
             : '')
@@ -1455,8 +1503,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     } else {
       h.push('<div class="tcard' + ap("time") + '">' + tmode
         + '<button class="trow" data-act="openTime"><span class="k">픽업 시간</span>'
-        + '<span class="v">' + (S.timeSet ? esc(timeLong()) : "언제 출발하세요?") + '</span></button>'
-        + (flightOn() ? (placeD() ? '<div class="dcoll">' + dRow() + '</div>' : flSumBlock()) : '')
+        + '<span class="v">' + (S.timeSet ? esc(timeLong()) + (placeE() && flightOn() ? " 예상" : "") : "언제 출발하세요?") + '</span></button>'
+        + (flightOn() ? (placeDE() ? '<div class="dcoll">' + dRow() + '</div>' : flSumBlock()) : '')
         + (!flightOn() && eligible() && placeA() ? '<div class="flentry"><button class="ghost" data-act="fOpen">✈️ 항공편 도착에 맞춰 입력</button></div>' : '')
         + '</div>');
     }
@@ -1466,12 +1514,12 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       h.push('<div class="icard"><span class="emo">✈️</span>'
         + '<span class="tx"><span class="t1">도착 예정 시각이 확정된 뒤 배차를 시작해요</span>'
         + '<span class="t2">항공편이 결항되면 수수료 없이 자동으로 취소돼요</span></span></div>');
-    } else if (flightOn() && trackOn() && !placeD()){
+    } else if (flightOn() && trackOn() && !placeDE()){
       /* 내가 고른 시각이 기준이면 시각이 이미 정해져 있어 평소처럼 배차한다 */
       h.push('<div class="icard"><span class="emo">✈️</span>'
         + '<span class="tx"><span class="t1">고른 시각에 맞춰 평소처럼 배차해요</span>'
         + '<span class="t2">항공편이 늦어지면 그만큼 픽업 시각을 옮기고, 결항되면 수수료 없이 취소돼요</span></span></div>');
-    } else if (flightOn() && !placeD()){
+    } else if (flightOn() && !placeDE()){
       h.push('<div class="icard"><img src="' + ASSET.clock + '" alt="" />'
         + '<span class="tx"><span class="t1">고른 시각에 맞춰 평소처럼 배차해요</span>'
         + '<span class="t2">항공편이 늦어져도 시각은 옮기지 않아요</span></span></div>');
@@ -1548,7 +1596,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     var h = '<div class="fwrap"><div class="fscrim" data-act="fClose"></div><div class="fsheet" role="dialog" aria-label="항공편 입력">';
     if (S.fsheet === "flight"){
       var list = candidates(), q = S.fquery.trim(), x = DATES[S.di];
-      var dSheet = placeD() && S.fintent === "ref";
+      var dSheet = placeDE() && S.fintent === "ref";
       h += '<header><h2>항공편명을 입력해 주세요</h2><p>' + (dSheet ? '3일 안에 인천공항에 도착하는 편을 찾아 드려요'
              : x.m + '월 ' + x.d + '일(' + x.w + ') 인천공항 도착편에서 찾아 드려요') + '</p></header>'
         + '<div class="fbody"><div class="fentry"><input id="fq" type="text" autocomplete="off" spellcheck="false" placeholder="예: LJ082" value="'
@@ -1556,7 +1604,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       if (!q){
         h += '<p class="fhelp">티켓에 적힌 편명을 그대로 넣어 주세요. 두 글자만 넣어도 찾아 드려요. 국제선 정기편만 이용할 수 있어요.</p>';
       } else if (list.length && dSheet){
-        var now = new Date(), rows = [];
+        var now = new Date(), rows = [], anyOff = false;
         list.forEach(function(c){
           var b = c.share ? findFlight(SHARE.oper) : c.pending ? PENDING : c;
           var label = c.share ? SHARE.no : c.pending ? PENDING.no : c.no;
@@ -1564,12 +1612,15 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
           var sub = c.share ? SHARE.air + " 판매 · " + b.air + " " + b.no + " 운항" : b.air + " · " + b.from;
           for (var di = 0; di < 3; di++){
             var dx = DATES[di]; if (new Date(dx.y, dx.m - 1, dx.d, 0, mins(b.eta)) <= now) continue;
-            rows.push('<li><button data-act="fPick" data-v="' + val + '|' + di + '"><span class="no">' + label + '</span>'
-              + '<span class="rt"><b class="dt">' + esc(dLong(di)) + '</b>' + esc(sub) + '</span>'
+            var off = placeE() && lateNight(b.eta);
+            if (off) anyOff = true;
+            rows.push('<li><button ' + (off ? 'class="off" disabled aria-disabled="true"' : 'data-act="fPick" data-v="' + val + '|' + di + '"') + '><span class="no">' + label + '</span>'
+              + '<span class="rt"><b class="dt">' + esc(dLong(di)) + '</b>' + esc(off ? "심야 도착편은 아직 지원하지 않아요" : sub) + '</span>'
               + '<span class="eta">' + b.eta + '<small>' + (c.pending ? "예정 미확정" : b.term + " 도착") + '</small></span></button></li>');
           }
         });
-        h += '<ul class="fcand">' + rows.join("") + '</ul><p class="fhelp">고르면 픽업 날짜도 이 날로 맞춰져요</p>';
+        h += '<ul class="fcand">' + rows.join("") + '</ul><p class="fhelp">고르면 픽업 날짜도 이 날로 맞춰져요'
+          + (anyOff ? '<br>베타 기간에는 오전 6시 이후 도착편만 지원해요' : '') + '</p>';
       } else if (list.length){
         h += '<ul class="fcand">';
         list.forEach(function(f){
@@ -1637,7 +1688,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     return '<div class="ab2"><button class="ib" data-act="back" aria-label="뒤로" style="border:0;background:none;padding:10px;cursor:pointer;line-height:0;">'
       + '<span class="icon" style="width:24px;height:24px;color:#000;">' + SVG.back + '</span></button>'
       + '<span class="pill"><span class="t">' + esc(pillRoute()) + '</span>'
-      + '<span class="d">' + esc(placeD() && flightOn() ? timePill()
+      + '<span class="d">' + esc(placeE() && flightOn() ? ePill() : placeD() && flightOn() ? timePill()
             : flightOn() ? pickPill() : (S.timeSet ? timePill() : "3.5 오후 14:30")) + '</span></span>'
       + '<span style="width:44px;"></span></div>';
   }
@@ -1746,9 +1797,10 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     if (placeB() && flightOn()) picked.unshift("항공편에 맞춰 픽업");
     if (placeC() && trackOn()) picked.unshift("항공편 지연 자동 조정");
     if (placeD() && trackOn()) picked.unshift("결항·지연 보장");
+    if (placeE() && flightOn()) picked.unshift("항공편에 맞춰 픽업");
     h.push('<div class="pv">');
     h.push('<div class="pvtitle" id="pvtitle"><span class="tx"><span class="n">' + esc(L.short) + ' ' + (S.tab === "time" ? "시간" : "일반") + ' 예약</span>'
-      + '<span class="d">' + esc(!flightOn() || placeD() ? timeTitle()
+      + '<span class="d">' + esc(placeE() && flightOn() ? timeTitle() + " 예상 픽업" : !flightOn() || placeD() ? timeTitle()
             : pickTitle() + (trackOn() && S.anchor === "flight" ? " 예상 픽업" : " 픽업")) + '\n(한국시간/KST)</span></span>'
       + '<img src="' + (L.id === "next" ? ASSET.pvThumb : ASSET[L.img]) + '" alt="" /></div>');
     h.push('<div class="pvcards">');
@@ -1760,7 +1812,17 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
     if (flightOn()){
       var f = S.flight;
-      if (placeD()){
+      if (placeE()){
+        /* 서버 흐름을 유저 말로: 확정 시점 · 늦을 때 · 일찍 올 때 · 결항 */
+        h.push('<div class="pvc"><div class="pvh"><h3>항공편</h3><span class="chip">BETA</span></div>'
+          + '<div class="pvb"><span class="tx"><span class="t">' + esc(f.no + " " + f.air) + '</span>'
+          + '<span class="s">' + esc(f.from + " → 인천 " + f.term + " · " + dLong(fdiOf()) + " " + f.eta + " 도착 예정 · 여유 " + offLabel(S.buf || 50)) + '</span></span></div>'
+          + '<div class="pvdiv"><i></i></div><div class="fare dguard"><div class="h">이렇게 진행돼요</div>'
+          + '<div class="li">도착 2시간 전쯤 실제 도착 예상에 맞춰 픽업 시각을 확정해요</div>'
+          + '<div class="li">그 뒤로 비행기가 늦어지면 기사님이 기다리고, 대기요금은 받지 않아요</div>'
+          + '<div class="li">20분 넘게 일찍 도착하면 픽업 시각을 앞당겨 다시 배차해요</div>'
+          + '<div class="li">결항되면 수수료 없이 자동으로 취소돼요</div></div></div>');
+      } else if (placeD()){
         h.push('<div class="pvc"><div class="pvh"><h3>항공편</h3></div>'
           + '<div class="pvb"><span class="tx"><span class="t">' + esc(f.no + " " + f.air) + '</span>'
           + '<span class="s">' + esc(f.from + " → 인천 " + f.term + " · " + dLong(fdiOf()) + " " + f.eta + (S.fpending ? " 도착 예정" : " 도착")) + '</span></span></div>'
@@ -1810,6 +1872,10 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     /* 유료 전환 준비: 지금은 0원이지만 요금 줄·총액·해지(체크 해제)까지 미리 연결해 둔다 */
     if (placeC() && trackOn()){
       fare += '<div class="r"><span>항공편 지연 자동 조정</span><span>' + won(0) + '</span></div>'
+            + '<div class="sub">* 베타 기간 무료</div>';
+    }
+    if (placeE() && flightOn()){
+      fare += '<div class="r"><span>항공편에 맞춰 픽업</span><span>' + won(0) + '</span></div>'
             + '<div class="sub">* 베타 기간 무료</div>';
     }
     if (placeD() && trackOn()){
@@ -1875,7 +1941,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     S.animate = false; S.appear = null;
     stepLabel.textContent = (S.screen === "rEdit" ? RE[S.rstep].label : LABEL[S.screen])
       + " · 배치 " + (S.flPlace === "route" ? "A(시간&경로)" : S.flPlace === "vehicle" ? "B(차량 선택)"
-          : S.flPlace === "split" ? "C(나눠 붙이기)" : "D(참고값)");
+          : S.flPlace === "split" ? "C(나눠 붙이기)" : S.flPlace === "ref" ? "D(참고값)" : "E(서버 모델)");
     sync("segScreen", S.screen);
     sync("segOrigin", S.origin); sync("segFkase", S.fkase); sync("segPlace", S.flPlace);
   }
@@ -2039,7 +2105,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
              보장은 기본으로 꺼 둔다(유료가 되면 미리 체크된 유료 옵션이 되므로). */
           S.flight = f; S.fdi = fdiPick == null ? S.di : fdiPick; S.failed = false; S.anchor = "clock";
           S.track = false; S.manual = false; S.fsheet = null; S.open = "time";
-          if (S.buf != null || !S.touched){ if (S.buf == null) S.buf = 50; setTime(bufDate(S.buf)); }
+          if (placeE()){ if (BUFS_E.indexOf(S.buf) < 0) S.buf = 50; setTime(bufDate(S.buf)); }   /* E: 여유가 입력값 */
+          else if (S.buf != null || !S.touched){ if (S.buf == null) S.buf = 50; setTime(bufDate(S.buf)); }
           else S.di = S.fdi;
           S.timeSet = true;
           break;
@@ -2162,7 +2229,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     var place = S.flPlace;
     S = fresh(); S.flPlace = place; S.routeFilled = true; S.origin = "icn"; setTime(earliest()); S.timeSet = true;
     S.flight = findFlight("LJ082"); S.open = null; S.track = true;
-    if (place === "ref"){
+    if (place === "ref" || place === "server"){
       S.anchor = "clock"; S.track = false; S.open = "time"; S.fdi = 0;
       while (S.fdi < 2 && arrDate() <= new Date()) S.fdi++;   /* 아직 도착하지 않은 가장 가까운 날 */
       S.buf = 50; setTime(bufDate(S.buf));
