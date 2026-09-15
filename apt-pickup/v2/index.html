@@ -569,8 +569,9 @@
   @media (prefers-reduced-motion:reduce){
     .fld.pick .roll .rw,.fld.pick svg,#f-fld-floor{transition:none;}
   }
-  .fld.pick:hover{background:var(--gray-80);}
-  .fld.pick:focus{box-shadow:inset 0 0 0 1.5px #000;}
+  /* 9/15 Figma design spec: 지상/지하 칸은 '디폴트 · 비활성화' 두 상태뿐, 포커스·눌림은 '없음'.
+     전엔 :hover 회색(#e3e4e8)이 터치 뒤에도 남고 :focus 검은 테두리가 입력 칸처럼 그려졌다 — 둘 다 걷는다.
+     키보드 사용자용 윤곽선(button:focus-visible)은 그대로 둔다. */
   /* Figma row1·row2 = wrap 줄간격 8 — 폭이 모자라 '동'·'라인' 칸이 세로로 접히면 그 사이가 8 이다(전엔 0 이라 붙었다) */
   .sent{display:flex;flex-wrap:wrap;align-items:center;row-gap:8px;margin:0;
     font-size:22px;line-height:46px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
@@ -2115,19 +2116,20 @@
          고르지도 않은 '지하 1층' 이 채워져 있으면 그대로 저장돼 버린다. */
       S.d.floor=null; S.d.floorAuto=false;
     }
+    const t=el('f-floor'), act=document.activeElement;
     renderSentence();
-    /* 지상으로 바꿔도 포커스는 층에 둔다. 예전엔 동으로 보냈는데, 그러면 미리 넣은 1 을
-       고치려고 층 칸을 다시 찾아 누르고 기존 값을 지워야 했다. */
-    /* 방금 제안값을 넣었으면 필드에 표식을 남긴다. focus 이벤트가 비동기로 오는 환경이 있어
-       setLvl 쪽에서 직접 select() 를 예약하면 핸들러의 '커서를 끝으로' 와 순서가 뒤집힌다.
-       판단을 핸들러 한 곳으로 모아 경합을 없앤다. */
-    const justSuggested = (v==='ground' && S.d.floorAuto);
-    setTimeout(()=>{
-      const t=el('f-floor');
-      if(t.hidden) return;
-      if(justSuggested) t.dataset.suggest='1';
-      t.focus();
-    },40);
+    /* 9/15: 지상/지하는 '고르는' 칩이라 포커스를 가져가지도, 옮기지도 않는다.
+       전엔 누르는 순간 입력 중이던 칸이 blur(키패드·도움말 내려감) → 칩에 검은 포커스 테두리 →
+       40ms 뒤 무조건 층 칸으로 포커스(키패드 다시 올라옴)라서, 동·라인을 치던 사람은 자리를 잃고
+       키패드가 내려갔던 사람은 원치 않는 키패드를 받았다.
+       규칙: ① 입력 중이던 칸이 있으면 그 칸·키패드·커서를 그대로 둔다(mousedown 에서 포커스 이동을 막음)
+             ② 키패드가 내려가 있었으면 내려간 채로 둔다
+             ③ 지상이 제안한 층 1 은 표식으로 남겨, 층 칸을 누르면(또는 이미 층에 있으면 즉시) 통째로 선택돼 바로 덮어쓴다 */
+    if(S.d.floorAuto) t.dataset.suggest='1'; else delete t.dataset.suggest;
+    if(act && act!==document.body && act!==el('f-lvl') && !act.hidden){
+      if(document.activeElement!==act) act.focus();
+      if(act===t && S.d.floorAuto){ try{ t.select(); }catch(e){} delete t.dataset.suggest; }
+    }
   }
   /* 지금 포커스된 칸의 안내만 띄운다. 슬롯 높이는 고정이라 오갈 때 아래가 튀지 않는다 */
   /* 숫자 키패드가 기본이고 '문자로 입력' ↔ '숫자로 입력' 으로 전환한다
@@ -2200,7 +2202,7 @@
       /* 숫자만 남기던 필터를 걷었다. 'L층' 처럼 글자로 된 층이 실제로 있다.
          Figma 주석(핸드오프 12071:77772): 층 최대 1글자 · 동 8글자 · 라인 8글자, 최대로 채우면 다음 빈 칸으로, 엔터도 다음 빈 칸으로. */
       const v=ev.target.value.slice(0,1);
-      ev.target.value=v; S.d.floor = v ? v : null; S.d.floorAuto=false; fitBv(ev.target);
+      ev.target.value=v; S.d.floor = v ? v : null; S.d.floorAuto=false; delete ev.target.dataset.suggest; fitBv(ev.target);
       renderSentence();
       if(v) dg.focus();                       /* 층은 한 자리다. 채우면 바로 넘긴다 */
     });
@@ -2259,6 +2261,8 @@
       ev.target.value=v; S.d.line=v; fitBv(ev.target); paintFoot();
       if(v.length>=8) toNextEmpty('f-line2');
     });
+    /* 누르는 순간 포커스가 칩으로 넘어가지 않게 — 입력 중이던 칸·키패드를 지킨다(찾아오는 길 헤더와 같은 처리) */
+    el('f-lvl').addEventListener('mousedown',ev=>ev.preventDefault());
     el('f-lvl').addEventListener('click',()=>setLvl(S.d.lvl==='under'?'ground':'under'));
     el('f-addetc').addEventListener('mousedown',ev=>ev.preventDefault());
     el('f-addetc').addEventListener('click',()=>{
