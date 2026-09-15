@@ -518,7 +518,7 @@ body.screenonly .col{margin:0;}
 /* D안(Figma 10766:65699, 현재 상태 그대로): 방법+쿠폰을 한 블록으로 묶고, 다시 예약하기는
    고정폭 240px 카드를 가로 스크롤(NO_WRAP)한다. 색 블록 대신 얇은 회색 띠(divider)로 섹션을
    가르고, 후기 카드마다 예약 종류 태그를 붙인다. */
-.fgd-top{padding:32px 28px 28px;display:flex;flex-direction:column;align-items:center;gap:24px;
+.fgd-top{padding:40px 28px 28px;display:flex;flex-direction:column;align-items:center;gap:24px;
   background:linear-gradient(180deg,#e2f2fe 0%,#ffffff 100%);}
 .fgd-top .tt{width:100%;display:flex;flex-direction:column;gap:8px;}
 .fgd-top h1{margin:0;font-size:24px;line-height:32px;font-weight:700;color:#000000;letter-spacing:-.4px;}
@@ -527,11 +527,15 @@ body.screenonly .col{margin:0;}
 
 .fgd-methcoupon{padding:20px 24px;display:flex;flex-direction:column;gap:28px;align-items:center;}
 /* 아이콘 래퍼. NEW 뱃지를 셀이 아니라 '아이콘' 기준으로 얹기 위한 좌표계 */
-.fgd-methcoupon .fg-row .c .ic{position:relative;display:block;width:44px;height:44px;}
-.fgd-newbdg{position:absolute;top:0;right:0;box-sizing:border-box;width:24px;height:12px;
-  border-radius:6px;background:#32a2fa;color:#fff;text-align:center;
-  font-size:8px;line-height:12px;font-weight:700;letter-spacing:0;}
+/* 디자인 QA(Figma 12360:464772, 2026-09): 진입점을 더 잘 보이게 아이콘 44 -> 48,
+   아이콘~라벨 간격 8 -> 4, 라벨 Regular -> Medium. New 뱃지는 흰 바탕+파란 테두리에서
+   파란 알약형(#32a2fa)+흰 글자로 바뀌었다. 뱃지는 Figma 원본 벡터를 그대로 넣는다. */
+.fgd-methcoupon .fg-row .c{gap:4px;}
+.fgd-methcoupon .fg-row .c .ic{position:relative;display:block;width:48px;height:48px;}
+.fgd-methcoupon .fg-row .c img{width:48px;height:48px;}
+.fgd-newbdg{position:absolute;top:0;right:0;display:block;width:28px;height:14px;}
 .fgd-methcoupon .fg-row .c span{color:#383d4f;}
+.fgd-methcoupon .fg-row .c > span:not(.ic){font-weight:500;}
 /* 면은 #99a5c0 을 8% 로 얹은 값이라 흰 배경 위에서 #f7f8fa 로 합성된다.
    ⚠ 테두리에 #c0c8d9 를 그대로 넣으면 안 된다. inspect 가 찍는 `stroke #c0c8d9/1` 의
    /1 은 불투명도가 아니라 선 두께이고, stroke 에 낮은 불투명도가 걸려 있어 실제 렌더는
@@ -1034,6 +1038,12 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       <section class="dd-sec">
         <h3>변경 이력</h3>
         <p class="dd-n" style="margin:0 0 12px">처음 핸드오프 이후 바뀐 것만 모았습니다. <b>최신이 위</b>입니다. 아래 섹션은 전부 바뀐 값 기준입니다.</p>
+        <p class="dd-when">2026-09 · 홈 디자인 QA 반영 (Figma 12360:464772)</p>
+        <table class="dd-t dd-log">
+          <tr><th>히어로 상단 패딩</th><td><span class="dd-was">32dp</span> &rarr; <span class="dd-now">40dp</span><span class="dd-why">디자인 QA</span></td></tr>
+          <tr><th>예약 방법 아이콘</th><td><span class="dd-was">44dp · 라벨 간격 8 · 14 Regular</span> &rarr; <span class="dd-now">48dp · 라벨 간격 4 · 14 Medium</span><span class="dd-why">진입점을 더 잘 보이게 하기 위한 조정</span></td></tr>
+          <tr><th>New 뱃지</th><td><span class="dd-was">흰 바탕 + 파란 테두리 · 파란 글자</span> &rarr; <span class="dd-now">#32a2fa 알약형 · 흰 글자 (28×14, 아이콘 오른쪽 위)</span><span class="dd-why">디자인 QA. 히어로 이미지는 변경 없음(10:30 아래 글자 없는 이미지가 맞음)</span></td></tr>
+        </table>
         <p class="dd-when">2026-09-15 · 실기기 시연 반영</p>
         <table class="dd-t dd-log">
           <tr><th>자동 이동</th><td><span class="dd-was">1900ms 뒤 요일 선택으로 자동 이동</span> &rarr; <span class="dd-now">없음. 버튼을 눌러야 넘어감</span><span class="dd-why">실기기에서 &ldquo;납치당하는 느낌&rdquo;. 2600ms, 3500ms 로 늘려도 해소되지 않았고, 버튼과 반대 신호가 됨</span></td></tr>
@@ -1488,11 +1498,12 @@ function fFigmaHomeD(){
     {id:'recur',  t:'정기예약', img:A.ic2r}
   ];
   const list = S.recur ? ICONS : ICONS.filter(m => m.id !== 'recur');
+  const NEW_BADGE = '<svg class="fgd-newbdg" width="28" height="14" viewBox="0 0 84 42" fill="none" aria-hidden="true"><rect width="84" height="42" rx="21" fill="#32A2FA"/><path fill-rule="evenodd" clip-rule="evenodd" d="M20.1884 21.9159V29.4003H16.6604V10.7523H20.4656L25.8836 20.6811L27.7484 24.7131H27.8744C27.7736 23.7387 27.6686 22.6719 27.5594 21.5127C27.4502 20.3535 27.3956 19.2447 27.3956 18.1863V10.7523H30.9236V29.4003H27.1436L21.7508 19.4211L19.8608 15.4143H19.7348C19.8188 16.4223 19.9154 17.4891 20.0246 18.6147C20.1338 19.7403 20.1884 20.8407 20.1884 21.9159ZM43.9646 29.3373C43.1162 29.6145 42.2468 29.7531 41.3564 29.7531C40.3652 29.7531 39.4454 29.5851 38.597 29.2491C37.7486 28.9131 37.0094 28.4301 36.3794 27.8001C35.7494 27.1701 35.2538 26.3973 34.8926 25.4817C34.5314 24.5661 34.3508 23.5287 34.3508 22.3695C34.3508 21.2271 34.5356 20.1981 34.9052 19.2825C35.2748 18.3669 35.7662 17.5857 36.3794 16.9389C36.9926 16.2921 37.694 15.7965 38.4836 15.4521C39.2732 15.1077 40.088 14.9355 40.928 14.9355C41.9024 14.9355 42.755 15.1035 43.4858 15.4395C44.2166 15.7755 44.8298 16.2459 45.3254 16.8507C45.821 17.4555 46.1948 18.1695 46.4468 18.9927C46.6988 19.8159 46.8248 20.7147 46.8248 21.6891C46.8248 22.0251 46.808 22.3485 46.7744 22.6593C46.7408 22.9701 46.6988 23.2095 46.6484 23.3775H37.9544C38.1056 24.5367 38.5298 25.4145 39.227 26.0109C39.9242 26.6073 40.802 26.9055 41.8604 26.9055C42.4484 26.9055 42.9986 26.8215 43.511 26.6535C44.0234 26.4855 44.5316 26.2419 45.0356 25.9227L46.2956 28.1907C45.59 28.6779 44.813 29.0601 43.9646 29.3373ZM43.6496 20.9331H37.904C38.0384 19.9083 38.3996 19.1313 38.9876 18.6021C39.5756 18.0729 40.2392 17.8083 40.9784 17.8083C41.8856 17.8083 42.5576 18.0897 42.9944 18.6525C43.4312 19.2153 43.6496 19.9755 43.6496 20.9331ZM57.8876 23.2515L56.4512 29.4003H52.2176L48.5636 15.2883H52.268L53.8052 22.2687C53.9396 22.9575 54.0572 23.6379 54.158 24.3099C54.2588 24.9819 54.3764 25.6707 54.5108 26.3763H54.6116C54.746 25.6707 54.8804 24.9777 55.0148 24.2973C55.1492 23.6169 55.3088 22.9407 55.4936 22.2687L57.182 15.2883H60.4832L62.2472 22.2687C62.4152 22.9575 62.5664 23.6379 62.7008 24.3099C62.8352 24.9819 62.978 25.6707 63.1292 26.3763H63.2552C63.3896 25.6707 63.5072 24.9819 63.608 24.3099C63.7088 23.6379 63.8264 22.9575 63.9608 22.2687L65.498 15.2883H68.9252L65.4476 29.4003H61.088L59.6012 23.2515C59.45 22.5795 59.3114 21.9159 59.1854 21.2607C59.0594 20.6055 58.9292 19.8999 58.7948 19.1439H58.6688L58.2908 21.2733C58.1732 21.9369 58.0388 22.5963 57.8876 23.2515Z" fill="#FFFFFF"/></svg>';
   /* 정기예약에만 NEW 뱃지. 아이콘 이미지에 붙어야 해서(셀 전체가 아니라) .ic 래퍼를 두고
      그 안에서 절대배치한다(Figma도 아이콘마다 'img container'를 두고 그 안에 얹었다). */
   const row = list.map(m => `
     <div class="c" data-m="${m.id}"><span class="ic"><img src="${m.img}" alt="">${
-      m.id === 'recur' ? '<i class="fgd-newbdg">New</i>' : ''
+      m.id === 'recur' ? NEW_BADGE : ''
     }</span><span>${esc(m.t)}</span></div>`).join('');
 
   const pickD = (lb, f, t) => `
