@@ -663,6 +663,8 @@
     box-shadow:inset 0 1px 0 0 var(--gray-80);border-radius:0;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .addetc>span:first-child{flex:1 1 auto;min-width:0;}
+  /* 9/15 Figma etc-header: '찾아오는 길 (선택)' — '(선택)' 만 글자 단위 색 #73788b, 굵기·크기는 같다 */
+  .addetc em{font-style:normal;color:var(--gray-500);}
   .addetc[hidden]{display:none;}
   /* − 는 '안 쓸래' 다. 쓴 내용이 있어도 살아 있고, 누르면 접히면서 내용을 비운다.
      접기와 지우기를 나누면 '접었는데 값은 남아 있는' 상태가 생기는데,
@@ -1189,7 +1191,7 @@
                 type="button" class="fa" id="f-hint-a2" hidden></button></span>
             </div>
 
-            <button type="button" class="addetc" id="f-addetc" hidden><span>찾아오는 길</span><svg class="ic tg" id="f-etc-ic" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect id="f-etc-v" x="9" y="4" width="2" height="12" rx="1" fill="currentColor"/><rect x="4" y="9" width="12" height="2" rx="1" fill="currentColor"/></svg></button>
+            <button type="button" class="addetc" id="f-addetc" hidden><span>찾아오는 길 <em>(선택)</em></span><svg class="ic tg" id="f-etc-ic" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect id="f-etc-v" x="9" y="4" width="2" height="12" rx="1" fill="currentColor"/><rect x="4" y="9" width="12" height="2" rx="1" fill="currentColor"/></svg></button>
             <div class="fopt" id="fopt" hidden>
 
               <div class="tinwrap">
