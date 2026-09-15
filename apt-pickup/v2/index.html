@@ -292,7 +292,8 @@
   /* Figma text box / monoline 실측: #f5f6f7 · r6 · pad16 · 15px/22 · 값 #000.
      오른쪽 여백 53 = pad16 + 카운터 27 + gap10 (카운터는 절대배치라 자리를 비워 준다). */
   .tin{width:100%;border:none;border-radius:6px;background:var(--gray-30);padding:16px 53px 16px 16px;
-    font:inherit;font-size:15px;line-height:22px;color:#000;outline:none;}
+    font:inherit;font-size:15px;line-height:22px;color:#000;outline:none;
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}   /* 9/15 spec: 넘치면 '게이트2…' (포커스 중엔 스크롤) */
   .tin::placeholder{color:var(--gray-500);}
   /* 포커스는 검정 1px 이다(navy 1.5 가 아니었다). */
   .tin:focus{box-shadow:inset 0 0 0 1px #000;}
@@ -526,7 +527,7 @@
   .ph-bar button{border:none;background:none;font:inherit;font-size:15px;color:var(--gray-800);cursor:pointer;padding:0;}
   /* ic_exit 는 24×24 아이콘이 44×44 터치 영역 한가운데 놓인 모양이다(글리프 자체는 15×15). */
   .ph-bar #phclose{flex:0 0 auto;width:44px;height:44px;display:grid;place-items:center;}
-  .ph-bar b{font-size:18px;font-weight:400;letter-spacing:0;color:#000;}
+  .ph-bar b{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:18px;font-weight:400;letter-spacing:0;color:#000;}   /* 9/15 spec: 좁으면 '상…' */
   .ph-body{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
     gap:14px;padding:24px 24px 28px;text-align:left;overflow-y:auto;}
   .ph-body .box{width:100%;border:1.5px dashed var(--gray-100);border-radius:10px;padding:28px 20px;}
@@ -687,28 +688,10 @@
   .fopt .flab3 em{font-style:normal;font-size:13px;font-weight:400;color:var(--gray-500);margin-left:5px;}
   .fopt .sp2{height:22px;}
 
-  /* ── 폭 단계. 좁은 폰(320)은 한 단계 줄이고, 넓은 폰(414+)은 한 단계 키운다.
-     칩 높이·패딩·본문·단위가 한 벌로 움직여야 비율이 유지된다. */
-  @container (max-width: 344px){
-    .sent{font-size:20px;line-height:44px;}
-    .fld{height:44px;padding:0 12px;margin-right:6px;}
-    .fld.pick{padding:0 10px 0 12px;gap:6px;}
-    .fld .u,.fld .bx{font-size:15px;}
-    .fld .nn{font-size:15px;}
-    .stail{font-size:15px;}
-    .sent{--r1gap:-4px;}
-    .ph-body.sform{padding-left:18px;padding-right:18px;}
-  }
-  @container (min-width: 400px){
-    .sent{font-size:24px;line-height:50px;}
-    .fld{height:50px;padding:0 16px;margin-right:10px;}
-    .fld.pick{padding:0 14px 0 16px;gap:8px;}
-    .fld .u,.fld .bx{font-size:17px;}
-    .fld .nn{font-size:17px;}
-    .stail{font-size:17px;}
-    .sent{--r1gap:0px;}
-    .ph-body.sform{padding-left:26px;padding-right:26px;}
-  }
+  /* ── 9/15 Figma design spec(12371:533043 · 190/360/534 폭): 폭이 달라도 크기는 그대로다.
+     여백 24 · 칸 46 · 값 22 · 단위 16 — 좁으면 칸이 줄바꿈되고(줄간격 8), 넓으면 입력칸만 늘어난다.
+     예전 프로토의 폭 단계(320 에서 20px·44, 414 에서 24px·50)는 Figma 에 없어 걷어냈다.
+     제목·찾아오는 길 값처럼 한 줄 고정 글자는 말줄임(…)으로 자른다. */
 
   /* ══════ 드라이버 앱 — TADA Driver v2 프로토타입(driverapp/driver-v2) 디자인 언어 ══════
      토큰·타입 스케일·컴포넌트를 v2 에서 그대로 가져온다. 이 화면만 별도 규칙으로 굴리면
