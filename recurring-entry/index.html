@@ -254,6 +254,13 @@ body.wide:not(.screenonly) .work .stage .cap{display:none;}
 .dd-l{margin:12px 0 0;padding-left:17px;display:flex;flex-direction:column;gap:8px;}
 .dd-l li{font-size:12px;line-height:18px;color:var(--ink-3);word-break:keep-all;}
 .dd-l b{color:var(--ink);}
+/* 변경 이력: 이전 값은 흐리게 지우고, 지금 값은 굵게, 이유는 한 줄 아래 작게 */
+.dd-log th{white-space:nowrap;}
+.dd-was{color:var(--ink-3);text-decoration:line-through;text-decoration-color:var(--line);}
+.dd-now{color:var(--ink);font-weight:700;}
+.dd-why{display:block;margin-top:3px;font-size:11.5px;line-height:17px;color:var(--ink-3);}
+.dd-when{margin:14px 0 6px;font-size:11.5px;line-height:16px;font-weight:700;color:var(--ink-3);letter-spacing:.02em;}
+.dd-when:first-of-type{margin-top:0;}
 
 .stage{display:flex;gap:22px 22px;align-items:flex-start;justify-content:flex-start;
   flex-wrap:wrap;margin:26px auto 0;
@@ -1016,6 +1023,31 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
         <h2>개발 가이드</h2>
         <p>Figma 에 안 담기는 <b>타이밍 · 상태 전이 · 플랫폼 분기 · 접근성 정책</b>을 모읍니다. 길이 단위는 전부 <b>dp</b>(iOS pt). 타이밍과 레이아웃은 왼쪽 프로토타입 실측치이고, 플랫폼 분기 · 생명주기 · 접근성 · 카드 폭은 <b>앱 구현을 위해 정한 규칙</b>이라 프로토타입에 없거나 일부만 재현돼 있습니다.</p>
       </div>
+
+      <section class="dd-sec">
+        <h3>변경 이력</h3>
+        <p class="dd-n" style="margin:0 0 12px">처음 핸드오프 이후 바뀐 것만 모았습니다. <b>최신이 위</b>입니다. 아래 섹션은 전부 바뀐 값 기준입니다.</p>
+        <p class="dd-when">2026-09-15 · 실기기 시연 반영</p>
+        <table class="dd-t dd-log">
+          <tr><th>브릿지 체류</th><td><span class="dd-was">1900ms (정지 1120)</span> &rarr; <span class="dd-now">3500ms (정지 2720)</span><span class="dd-why">실기기에서 너무 짧아 &ldquo;납치당하는 느낌&rdquo;. 2600ms 도 짧아 한 번 더 늘림</span></td></tr>
+          <tr><th>모션 축소 체류</th><td><span class="dd-was">1120ms</span> &rarr; <span class="dd-now">2720ms</span><span class="dd-why">정지 구간과 같게 유지</span></td></tr>
+          <tr><th>서브 문구</th><td><span class="dd-was">탭하면 바로 이동</span> &rarr; <span class="dd-now">잠시 후 자동으로 이동해요 · 탭하면 바로</span><span class="dd-why">탭 방법만 알려주면, 누르지도 않았는데 넘어가는 게 납치로 느껴짐. 자동 이동을 먼저 예고</span></td></tr>
+          <tr><th>타이머 시작점</th><td><span class="dd-was">[다음] 탭 시점</span> &rarr; <span class="dd-now">브릿지가 화면에 뜬 시점</span><span class="dd-why">탭 시점부터 세면 API 응답 대기만큼 브릿지가 잘려 보임</span></td></tr>
+        </table>
+        <p class="dd-when">2026-08 · 핸드오프 정리</p>
+        <table class="dd-t dd-log">
+          <tr><th>확인 &rarr; 브릿지</th><td><span class="dd-was">확인 화면 표시 후 400ms 뒤 브릿지</span> &rarr; <span class="dd-now">한 번에 그리고 베일만 180ms 부터 겹침</span><span class="dd-why">나중에 덧그리면 진행 중인 슬라이드가 끊겨 400ms 를 기다려야 했음</span></td></tr>
+          <tr><th>등장 커브</th><td><span class="dd-was">cubic(.2,.8,.3,1) 260ms</span> &rarr; <span class="dd-now">cubic(.45,0,.25,1) 380ms</span><span class="dd-why">시작부터 최고 속도라 급해 보임. 양끝을 눕히고 시간도 함께 늘림</span></td></tr>
+          <tr><th>진행바</th><td><span class="dd-was">있음</span> &rarr; <span class="dd-now">없음</span><span class="dd-why">처리할 게 없는데 로딩처럼 보여 앱의 진짜 진행바 신뢰를 깎음</span></td></tr>
+          <tr><th>탭</th><td><span class="dd-was">터치 없음</span> &rarr; <span class="dd-now">어디든 탭하면 즉시 이동 (진입 후 300ms 는 무시)</span><span class="dd-why">빠른 사용자가 기다리지 않게. 앞 화면 [다음] 연타가 새지 않도록 가드</span></td></tr>
+          <tr><th>뒤로가기</th><td><span class="dd-was">불가</span> &rarr; <span class="dd-now">Android back = 확인 화면에 정지 / iOS edge swipe = 브릿지 구간만 비활성</span><span class="dd-why">back 은 &ldquo;닫기&rdquo;, edge swipe 는 &ldquo;이전 화면으로&rdquo;라 의미가 다름</span></td></tr>
+          <tr><th>모션 축소</th><td><span class="dd-was">타이밍 그대로</span> &rarr; <span class="dd-now">등장분만큼 총 시간 단축</span><span class="dd-why">애니메이션을 끈 사람에게 정지 화면을 더 오래 보여주던 결함</span></td></tr>
+          <tr><th>생명주기</th><td><span class="dd-was">규칙 없음</span> &rarr; <span class="dd-now">화면이 보일 때만 타이머, 복귀 시 처음부터 재생</span><span class="dd-why">자리를 비운 사이 넘어가 버리면 읽을 기회가 사라짐</span></td></tr>
+          <tr><th>스크린 리더</th><td><span class="dd-was">규칙 없음</span> &rarr; <span class="dd-now">켜져 있으면 자동 전환 끔</span><span class="dd-why">읽는 도중 화면이 넘어감. WCAG 2.2.1</span></td></tr>
+          <tr><th>홈 카드 표면</th><td><span class="dd-was">쿠폰·후기 #f6f8fa·#f9f9f9 / FAQ 테두리</span> &rarr; <span class="dd-now">#99a5c0 8% 면 + #f2f4f7 테두리 / FAQ 테두리 없음</span><span class="dd-why">최신 Figma(10883:123790) 반영. 히어로 하단 패딩도 20 &rarr; 28</span></td></tr>
+          <tr><th>다시 예약하기 카드 폭</th><td><span class="dd-was">240dp 고정</span> &rarr; <span class="dd-now">clamp(200dp, 화면 폭 60%, 280dp)</span><span class="dd-why">기기마다 옆 카드가 보이는 폭이 62~132dp 로 흔들려서</span></td></tr>
+        </table>
+      </section>
 
       <section class="dd-sec">
         <h3>브릿지 화면 타이밍</h3>
