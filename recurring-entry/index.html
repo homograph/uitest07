@@ -656,11 +656,13 @@ body.mock.flowopen{overflow:hidden;}
 .fw-cta .b{flex:1 1 auto;height:52px;border-radius:8px;background:#19254d;color:#fff;
   display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;cursor:pointer;}
 .fw-cta.pay .b{flex:0 0 auto;padding:0 38px;}
-/* 브릿지 바로 이동 버튼: 차량 선택 [다음] 과 같은 하단 자리·같은 스타일.
-   문구 블록은 버튼 영역(88dp)만큼 위에서 가운데 정렬되도록 아래 패딩을 준다. */
-.fw-breaker{padding:0 24px 88px;box-sizing:border-box;}
-.fw-breaker .bk-ctawrap{position:absolute;left:0;right:0;bottom:0;background:transparent;}
-.fw-breaker .bk-cta{border:0;font-family:inherit;}
+/* 브릿지 버튼: 문구 바로 아래 가운데(부모 gap 32dp). 폭은 내용에 맞춤. 가운데서 전폭이면
+   무거워 보인다. 색·높이·굵기는 주요 CTA 와 같게 둬 '눌러도 되는 버튼'임을 유지한다.
+   등장은 베일(.fw-breaker)과 함께 페이드된다. */
+.fw-breaker{padding:0 24px;box-sizing:border-box;}
+.fw-breaker .bk-cta{flex:0 0 auto;height:52px;padding:0 32px;border:0;border-radius:8px;
+  background:#19254d;color:#fff;font-family:inherit;font-size:16px;line-height:24px;font-weight:700;cursor:pointer;}
+.fw-breaker .bk-cta:active{transform:scale(.97);}
 .fw-cta .p{flex:1 1 auto;display:flex;flex-direction:column;gap:2px;}
 .fw-cta .p i{font-style:normal;font-size:13px;color:#73788b;}
 .fw-cta .p b{font-size:18px;font-weight:700;color:#171a24;}
@@ -735,7 +737,6 @@ body.mock.flowopen{overflow:hidden;}
 @keyframes fwFloat{0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);}}
 .fw-breaker img{animation:fwRise .38s cubic-bezier(.45,0,.25,1) .26s both,
                           fwFloat 2s ease-in-out .64s infinite;}
-.fw-breaker{cursor:pointer;}
 @media (prefers-reduced-motion:reduce){
   .fw-breaker,.fw-breaker img,.fw-breaker .bk-tx b,.fw-breaker .bk-tx span{animation:none;}
   .fw-scr.push-in,.fw-scr.push-out,.fw-scr.pop-in,.fw-scr.pop-out{animation:none;}
@@ -1026,7 +1027,8 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
     <aside class="devdoc">
       <div class="dd-hd">
         <h2>개발 가이드</h2>
-        <p>Figma 에 안 담기는 <b>타이밍 · 상태 전이 · 플랫폼 분기 · 접근성 정책</b>을 모읍니다. 길이 단위는 전부 <b>dp</b>(iOS pt). 타이밍과 레이아웃은 왼쪽 프로토타입 실측치이고, 플랫폼 분기 · 생명주기 · 접근성 · 카드 폭은 <b>앱 구현을 위해 정한 규칙</b>이라 프로토타입에 없거나 일부만 재현돼 있습니다.</p>
+        <p>Figma 에 안 담기는 <b>타이밍 · 상태 전이 · 뒤로가기 · 접근성</b>을 모읍니다. 길이 단위는 전부 <b>dp</b>(iOS pt).
+          타이밍과 레이아웃은 왼쪽 프로토타입 실측치이고, 뒤로가기 · 접근성 · 카드 폭은 앱 구현을 위해 정한 규칙입니다.</p>
       </div>
 
       <section class="dd-sec">
@@ -1034,163 +1036,117 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
         <p class="dd-n" style="margin:0 0 12px">처음 핸드오프 이후 바뀐 것만 모았습니다. <b>최신이 위</b>입니다. 아래 섹션은 전부 바뀐 값 기준입니다.</p>
         <p class="dd-when">2026-09-15 · 실기기 시연 반영</p>
         <table class="dd-t dd-log">
-          <tr><th>브릿지 체류</th><td><span class="dd-was">1900ms (정지 1120)</span> &rarr; <span class="dd-now">3500ms (정지 2720)</span><span class="dd-why">실기기에서 너무 짧아 &ldquo;납치당하는 느낌&rdquo;. 2600ms 도 짧아 한 번 더 늘림</span></td></tr>
-          <tr><th>모션 축소 체류</th><td><span class="dd-was">1120ms</span> &rarr; <span class="dd-now">2720ms</span><span class="dd-why">정지 구간과 같게 유지</span></td></tr>
-          <tr><th>서브 문구</th><td><span class="dd-was">탭하면 바로 이동</span> &rarr; <span class="dd-now">잠시 후 자동으로 이동해요</span><span class="dd-why">탭 방법만 알려주면, 누르지도 않았는데 넘어가는 게 납치로 느껴짐. 자동 이동을 예고. 탭 안내는 아래 버튼이 대신함</span></td></tr>
-          <tr><th>바로 이동 방법</th><td><span class="dd-was">화면 아무 곳 탭 (문구로만 안내)</span> &rarr; <span class="dd-now">하단 CTA 버튼 [요일 선택하기]</span><span class="dd-why">보이지 않는 조작이라 알기 어려움. [다음] 과 같은 자리라 엄지를 옮기지 않음. 화면 탭은 보조로 유지</span></td></tr>
-          <tr><th>타이머 시작점</th><td><span class="dd-was">[다음] 탭 시점</span> &rarr; <span class="dd-now">브릿지가 화면에 뜬 시점</span><span class="dd-why">탭 시점부터 세면 API 응답 대기만큼 브릿지가 잘려 보임</span></td></tr>
+          <tr><th>자동 이동</th><td><span class="dd-was">1900ms 뒤 요일 선택으로 자동 이동</span> &rarr; <span class="dd-now">없음. 버튼을 눌러야 넘어감</span><span class="dd-why">실기기에서 &ldquo;납치당하는 느낌&rdquo;. 2600ms, 3500ms 로 늘려도 해소되지 않았고, 버튼과 반대 신호가 됨</span></td></tr>
+          <tr><th>넘어가는 방법</th><td><span class="dd-was">화면 아무 곳 탭</span> &rarr; <span class="dd-now">문구 바로 아래 가운데 버튼 [요일 선택하기]</span><span class="dd-why">하단에 두면 [다음] 을 누른 엄지가 그대로 눌러 문구를 안 읽고 지나감. 가운데면 읽고 누름</span></td></tr>
+          <tr><th>서브 문구</th><td><span class="dd-was">탭하면 바로 이동</span> &rarr; <span class="dd-now">없음</span><span class="dd-why">자동 이동이 없어 예고할 게 없고, 버튼이 누를 곳을 대신 알려줌</span></td></tr>
+          <tr><th>뒤로가기</th><td><span class="dd-was">Android back = 확인 화면에 정지 / iOS edge swipe = 비활성</span> &rarr; <span class="dd-now">두 플랫폼 모두 오버레이만 닫고 확인 화면에 머묾</span><span class="dd-why">타이머와 부딪칠 일이 없어져 하나로 통일</span></td></tr>
+          <tr><th>타이머 관련 규칙</th><td><span class="dd-was">체류 시간 · 모션 축소 체류 · 생명주기 재생 · 스크린 리더일 때 자동 전환 끔</span> &rarr; <span class="dd-now">전부 삭제</span><span class="dd-why">자동 이동이 없으므로 필요 없음</span></td></tr>
         </table>
         <p class="dd-when">2026-08 · 핸드오프 정리</p>
         <table class="dd-t dd-log">
           <tr><th>확인 &rarr; 브릿지</th><td><span class="dd-was">확인 화면 표시 후 400ms 뒤 브릿지</span> &rarr; <span class="dd-now">한 번에 그리고 베일만 180ms 부터 겹침</span><span class="dd-why">나중에 덧그리면 진행 중인 슬라이드가 끊겨 400ms 를 기다려야 했음</span></td></tr>
           <tr><th>등장 커브</th><td><span class="dd-was">cubic(.2,.8,.3,1) 260ms</span> &rarr; <span class="dd-now">cubic(.45,0,.25,1) 380ms</span><span class="dd-why">시작부터 최고 속도라 급해 보임. 양끝을 눕히고 시간도 함께 늘림</span></td></tr>
           <tr><th>진행바</th><td><span class="dd-was">있음</span> &rarr; <span class="dd-now">없음</span><span class="dd-why">처리할 게 없는데 로딩처럼 보여 앱의 진짜 진행바 신뢰를 깎음</span></td></tr>
-          <tr><th>탭</th><td><span class="dd-was">터치 없음</span> &rarr; <span class="dd-now">어디든 탭하면 즉시 이동 (진입 후 300ms 는 무시)</span><span class="dd-why">빠른 사용자가 기다리지 않게. 앞 화면 [다음] 연타가 새지 않도록 가드</span></td></tr>
-          <tr><th>뒤로가기</th><td><span class="dd-was">불가</span> &rarr; <span class="dd-now">Android back = 확인 화면에 정지 / iOS edge swipe = 브릿지 구간만 비활성</span><span class="dd-why">back 은 &ldquo;닫기&rdquo;, edge swipe 는 &ldquo;이전 화면으로&rdquo;라 의미가 다름</span></td></tr>
-          <tr><th>모션 축소</th><td><span class="dd-was">타이밍 그대로</span> &rarr; <span class="dd-now">등장분만큼 총 시간 단축</span><span class="dd-why">애니메이션을 끈 사람에게 정지 화면을 더 오래 보여주던 결함</span></td></tr>
-          <tr><th>생명주기</th><td><span class="dd-was">규칙 없음</span> &rarr; <span class="dd-now">화면이 보일 때만 타이머, 복귀 시 처음부터 재생</span><span class="dd-why">자리를 비운 사이 넘어가 버리면 읽을 기회가 사라짐</span></td></tr>
-          <tr><th>스크린 리더</th><td><span class="dd-was">규칙 없음</span> &rarr; <span class="dd-now">켜져 있으면 자동 전환 끔</span><span class="dd-why">읽는 도중 화면이 넘어감. WCAG 2.2.1</span></td></tr>
           <tr><th>홈 카드 표면</th><td><span class="dd-was">쿠폰·후기 #f6f8fa·#f9f9f9 / FAQ 테두리</span> &rarr; <span class="dd-now">#99a5c0 8% 면 + #f2f4f7 테두리 / FAQ 테두리 없음</span><span class="dd-why">최신 Figma(10883:123790) 반영. 히어로 하단 패딩도 20 &rarr; 28</span></td></tr>
           <tr><th>다시 예약하기 카드 폭</th><td><span class="dd-was">240dp 고정</span> &rarr; <span class="dd-now">clamp(200dp, 화면 폭 60%, 280dp)</span><span class="dd-why">기기마다 옆 카드가 보이는 폭이 62~132dp 로 흔들려서</span></td></tr>
         </table>
       </section>
 
       <section class="dd-sec">
-        <h3>브릿지 화면 타이밍</h3>
+        <h3>브릿지 화면</h3>
         <table class="dd-t">
           <tr><th>차량 선택 [다음]</th><td>확인 화면과 브릿지를 <b>한 번에</b> 그리고 슬라이드 <b>320ms</b> (우&rarr;좌)</td></tr>
-          <tr><th>흰 베일</th><td><b>180ms</b> 에 페이드 시작, 480ms 에 완성</td></tr>
-          <tr><th>문구까지 등장 완료</th><td><b>780ms</b></td></tr>
-          <tr><th>요일 선택으로</th><td><b>3500ms</b> (정지 구간 2720ms)</td></tr>
+          <tr><th>흰 베일 &middot; 버튼</th><td><b>180ms</b> 에 페이드 시작, 480ms 에 완성 (버튼은 베일과 함께 나타남)</td></tr>
+          <tr><th>문구 등장 완료</th><td><b>780ms</b></td></tr>
+          <tr><th>요일 선택으로</th><td><b>[요일 선택하기] 를 눌렀을 때만.</b> 자동 이동 없음</td></tr>
         </table>
-        <p class="dd-n"><b>레이아웃</b> 아이콘 120dp &middot; 아이콘~텍스트 gap 32dp &middot;
-          헤드라인~서브 gap 16dp &middot; 좌우 패딩 24dp &middot; 세로 가운데 정렬(버튼 영역 88dp 제외).
-          <b>하단 CTA <code class="i">[요일 선택하기]</code></b> 는 차량 선택 <code class="i">[다음]</code> 과 같은 자리&middot;스타일
-          (높이 52dp, r8, <code class="i">#19254d</code>, 16sp Bold, 영역 패딩 12/16/24).
+        <p class="dd-n"><b>레이아웃</b> 아이콘 120dp &middot; 아이콘~헤드라인 gap 32dp &middot; 헤드라인~버튼 gap 32dp &middot;
+          좌우 패딩 24dp &middot; 전체 세로 가운데 정렬.
+          <b>버튼</b>은 폭 내용에 맞춤(좌우 패딩 32dp), 높이 52dp, r8, <code class="i">#19254d</code>, 16sp Bold.
+          가운데에서 전폭으로 늘리면 무거워 보입니다.
           <b>베일은 단색이 아니라 세로 그라디언트</b>입니다 (위 <code class="i">rgba(255,255,255,.5)</code>,
           50% 지점부터 <code class="i">#ffffff</code> 불투명). 뒤 확인 화면이 위쪽에 비쳐야 합니다.</p>
-        <p class="dd-n">⚠ <b>자동 전환 타이머는 [다음] 탭 시점이 아니라 브릿지가 화면에 뜬 시점부터</b> 셉니다.
-          탭 시점부터 세면 API 응답을 기다린 만큼 브릿지가 잘려 보여, 실기기에서 &ldquo;납치당하는 느낌&rdquo;이 납니다.
-          서브 문구 <code class="i">잠시 후 자동으로 이동해요</code> 는 자동 이동을 <b>예고</b>하는 장치입니다.
-          버튼이 있으면 &ldquo;눌러야 넘어간다&rdquo;로 읽히므로, <b>버튼만 두고 이 문구를 지우면 오히려 더 놀랍니다.</b></p>
-        <p class="dd-n">확인 화면은 브릿지 뒤에 비치는 배경이지 읽으라고 두는 화면이 아닙니다.
-          베일을 슬라이드가 끝난 뒤에 띄우지 말고 <b>도중(180ms)부터 겹치게</b> 하세요.
-          ⚠ 확인 화면을 먼저 그린 뒤 나중에 브릿지를 덧그리는 방식은 피해야 합니다.
-          그 재렌더가 진행 중이던 슬라이드를 죽여 화면이 튀고, 그걸 피하려면 400ms 를
-          기다려야 해서 브릿지가 그만큼 늦게 뜹니다.</p>
+        <p class="dd-n">⚠ <b>자동 이동을 다시 넣지 마세요.</b> 체류를 1900 &rarr; 2600 &rarr; 3500ms 로 늘려도 실기기에서 계속
+          납치감이 났습니다. 버튼을 <b>하단 CTA 자리로 옮기지도 마세요.</b> [다음] 을 누른 엄지가 그대로 눌러
+          문구를 안 읽고 지나가서 브릿지를 둔 의미가 사라집니다.</p>
+        <p class="dd-n">확인 화면은 브릿지 뒤에 비치는 배경입니다. 베일을 슬라이드가 끝난 뒤에 띄우지 말고
+          <b>도중(180ms)부터 겹치게</b> 하세요. 확인 화면을 먼저 그린 뒤 브릿지를 덧그리면 진행 중인 슬라이드가 끊겨 화면이 튑니다.</p>
       </section>
 
       <section class="dd-sec">
-        <h3>브릿지 등장 순서</h3>
+        <h3>등장 순서</h3>
         <pre><code>슬라이드   scrInR 320ms  cubic(.2,.8,.3,1)     delay    0
-베일       fade   300ms  cubic(.45,0,.25,1)    delay  180ms
+베일+버튼  fade   300ms  cubic(.45,0,.25,1)    delay  180ms
 아이콘     rise   380ms  cubic(.45,0,.25,1)    delay  260ms
 헤드라인   rise   380ms  cubic(.45,0,.25,1)    delay  340ms
-서브       rise   380ms  cubic(.45,0,.25,1)    delay  400ms
 
 rise = opacity 0 -&gt; 1, translateY(12dp) -&gt; 0</code></pre>
-        <p class="dd-n">마지막 요소가 <b>400 + 380 = 780ms</b> 에 끝납니다. 남은 <b>2720ms</b> 가 정지 구간입니다.
-          아이콘은 등장 뒤 2초 주기로 8dp 위아래 부유합니다(delay 640ms).
-          ⚠ 등장 커브는 <b>양끝이 누운 cubic-bezier(.45,0,.25,1)</b> 입니다. 화면 전환용 감속 커브
-          (.2,.8,.3,1)를 쓰면 시작부터 최고 속도라 급하게 보입니다. 커브만 바꾸고 지속시간을
-          그대로 두면 중간이 빨라져 역효과이므로 380ms 와 한 쌍으로 보세요.
-          베일은 <b>슬라이드 중인 화면보다 뷰 계층에서 위</b>에 있어야 합니다(웹 z-index, iOS 서브뷰 순서, Android elevation).</p>
+        <p class="dd-n">헤드라인이 <b>340 + 380 = 720ms</b> 에 끝납니다. 아이콘은 등장 뒤 2초 주기로 8dp 위아래 부유합니다(delay 640ms).
+          ⚠ 등장 커브는 <b>양끝이 누운 cubic-bezier(.45,0,.25,1)</b> 입니다. 화면 전환용 감속 커브(.2,.8,.3,1)를 쓰면
+          급해 보이고, 커브만 바꾸고 380ms 를 줄이면 중간이 빨라져 역효과입니다.
+          베일은 <b>슬라이드 중인 화면보다 뷰 계층에서 위</b>에 있어야 합니다(iOS 서브뷰 순서, Android elevation).</p>
       </section>
 
       <section class="dd-sec">
         <h3>전환 로직</h3>
-        <p class="dd-n" style="margin:0 0 10px">웹 프로토타입 코드 대신 <b>상태 기계</b>로 적습니다. 아래 표가 계약이고,
-          구현은 플랫폼 관용구를 따르면 됩니다.</p>
         <pre><code>상태(브릿지 구간)  car · confirm · bridge · weekday · rconfirm
 
 전이
-  car      --[다음]-----------&gt;  bridge    confirm 과 한 번에 그림, 우-&gt;좌 push 320ms
-  bridge   --자동------------&gt;  weekday   기본 3500ms · 모션 축소 2720ms
-                                         스크린 리더 켜짐이면 자동 전환 없음
-  bridge   --[요일 선택하기]--&gt;  weekday   화면 아무 곳 탭도 동일, 진입 후 300ms 는 무시(가드)
-  bridge   --Android back---&gt;  confirm   배너 promo, 자동 전환 없음
-  bridge   --화면 가려짐-----&gt;  bridge    다시 보일 때 처음부터 재생
-  confirm  --[설정]----------&gt;  weekday
-  weekday  --[다음]----------&gt;  rconfirm
-  weekday  --취소 / 뒤로-----&gt;  confirm   배너 warn, 자동 전환 없음
+  car      --[다음]--------------&gt;  bridge    confirm 과 한 번에 그림, 우-&gt;좌 push 320ms
+  bridge   --[요일 선택하기]------&gt;  weekday   우-&gt;좌 push, 진입 후 300ms 는 입력 무시
+  bridge   --뒤로가기-------------&gt;  confirm   오버레이만 닫음, 배너 promo
+  confirm  --[설정]---------------&gt;  weekday
+  weekday  --[다음]---------------&gt;  rconfirm
+  weekday  --취소 / 뒤로----------&gt;  confirm   배너 warn
 
 불변식
-  1. 모든 전이는 대기 타이머를 먼저 취소한다
-  2. confirm 에는 자동 전환 훅이 없다 (있으면 취소가 취소된다)
-  3. 자동 전환 타이머는 화면이 보이는 동안에만 흐른다</code></pre>
+  1. bridge · confirm 어디에도 자동 전환이 없다
+  2. bridge 에서 빈 곳 탭은 아무 일도 없다 (뒤 화면으로 새지도 않는다)</code></pre>
         <p class="dd-n" style="margin-top:14px"><b>Android</b></p>
         <pre><code>val BridgeEasing = CubicBezierEasing(0.45f, 0f, 0.25f, 1f)
 
-// 브릿지 중 back = 오버레이 닫기. 뒤로 가는 게 아니라 그 자리에 서는 것
+// 브릿지 중 back = 오버레이 닫기. 이전 화면이 아니라 확인 화면에 머문다
 BackHandler(enabled = step == Step.Bridge) {
-    cancelAutoAdvance()
-    step = Step.Confirm          // 배너는 promo 유지
+    step = Step.Confirm          // 배너는 promo
 }</code></pre>
         <p class="dd-n" style="margin-top:14px"><b>iOS</b></p>
         <pre><code>let bridgeEasing = UICubicTimingParameters(
     controlPoint1: CGPoint(x: 0.45, y: 0),
     controlPoint2: CGPoint(x: 0.25, y: 1))
 
-// 브릿지 구간에만 차단. 어떤 경로로 벗어나든 반드시 되돌린다
-navigationController?.interactivePopGestureRecognizer?.isEnabled = (step != .bridge)</code></pre>
+// 브릿지가 떠 있으면 edge swipe 로 pop 하지 않고 오버레이만 닫는다
+func gestureRecognizerShouldBegin(_ g: UIGestureRecognizer) -&gt; Bool {
+    guard g === navigationController?.interactivePopGestureRecognizer else { return true }
+    if step == .bridge { closeBridge(); return false }   // 확인 화면에 머묾
+    return true
+}</code></pre>
         <p class="dd-n">모든 화면 전환은 우&rarr;좌 push, 뒤로가기는 그 역방향 pop 입니다.
           <b>확인 화면은 독립 단계가 아닙니다.</b> 정방향에서는 브릿지와 한 덩어리로 그려지고,
-          취소로 되돌아올 때만 단독으로 뜹니다.</p>
+          뒤로가기나 요일 선택 취소로 돌아올 때만 단독으로 보입니다.</p>
       </section>
 
       <section class="dd-sec">
-        <h3>인터럽트 · 플랫폼 분기</h3>
-        <p class="dd-n" style="margin:0 0 12px"><b>브릿지 구간에서만</b> 두 플랫폼이 갈립니다. 앞뒤 구간은 동일합니다. 탭 동작은 공통이라 위 상태 기계에 있습니다.</p>
+        <h3>뒤로가기 &middot; 인터럽트</h3>
         <table class="dd-t">
-          <tr><th><b>Android</b> back</th><td>back 을 받아 <b>흰 베일만 걷고 확인 화면에 정지</b>.
-            타이머 취소, 배너는 promo(<code class="i">[설정]</code>) 유지, 자동 전환 없음.
-            뒤로 가는 게 아니라 <b>그 자리에 서는 것</b>입니다.<br>
+          <tr><th>뒤로가기</th><td>Android back &middot; iOS edge swipe <b>모두 같은 동작</b>. 흰 베일만 걷고 확인 화면에 머묾
+            (배너 promo, <code class="i">[설정]</code> 으로 다시 진행 가능).<br>
             왼쪽 프로토타입에서는 <b>Esc</b> 가 이 자리입니다</td></tr>
-          <tr><th><b>iOS</b> edge swipe</th><td>브릿지 구간에만 <b>비활성</b>.
-            <code class="i">interactivePopGestureRecognizer.isEnabled = false</code></td></tr>
-          <tr><th>모션 축소</th><td>등장&middot;부유&middot;슬라이드 off. <b>총 2720ms</b> 로 단축</td></tr>
+          <tr><th>빈 곳 탭</th><td>아무 일도 없음. 오버레이가 탭을 흡수</td></tr>
+          <tr><th>백그라운드&middot;회전</th><td>화면 상태 그대로 유지. 자동 이동이 없어 따로 처리할 것 없음</td></tr>
+          <tr><th>모션 축소</th><td>등장&middot;부유&middot;슬라이드 off. 문구와 버튼이 바로 완성된 상태로 보임</td></tr>
         </table>
-        <p class="dd-n">back 은 &ldquo;닫기&rdquo;, edge swipe 는 &ldquo;이전 화면으로&rdquo;라 의미가 다릅니다.
-          브릿지 같은 오버레이에서는 <b>같게 맞추는 쪽이 오히려 어색합니다.</b>
-          Android 는 back 을 소비하므로 <b>predictive back 프리뷰가 뜨면 안 됩니다.</b></p>
-        <p class="dd-n">★★ <b>iOS 회귀 위험</b>: 브릿지에서 끈 제스처를 다시 켜지 않는 결함이 가장 흔합니다.
-          <b>자동 전환&middot;탭 스킵&middot;백그라운드 복귀 후 재생, 어떤 경로로 브릿지를 벗어나든 반드시 복구</b>해야 합니다.</p>
         <p class="dd-n">⚠ 오버레이를 터치 투과로 두면 안 됩니다(웹 <code class="i">pointer-events:none</code>,
-          iOS <code class="i">isUserInteractionEnabled=false</code>). 탭이 통과해 <b>뒤 화면의 뒤로가기가 눌립니다.</b>
-          핸들러 없이 받아내기만 하면 됩니다.</p>
+          iOS <code class="i">isUserInteractionEnabled=false</code>). 빈 곳 탭이 <b>뒤 화면의 뒤로가기나 [설정] 으로 새어 들어갑니다.</b></p>
       </section>
 
       <section class="dd-sec">
-        <h3>생명주기</h3>
-        <p class="dd-n" style="margin:0 0 10px"><b>자동 전환 타이머는 화면이 보이는 동안에만 흐릅니다.</b>
-          가려지면 취소하고, 다시 보일 때 브릿지를 <b>처음부터 재생</b>합니다.</p>
+        <h3>접근성</h3>
         <table class="dd-t">
-          <tr><th>백그라운드&middot;전화 수신</th><td>타이머 취소 &rarr; 복귀 시 처음부터 재생</td></tr>
-          <tr><th>회전&middot;프로세스 사망</th><td>동일. 뷰의 resumed/visible 생명주기에 타이머를 묶으면 한 규칙으로 덮입니다</td></tr>
+          <tr><th>포커스</th><td>진입 시 <b>[요일 선택하기] 버튼</b>으로 포커스 이동. 헤드라인은 그 앞에서 읽히도록 순서 유지</td></tr>
+          <tr><th>시간 제한</th><td>없음. 자동 이동이 없어 스크린 리더 사용자도 끝까지 읽고 누를 수 있음 (WCAG 2.2.1 해당 없음)</td></tr>
+          <tr><th>입력 가드</th><td>진입 후 <b>300ms</b> 는 버튼 입력 무시. 앞 화면 <code class="i">[다음]</code> 빠른 연타 대비</td></tr>
+          <tr><th>최소 터치 영역</th><td>쿠폰 <code class="i">[보기]</code> 는 시각 34dp 라 <b>히트 영역만 48dp</b> 로 확장. 보이는 크기는 Figma 그대로</td></tr>
         </table>
-        <p class="dd-n">브릿지의 임무는 <b>읽히는 것</b>입니다. 자리를 비운 사이 타이머만 흘려보내면 존재 이유가
-          사라집니다. 복귀했더니 요일 선택 화면이면, 브릿지가 막으려던 <b>바로 그 &ldquo;납치당한 느낌&rdquo;</b> 이 그대로 납니다.</p>
-      </section>
-
-      <section class="dd-sec">
-        <h3>접근성 · 정책</h3>
-        <table class="dd-t">
-          <tr><th>스크린 리더 켜짐</th><td><b>자동 전환을 끕니다.</b> 사용자가 직접 눌러 진행<br>
-            Android <code class="i">AccessibilityManager.isTouchExplorationEnabled</code><br>
-            iOS <code class="i">UIAccessibility.isVoiceOverRunning</code></td></tr>
-          <tr><th>포커스</th><td>진입 시 포커스를 <b>[요일 선택하기] 버튼</b>으로. 화면 전체 탭은 보조 경로라
-            스크린 리더에 따로 노출하지 않습니다</td></tr>
-          <tr><th>탭 스킵 가드</th><td>진입 후 <b>300ms</b> 는 탭 무시. 앞 화면 <code class="i">[다음]</code> 연타가
-            그대로 스킵으로 새는 걸 막습니다. <b>버튼이 [다음] 과 같은 자리라 연타가 그대로 떨어지므로 필수</b></td></tr>
-          <tr><th>최소 터치 영역</th><td>쿠폰 <code class="i">[보기]</code> 는 시각 34dp 라 <b>히트 영역만 48dp</b> 로 확장.
-            보이는 크기는 Figma 그대로</td></tr>
-        </table>
-        <p class="dd-n">정지 구간 2720ms 로도 TalkBack/VoiceOver 가 헤드라인과 서브를 다 읽는다는 보장이 없습니다.
-          자동 전환을 그대로 두면 <b>읽는 도중 화면이 넘어갑니다.</b>
-          WCAG 2.2.1(Timing Adjustable) 관점에서도 자동 전환은 조정 가능해야 합니다.</p>
-        <p class="dd-n">⚠ 접근성 서비스 감지는 <b>실행 중에도 바뀝니다.</b> 브릿지 진입 시점에 한 번만 읽지 말고
-          변경 콜백을 구독하세요. 왼쪽 프로토타입은 웹이라 이 감지가 불가능해, 오버레이 시맨틱과
-          300ms 가드까지만 재현돼 있습니다.</p>
       </section>
 
       <section class="dd-sec">
@@ -1425,25 +1381,19 @@ function fConfirm(kind){
    이 시점엔 아직 확정된 게 없어서(요일 선택에서 취소하면 경고 배너가 "아직
    완료되지 않았습니다"라고 말한다) 사실과 어긋나는 약속이 된다.
 
-   서브는 '자동 이동 예고'다. 한때 "탭하면 바로 이동" 만 두었는데, 수동 경로만
-   설명해서 누르지도 않았는데 넘어가는 게 실기기 시연에서 '납치'로 느껴졌다.
-   ⚠ 버튼이 생긴 뒤로는 더더욱 지우면 안 된다. 버튼은 '눌러야 넘어간다'로 읽혀서,
-   예고 없이 넘어가면 지금보다 더 놀란다.
-
-   바로 가는 방법은 하단 CTA [요일 선택하기]. '화면 어디든 탭'은 보이지 않는 조작이라
-   문구로만 알 수 있었다. 버튼은 차량 선택 [다음] 과 같은 자리·같은 스타일이라 엄지를
-   옮기지 않고 이어서 누른다(그래서 [다음] 연타가 그대로 떨어지니 300ms 가드가 중요).
-   화면 아무 곳 탭도 보조 경로로 남긴다. 오버레이를 pointer-events:none 으로 두면
-   탭이 뒤 화면의 뒤로가기로 새므로 안 된다.
-
-   진행바는 두지 않는다. 로딩이 없는 구간의 진행바는 가짜 로딩이고, 앱의 진짜
-   진행바까지 신뢰를 깎는다. 정지감은 아이콘 부유로만 준다. */
+   자동 전환은 없다. 넘어가는 방법은 문구 바로 아래 가운데 버튼 [요일 선택하기] 하나다.
+   하단 CTA 자리에 두면 엄지가 [다음] 을 누른 흐름 그대로 버튼까지 눌러 문구를 안 읽고
+   지나간다. 가운데 두면 아이콘 -> 헤드라인 -> 버튼 순서로 읽고 누르게 된다.
+   서브 문구('잠시 후 자동으로 이동해요')는 사실이 아니게 되어 뺐다.
+   화면 아무 곳 탭으로 넘어가는 경로도 없앴다. 버튼이 있는데 빈 곳을 눌러도 넘어가면
+   실수로 넘어간다. 단 오버레이는 탭을 '흡수'해야 한다(pointer-events:none 이면 뒤
+   화면의 뒤로가기로 샌다). */
 function fBridge(){
-  // 스크린 리더 포커스는 화면 전체가 아니라 진짜 버튼에 준다(wireFlow). 화면 탭은 보조 경로.
-  return `${fConfirm()}<div class="fw-breaker" data-flow="weekday">
+  // 진입 시 포커스는 버튼으로(wireFlow)
+  return `${fConfirm()}<div class="fw-breaker">
     <img src="${A.icCal}" alt="">
-    <div class="bk-tx"><b>마지막으로,<br>반복할 날짜를 알려주세요</b><span>잠시 후 자동으로 이동해요</span></div>
-    <div class="fw-cta bk-ctawrap"><button type="button" class="b bk-cta" data-flow="weekday">요일 선택하기</button></div>
+    <div class="bk-tx"><b>마지막으로,<br>반복할 날짜를 알려주세요</b></div>
+    <button type="button" class="bk-cta" data-flow="weekday">요일 선택하기</button>
   </div>`;
 }
 
@@ -1843,32 +1793,15 @@ function layout(){
 }
 
 /* ── 플로우 단계 전환 ────────────────────────────────────────────
-   예약 확인에 들어가면 사용자가 아무것도 안 해도 bridge를 거쳐 요일 선택으로 간다.
-   ⚠ 자동 구간에 타이머가 겹치면 단계가 건너뛰어지므로 진입할 때마다 항상 먼저 지운다. */
-/* bridgeStay 는 '읽는 시간'이 아니라 차량 선택에서 [다음] 을 누른 순간부터
-   요일 선택으로 넘어갈 때까지의 총 시간이다.
-   타임라인: 0 슬라이드 시작 / 180 베일 시작 / 480 베일 완성 / 780 문구까지
-   등장 완료 / 3500 요일 선택. 실제 정지 구간은 3500 - 780 = 2720ms 다.
+   차량 선택 [다음] 은 확인 화면과 bridge 를 한 번에 그리고, bridge 에서 [요일 선택하기] 로 넘어간다.
+   flowTimers 는 지금 브릿지에서 쓰지 않지만, 단계 전환마다 비우는 안전장치로 남긴다. */
+/* 브릿지에는 자동 전환이 없다(2026-09-15). [요일 선택하기] 를 눌러야 넘어간다.
+   체류를 1900 -> 2600 -> 3500ms 로 늘려도 실기기에서 계속 '납치당하는 느낌'이었고,
+   버튼을 넣고 나니 '누르면 넘어간다'(버튼)와 '안 눌러도 넘어간다'(자동)가 반대 신호가 됐다.
+   자동 전환을 없애면 타이머·생명주기 재생·모션 축소 체류·스크린 리더 예외가 전부 사라진다.
 
-   2026-09-15 실기기 시연에서 1900ms(정지 1120)가 '납치당하는 느낌'이라 2600 으로,
-   그래도 짧다는 피드백에 3500 으로 다시 늘렸다.
-   예전 2000ms 에서 '멈춘 것 같다'던 건 아이콘 부유가 없던 때라 조건이 달랐다.
-   지금은 부유(8dp, 2초 주기)가 살아 있어 길게 둬도 멈춤으로 읽힐 위험이 낮다.
-   ⚠ 앱에서는 타이머를 [다음] 탭 시점이 아니라 '브릿지가 화면에 뜬 시점'부터 센다.
-   탭 시점부터 세면 API 응답을 기다린 만큼 브릿지가 잘려 보인다.
-
-   등장 커브는 cubic-bezier(.45,0,.25,1). 종전 (.2,.8,.3,1) 은 두 번째 값이 .8 이라
-   시작하자마자 최고 속도로 튀어나가는 감속 커브였고, 그게 '급하다'의 원인이었다.
-   지금은 y1=0 으로 눕혀 시작을 만들고 x2=.25 로 끝을 길게 끈다.
-   ⚠ 커브만 바꾸고 지속시간을 그대로 두면 양끝이 느려진 만큼 중간이 빨라져
-   오히려 더 급해 보인다. 그래서 260 -> 380ms 로 같이 늘렸다.
-   등장 지연은 CSS(.fw-breaker 계열 animation-delay)가 쥐고 있으므로 이 값만
-   바꾸면 정지 구간이 늘고 준다. */
-const FLOW_T = { bridgeStay: 3500, bridgeStayReduced: 2720 };
-/* 모션 축소는 '움직임'을 끄자는 설정이지 '읽는 속도'를 바꾸자는 게 아니다.
-   등장 780ms 가 사라지면 그만큼 총 시간도 줄여야 한다. 그대로 두면 애니메이션을
-   끈 사람에게 정지 화면을 780ms 더 보여주는 셈이 된다. 정지 구간 2720ms 는 동일. */
-const prefersReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+   등장 커브는 cubic-bezier(.45,0,.25,1). 종전 (.2,.8,.3,1) 은 시작하자마자 최고 속도라
+   급해 보였다. 커브만 바꾸면 중간이 빨라지므로 260 -> 380ms 로 같이 늘렸다. */
 let flowTimers = [];
 function clearFlowTimers(){ flowTimers.forEach(clearTimeout); flowTimers = []; }
 
@@ -1885,11 +1818,7 @@ function goStep(step){
   document.body.classList.toggle('flowopen', !!step);
   if (step) window.scrollTo(0, 0);
   renderFlow();
-  if (step === 'bridge'){
-    bridgeShownAt = performance.now();
-    flowTimers.push(setTimeout(() => goStep('weekday'),
-      prefersReduced() ? FLOW_T.bridgeStayReduced : FLOW_T.bridgeStay));
-  }
+  if (step === 'bridge') bridgeShownAt = performance.now();   // 버튼 입력 가드 기준점
 }
 
 /* 단계만 다시 그린다. 홈(app)은 그대로 두므로 스크롤 위치가 안 튄다.
@@ -2030,27 +1959,17 @@ bind('segPrev', 'prevCount', Number);
 bind('segCoupon', 'coupon', Number);
 bind('segMode', 'mode');
 
-/* 브릿지 진입 직후 300ms 는 탭을 무시한다. 앞 화면 [다음] 연타가 그대로 스킵으로
-   새는 걸 막는다. 이 구간은 베일이 아직 안 찼고(480ms 완성) 문구도 안 떠서,
-   여기 들어온 탭은 '건너뛰겠다'는 의도일 수 없다. */
+/* 브릿지 진입 직후 300ms 는 버튼 입력을 무시한다. 버튼이 가운데라 [다음] 연타는 대개
+   빈 곳에 떨어지지만, 빠른 두 번 탭·키보드 연타 대비로 남긴다. 이 구간은 베일도
+   문구도 아직 안 떠서 여기 들어온 입력은 '읽고 누른' 것일 수 없다. */
 const TAP_GUARD = 300;
 let bridgeShownAt = 0;
 
-/* Android back 의 웹 대응물로 Esc 를 둔다. 브릿지는 오버레이라, back/Esc 의 의미는
-   '뒤로 가기'가 아니라 '오버레이 닫기'다. 타이머를 끄고 베일만 걷어 확인 화면에 세운다.
-   ⚠ iOS edge swipe 는 '이전 화면으로'라 의미가 달라 브릿지 구간에만 비활성한다(앱 구현). */
+/* 뒤로가기(Android back · iOS edge swipe)의 웹 대응물로 Esc 를 둔다. 브릿지는 오버레이라
+   뒤로가기의 의미는 '이전 화면'이 아니라 '오버레이 닫기'다. 베일만 걷어 확인 화면에 세운다.
+   자동 전환이 없어져 타이머 경합이 사라졌으므로 두 플랫폼 동작을 하나로 통일했다. */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && S.step === 'bridge'){ S.cfBanner = 'promo'; goStep('confirm'); }
-});
-
-/* 자동 전환 타이머는 화면이 보이는 동안에만 흐른다. 가려지면 취소하고, 다시 보일 때
-   처음부터 재생한다. 브릿지의 임무는 '읽히는 것'이라, 자리를 비운 사이 타이머만
-   흘려보내면 존재 이유가 사라진다(복귀했더니 요일 선택 = 브릿지가 막으려던 그 느낌).
-   앱에서는 백그라운드 전환·전화 수신·회전·프로세스 사망이 전부 이 한 규칙으로 덮인다. */
-document.addEventListener('visibilitychange', () => {
-  if (S.step !== 'bridge') return;
-  if (document.hidden) clearFlowTimers();
-  else goStep('bridge');
 });
 
 document.getElementById('playBridge').addEventListener('click', () => {
