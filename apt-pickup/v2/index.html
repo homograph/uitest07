@@ -918,7 +918,7 @@
   /* ── 9/15 T맵 하단 배너안(기존 오버레이 컴포넌트 12400:533657 · 제안) ─────────────
      말풍선 대신 하단 검정 띠 하나. Figma banner: 360×88 · #000 · pad20 · gap20 · SP/32 Bold #fff 32/48.
      문구는 위치만('지하 1층 102동 3-4라인') — '에서 탈게요' 는 뺀다. × 대신 '자세히' 하나(누르면 타다 앱 카드).
-     흐름: 뜰 때·위치 변경·300m 진입 때만 2바퀴 흐르고 맨 앞에서 멈춘다. 넘치면 끝을 흐린다.
+     흐름: 넘치면 계속 흐르고(9/15 무한 루프) 잘리는 양 끝을 흐린다. 뜰 때·위치 변경·300m 진입 때 처음부터 다시.
      배너 전체가 누르는 자리다 — 주행 중 작은 버튼을 겨누지 않게. */
   /* 9/15 A안(두 줄): 한 줄에 변경 칩·글자·자세히를 나눠 쓰니 위치 글자가 150~210px 로 좁아졌다.
      윗줄 = 상태(앱 카드와 같은 '고객이 작성함/변경함' 15 Bold) + '자세히 ›'(15 Bold #C0C8D9),
@@ -929,13 +929,16 @@
   .tbn-st{font-size:15px;line-height:22px;font-weight:700;color:#32a2fa;}
   .tbn-st.chg{color:#fe4c00;}
   .tbn[hidden]{display:none;}
-  .tbn-win{display:block;min-width:0;overflow:hidden;white-space:nowrap;}
-  .tbn.ovf:not(.run) .tbn-win{-webkit-mask-image:linear-gradient(90deg,#000 80%,transparent);mask-image:linear-gradient(90deg,#000 80%,transparent);}
+  /* 9/15: 넘치면 계속 흐른다(무한 루프). 창을 좌우 여백(20)까지 넓혀 글자가 배너 끝까지 흐르고,
+     잘리는 양 끝 24px 에 그라데이션을 준다. 넘치지 않으면 멈춘 채 그라데이션도 없다. */
+  .tbn-win{display:block;min-width:0;overflow:hidden;white-space:nowrap;margin:0 -20px;padding:0 20px;}
+  .tbn.ovf .tbn-win{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);
+    mask-image:linear-gradient(90deg,transparent 0,#000 24px,#000 calc(100% - 24px),transparent 100%);}
   .tbn-trk{display:inline-flex;gap:var(--mq-gap,48px);will-change:transform;}
   .tbn-t{font-size:32px;line-height:48px;font-weight:700;color:#fff;}
   .tbn-t2{display:none;}
   .tbn.run .tbn-t2{display:inline;}
-  .tbn.run .tbn-trk{animation:mq var(--mq-dur,6s) linear 2;}
+  .tbn.run .tbn-trk{animation:mq var(--mq-dur,6s) linear infinite;}
   @keyframes mq{from{transform:translateX(0)}to{transform:translateX(calc(-1 * var(--mq-d,0px)))}}
   .tbn-more{flex:0 0 auto;display:flex;align-items:center;gap:2px;font-size:15px;line-height:22px;font-weight:700;color:#c0c8d9;}
   @media (prefers-reduced-motion:reduce){ .tbn.run .tbn-trk{animation:none;} }
@@ -2778,11 +2781,11 @@
       el('tb-eta').textContent=TB0.eta; el('tb-sub').textContent=TB0.sub;
     }
   }
-  /* 하단 배너 — 흐를지(넘칠 때만) 재고, 뜰 때·값/변경 표시가 바뀔 때·300m 진입 때 2바퀴 흘린다 */
+  /* 하단 배너 — 흐를지(넘칠 때만) 재고, 뜰 때·값/변경 표시가 바뀔 때·300m 진입 때 처음부터 다시 (루프)바퀴 흘린다 */
   function mqPlay(){
     const b=el('tbn'); if(b.hidden) return;
     const win=el('tbn-win'), t=el('tbn-t');
-    const over = t.scrollWidth > win.clientWidth + 1;
+    const over = t.scrollWidth > win.clientWidth - 40 + 1;   /* 창은 좌우 여백 20씩 넓혀 두었다 */
     b.classList.toggle('ovf', over);
     b.classList.remove('run');
     if(!over) return;
@@ -2968,7 +2971,6 @@
   });
   el('tbn').addEventListener('click',()=>{ S.dview='app'; S.msgUnread=false; render(); });
   el('tbn').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el('tbn').click(); } });
-  el('tbn-trk').addEventListener('animationend',()=>el('tbn').classList.remove('run'));
   $$('.tov').forEach(b=>b.addEventListener('click',()=>{ S.ovMode=b.dataset.ov; if(S.appr) S.appr.stopped=false; render(); }));
   el('dstop').addEventListener('click',()=>{ if(!S.appr) return; S.appr.stopped=!S.appr.stopped; render(); });
   el('dreplay').addEventListener('click',()=>{ apprSpeak('first'); mqPlay(); });
