@@ -574,21 +574,20 @@
      전엔 :hover 회색(#e3e4e8)이 터치 뒤에도 남고 :focus 검은 테두리가 입력 칸처럼 그려졌다 — 둘 다 걷는다.
      키보드 사용자용 윤곽선(button:focus-visible)은 그대로 둔다. */
   /* Figma row1·row2 = wrap 줄간격 8 — 폭이 모자라 '동'·'라인' 칸이 세로로 접히면 그 사이가 8 이다(전엔 0 이라 붙었다) */
-  .sent{display:flex;flex-wrap:wrap;align-items:center;row-gap:8px;margin:0;
+  /* 9/15: Figma 구조 그대로 sentence(col gap14) > row1·row2(row wrap gap8 · 줄간격8).
+     예전 한 줄 flex + br(-2 보정) 방식은 190 폭에서 row1 이 접히면 그 줄 사이가 6 이 됐다. */
+  .sent{display:flex;flex-direction:column;align-items:flex-start;gap:14px;margin:0;
     font-size:22px;line-height:46px;font-weight:600;letter-spacing:-.4px;color:var(--gray-950);}
+  .sent .srow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;width:100%;}
+  .sent .srow .fld{margin:0;}
   .sent .w{flex:0 0 auto;}
-  .sent .w:not(.tail2){margin-right:8px;}
   /* 접히는 자리를 고정한다. 우연히 접히면 '1012동'과 '2-5호라인'처럼
      한 덩어리인 주소가 두 줄로 갈라진다. */
   /* 줄바꿈 자리에 실제 높이를 준다. line-height 만으로는 '지하 2층' 과 '87동' 줄이 붙어 보였다 */
   /* row1→row2 는 14(sentence gap). 줄간격 8 이 br 위아래로 두 번 붙어 16 이 되므로,
      br 앞(1줄) 칸들의 아래 여백을 -2 로 당겨 14 로 맞춘다. br 자체의 음수 여백은 줄 높이 0 에서 막혀 안 먹는다. */
-  .sent{--r1gap:-2px;}
-  .sent .br{flex:0 0 100%;height:0;}
-  .sent > :not(.br):not(.br ~ *){margin-bottom:var(--r1gap);}
   /* 글꼴을 키우면 한 줄에 두 칸이 안 들어간다. 웹은 줄바꿈이 알아서 한 칸씩 내리지만
      네이티브 HStack 은 안 넘어간다 — 구현할 때 flow 레이아웃이나 fontScale 분기가 필요하다. */
-  .sent .br + .fld{margin-left:0;}
   /* '앞에서 탈게요' 는 고정 문구다. 줄이 바뀌어도 값이 갈라지지 않도록 따로 떼어 두고,
      입력값이 아니라는 게 보이게 한 톤 낮춘다. */
   .sent .tail2{font-weight:500;color:var(--gray-500);}
@@ -1202,16 +1201,15 @@
 
           <div class="fform" id="fform" hidden>
             <div class="seg" id="f-seg"></div>
-            <div class="sent" id="f-sent">
+            <div class="sent" id="f-sent"><span class="srow" id="f-row1">
               <button type="button" class="fld pick" id="f-lvl" hidden><span class="roll" id="f-lvl-t"><span class="rw"><span>지하</span><span>지상</span></span></span><svg class="ic" width="14" height="14" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.9999 12.3999L34.4873 25.8873L32.0125 28.3622L20.9999 17.3497L9.98732 28.3622L7.51245 25.8873L20.9999 12.3999Z" fill="currentColor"/></svg></button>
               <span class="w" id="f-w-u">지하</span>
               <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="numeric"
-                     maxlength="1" placeholder="1" aria-label="몇 층" /><span class="u">층</span><span class="bx" id="f-floor-b" hidden></span></label>
-              <span class="br" id="f-br1"></span>
-              <label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="numeric" maxlength="8"
+                     maxlength="1" placeholder="1" aria-label="몇 층" /><span class="u">층</span><span class="bx" id="f-floor-b" hidden></span></label></span>
+              <span class="srow" id="f-row2"><label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="numeric" maxlength="8"
                      placeholder="101" aria-label="몇 동" /><span class="u">동</span><span class="nn" id="f-dong-nn" hidden>동 없음</span></label>
               <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="numeric" maxlength="8"
-                     placeholder="1-2" aria-label="라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label>
+                     placeholder="1-2" aria-label="라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label></span>
             </div>
             <p class="stail" id="f-tail">에서 탈게요.</p>
             <div class="fhint" id="f-hint" hidden>
