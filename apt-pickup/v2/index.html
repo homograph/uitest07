@@ -157,7 +157,7 @@
      오른쪽 패딩만 18 인 건 액션 글자('입력'/'수정')가 모서리에 붙지 않게 하는 여백이다. */
   .pkbox{box-sizing:border-box;width:100%;font:inherit;text-align:left;
     background:#f9f9f9;box-shadow:inset 0 0 0 1px var(--gray-e6);border:none;border-radius:4px;   /* 9/14 Figma 12190:275041: off white 단색 + 테두리 #e6e9ef */
-    padding:12px 10px 12px 12px;display:flex;flex-direction:row;align-items:center;gap:12px;cursor:pointer;}
+    padding:12px 10px 12px 14px;display:flex;flex-direction:row;align-items:center;gap:12px;cursor:pointer;}   /* 9/16 Figma 12469:541338: 왼쪽 12 → 14 */
   /* 9/6 재설계: 상태를 나르는 축이 아이콘에서 '카드 면' 으로 옮겨졌다.
      값이 기사에게 가 있으면 면 전체가 파랗게 물들고, 아직이면 회색으로 남는다.
      전송 중은 값이 있어도 아직 안 닿았으므로 회색이다(.filled 뒤에 와서 이긴다). */
@@ -219,7 +219,7 @@
   .pktx .l2[hidden]{display:none;}
   .pktx.ph .l1{font-weight:700;color:var(--gray-800);}
   .pktx.ph .l2{color:var(--gray-600);}
-  .pktx.fill .l1{color:var(--gray-950);font-weight:500;}   /* 9/14 #000 → #171A24 · Body_3_Medium */
+  .pktx.fill .l1{color:var(--gray-900);font-weight:500;}   /* 9/16 Figma 12469:541338: #171A24 → #262A38 · Body_3_Medium */
   .pktx.fill .l2{color:var(--gray-600);}
   .pkbox.sending .pktx.fill .l1{color:var(--gray-600);}
   .pkbox.sending .pktx.fill .l2{color:var(--gray-600);}
