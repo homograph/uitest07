@@ -640,16 +640,13 @@
   .fhint .ft{margin:0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
   .fhint .ft b{color:var(--gray-700);font-weight:600;}
   .fhint .ft:empty{display:none;}
-  .fhint .fa{margin-top:0;border:none;box-shadow:inset 0 0 0 1px var(--gray-80);background:#fff;border-radius:9999px;
+  /* 9/16 DS chip_button(781:2076) 채움형으로 위계를 올렸다 — '라인 없음' 이 선택지라는 걸 칩이 말해야 한다.
+     흰 면 + 회색 1px 은 배경(#fff)에 묻혀 '누를 수 있는 답' 으로 안 읽혔다. */
+  .fhint .fa{margin-top:0;border:none;background:#f1f9fe;border-radius:9999px;
     padding:10px 14px;font:inherit;font-size:13px;line-height:18px;font-weight:400;
     color:var(--gray-800);text-decoration:none;cursor:pointer;}
+  .fhint .fa:active{background:#e3f1fb;}
   .fhint .fa[hidden]{display:none;}
-  /* 키패드 전환 칩 — Figma '입력 필드 & 키패드': 칸에 포커스가 있을 때(키패드가 올라와 있을 때) 키패드 바로 위 가운데.
-     스타일은 hint-slot 칩과 같은 chip_button(흰 면 · #E3E4E8 1px · r9999 · pad10/14 · 13 #383D4F) */
-  /* ph-body 아래 여백(24)을 12 만큼 되돌려 키패드 위 간격을 12 로 */
-  .kbsw{align-self:center;margin:auto 0 -12px;border:0;box-shadow:inset 0 0 0 1px var(--gray-80);background:#fff;border-radius:9999px;
-    padding:10px 14px;font:inherit;font-size:13px;line-height:18px;font-weight:400;color:#383d4f;cursor:pointer;}
-  .kbsw[hidden]{display:none;}
   /* Figma: 힌트 액션이 밑줄 링크에서 DS chip_button / Neutral Weak Outline 으로 바뀌었다.
      설명문이 빠지고 액션만 남으면서, 누를 수 있다는 것을 밑줄 대신 알약 모양이 말한다. */
   .fhint .fas{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
@@ -1251,11 +1248,11 @@
             <div class="sent" id="f-sent"><span class="srow" id="f-row1">
               <button type="button" class="fld pick" id="f-lvl" hidden><span class="roll" id="f-lvl-t"><span class="rw"><span>지하</span><span>지상</span></span></span><svg class="ic" width="14" height="14" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M20.9999 12.3999L34.4873 25.8873L32.0125 28.3622L20.9999 17.3497L9.98732 28.3622L7.51245 25.8873L20.9999 12.3999Z" fill="currentColor"/></svg></button>
               <span class="w" id="f-w-u">지하</span>
-              <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="numeric"
+              <label class="fld" id="f-fld-floor"><input class="bv fl" id="f-floor" inputmode="text"
                      maxlength="1" placeholder="1" aria-label="몇 층" /><span class="u">층</span><span class="bx" id="f-floor-b" hidden></span></label></span>
-              <span class="srow" id="f-row2"><label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="numeric" maxlength="8"
+              <span class="srow" id="f-row2"><label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="text" maxlength="8"
                      placeholder="101" aria-label="몇 동" /><span class="u">동</span><span class="nn" id="f-dong-nn" hidden>동 없음</span></label>
-              <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="numeric" maxlength="8"
+              <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="text" maxlength="8"
                      placeholder="1-2" aria-label="라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label></span>
             </div>
             <p class="stail" id="f-tail">에서 탈게요.</p>
@@ -1275,7 +1272,6 @@
               <p class="askhelp" id="f-etc-help"></p>
             </div>
           </div>
-          <button type="button" class="kbsw" id="f-kbsw" hidden>문자로 입력</button>
         </div>
         <div class="ph-foot">
           <div class="prev2" id="prev2"><span id="prev2-tx">고르면 기사님께 갈 문장이 여기 만들어져요</span></div>
@@ -2210,24 +2206,14 @@
     }
   }
   /* 지금 포커스된 칸의 안내만 띄운다. 슬롯 높이는 고정이라 오갈 때 아래가 튀지 않는다 */
-  /* 숫자 키패드가 기본이고 '문자로 입력' ↔ '숫자로 입력' 으로 전환한다
-     (동 '관리동'·'타운하우스동', 층 'L', 라인 '-'·'~' 같은 값). iOS 는 .numbersAndPunctuation 도 고려 가능(주석).
-     ⚠ 전환 칩은 칸 아래 hint-slot 이 아니다 — Figma '입력 필드 & 키패드' 에서 키패드 바로 위 가운데에 떠 있다(#f-kbsw).
-       hint-slot 에는 '동이 없어요 / 라인이 없어요' 만 남는다. */
-  const kbLabel = k => (S.kb && S.kb[k]==='text') ? '숫자로 입력' : '문자로 입력';
-  function toggleKb(id,k){
-    S.kb[k] = S.kb[k]==='text' ? 'numeric' : 'text';
-    const i=el(id); i.inputMode=S.kb[k];
-    /* 모바일 키보드는 포커스를 다시 받아야 바뀐다 */
-    i.blur(); i.focus();
-  }
+  /* 9/16 Figma 12469:538737: 세 칸 모두 기본 자판(숫자 줄 + 문자) 하나로 통일 — 전환 칩은 없앴다.
+     라인은 '1,2호라인'(최다) 처럼 쉼표·물결이 흔하고, 동은 '가동'·'C동' 이 있어 숫자 전용이면 못 넣는다. */
   const HINT = {
     dong: { t:'', a:()=>'동이 없어요',
             go:()=>{ S.d.noDong=true; S.d.dong=''; S.focus=null; renderSentence(); paintFoot(); } },
     line: { t:'', a:()=>'라인이 없어요',
             go:()=>{ S.d.noLine=true; S.d.line=''; S.focus=null; renderSentence(); paintFoot(); } }
   };
-  const KB_FIELD = {floor:'f-floor', dong:'f-dong', line:'f-line2'};
   /* 값이 기본 폭을 넘칠 때만 늘린다. 늘 내용에 딱 맞추면 한 글자마다 옆 칸이 밀린다 */
   let MEAS=null;
   function fitBv(i){
@@ -2258,9 +2244,6 @@
     if(cfg && cfg.a2) a2.textContent = cfg.a2();
     el('f-hint').classList.add('on');
     el('f-hint').hidden = !(el('f-hint-t').innerHTML || !a.hidden || !a2.hidden);
-    const kb=el('f-kbsw'), onKb = !!KB_FIELD[S.focus] && !S.ro;
-    kb.hidden = !onKb;
-    if(onKb) kb.textContent = kbLabel(S.focus);
   }
   function paintFEtc(){
     const p=el('f-etc-help'); if(!p) return;
@@ -2296,9 +2279,6 @@
     const a=el('f-hint-a');
     a.addEventListener('mousedown',ev=>ev.preventDefault());
     a.addEventListener('click',()=>{ const c=HINT[S.focus]; if(c && c.go) c.go(); });
-    const kbsw=el('f-kbsw');
-    kbsw.addEventListener('mousedown',ev=>ev.preventDefault());
-    kbsw.addEventListener('click',()=>{ const k=S.focus; if(KB_FIELD[k]) toggleKb(KB_FIELD[k], k); });
     const a2=el('f-hint-a2');
     a2.addEventListener('mousedown',ev=>ev.preventDefault());
     a2.addEventListener('click',()=>{ const c=HINT[S.focus]; if(c && c.go2) c.go2(); });
@@ -2438,14 +2418,12 @@
 
   function openForm(where, ro){
     S.opened=where; S.skipped={}; S.ro=!!ro;
-    /* 이미 쓴 길 안내가 있으면 펼친 채로 연다 — 접힌 채 열면 안 보이는 값이 된다 */
-    S.etcOpen = !!(S.current && S.current.etc && S.current.etc.trim());
+    /* 9/16: 펼침이 기본이다. 접혀 있으면 '입구로 들어오세요' 같은 안내를 아예 못 보고 지나친다(요청사항의 경로 안내 20.3%). */
+    S.etcOpen = true;
     S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false};
     S.d0 = flat(S.d);   /* 닫을 때 '바꾼 게 있나' 의 기준 */
     el('pdlg').hidden = true;
-    /* 숫자 키패드가 기본(Figma '입력 필드 & 키패드') — 칸마다 '문자로 입력' 으로 전환 */
-    S.kb = {floor:'numeric', dong:'numeric', line:'numeric'};
-    [['f-floor','floor'],['f-dong','dong'],['f-line2','line']].forEach(([id,k])=>{ el(id).inputMode='numeric'; });
+    [['f-floor','floor'],['f-dong','dong'],['f-line2','line']].forEach(([id,k])=>{ el(id).inputMode='text'; });
     /* Figma 24개 변형 모두 제목이 '상세 위치 입력' 이다 — 상태별로 나누지 않기로 했다.
        (첫 입력/변경/수정 불가를 제목으로 구분하던 것을 되돌렸다) */
     el('ph-title').textContent = '상세 위치';
