@@ -2956,7 +2956,7 @@
           <tr><td>펼침</td><td>상태 줄(16 Bold) + 위치(32 Bold)</td><td>픽업 구간 시작 · 위치 변경 · 300m 진입</td></tr>
           <tr><td>접힘</td><td>208×58 탭(P 30 · 위치 18 · ⌄)</td><td>× 또는 아래로 밀기</td></tr>
           <tr><td>변경</td><td>상태 줄 주황 + 다시 흐름</td><td>배차 후 고객이 수정</td></tr>
-          <tr><td>접힘+변경</td><td>표시 없음(미정)</td><td>접힌 동안 수정됨</td></tr>
+          <tr><td>접힘+변경</td><td><b>저절로 펼쳐지는 것</b>이 곧 알림</td><td>접힌 동안 수정됨</td></tr>
         </table>
         <h4>치수</h4>
         <ul>
@@ -2977,7 +2977,7 @@
         <h4>동작 규칙</h4>
         <ul>
           <li>위치가 한 줄에 들어가면 <b>흐르지 않습니다.</b> 넘칠 때만 흐르고, 넘치면 계속 돕니다.</li>
-          <li>배너 <b>어디를 눌러도</b> 타다 앱 카드로 갑니다(찾아오는 길은 거기에 있습니다). × 만 예외입니다. Figma 배너에 &lsquo;자세히&rsquo; 글자는 없습니다.</li>
+          <li>배너 <b>어디를 눌러도</b>(360×100) 타다 앱 카드로 갑니다. × 만 예외이고 <b>위로 밀어도</b> 같습니다. 오른쪽 끝 화살표(28)는 버튼이 아니라 <b>표식</b>입니다. 찾아오는 길은 앱 카드에 있습니다.</li>
           <li>접힌 상태는 <b>같은 호출 동안</b> 유지됩니다. 저절로 펼치는 건 위치 변경과 300m 진입 두 가지뿐입니다.</li>
           <li>300m 진입 때는 <b>음성 1회</b>와 함께 흐름을 처음부터 다시 재생합니다.</li>
           <li>운행 시작 후(고객 탑승)에는 배너를 내립니다.</li>
@@ -3017,6 +3017,10 @@
         &lt;span class=&quot;tbn-st&quot; id=&quot;tbn-st&quot;&gt;고객이 작성함&lt;/span&gt;
       &lt;/span&gt;
     &lt;/span&gt;
+    &lt;!-- 앱으로 간다는 표식. 버튼이 아니라 배너 전체가 누르는 자리다 --&gt;
+    &lt;svg class=&quot;tbn-go&quot; width=&quot;28&quot; height=&quot;28&quot;&gt;&lt;!-- › --&gt;&lt;/svg&gt;
+    &lt;span hidden&gt;
+    &lt;/span&gt;
     &lt;span class=&quot;tbn-win&quot; id=&quot;tbn-win&quot;&gt;
       &lt;span class=&quot;tbn-trk&quot; id=&quot;tbn-trk&quot;&gt;
         &lt;span class=&quot;tbn-t&quot; id=&quot;tbn-t&quot;&gt;지하 1층 1902동 3-4라인&lt;/span&gt;
@@ -3055,6 +3059,7 @@
 /* 상태 줄 16 Bold(DP/16 Bold) — 앱 안 카드와 같은 문구, 한 단계 큰 글자 */
 .tbn-st{font-size:16px; line-height:24px; font-weight:700; color:#32a2fa;}
 .tbn-st.chg{color:#fe4c00;}
+.tbn-go{position:absolute; right:16px; bottom:22px; color:#c0c8d9; pointer-events:none;}   /* 표식만 */
 
 /* 위치 줄 32 Bold. 창을 좌우 여백(20)까지 넓혀 글자가 배너 끝까지 흐르게 한다 */
 .tbn-win{display:block; overflow:hidden; white-space:nowrap; margin:0 -20px; padding:0 20px;}
@@ -3109,11 +3114,11 @@ banner.onclick = e =&gt; {                          // 배너 전체가 누르�
   if (state.collapsed) { state.collapsed = false; render(); return; }
   openTadaApp();                                 // 펼친 상태의 탭 → 앱 카드
 };
-// 아래로 36px 이상 밀면 접기 / 접힌 탭은 위·아래 어느 쪽이든 24px 이상이면 펼치기
+// 아래로 36px 밀면 접기 · 위로 36px 밀면 앱 카드 / 접힌 탭은 어느 쪽이든 24px 이상이면 펼치기
 
 /* ── 4) 저절로 다시 펼치는 두 경우 ────────────────────────── */
 function onPickupEvent(ev) {
-  if (ev.type === &#x27;CHANGED&#x27;)        { state.collapsed = false; speak(line(ev)); }   // 고객이 위치 변경
+  if (ev.type === &#x27;CHANGED&#x27;)        { state.collapsed = false; speak(line(ev)); }   // 접혀 있었다면 펼쳐지는 것이 알림
   else if (ev.type === &#x27;NEAR_300M&#x27;) { state.collapsed = false; speak(line(ev)); }   // 도착 60초 전 또는 500m 권장
   render();
 }
