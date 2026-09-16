@@ -1038,6 +1038,10 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       <section class="dd-sec">
         <h3>변경 이력</h3>
         <p class="dd-n" style="margin:0 0 12px">처음 핸드오프 이후 바뀐 것만 모았습니다. <b>최신이 위</b>입니다. 아래 섹션은 전부 바뀐 값 기준입니다.</p>
+        <p class="dd-when">2026-09-16 · 브릿지 문구</p>
+        <table class="dd-t dd-log">
+          <tr><th>브릿지 헤드라인</th><td><span class="dd-was">마지막으로, 반복할 <b>날짜</b>를 알려주세요</span> &rarr; <span class="dd-now">마지막으로, 반복할 <b>요일</b>을 알려주세요</span><span class="dd-why">다음 화면이 캘린더가 아니라 요일 칩이라 &ldquo;날짜&rdquo;가 기대를 어긋나게 함. 헤드라인 &middot; 버튼 &middot; 다음 화면 제목이 모두 &ldquo;요일&rdquo;로 이어짐</span></td></tr>
+        </table>
         <p class="dd-when">2026-09 · 홈 디자인 QA 반영 (Figma 12360:464772)</p>
         <table class="dd-t dd-log">
           <tr><th>히어로 상단 패딩</th><td><span class="dd-was">32dp</span> &rarr; <span class="dd-now">40dp</span><span class="dd-why">디자인 QA</span></td></tr>
@@ -1391,6 +1395,10 @@ function fConfirm(kind){
    이 시점엔 아직 확정된 게 없어서(요일 선택에서 취소하면 경고 배너가 "아직
    완료되지 않았습니다"라고 말한다) 사실과 어긋나는 약속이 된다.
 
+   헤드라인은 "날짜"가 아니라 "요일"이다(2026-09-16). 다음 화면이 캘린더가 아니라
+   요일 칩 7개라서, 날짜라고 하면 캘린더를 예상했다가 어긋난다. 헤드라인 -> 버튼
+   [요일 선택하기] -> 다음 화면 제목 "반복할 요일을 선택해주세요" 가 같은 말로 이어진다.
+
    자동 전환은 없다. 넘어가는 방법은 문구 바로 아래 가운데 버튼 [요일 선택하기] 하나다.
    하단 CTA 자리에 두면 엄지가 [다음] 을 누른 흐름 그대로 버튼까지 눌러 문구를 안 읽고
    지나간다. 가운데 두면 아이콘 -> 헤드라인 -> 버튼 순서로 읽고 누르게 된다.
@@ -1402,7 +1410,7 @@ function fBridge(){
   // 진입 시 포커스는 버튼으로(wireFlow)
   return `${fConfirm()}<div class="fw-breaker">
     <img src="${A.icCal}" alt="">
-    <div class="bk-tx"><b>마지막으로,<br>반복할 날짜를 알려주세요</b></div>
+    <div class="bk-tx"><b>마지막으로,<br>반복할 요일을 알려주세요</b></div>
     <button type="button" class="bk-cta" data-flow="weekday">요일 선택하기</button>
   </div>`;
 }
