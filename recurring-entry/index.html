@@ -680,6 +680,8 @@ body.mock.flowopen{overflow:hidden;}
   box-sizing:border-box;background:#19254d;color:#fff;font-family:inherit;
   font-size:16px;line-height:24px;font-weight:700;cursor:pointer;}
 .fw-breaker .bk-cta:active{background:#101a3d;color:#556895;}
+/* 코드로 준 포커스에는 테두리를 그리지 않는다(위 wireFlow 주석 참고). Tab 으로 오면 보인다. */
+.fw-breaker .bk-cta.noring:focus-visible{outline:none;}
 .fw-cta .p{flex:1 1 auto;display:flex;flex-direction:column;gap:2px;}
 .fw-cta .p i{font-style:normal;font-size:13px;color:#73788b;}
 .fw-cta .p b{font-size:18px;font-weight:700;color:#171a24;}
@@ -1213,6 +1215,7 @@ func gestureRecognizerShouldBegin(_ g: UIGestureRecognizer) -&gt; Bool {
         <h3>접근성</h3>
         <table class="dd-t">
           <tr><th>포커스</th><td>진입 시 <b>[선택하기] 버튼</b>으로 포커스 이동. 헤드라인은 그 앞에서 읽히도록 순서 유지</td></tr>
+          <tr><th>포커스 표시</th><td>네이티브는 <b>따로 그리지 마세요</b>. VoiceOver &middot; TalkBack 이 자체 표시를 그립니다. 프로토타입에서 파란 테두리가 보였다면 웹 브라우저의 포커스 링이라 앱과 무관합니다</td></tr>
           <tr><th>버튼 접근성 이름</th><td>보이는 글자는 <code class="i">선택하기</code>, 읽히는 이름은 <b><code class="i">날짜 선택하기</code></b>. 포커스가 버튼에 바로 꽂혀 헤드라인을 못 들을 수 있어서. Android <code class="i">contentDescription</code>, iOS <code class="i">accessibilityLabel</code>. 보이는 글자를 포함하므로 WCAG 2.5.3 충족</td></tr>
           <tr><th>시간 제한</th><td>없음. 자동 이동이 없어 스크린 리더 사용자도 끝까지 읽고 누를 수 있음 (WCAG 2.2.1 해당 없음)</td></tr>
           <tr><th>입력 가드</th><td>진입 후 <b>300ms</b> 는 버튼 입력 무시. 앞 화면 <code class="i">[다음]</code> 빠른 연타 대비</td></tr>
@@ -1972,9 +1975,18 @@ function wireFlow(){
       goStep(to);
     });
   });
-  // 브릿지는 스크린 리더가 읽을 수 있도록 포커스를 받고, 키보드로도 진행된다
+  /* 브릿지는 스크린 리더가 읽을 수 있도록 포커스를 받고, 키보드로도 진행된다.
+     ⚠ 이때 .noring 을 붙인다. 이 페이지 맨 위의 콘솔용 규칙
+     :where(button,a,[tabindex]):focus-visible 이 폰 화면 안의 <button> 에까지 적용돼서,
+     우리가 코드로 준 포커스에 파란 테두리가 그려진다. 디자인에 없는 것이고 실제 앱에도 없다
+     (iOS·Android 는 VoiceOver·TalkBack 이 자체 표시를 그린다).
+     탭으로 직접 이동했을 때는 테두리가 보여야 하므로 Tab 키가 눌리면 .noring 을 걷는다. */
   const bkBtn = stage.querySelector('.fwlayer .bk-cta');
-  if (bkBtn) bkBtn.focus({preventScroll:true});
+  if (bkBtn){
+    bkBtn.classList.add('noring');
+    bkBtn.focus({preventScroll:true});
+    bkBtn.addEventListener('blur', () => bkBtn.classList.remove('noring'), {once:true});
+  }
   // 요일 칩 토글. 최소 하나는 남긴다.
   stage.querySelectorAll('.fwlayer [data-day]').forEach(chip => {
     chip.addEventListener('click', e => {
@@ -2055,6 +2067,8 @@ let bridgeShownAt = 0;
    자동 전환이 없어져 타이머 경합이 사라졌으므로 두 플랫폼 동작을 하나로 통일했다. */
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && S.step === 'bridge'){ S.cfBanner = 'promo'; goStep('confirm'); }
+  // 키보드로 이동하기 시작하면 포커스 테두리를 되살린다
+  if (e.key === 'Tab') document.querySelectorAll('.noring').forEach(el => el.classList.remove('noring'));
 });
 
 document.getElementById('playBridge').addEventListener('click', () => {
