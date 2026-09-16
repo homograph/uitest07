@@ -1040,8 +1040,8 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
         <p class="dd-n" style="margin:0 0 12px">처음 핸드오프 이후 바뀐 것만 모았습니다. <b>최신이 위</b>입니다. 아래 섹션은 전부 바뀐 값 기준입니다.</p>
         <p class="dd-when">2026-09-16 · 브릿지 문구</p>
         <table class="dd-t dd-log">
-          <tr><th>브릿지 헤드라인</th><td><span class="dd-was">마지막으로, 반복할 <b>날짜</b>를 알려주세요</span> &rarr; <span class="dd-now">마지막으로, 반복할 <b>요일</b>을 알려주세요</span><span class="dd-why">다음 화면이 캘린더가 아니라 요일 칩 7개라서 &ldquo;날짜&rdquo;는 캘린더를 예상하게 만듦</span></td></tr>
-          <tr><th>브릿지 버튼</th><td><span class="dd-was">요일 선택하기</span> &rarr; <span class="dd-now">선택하기 (읽히는 이름은 &ldquo;요일 선택하기&rdquo; 유지)</span><span class="dd-why">32dp 위 헤드라인이 방금 &ldquo;요일&rdquo;을 말했고 다음 화면 제목도 같은 말이라 세 번 반복됨. 목적어는 헤드라인이, 진행은 버튼이 맡음</span></td></tr>
+          <tr><th>브릿지 버튼</th><td><span class="dd-was">요일 선택하기</span> &rarr; <span class="dd-now">선택하기 (읽히는 이름은 <code class="i">날짜 선택하기</code>)</span><span class="dd-why">32dp 위 헤드라인이 방금 목적어를 말했고 다음 화면 제목도 같은 종류의 말이라 사족이 됨. 목적어는 헤드라인이, 진행은 버튼이 맡음</span></td></tr>
+          <tr><th>브릿지 헤드라인</th><td colspan="1"><span class="dd-now">마지막으로, 반복할 <b>날짜</b>를 알려주세요 (변경 없음)</span><span class="dd-why">&ldquo;요일&rdquo;로 바꿨다가 되돌림. 브릿지 다음은 요일 하나가 아니라 <b>요일 &rarr; 기간(최대 4주)</b> 두 단계이고 그 결과물이 날짜라서, 요일이라고 하면 목표를 첫 입력으로 축소하게 됨</span></td></tr>
         </table>
         <p class="dd-when">2026-09 · 홈 디자인 QA 반영 (Figma 12360:464772)</p>
         <table class="dd-t dd-log">
@@ -1158,7 +1158,7 @@ func gestureRecognizerShouldBegin(_ g: UIGestureRecognizer) -&gt; Bool {
         <h3>접근성</h3>
         <table class="dd-t">
           <tr><th>포커스</th><td>진입 시 <b>[선택하기] 버튼</b>으로 포커스 이동. 헤드라인은 그 앞에서 읽히도록 순서 유지</td></tr>
-          <tr><th>버튼 접근성 이름</th><td>보이는 글자는 <code class="i">선택하기</code>, 읽히는 이름은 <b><code class="i">요일 선택하기</code></b>. 포커스가 버튼에 바로 꽂혀 헤드라인을 못 들을 수 있어서. Android <code class="i">contentDescription</code>, iOS <code class="i">accessibilityLabel</code>. 보이는 글자를 포함하므로 WCAG 2.5.3 충족</td></tr>
+          <tr><th>버튼 접근성 이름</th><td>보이는 글자는 <code class="i">선택하기</code>, 읽히는 이름은 <b><code class="i">날짜 선택하기</code></b>. 포커스가 버튼에 바로 꽂혀 헤드라인을 못 들을 수 있어서. Android <code class="i">contentDescription</code>, iOS <code class="i">accessibilityLabel</code>. 보이는 글자를 포함하므로 WCAG 2.5.3 충족</td></tr>
           <tr><th>시간 제한</th><td>없음. 자동 이동이 없어 스크린 리더 사용자도 끝까지 읽고 누를 수 있음 (WCAG 2.2.1 해당 없음)</td></tr>
           <tr><th>입력 가드</th><td>진입 후 <b>300ms</b> 는 버튼 입력 무시. 앞 화면 <code class="i">[다음]</code> 빠른 연타 대비</td></tr>
           <tr><th>최소 터치 영역</th><td>쿠폰 <code class="i">[보기]</code> 는 시각 34dp 라 <b>히트 영역만 48dp</b> 로 확장. 보이는 크기는 Figma 그대로</td></tr>
@@ -1397,15 +1397,16 @@ function fConfirm(kind){
    이 시점엔 아직 확정된 게 없어서(요일 선택에서 취소하면 경고 배너가 "아직
    완료되지 않았습니다"라고 말한다) 사실과 어긋나는 약속이 된다.
 
-   헤드라인은 "날짜"가 아니라 "요일"이다(2026-09-16). 다음 화면이 캘린더가 아니라
-   요일 칩 7개라서, 날짜라고 하면 캘린더를 예상했다가 어긋난다.
+   ⚠ 헤드라인은 "요일"이 아니라 "날짜"다(2026-09-16). 브릿지 다음은 요일 선택 하나가
+   아니라 [요일] -> [기간(최대 4주)] 두 단계이고, 그 결과물이 날짜(시작 4/13 ~ 종료 4/29)다.
+   "요일"로 바꾸면 목표를 두 입력 중 첫 번째로 축소하게 된다. 한 번 그렇게 바꿨다가 되돌렸다.
+   날짜 -> 요일은 어긋남이 아니라 하위 단계 진입이고, 요일 시트가 "4월 13일 (월) 부터"로
+   날짜를 다시 말해줘서 연결이 끊기지 않는다.
 
-   ⚠ 그래서 버튼은 "요일"을 다시 말하지 않는다. 32dp 위 헤드라인이 방금 말했고,
-   다음 화면 제목도 "반복할 요일을 선택해주세요"라 세 번 반복되면 사족이 된다.
-   목적어는 헤드라인이, 진행은 버튼이 맡는다. 다음 화면에서 다시 말하는 것은
-   중복이 아니라 도착 확인이라 그대로 둔다.
+   버튼은 목적어를 말하지 않는다. 32dp 위 헤드라인이 방금 말했고 다음 화면 제목도
+   같은 종류의 말이라, 버튼까지 말하면 사족이 된다. 목적어는 헤드라인이, 진행은 버튼이 맡는다.
    단 스크린 리더는 포커스가 버튼에 바로 꽂혀 헤드라인을 못 들을 수 있으므로
-   접근성 이름은 "요일 선택하기" 를 유지한다(보이는 레이블을 포함하므로 WCAG 2.5.3 충족).
+   접근성 이름은 "날짜 선택하기" 로 둔다(보이는 레이블을 포함하므로 WCAG 2.5.3 충족).
 
    자동 전환은 없다. 넘어가는 방법은 문구 바로 아래 가운데 버튼 [선택하기] 하나다.
    하단 CTA 자리에 두면 엄지가 [다음] 을 누른 흐름 그대로 버튼까지 눌러 문구를 안 읽고
@@ -1418,8 +1419,8 @@ function fBridge(){
   // 진입 시 포커스는 버튼으로(wireFlow)
   return `${fConfirm()}<div class="fw-breaker">
     <img src="${A.icCal}" alt="">
-    <div class="bk-tx"><b>마지막으로,<br>반복할 요일을 알려주세요</b></div>
-    <button type="button" class="bk-cta" data-flow="weekday" aria-label="요일 선택하기">선택하기</button>
+    <div class="bk-tx"><b>마지막으로,<br>반복할 날짜를 알려주세요</b></div>
+    <button type="button" class="bk-cta" data-flow="weekday" aria-label="날짜 선택하기">선택하기</button>
   </div>`;
 }
 
