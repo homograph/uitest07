@@ -717,7 +717,11 @@ body.mock.flowopen{overflow:hidden;}
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:48px;
   background:linear-gradient(180deg, rgba(255,255,255,.5) 0%, #fff 50%);}
 .fw-breaker .bk-grp{display:flex;flex-direction:column;align-items:center;gap:24px;}
-.fw-breaker img{width:120px;height:120px;object-fit:contain;}
+/* 아이콘 88dp 다(Figma 12469:538681, 2026-09-16). 120dp 일 때 이 아이콘 하나가
+   화면 잉크의 51.9% 를 먹어서, 장식이 헤드라인·버튼보다 무거운 역순 위계였다.
+   88 로 줄이니 34.8% 가 되고 순위가 버튼 > 아이콘 > 헤드라인 으로 정상화됐다.
+   덩어리(아이콘+헤드라인) 높이는 208 -> 176dp. 광학적 여백은 그대로 32dp 다. */
+.fw-breaker img{width:88px;height:88px;object-fit:contain;}
 /* 등장 연출. bridge 는 2초만 머무는 구간이라 진입을 0.48초 안에 끝내고 나머지 약 1.5초를
    정지 상태로 둬야 문구가 읽힌다. 그래서 요소 간 간격(80ms)을 지속시간(260ms)보다
    훨씬 짧게 잡아 앞 요소가 끝나기 전에 다음이 시작되도록 겹친다. */
@@ -755,12 +759,13 @@ body.mock.flowopen{overflow:hidden;}
   .fw-scr.push-in,.fw-scr.push-out,.fw-scr.pop-in,.fw-scr.pop-out{animation:none;}
 }
 .fw-breaker .bk-tx{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center;}
-/* 세로 그라디언트다. 위가 진하고 아래로 갈수록 밝아진다(대각선 아님).
-   Figma 렌더에서 글자 내부 픽셀만(안티에일리어싱 침식 후) 재서 얻은 값이다:
-   가로 변화는 세로의 1/26 이라 사실상 180deg. 정지 위치 1%/88% 도 실측 회귀. */
-.fw-breaker .bk-tx b{font-size:24px;line-height:32px;font-weight:700;
-  background:linear-gradient(180deg,#0063c5 1%,#5cb4fa 88%);
-  -webkit-background-clip:text;background-clip:text;color:transparent;}
+/* ⚠ 단색이다. 그라디언트로 되돌리지 말 것(Figma 12469:538681, 2026-09-16).
+   예전엔 위 #0063c5 -> 아래 #5cb4fa 세로 그라디언트였는데, 아래로 갈수록
+   흰 배경과의 대비가 떨어져 2행이 2.61:1 까지 내려갔다. 24px Bold 는 WCAG
+   "큰 글자"라 3:1 이 기준인데 그것도 못 넘겼다. 게다가 보조 문구인 1행이 가장
+   진하고 핵심 지시인 2행이 가장 흐려 강조가 뒤집혀 있었다.
+   단색 #0063c5 는 5.85:1 이다. 글자 수를 안 바꾸고 2행의 잉크 질량만 38% 올렸다. */
+.fw-breaker .bk-tx b{font-size:24px;line-height:32px;font-weight:700;color:#0063c5;}
 .fw-breaker .bk-tx span{font-size:14px;line-height:20px;color:#73788b;}
 /* 요일 선택 시트 */
 .fwlayer .scrim.on{opacity:1;}
@@ -1050,6 +1055,11 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       <section class="dd-sec">
         <h3>변경 이력</h3>
         <p class="dd-n" style="margin:0 0 12px">처음 핸드오프 이후 바뀐 것만 모았습니다. <b>최신이 위</b>입니다. 아래 섹션은 전부 바뀐 값 기준입니다.</p>
+        <p class="dd-when">2026-09-16 · 브릿지 위계 조정 (Figma 12469:538681)</p>
+        <table class="dd-t dd-log">
+          <tr><th>달력 아이콘</th><td><span class="dd-was">120dp</span> &rarr; <span class="dd-now">88dp</span><span class="dd-why">아이콘 하나가 화면 잉크의 51.9% 를 먹어 장식이 헤드라인·버튼보다 무거웠음. 34.8% 로 내려가며 순위가 버튼 &gt; 아이콘 &gt; 헤드라인 으로 정상화. 덩어리 높이 208 &rarr; 176dp</span></td></tr>
+          <tr><th>헤드라인 색</th><td><span class="dd-was">세로 그라디언트 <code class="i">#0063c5</code> &rarr; <code class="i">#5cb4fa</code></span> &rarr; <span class="dd-now">단색 <code class="i">#0063c5</code></span><span class="dd-why">2행 대비가 2.61:1 로 WCAG 큰 글자 기준 3:1 미달. 보조 문구인 1행이 가장 진하고 핵심 지시인 2행이 가장 흐린 강조 역전도 있었음. 단색은 5.85:1</span></td></tr>
+        </table>
         <p class="dd-when">2026-09-16 · 브릿지 문구 · 버튼 컴포넌트 · Figma 대조</p>
         <table class="dd-t dd-log">
           <tr><th>브릿지 간격 구조</th><td><span class="dd-was">아이콘 &middot; 문구 &middot; 버튼을 모두 32dp 간격</span> &rarr; <span class="dd-now">[아이콘+문구] 덩어리 내부 <b>24</b>, 덩어리&rarr;버튼 <b>48</b></span><span class="dd-why">Figma 12455:538601 구조. 덩어리 높이 208dp 까지 일치 확인</span></td></tr>
@@ -1091,12 +1101,12 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
           <tr><th>요일 선택으로</th><td><b>[선택하기] 를 눌렀을 때만.</b> 자동 이동 없음</td></tr>
         </table>
         <p class="dd-n"><b>레이아웃</b> ⚠ 셋을 같은 간격으로 늘어놓지 마세요.
-          <b>[아이콘 + 헤드라인] 이 한 덩어리</b>(내부 gap <b>24dp</b>, 덩어리 높이 208dp)이고,
-          그 덩어리와 버튼 사이가 <b>48dp</b> 입니다. 아이콘 120dp &middot; 패딩 24dp(4면) &middot;
+          <b>[아이콘 + 헤드라인] 이 한 덩어리</b>(내부 gap <b>24dp</b>, 덩어리 높이 176dp)이고,
+          그 덩어리와 버튼 사이가 <b>48dp</b> 입니다. 아이콘 <b>88dp</b> &middot; 패딩 24dp(4면) &middot;
           전체 세로 가운데 정렬.
           <b>헤드라인</b>은 <code class="i">Semantic26/Heading_1_5_Bold</code> 24/32,
-          <b>세로 그라디언트</b>(위 <code class="i">#0063c5</code> &rarr; 아래 <code class="i">#5cb4fa</code>)입니다.
-          대각선이 아닙니다.
+          <b>단색 <code class="i">#0063c5</code></b> 입니다. ⚠ 그라디언트로 만들지 마세요
+          (아래쪽 대비가 2.61:1 까지 떨어져 WCAG 큰 글자 기준 3:1 에 미달했습니다).
           <b>버튼은 디자인 시스템 컴포넌트</b>입니다. 직접 그리지 말고
           <code class="i">Action Button &rsaquo; Solid Button &rsaquo; Neutral Solid Button / Large</code>
           (<code class="i">icon=TextOnly &middot; state=Enabled &middot; layout=Hug</code>) 를 그대로 쓰세요.
