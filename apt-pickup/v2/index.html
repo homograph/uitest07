@@ -930,30 +930,19 @@
   /* 9/16: 줄어드는 기준을 띠의 위쪽 끝으로 — 내비 화면 아래쪽(남은 거리·속도·경로 버튼)을 덮지 않게
      탭은 T맵 하단 막대 바로 위에 뜬다. 상자는 110 으로 두고 펼침은 위 12 를 잘라 보이는 띠를 98 로 맞춘다.
      탭 = 상자 맨 위 204×48(막대 위 62 에 바닥을 맞춤) → 펼치면 아래로 자라므로 탭 화살표는 ⌄ 다. */
-  .tbn{position:absolute;left:0;right:0;bottom:0;height:112px;z-index:7;box-sizing:border-box;
+  /* 9/16 최종본: 접힘 탭이 없어져 clip-path 모프도 뺐다. 배너는 뜨거나 닫히거나 둘 중 하나다. */
+  .tbn{position:absolute;left:0;right:0;bottom:0;height:100px;z-index:7;box-sizing:border-box;
     background:#000;color:#fff;cursor:pointer;
-    clip-path:inset(12px 0 0 0 round 0);
-    transition:clip-path .34s cubic-bezier(.32,.72,.24,1),transform .22s cubic-bezier(.22,.61,.36,1);}
+    transition:transform .22s cubic-bezier(.22,.61,.36,1);}
   /* 접힘 = 208×58 · r16 · 오른쪽 끝(여백 0) · 화면 아래에서 42(하단 막대와 20 겹침) */
-  .tbn.min{clip-path:inset(12px 12px 42px calc(100% - 220px) round 16px);}   /* 9/16 결정: 오른쪽 12(엣지 제스처 회피) · 아래 = 내비 인셋+12 */
+  /* 9/16 최종본: 접힘 탭 폐기 — × 는 닫기만 한다. 다시 보는 길은 T맵 스택의 '픽업 위치' 버블이다. */
   .tbn.drag{transition:none;}
-  .tbn-full{position:absolute;left:0;right:0;bottom:0;height:100px;display:flex;flex-direction:column;gap:2px;padding:14px 20px 12px;box-sizing:border-box;
-    transition:opacity .2s ease .12s;}
-  .tbn.min .tbn-full{opacity:0;pointer-events:none;transition:opacity .14s ease;}
+  .tbn-full{position:absolute;left:0;right:0;bottom:0;height:100px;display:flex;flex-direction:column;gap:2px;padding:14px 20px 12px;box-sizing:border-box;}
   /* 접힌 탭의 내용은 잘라 낸 자리(오른쪽 아래 204×48)에 그대로 놓는다 */
-  .tbn-mini{position:absolute;right:12px;top:12px;width:208px;height:58px;display:flex;align-items:center;gap:8px;
-    padding:0 14px 0 12px;box-sizing:border-box;border:2px solid #fff;border-radius:16px;opacity:0;pointer-events:none;transition:opacity .12s ease;}
-  .tbn.min .tbn-mini{opacity:1;transition:opacity .2s ease .14s;}
-  .tbn-mt{flex:1 1 auto;min-width:0;font-size:18px;line-height:26px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .tbn-mp{flex:0 0 auto;width:30px;height:30px;}
-  .tbn-up{flex:0 0 auto;color:#c0c8d9;}
-  .tbn.min .tbn-trk{animation-play-state:paused;}
   .tbn-top{display:flex;align-items:center;justify-content:space-between;gap:12px;height:24px;}
   .tbn-lead{display:flex;align-items:center;min-width:0;}
   /* 9/16 '자세히' 글자를 걷고 표식만 남긴다 — 누르는 자리는 원래 글자가 아니라 배너 전체(360×100)다.
      위치 줄 오른쪽 끝, 그라데이션 위에 올려 흐르는 글자와 겹치지 않는다. */
-  .tbn-go{position:absolute;right:16px;bottom:22px;color:#c0c8d9;pointer-events:none;}
-  .tbn.min .tbn-go{opacity:0;}
   /* 9/16: × 를 띠 위 끝에 절반 걸치게 빼고 36 → 47(130%). 띠 안(overflow:hidden)이면 잘려서 형제로 둔다.
      자리: 띠 높이 98 · 버튼 47 → bottom 74.5 면 위 절반이 지도 위로 나온다. 접히면 같이 사라진다. */
   .tbn-x{position:absolute;right:16px;bottom:75px;z-index:8;width:50px;height:50px;padding:0;
@@ -963,8 +952,7 @@
   .tbn-x::after{content:"";position:absolute;inset:-4px;}
   .tbn-x:active{background:#1c1c1c;}
   .tbn-x[hidden]{display:none;}
-  .tbn-x.off{opacity:0;transform:scale(.7);pointer-events:none;}
-  @media (prefers-reduced-motion:reduce){ .tbn,.tbn-full,.tbn-mini,.tbn-x{transition:none;} }
+  @media (prefers-reduced-motion:reduce){ .tbn,.tbn-full,.tbn-x{transition:none;} }
   .tbn-st{font-size:16px;line-height:24px;font-weight:700;color:#32a2fa;}   /* Figma DP/16 Bold */
   .tbn-st.chg{color:#fe4c00;}
   .tbn[hidden]{display:none;}
@@ -1047,6 +1035,8 @@
   /* 소리를 꺼둘 수 있어 '또 바뀌었다' 는 깜빡임이 맡는다 */
   @keyframes chgBlink{0%,100%{opacity:1}25%,75%{opacity:.2}50%{opacity:1}}
   .tp-chg.blink,.plr-chg.blink,.tbn-st.blink{animation:chgBlink .6s ease-in-out 2;}
+  /* 9/16 Figma 주석: 픽업 위치 버블을 누르고 앱으로 돌아오면 카드 상태 줄이 3회 깜빡인다 */
+  .plr-chg.blink3{animation:chgBlink .6s ease-in-out 3;}
   @media (prefers-reduced-motion:reduce){ .tp-chg.blink,.plr-chg.blink,.tbn-st.blink{animation:none;} }
   /* 실제 T맵은 턴 배너 아래 왼쪽에 차선 안내칩이 붙는다 — 알약이 피해야 하는 자리라 목업에 둔다 */
   .tlane{position:absolute;top:0;left:0;z-index:5;display:flex;align-items:baseline;gap:6px;
@@ -1379,9 +1369,9 @@
         <div class="dtmap" id="dtmap" hidden>
           <div class="sb light"><span>12:30</span><span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
           <div class="tbt"><div class="tbt-a"><svg viewBox="0 0 32 32" fill="none"><path d="M8 27 V15.5 A4.5 4.5 0 0 1 12.5 11 H20 M15.5 6.5 L21 11 L15.5 15.5" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div class="tbt-m"><div class="tbt-d">320<em>m</em></div><div class="tbt-r">반포대로 방면</div></div><div class="tbt-n"><span class="tbt-ni">↑</span><b>120m</b></div></div>
-          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6.4" fill="#0044A6" fill-opacity="0.7"/><path d="M8.5 17.2501V6.75H12.5834C13.5556 6.75 14.382 7.09028 15.0625 7.77084C15.7431 8.4514 16.0834 9.27779 16.0834 10.25C16.0834 11.2223 15.7431 12.0486 15.0625 12.7292C14.382 13.4098 13.5556 13.7501 12.5834 13.7501H10.8334V17.2501H8.5ZM10.8334 11.4167H12.7C13.0209 11.4167 13.2955 11.3025 13.524 11.074C13.7524 10.8455 13.8667 10.5708 13.8667 10.25C13.8667 9.9292 13.7524 9.65455 13.524 9.42606C13.2955 9.19757 13.0209 9.08334 12.7 9.08334H10.8334V11.4167Z" fill="white"/></svg><b id="tp-fl"></b><i class="tp-spk" id="tp-spk" hidden aria-label="음성 안내 중"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 9.5h3L11 6v12l-4-3.5H4v-5Z" fill="currentColor"/><path class="w1" d="M15 9a4 4 0 0 1 0 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="w2" d="M17.8 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></i></span><span class="tp-v" id="tp-v"></span><span class="tp-etc" id="tp-etc" hidden></span><span class="tp-go" id="tp-go">고객이 작성함</span><span class="tp-chg" id="tp-chg" hidden>고객이 변경함</span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button></div></div>
+          <div class="tmapmap"><svg viewBox="0 0 100 100" preserveAspectRatio="none" style="position:absolute;inset:0;width:100%;height:100%"><rect width="100" height="100" fill="#E7ECF0"/><rect x="0" y="33" width="100" height="7" fill="#fff" opacity="0.85"/><rect x="46" y="0" width="5" height="100" fill="#fff" opacity="0.8"/><rect x="8" y="46" width="26" height="18" fill="#DCEAD7" opacity="0.7"/><path d="M34 76 L50 20" stroke="#2E7CE0" stroke-width="6" vector-effect="non-scaling-stroke" fill="none" stroke-linecap="round" opacity="0.92"/></svg><div class="tpin" style="left:50%;top:20%"><svg class="tmk" viewBox="0 0 40 50"><ellipse cx="20" cy="47" rx="6.5" ry="2.2" fill="#0a1024" opacity="0.2"/><path d="M20 3C12.3 3 6 9.3 6 17C6 26.5 20 44 20 44C20 44 34 26.5 34 17C34 9.3 27.7 3 20 3Z" fill="#EA1F2D" stroke="#fff" stroke-width="2"/><rect x="15.4" y="9.3" width="1.5" height="16" rx="0.7" fill="#fff"/><path d="M16.9 9.7H26.3V16.3H16.9Z" fill="#fff"/><path d="M16.9 9.7H20.03V13H16.9Z" fill="#1a1a1a"/><path d="M23.17 9.7H26.3V13H23.17Z" fill="#1a1a1a"/><path d="M20.03 13H23.17V16.3H20.03Z" fill="#1a1a1a"/></svg></div><div class="navp" style="left:34%;top:76%"><span class="nv"><svg class="navarr" viewBox="0 0 40 40"><circle cx="20" cy="21" r="17" fill="#3B8BEA" opacity="0.16"/><path d="M20 5 L31 32 Q20 26 9 32 Z" fill="#1E6FE0" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg></span></div><div class="tspeed"><div class="tsl">50</div><div class="tcur">48<em>km/h</em></div></div><div class="tlane" aria-hidden="true"><span>↑</span><b>248</b><em>m</em></div><button type="button" class="tpill" id="tovb-loc" hidden aria-label="고객 픽업 위치 보기"><span class="tp-hd"><svg class="pv24 tp-ic" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect width="24" height="24" rx="6.4" fill="#0044A6" fill-opacity="0.7"/><path d="M8.5 17.2501V6.75H12.5834C13.5556 6.75 14.382 7.09028 15.0625 7.77084C15.7431 8.4514 16.0834 9.27779 16.0834 10.25C16.0834 11.2223 15.7431 12.0486 15.0625 12.7292C14.382 13.4098 13.5556 13.7501 12.5834 13.7501H10.8334V17.2501H8.5ZM10.8334 11.4167H12.7C13.0209 11.4167 13.2955 11.3025 13.524 11.074C13.7524 10.8455 13.8667 10.5708 13.8667 10.25C13.8667 9.9292 13.7524 9.65455 13.524 9.42606C13.2955 9.19757 13.0209 9.08334 12.7 9.08334H10.8334V11.4167Z" fill="white"/></svg><b id="tp-fl"></b><i class="tp-spk" id="tp-spk" hidden aria-label="음성 안내 중"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 9.5h3L11 6v12l-4-3.5H4v-5Z" fill="currentColor"/><path class="w1" d="M15 9a4 4 0 0 1 0 6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path class="w2" d="M17.8 6.5a7.5 7.5 0 0 1 0 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></i></span><span class="tp-v" id="tp-v"></span><span class="tp-etc" id="tp-etc" hidden></span><span class="tp-go" id="tp-go">고객이 작성함</span><span class="tp-chg" id="tp-chg" hidden>고객이 변경함</span></button><div class="tovr" id="tovr"><button type="button" class="tovb tada" id="tovb-back"><svg class="tlogo" viewBox="0 0 120 30" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M40.5475 30V0H46.3234V12.1128H57.0171V17.8884H46.3234V30H40.5475Z" fill="#5CB4FA"/><path d="M0 5.98596H29.2578V0.21156H0V5.98596Z" fill="#5CB4FA"/><path d="M0 17.8888H29.2578V12.1132H0V17.8888Z" fill="#5CB4FA"/><path d="M29.2578 29.7892H0V24.0148H29.2578V29.7892Z" fill="#5CB4FA"/><path d="M63.018 5.98596H92.2757V0.21156H63.018V5.98596Z" fill="#5CB4FA"/><path d="M63.018 29.7892H92.2757V24.0148H63.018V29.7892Z" fill="#5CB4FA"/><path d="M103.53 30V0H109.306V12.1128H120V17.8884H109.306V30H103.53Z" fill="#5CB4FA"/></svg><span class="trun">운행중</span><span class="tovdot" id="tovdot" hidden>1</span></button><span class="tconn"></span><button type="button" class="tovb chg">경로<br>변경</button><span class="tconn" id="tconn-pick" hidden></span><button type="button" class="tovb chg" id="tovb-pick" hidden>픽업<br>위치</button></div></div>
           <div class="tbar"><div class="tb-info"><b id="tb-eta">9분</b><span id="tb-sub">1.2km · 오후 3:52 · 래미안원베일리</span></div><button type="button" class="tb-x" id="tb-x">✕</button></div>
-          <div class="tbn" id="tbn" hidden role="button" tabindex="0" aria-label="고객 픽업 위치 자세히 보기"><span class="tbn-full"><span class="tbn-top"><span class="tbn-lead"><span class="tbn-st" id="tbn-st">고객이 작성함</span></span></span><svg class="tbn-go" width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="tbn-win" id="tbn-win"><span class="tbn-trk" id="tbn-trk"><span class="tbn-t" id="tbn-t"></span><span class="tbn-t tbn-t2" id="tbn-t2" aria-hidden="true"></span></span></span></span><span class="tbn-mini" aria-hidden="true"><svg class="tbn-mp" width="30" height="30" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6.4" fill="#053886"/><path d="M8.5 17.2501V6.75H12.5834C13.5556 6.75 14.382 7.09028 15.0625 7.77084C15.7431 8.4514 16.0834 9.27779 16.0834 10.25C16.0834 11.2223 15.7431 12.0486 15.0625 12.7292C14.382 13.4098 13.5556 13.7501 12.5834 13.7501H10.8334V17.2501H8.5ZM10.8334 11.4167H12.7C13.0209 11.4167 13.2955 11.3025 13.524 11.074C13.7524 10.8455 13.8667 10.5708 13.8667 10.25C13.8667 9.9292 13.7524 9.65455 13.524 9.42606C13.2955 9.19757 13.0209 9.08334 12.7 9.08334H10.8334V11.4167Z" fill="white"/></svg><span class="tbn-mt" id="tbn-mt"></span><svg class="tbn-up" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div><button type="button" class="tbn-x" id="tbn-x" aria-label="배너 접기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
+          <div class="tbn" id="tbn" hidden role="button" tabindex="0" aria-label="고객 픽업 위치 자세히 보기"><span class="tbn-full"><span class="tbn-top"><span class="tbn-lead"><span class="tbn-st" id="tbn-st">고객이 작성함</span></span></span><span class="tbn-win" id="tbn-win"><span class="tbn-trk" id="tbn-trk"><span class="tbn-t" id="tbn-t"></span><span class="tbn-t tbn-t2" id="tbn-t2" aria-hidden="true"></span></span></span></span><span class="tbn-mini" aria-hidden="true"><svg class="tbn-mp" width="30" height="30" viewBox="0 0 24 24" fill="none"><rect width="24" height="24" rx="6.4" fill="#053886"/><path d="M8.5 17.2501V6.75H12.5834C13.5556 6.75 14.382 7.09028 15.0625 7.77084C15.7431 8.4514 16.0834 9.27779 16.0834 10.25C16.0834 11.2223 15.7431 12.0486 15.0625 12.7292C14.382 13.4098 13.5556 13.7501 12.5834 13.7501H10.8334V17.2501H8.5ZM10.8334 11.4167H12.7C13.0209 11.4167 13.2955 11.3025 13.524 11.074C13.7524 10.8455 13.8667 10.5708 13.8667 10.25C13.8667 9.9292 13.7524 9.65455 13.524 9.42606C13.2955 9.19757 13.0209 9.08334 12.7 9.08334H10.8334V11.4167Z" fill="white"/></svg><span class="tbn-mt" id="tbn-mt"></span><svg class="tbn-up" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div><button type="button" class="tbn-x" id="tbn-x" aria-label="배너 접기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg></button>
         </div>
         <!-- T맵 경로 선택(driver-v2 tmapsel). '고객 위치로 출발하기' → 이 화면이 오른쪽에서 밀려 들어오고,
              '안내'(15초 뒤 자동)를 누르면 T맵 안내(dtmap)로, ← 를 누르면 타다 앱 03 으로 돌아간다. -->
@@ -2272,11 +2262,17 @@
       el('plr-chg').textContent = S.chgFlag ? '고객이 변경함' : '고객이 작성함';   /* 9/15 드라이버앱 1안(12345:437629): 알약 설명 줄과 같은 문구 */
       el('plr-chg').classList.toggle('chg', !!S.chgFlag);
       el('tp-go').hidden = !!S.chgFlag;
+      if(S.pickBlink !== S.pickSeen){
+        S.pickSeen = S.pickBlink;
+        const c=el('plr-chg'); c.classList.remove('blink3'); void c.offsetWidth; c.classList.add('blink3');
+      }
       if(S.chgBlink !== S.chgSeen){
         S.chgSeen = S.chgBlink;
         ['tp-chg','plr-chg','tbn-st'].forEach(id=>{ const c=el(id); c.classList.remove('blink'); void c.offsetWidth; c.classList.add('blink'); });
       }
     }
+    /* 9/16 Figma 최종본: 상세 위치가 있으면 T맵 스택에 '픽업 위치' 버블이 선다 */
+    el('tovb-pick').hidden = el('tconn-pick').hidden = !show;
     paintAppr(show);
     paintBanner(show && !S.driving && onTmap() && bnMode);
     $$('.tov').forEach(b=>b.classList.toggle('on', b.dataset.ov===(S.ovMode||'banner')));
@@ -2458,31 +2454,24 @@
   }
   function paintBanner(on){
     const b=el('tbn'); const was=!b.hidden;
-    /* 9/15 접기: 드라이버가 접으면(S.bnMin) 배너 대신 '타다 운행중' 버튼의 P 뱃지만.
-       위치 변경·300m 진입 때만 저절로 다시 펼친다. 같은 호출 동안 그 밖에는 접은 채로 둔다. */
+    /* 9/16 최종본: × 는 닫기다(접힘 탭 폐기). 닫아도 새 변경·300m 진입이면 다시 뜬다.
+       닫힌 동안 다시 보는 길은 T맵 스택의 '픽업 위치' 버블이다. */
     const chgN = S.chgFlag ? S.chgBlink : 0, apprOn = !!S.appr;
-    if(on && S.bnMin && S.bnEvKey){
-      if(chgN > S.bnEvKey.chg || (apprOn && !S.bnEvKey.appr)) S.bnMin=false;   /* 새 변경 · 300m 진입만 */
+    if(on && S.bnClosed && S.bnEvKey){
+      if(chgN > S.bnEvKey.chg || (apprOn && !S.bnEvKey.appr)) S.bnClosed=false;
     }
     S.bnEvKey={chg:chgN, appr:apprOn};
-    b.hidden=!on;
-    el('tbn-x').hidden=!on;
-    el('tbn-x').classList.toggle('off', !!S.bnMin);
-    if(!on){ b.classList.remove('run','min'); S.bnKey=null; return; }
-    const wasMin=b.classList.contains('min');
-    b.classList.toggle('min', !!S.bnMin);
-    b.setAttribute('aria-label', S.bnMin ? '픽업 위치 배너 펼치기' : '고객 픽업 위치 자세히 보기');
+    on = on && !S.bnClosed;
+    b.hidden=!on; el('tbn-x').hidden=!on;
+    if(!on){ b.classList.remove('run'); S.bnKey=null; return; }
     const txt=loc(S.current).replace(/\u2002/g,' ');
     el('tbn-t').textContent=el('tbn-t2').textContent=txt;
-    el('tbn-mt').textContent=txt;
-    if(S.bnMin) return;
-    if(wasMin){ S.bnKey=null; setTimeout(()=>{ if(!S.bnMin) mqPlay(); }, 360); S.bnKey=txt+'|'+(S.chgFlag?S.chgBlink:0)+'|'+(S.appr?'a':''); }
-    el('tbn-st').textContent = S.chgFlag ? '고객이 변경함' : '고객이 작성함';
+    el('tbn-st').textContent = S.chgFlag ? '고객이 변경함' : '고객이 작성한 픽업 위치';   /* 9/16 Figma 문구 */
     el('tbn-st').classList.toggle('chg', !!S.chgFlag);
     const key=txt+'|'+(S.chgFlag?S.chgBlink:0)+'|'+(S.appr?'a':'');
     if(!was || key!==S.bnKey){ S.bnKey=key; requestAnimationFrame(mqPlay); }
   }
-  function voiceLine(){
+    function voiceLine(){
     if(S.drKind==='msg') return '고객 메시지. '+S.msg;
     if(!S.current) return '';
     if(S.drKind==='near') return '곧 도착합니다. '+loc(S.current)+'.';
@@ -2516,7 +2505,7 @@
     S.mode=m; S.screen='start'; S.pmPlayed=false;
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='go'; S.chgFlag=false; S.near=false; S.chgBlink=0; S.chgSeen=0;
-    S.drover=false; S.hilite=false; S.before=null; apprEnd(true); S.bnMin=false; S.bnEvKey=null;
+    S.drover=false; S.hilite=false; S.before=null; apprEnd(true); S.bnClosed=false; S.bnEvKey=null; S.pickBlink=0; S.pickSeen=0;
     S.drKind=null; S.ack=true; S.rphase='match'; S.dview='app'; S.dstage='go'; S.driving=false; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
@@ -2646,22 +2635,21 @@
     render(); apprSpeak('first');
   });
   el('tbn').addEventListener('click',e=>{ if(e.target.closest('#tbn-x')) return; if(S.bnSwiped){ S.bnSwiped=false; return; }
-    if(S.bnMin){ S.bnMin=false; render(); return; }   /* 접힌 탭을 누르면 그 자리에서 펼친다 */
     S.dview='app'; S.msgUnread=false; render(); });
   el('tbn-trk').addEventListener('animationend',()=>el('tbn').classList.add('rest'));
-  const bnCollapse=()=>{ S.bnMin=true; render(); };
+  /* 버블 → 타다 앱 카드. 돌아온 카드의 상태 줄이 3회 깜빡여 '이 값을 보라' 고 말한다 */
+  el('tovb-pick').addEventListener('click',()=>{ S.dview='app'; S.msgUnread=false; S.pickBlink=(S.pickBlink||0)+1; render(); });
+  const bnCollapse=()=>{ S.bnClosed=true; render(); };   /* × = 닫기 */
   el('tbn-x').addEventListener('click',e=>{ e.stopPropagation(); bnCollapse(); });
   /* 아래로 밀어 접기 — 운전 중엔 작은 × 보다 배너 전체를 쓸어내리는 쪽이 정확하다 */
   (function(){
     const b=el('tbn'); let y0=null, id=null, dy=0;
     b.addEventListener('pointerdown',e=>{ if(e.target.closest('#tbn-x')) return; y0=e.clientY; id=e.pointerId; dy=0; b.classList.add('drag'); });
     b.addEventListener('pointermove',e=>{ if(y0===null||e.pointerId!==id) return; dy=e.clientY-y0; if(Math.abs(dy)>4){ try{b.setPointerCapture(id);}catch(_){} }
-      if(!S.bnMin) b.style.transform='translateY('+Math.max(0,dy)+'px)'; });
+      b.style.transform='translateY('+Math.max(0,dy)+'px)'; });
     const end=()=>{ if(y0===null) return; b.classList.remove('drag'); b.style.transform='';
       if(Math.abs(dy)>4) S.bnSwiped=true;
-      if(!S.bnMin && dy>36) bnCollapse();
-      else if(!S.bnMin && dy<-36){ S.dview='app'; S.msgUnread=false; render(); }   /* 위로 밀면 앱 카드 */
-      else if(S.bnMin && Math.abs(dy)>24){ S.bnMin=false; render(); }   /* 접힌 탭은 위·아래 어느 쪽으로 밀어도 펼친다 */
+      if(dy>36) bnCollapse();   /* 아래로 밀어도 닫힌다 */
       y0=null; };
     b.addEventListener('pointerup',end); b.addEventListener('pointercancel',end);
   })();
@@ -2942,60 +2930,52 @@
 
 <section class="devcon" id="devcon">
   <div class="devcon-in">
-    <div class="devcon-hd"><b>개발 콘솔</b><em>드라이버 하단 배너</em>
+    <div class="devcon-hd"><b>개발 콘솔</b><em>드라이버 배너 · 픽업 위치 버블</em>
       <span class="devcon-tabs"><button type="button" class="on" data-pane="dc-guide">가이드</button><button type="button" data-pane="dc-code">예시 코드</button></span>
     </div>
     <div class="devcon-bd">
       <div class="pane" id="dc-guide">
         <h4>무엇인가</h4>
-        <p>드라이버가 T맵 내비를 보는 동안, 타다 앱이 <b>화면 위에 그리는(draw over)</b> 하단 띠배너입니다.
-           고객이 남긴 <b>상세 위치</b>만 싣고, 찾아오는 길은 앱 카드에서 봅니다.</p>
+        <p>드라이버가 T맵을 보는 동안 타다 앱이 <b>화면 위에 그리는(draw over)</b> 하단 배너와,
+           T맵 오른쪽 버블 스택의 <b>‘픽업 위치’ 버블</b> 둘입니다. 배너는 알리는 자리, 버블은 다시 보는 자리입니다.</p>
         <h4>상태</h4>
         <table>
           <tr><th>상태</th><th>보이는 것</th><th>들어가는 조건</th></tr>
-          <tr><td>펼침</td><td>상태 줄(16 Bold) + 위치(32 Bold) + 표식 화살표</td><td>픽업 구간 시작 · 위치 변경 · 300m 진입</td></tr>
-          <tr><td>접힘</td><td>208×58 탭(P 30 · 위치 18 · ⌄)</td><td>× 또는 아래로 밀기</td></tr>
-          <tr><td>변경</td><td>상태 줄 주황 + 두 번 깜빡임 + 흐름 다시</td><td>배차 후 고객이 수정</td></tr>
-          <tr><td>접힘 + 변경</td><td><b>저절로 펼쳐지는 것이 곧 알림</b></td><td>접힌 동안 수정됨</td></tr>
+          <tr><td>배너 표시</td><td>상태 줄(16 Bold) + 위치(32 Bold) + ×</td><td>상세 위치를 받은 때 · 위치 변경 · 300m 진입</td></tr>
+          <tr><td>배너 닫힘</td><td>없음(버블만 남음)</td><td>× 또는 아래로 밀기</td></tr>
+          <tr><td>변경</td><td>상태 줄이 ‘고객이 변경함’(주황)으로, 다시 흐름</td><td>배차 후 고객이 수정</td></tr>
+          <tr><td>픽업 위치 버블</td><td>스택 3번째 버블</td><td>상세 위치가 있는 동안 계속</td></tr>
         </table>
         <h4>치수</h4>
         <ul>
-          <li>띠 <b>360×100</b> · 여백 14/20/12 · 줄 간격 2 · 상태 줄 24 · 위치 줄 48</li>
-          <li>× <b>50×50</b> 원형 · 흰 테두리 2 · 오른쪽 16 · 띠 위 끝선에 <b>절반(25) 걸침</b></li>
-          <li>접힘 탭 <b>208×58</b> · r16 · 흰 테두리 2 · 여백 12/14 · 간격 8</li>
-          <li>탭 배치 <b>오른쪽 12dp</b> · 아래 <b>시스템 내비게이션 인셋 + 12dp</b>(3버튼 48 → 60, 제스처 24 → 36)</li>
-          <li>탭 폭은 <b>208dp 고정</b> · 글자 영역 112dp · 넘치면 말줄임 — 값에 따라 늘리지 않는다</li>
-          <li>좁은 화면(≤340dp)에서는 글자 영역만 줄여 <b>탭 폭 = min(208, 화면폭 × 0.58)</b>, 글자 최소 72dp</li>
-          <li>탭 안: P 타일 <b>30 · r8</b> · 라벨 <b>18/26 Bold</b> · ⌄ 20</li>
-          <li>흐름 초당 <b>90px</b> · 오른쪽 <b>66px</b> 그라데이션 · 접힘/펼침 모프 0.34초</li>
+          <li>배너 <b>360×100</b> · 여백 14/20/12 · 줄 간격 2 · 상태 줄 24 · 위치 줄 48</li>
+          <li>× <b>50×50</b> 원형 · 흰 테두리 2 · 오른쪽 16 · 배너 위 끝선에 <b>절반(25) 걸침</b></li>
+          <li>버블 <b>62×62</b> · r15 · #19254D · 테두리 #5CB4FA 2 · 글자 20/24 Bold #EFEFF1 · 연결선 32×10</li>
+          <li>스택 높이: 버블 2개 134 → <b>3개 206</b>(운행중 · 경로 변경 · 픽업 위치)</li>
+          <li>흐름 초당 <b>90px</b> · 오른쪽 <b>66px</b> 그라데이션</li>
         </ul>
-        <h4>색</h4>
-        <table>
-          <tr><th>쓰임</th><th>값</th></tr>
-          <tr><td>배너 바탕 / 글자</td><td>#000000 / #FFFFFF</td></tr>
-          <tr><td>고객이 작성함</td><td>#32A2FA</td></tr>
-          <tr><td>고객이 변경함</td><td>#FE4C00</td></tr>
-          <tr><td>표식 화살표 · 탭 ⌄</td><td>#C0C8D9</td></tr>
-          <tr><td>탭 P 타일</td><td>#053886</td></tr>
-        </table>
+        <h4>문구</h4>
+        <ul>
+          <li>처음 받았을 때 <b>고객이 작성한 픽업 위치</b> (#32A2FA)</li>
+          <li>배차 후 수정됐을 때 <b>고객이 변경함</b> (#FE4C00)</li>
+          <li>버블 <b>픽업 / 위치</b> 두 줄</li>
+        </ul>
         <h4>동작 규칙</h4>
         <ul>
-          <li>위치가 한 줄에 들어가면 <b>흐르지 않습니다.</b> 넘칠 때만 흐르고, 넘치면 계속 돕니다.</li>
-          <li>누르는 자리는 <b>배너 전체(360×100)</b>입니다. 오른쪽 끝 화살표는 버튼이 아니라 표식입니다. × 만 예외입니다.</li>
-          <li>제스처: 펼침에서 <b>아래로 밀면 접기 · 위로 밀면 앱 카드</b>, 접힘에서는 어느 쪽으로 밀어도 펼칩니다.</li>
-          <li>접힌 상태는 <b>같은 호출 동안</b> 유지됩니다. 저절로 펼치는 건 위치 변경과 300m 진입 두 가지뿐입니다.</li>
-          <li>300m 진입 때는 <b>음성 1회</b>와 함께 흐름을 처음부터 다시 재생합니다.</li>
-          <li>운행 시작 후(고객 탑승)에는 배너를 내립니다.</li>
+          <li>× 는 <b>닫기</b>입니다. 접었다 펴는 탭은 없앴습니다.</li>
+          <li>닫아도 <b>위치 변경 · 300m 진입</b> 때는 다시 뜹니다. 그 밖에는 같은 호출 동안 닫힌 채로 둡니다.</li>
+          <li>배너를 누르면 타다 앱 픽업 카드로 갑니다(찾아오는 길은 거기에 있습니다).</li>
+          <li><b>버블을 누르면</b> 타다 앱으로 넘어가고, 카드의 상태 줄이 <b>3회 깜빡입니다.</b></li>
+          <li>위치가 한 줄에 들어가면 흐르지 않고, 넘칠 때만 계속 흐릅니다.</li>
+          <li>운행 시작 후(고객 탑승)에는 배너를 내리고 버블만 남깁니다.</li>
         </ul>
         <h4>주의</h4>
         <ul>
-          <li>흐르는 글은 주행 중 읽기 어렵습니다. 위치만 넣고, 그 이상은 <b>음성</b>으로 보냅니다.</li>
-          <li>펼친 배너는 T맵 하단 막대를 덮습니다. 접으면 탭만 남아 막대 대부분이 보입니다 — T맵 UI 높이는 알 수 없으므로 <b>시스템 인셋</b>을 기준으로 잡습니다.</li>
-          <li>오버레이 창은 <code>TYPE_APPLICATION_OVERLAY</code> + <code>FLAG_NOT_FOCUSABLE</code>, 폭 <code>MATCH_PARENT</code> · 높이 <code>WRAP_CONTENT</code>, <code>gravity = BOTTOM</code> 입니다.</li>
-          <li>현장결제 안내와 자리가 같습니다. 겹치면 현장결제를 먼저 한 바퀴 돌리고 위치로 넘깁니다.</li>
-          <li>표식 화살표와 밀기 제스처는 Figma에 없는 추가분입니다(‘자세히’ 글자를 대신합니다).</li>
+          <li>흐르는 글은 주행 중 읽기 어렵습니다. 위치만 싣고 나머지는 음성으로 보냅니다.</li>
+          <li>배너는 T맵 하단 막대를 덮습니다. 닫으면 막대가 그대로 보입니다.</li>
+          <li>현장결제 안내와 배너 자리가 같습니다. 겹치면 현장결제를 먼저 한 바퀴 돌리고 위치로 넘깁니다.</li>
         </ul>
-        <p class="src" style="font-size:11px;color:var(--ink-3);margin-top:10px">기준: Figma 15610:42103 · 15610:39115 (드라이버 핸드오프)</p>
+        <p class="src" style="font-size:11px;color:var(--ink-3);margin-top:10px">기준: Figma 15610:39115 최종본 · DS overlay banner 29325:181198</p>
       </div>      <div class="pane" id="dc-code" hidden>
         <h4>payload (드라이버 앱이 받는 값)</h4>
         <div class="cpwrap"><button type="button" class="cp" data-cp="dc-code-1">복사</button>
@@ -3014,136 +2994,120 @@
 
 // 배너 문구 = 위치만. &#x27;에서 탈게요&#x27; 꼬리와 찾아오는 길은 넣지 않는다.
 //   `${level===&#x27;UNDER&#x27;?&#x27;지하&#x27;:&#x27;지상&#x27;} ${floor}층 ${dong}동${line ? &#x27; &#x27;+line+&#x27;라인&#x27; : &#x27;&#x27;}`
-// 찾아오는 길은 타다 앱 카드에서 본다(배너를 누르면 카드로).</code></pre></div>
+// 찾아오는 길은 타다 앱 픽업 카드에서 본다.</code></pre></div>
         <h4>HTML</h4>
         <div class="cpwrap"><button type="button" class="cp" data-cp="dc-code-2">복사</button>
-        <pre><code id="dc-code-2">&lt;!-- T맵 위에 그리는 드라이버 앱 오버레이(draw over).
-     상자는 늘 360×112 로 두고 clip-path 로 보이는 영역만 자른다(펼침 100 / 접힘 208×58). --&gt;
+        <pre><code id="dc-code-2">&lt;!-- 1) T맵 위 오버레이 배너 (draw over) · 360×100 --&gt;
 &lt;div class=&quot;tbn&quot; id=&quot;tbn&quot; role=&quot;button&quot; tabindex=&quot;0&quot; aria-label=&quot;고객 픽업 위치 자세히 보기&quot;&gt;
-
-  &lt;!-- 펼침 --&gt;
   &lt;span class=&quot;tbn-full&quot;&gt;
     &lt;span class=&quot;tbn-top&quot;&gt;
-      &lt;span class=&quot;tbn-st&quot; id=&quot;tbn-st&quot;&gt;고객이 작성함&lt;/span&gt;   &lt;!-- 변경 시 .chg --&gt;
+      &lt;span class=&quot;tbn-st&quot; id=&quot;tbn-st&quot;&gt;고객이 작성한 픽업 위치&lt;/span&gt;   &lt;!-- 변경 시 &#x27;고객이 변경함&#x27; + .chg --&gt;
     &lt;/span&gt;
-    &lt;span class=&quot;tbn-win&quot; id=&quot;tbn-win&quot;&gt;                      &lt;!-- 넘치면 흐르는 창 --&gt;
+    &lt;span class=&quot;tbn-win&quot; id=&quot;tbn-win&quot;&gt;                                &lt;!-- 넘치면 흐르는 창 --&gt;
       &lt;span class=&quot;tbn-trk&quot; id=&quot;tbn-trk&quot;&gt;
         &lt;span class=&quot;tbn-t&quot; id=&quot;tbn-t&quot;&gt;지하 1층 1902동 3-4라인&lt;/span&gt;
         &lt;span class=&quot;tbn-t tbn-t2&quot; aria-hidden=&quot;true&quot;&gt;지하 1층 1902동 3-4라인&lt;/span&gt;
       &lt;/span&gt;
     &lt;/span&gt;
-    &lt;!-- 앱으로 간다는 표식. 버튼이 아니라 배너 전체가 누르는 자리다 --&gt;
-    &lt;svg class=&quot;tbn-go&quot; width=&quot;28&quot; height=&quot;28&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; aria-hidden=&quot;true&quot;&gt;
-      &lt;path d=&quot;M9 5l7 7-7 7&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.4&quot; stroke-linecap=&quot;round&quot;/&gt;
-    &lt;/svg&gt;
-  &lt;/span&gt;
-
-  &lt;!-- 접힘 탭 --&gt;
-  &lt;span class=&quot;tbn-mini&quot; aria-hidden=&quot;true&quot;&gt;
-    &lt;svg class=&quot;tbn-mp&quot; width=&quot;30&quot; height=&quot;30&quot;&gt;&lt;!-- P 타일 · r8 · #053886 --&gt;&lt;/svg&gt;
-    &lt;span class=&quot;tbn-mt&quot;&gt;지하 1층 1902동 3-4라인&lt;/span&gt;
-    &lt;svg class=&quot;tbn-up&quot; width=&quot;20&quot; height=&quot;20&quot;&gt;&lt;!-- ⌄ · #C0C8D9 --&gt;&lt;/svg&gt;
   &lt;/span&gt;
 &lt;/div&gt;
+&lt;button type=&quot;button&quot; class=&quot;tbn-x&quot; id=&quot;tbn-x&quot; aria-label=&quot;배너 닫기&quot;&gt;✕&lt;/button&gt;
 
-&lt;!-- × 는 띠 밖 형제다. 띠가 overflow 를 자르므로 안에 두면 위쪽 절반이 잘린다 --&gt;
-&lt;button type=&quot;button&quot; class=&quot;tbn-x&quot; id=&quot;tbn-x&quot; aria-label=&quot;배너 접기&quot;&gt;✕&lt;/button&gt;</code></pre></div>
+&lt;!-- 2) T맵 오른쪽 버블 스택 — 상세 위치가 있으면 &#x27;픽업 위치&#x27; 가 하나 더 선다 --&gt;
+&lt;div class=&quot;tovr&quot;&gt;
+  &lt;button class=&quot;tovb tada&quot;&gt;타다 · 운행중&lt;/button&gt;
+  &lt;span class=&quot;tconn&quot;&gt;&lt;/span&gt;
+  &lt;button class=&quot;tovb chg&quot;&gt;경로&lt;br&gt;변경&lt;/button&gt;
+  &lt;span class=&quot;tconn&quot; id=&quot;tconn-pick&quot; hidden&gt;&lt;/span&gt;
+  &lt;button class=&quot;tovb chg&quot; id=&quot;tovb-pick&quot; hidden&gt;픽업&lt;br&gt;위치&lt;/button&gt;
+&lt;/div&gt;</code></pre></div>
         <h4>CSS</h4>
         <div class="cpwrap"><button type="button" class="cp" data-cp="dc-code-3">복사</button>
-        <pre><code id="dc-code-3">/* 상자는 고정, clip-path 만 움직인다 — 폭·높이를 바꾸면 글자가 다시 배치돼 흐르던 위치가 튄다 */
-.tbn{position:absolute; left:0; right:0; bottom:0; height:112px; z-index:7;
-     background:#000; color:#fff; cursor:pointer;
-     clip-path:inset(12px 0 0 0 round 0);                      /* 펼침 = 아래 100 */
-     transition:clip-path .34s cubic-bezier(.32,.72,.24,1);}
-.tbn.min{clip-path:inset(12px 0 42px calc(100% - 208px) round 16px);}  /* 접힘 = 208×58 · 오른쪽 0 · 아래 42 */
+        <pre><code id="dc-code-3">/* 배너: 떠 있거나 닫히거나 둘 중 하나. 접힘 탭은 없다 */
+.tbn{position:absolute; left:0; right:0; bottom:0; height:100px; z-index:7;
+     background:#000; color:#fff; cursor:pointer;}
+.tbn[hidden]{display:none;}
+.tbn-full{position:absolute; inset:0; display:flex; flex-direction:column; gap:2px; padding:14px 20px 12px;}
 
-.tbn-full{position:absolute; left:0; right:0; bottom:0; height:100px;
-          display:flex; flex-direction:column; gap:2px; padding:14px 20px 12px;
-          transition:opacity .2s ease .12s;}
-.tbn.min .tbn-full{opacity:0; pointer-events:none; transition:opacity .14s ease;}
-
-.tbn-mini{position:absolute; right:0; top:12px; width:208px; height:58px;
-          display:flex; align-items:center; gap:8px; padding:0 14px 0 12px;
-          border:2px solid #fff; border-radius:16px; box-sizing:border-box;
-          opacity:0; pointer-events:none; transition:opacity .12s ease;}
-.tbn.min .tbn-mini{opacity:1; transition:opacity .2s ease .14s;}
-.tbn-mt{flex:1 1 auto; min-width:0; font-size:18px; line-height:26px; font-weight:700; color:#fff;
-        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-
-/* 상태 줄 DP/16 Bold — 앱 안 카드와 같은 문구 */
+/* 상태 줄 DP/16 Bold */
 .tbn-st{font-size:16px; line-height:24px; font-weight:700; color:#32a2fa;}
 .tbn-st.chg{color:#fe4c00;}
-.tbn-go{position:absolute; right:16px; bottom:22px; color:#c0c8d9; pointer-events:none;}
 
 /* 위치 줄 SP/32 Bold. 창을 좌우 여백(20)까지 넓혀 글자가 배너 끝까지 흐르게 한다 */
 .tbn-win{display:block; overflow:hidden; white-space:nowrap; margin:0 -20px; padding:0 20px;}
 .tbn-t{font-size:32px; line-height:48px; font-weight:700; color:#fff;}
 .tbn.ovf .tbn-win{                                  /* 넘칠 때만 오른쪽 66px 그라데이션 */
-  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 66px),transparent 100%);
-          mask-image:linear-gradient(90deg,#000 calc(100% - 66px),transparent 100%);}
-.tbn.run .tbn-t2{display:inline;}                   /* 이어 붙는 두 번째 복사본 */
+  mask-image:linear-gradient(90deg,#000 calc(100% - 66px),transparent 100%);}
+.tbn.run .tbn-t2{display:inline;}
 .tbn.run .tbn-trk{animation:mq var(--mq-dur) linear infinite;}
-.tbn.min .tbn-trk{animation-play-state:paused;}
 @keyframes mq{from{transform:translateX(0)} to{transform:translateX(calc(-1 * var(--mq-d)))}}
 
-/* × 는 띠 위 끝에 절반 걸친다: 띠 100 · 버튼 50 → bottom 75 */
+/* × 는 배너 위 끝에 절반 걸친다: 띠 100 · 버튼 50 → bottom 75 */
 .tbn-x{position:absolute; right:16px; bottom:75px; z-index:8; width:50px; height:50px;
        border:2px solid #fff; border-radius:50%; background:#000; color:#fff;}
-.tbn-x.off{opacity:0; transform:scale(.7); pointer-events:none;}   /* 접히면 같이 사라진다 */
 
-@media (prefers-reduced-motion:reduce){ .tbn,.tbn-full,.tbn-mini,.tbn-x{transition:none;}
-                                        .tbn.run .tbn-trk{animation:none;} }</code></pre></div>
+/* 픽업 위치 버블 — 스택의 다른 버블과 같은 문법 */
+.tovb.chg{width:62px; height:62px; border-radius:15px; background:#19254D; border:2px solid #5CB4FA;
+          font-size:20px; line-height:24px; font-weight:700; color:#EFEFF1;}
+.tconn{width:32px; height:10px; background:#19254D;}
+
+/* 앱 카드 상태 줄: 버블로 들어오면 3회 깜빡인다 */
+.plr-chg.blink3{animation:chgBlink .6s ease-in-out 3;}
+@keyframes chgBlink{0%,100%{opacity:1} 50%{opacity:.25}}</code></pre></div>
         <h4>JS</h4>
         <div class="cpwrap"><button type="button" class="cp" data-cp="dc-code-4">복사</button>
-        <pre><code id="dc-code-4">/* ── 1) 값 그리기 ───────────────────────────────────────── */
+        <pre><code id="dc-code-4">/* ── 1) 배너 그리기 ─────────────────────────────────────── */
 function paintBanner(pickup, state) {
-  const text = locText(pickup);                    // &#x27;지하 1층 1902동 3-4라인&#x27;
-  tbnT.textContent = tbnT2.textContent = tbnMt.textContent = text;
-  tbnSt.textContent = pickup.changed ? &#x27;고객이 변경함&#x27; : &#x27;고객이 작성함&#x27;;
+  const on = state.hasPickup &amp;&amp; !state.bannerClosed;
+  banner.hidden = closeBtn.hidden = !on;
+  if (!on) return;
+  const text = locText(pickup);                     // &#x27;지하 1층 1902동 3-4라인&#x27;
+  tbnT.textContent = tbnT2.textContent = text;
+  tbnSt.textContent = pickup.changed ? &#x27;고객이 변경함&#x27; : &#x27;고객이 작성한 픽업 위치&#x27;;
   tbnSt.classList.toggle(&#x27;chg&#x27;, pickup.changed);
-  banner.classList.toggle(&#x27;min&#x27;, state.collapsed);
-  closeBtn.classList.toggle(&#x27;off&#x27;, state.collapsed);
-  if (!state.collapsed) playMarquee();              // 접힘은 흐름을 멈춘다(CSS)
+  playMarquee();                                    // 넘칠 때만 흐른다
 }
 
 /* ── 2) 흐름: 넘칠 때만, 넘치면 계속 ─────────────────────── */
 function playMarquee() {
-  const avail = screenWidth - 40;                   // 좌우 여백 20씩
-  const over  = tbnT.scrollWidth &gt; avail + 1;
-  banner.classList.toggle(&#x27;ovf&#x27;, over);             // 그라데이션도 이때만
+  const over = tbnT.scrollWidth &gt; (screenWidth - 40) + 1;   // 좌우 여백 20씩
+  banner.classList.toggle(&#x27;ovf&#x27;, over);
   banner.classList.remove(&#x27;run&#x27;);
-  if (!over) return;                                // 한 줄에 들어가면 흐르지 않는다
+  if (!over) return;
   const gap = 48, d = tbnT.scrollWidth + gap;
-  banner.style.setProperty(&#x27;--mq-gap&#x27;, gap + &#x27;px&#x27;);
-  banner.style.setProperty(&#x27;--mq-d&#x27;,   d   + &#x27;px&#x27;);
+  banner.style.setProperty(&#x27;--mq-d&#x27;,   d + &#x27;px&#x27;);
   banner.style.setProperty(&#x27;--mq-dur&#x27;, (d / 90).toFixed(2) + &#x27;s&#x27;);   // 초당 90px
-  void banner.offsetWidth;                          // 리플로우 → 처음부터 다시
+  void banner.offsetWidth;
   banner.classList.add(&#x27;run&#x27;);
 }
 
-/* ── 3) 접기 · 펼치기 · 앱으로 ───────────────────────────── */
-closeBtn.onclick = e =&gt; { e.stopPropagation(); state.collapsed = true; render(); };
-banner.onclick   = e =&gt; {
-  if (e.target.closest(&#x27;.tbn-x&#x27;) || swiped) return;
-  if (state.collapsed) { state.collapsed = false; render(); return; }  // 탭 → 펼침
-  openTadaApp();                                    // 펼침 → 앱 카드(찾아오는 길)
-};
-// 제스처: 펼침에서 아래로 36px = 접기 · 위로 36px = 앱 카드
-//        접힘에서 위·아래 24px = 펼치기
-// 누르는 자리는 배너 전체(360×100)다. .tbn-go 화살표는 표식이라 pointer-events:none.
+/* ── 3) 닫기 · 다시 보기 ─────────────────────────────────── */
+closeBtn.onclick = e =&gt; { e.stopPropagation(); state.bannerClosed = true; render(); };
+// 아래로 36px 밀어도 닫힌다. 배너를 누르면 타다 앱 픽업 카드로 간다.
+// 닫은 뒤 다시 보는 길은 T맵 스택의 &#x27;픽업 위치&#x27; 버블이다(접힘 탭은 없앴다).
 
-/* ── 4) 저절로 펼치는 두 경우 ────────────────────────────── */
-function onPickupEvent(ev) {
-  if (ev.type === &#x27;CHANGED&#x27;) {          // 접혀 있었다면 &#x27;펼쳐지는 것&#x27;이 곧 알림이다
-    state.collapsed = false; speak(line(ev));
-  } else if (ev.type === &#x27;NEAR_300M&#x27;) { // 권장 발동: 도착 60초 전 또는 500m 중 먼저
-    state.collapsed = false; speak(line(ev));
+pickBubble.onclick = () =&gt; {
+  openTadaApp();                                    // 타다 앱 픽업 카드
+  state.pickupBlink = (state.pickupBlink || 0) + 1; // 카드에서 3회 깜빡임
+  render();
+};
+
+function paintCard(state) {                         // 앱 카드 쪽
+  if (state.pickupBlink !== state.pickupBlinkSeen) {
+    state.pickupBlinkSeen = state.pickupBlink;
+    cardStatus.classList.remove(&#x27;blink3&#x27;);
+    void cardStatus.offsetWidth;                    // 리플로우 → 애니메이션 재시작
+    cardStatus.classList.add(&#x27;blink3&#x27;);             // 0.6s × 3회
   }
-  render();                             // 그 밖에는 접은 상태를 같은 호출 동안 지킨다
 }
-function line(ev) {                     // TTS 한 문장
-  return (ev.type === &#x27;CHANGED&#x27; ? &#x27;고객이 위치를 변경했어요. &#x27; : &#x27;고객 요청 위치, &#x27;)
-       + ev.text + &#x27;.&#x27; + (ev.directions ? &#x27; &#x27; + ev.directions + &#x27;.&#x27; : &#x27;&#x27;);
+
+/* ── 4) 저절로 다시 뜨는 두 경우 ─────────────────────────── */
+function onPickupEvent(ev) {
+  if (ev.type === &#x27;CHANGED&#x27; || ev.type === &#x27;NEAR_300M&#x27;) {
+    state.bannerClosed = false;                     // 닫아 두었어도 다시 띄운다
+    speak(line(ev));
+  }
+  render();
 }</code></pre></div>
       </div>
     </div>
