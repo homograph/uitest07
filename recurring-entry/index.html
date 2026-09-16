@@ -1040,7 +1040,8 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
         <p class="dd-n" style="margin:0 0 12px">처음 핸드오프 이후 바뀐 것만 모았습니다. <b>최신이 위</b>입니다. 아래 섹션은 전부 바뀐 값 기준입니다.</p>
         <p class="dd-when">2026-09-16 · 브릿지 문구</p>
         <table class="dd-t dd-log">
-          <tr><th>브릿지 헤드라인</th><td><span class="dd-was">마지막으로, 반복할 <b>날짜</b>를 알려주세요</span> &rarr; <span class="dd-now">마지막으로, 반복할 <b>요일</b>을 알려주세요</span><span class="dd-why">다음 화면이 캘린더가 아니라 요일 칩이라 &ldquo;날짜&rdquo;가 기대를 어긋나게 함. 헤드라인 &middot; 버튼 &middot; 다음 화면 제목이 모두 &ldquo;요일&rdquo;로 이어짐</span></td></tr>
+          <tr><th>브릿지 헤드라인</th><td><span class="dd-was">마지막으로, 반복할 <b>날짜</b>를 알려주세요</span> &rarr; <span class="dd-now">마지막으로, 반복할 <b>요일</b>을 알려주세요</span><span class="dd-why">다음 화면이 캘린더가 아니라 요일 칩 7개라서 &ldquo;날짜&rdquo;는 캘린더를 예상하게 만듦</span></td></tr>
+          <tr><th>브릿지 버튼</th><td><span class="dd-was">요일 선택하기</span> &rarr; <span class="dd-now">선택하기 (읽히는 이름은 &ldquo;요일 선택하기&rdquo; 유지)</span><span class="dd-why">32dp 위 헤드라인이 방금 &ldquo;요일&rdquo;을 말했고 다음 화면 제목도 같은 말이라 세 번 반복됨. 목적어는 헤드라인이, 진행은 버튼이 맡음</span></td></tr>
         </table>
         <p class="dd-when">2026-09 · 홈 디자인 QA 반영 (Figma 12360:464772)</p>
         <table class="dd-t dd-log">
@@ -1051,7 +1052,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
         <p class="dd-when">2026-09-15 · 실기기 시연 반영</p>
         <table class="dd-t dd-log">
           <tr><th>자동 이동</th><td><span class="dd-was">1900ms 뒤 요일 선택으로 자동 이동</span> &rarr; <span class="dd-now">없음. 버튼을 눌러야 넘어감</span><span class="dd-why">실기기에서 &ldquo;납치당하는 느낌&rdquo;. 2600ms, 3500ms 로 늘려도 해소되지 않았고, 버튼과 반대 신호가 됨</span></td></tr>
-          <tr><th>넘어가는 방법</th><td><span class="dd-was">화면 아무 곳 탭</span> &rarr; <span class="dd-now">문구 바로 아래 가운데 버튼 [요일 선택하기]</span><span class="dd-why">하단에 두면 [다음] 을 누른 엄지가 그대로 눌러 문구를 안 읽고 지나감. 가운데면 읽고 누름</span></td></tr>
+          <tr><th>넘어가는 방법</th><td><span class="dd-was">화면 아무 곳 탭</span> &rarr; <span class="dd-now">문구 바로 아래 가운데 버튼 [선택하기]</span><span class="dd-why">하단에 두면 [다음] 을 누른 엄지가 그대로 눌러 문구를 안 읽고 지나감. 가운데면 읽고 누름</span></td></tr>
           <tr><th>서브 문구</th><td><span class="dd-was">탭하면 바로 이동</span> &rarr; <span class="dd-now">없음</span><span class="dd-why">자동 이동이 없어 예고할 게 없고, 버튼이 누를 곳을 대신 알려줌</span></td></tr>
           <tr><th>뒤로가기</th><td><span class="dd-was">Android back = 확인 화면에 정지 / iOS edge swipe = 비활성</span> &rarr; <span class="dd-now">두 플랫폼 모두 오버레이만 닫고 확인 화면에 머묾</span><span class="dd-why">타이머와 부딪칠 일이 없어져 하나로 통일</span></td></tr>
           <tr><th>타이머 관련 규칙</th><td><span class="dd-was">체류 시간 · 모션 축소 체류 · 생명주기 재생 · 스크린 리더일 때 자동 전환 끔</span> &rarr; <span class="dd-now">전부 삭제</span><span class="dd-why">자동 이동이 없으므로 필요 없음</span></td></tr>
@@ -1072,7 +1073,7 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
           <tr><th>차량 선택 [다음]</th><td>확인 화면과 브릿지를 <b>한 번에</b> 그리고 슬라이드 <b>320ms</b> (우&rarr;좌)</td></tr>
           <tr><th>흰 베일 &middot; 버튼</th><td><b>180ms</b> 에 페이드 시작, 480ms 에 완성 (버튼은 베일과 함께 나타남)</td></tr>
           <tr><th>문구 등장 완료</th><td><b>780ms</b></td></tr>
-          <tr><th>요일 선택으로</th><td><b>[요일 선택하기] 를 눌렀을 때만.</b> 자동 이동 없음</td></tr>
+          <tr><th>요일 선택으로</th><td><b>[선택하기] 를 눌렀을 때만.</b> 자동 이동 없음</td></tr>
         </table>
         <p class="dd-n"><b>레이아웃</b> 아이콘 120dp &middot; 아이콘~헤드라인 gap 32dp &middot; 헤드라인~버튼 gap 32dp &middot;
           좌우 패딩 24dp &middot; 전체 세로 가운데 정렬.
@@ -1107,7 +1108,7 @@ rise = opacity 0 -&gt; 1, translateY(12dp) -&gt; 0</code></pre>
 
 전이
   car      --[다음]--------------&gt;  bridge    confirm 과 한 번에 그림, 우-&gt;좌 push 320ms
-  bridge   --[요일 선택하기]------&gt;  weekday   우-&gt;좌 push, 진입 후 300ms 는 입력 무시
+  bridge   --[선택하기]----------&gt;  weekday   우-&gt;좌 push, 진입 후 300ms 는 입력 무시
   bridge   --뒤로가기-------------&gt;  confirm   오버레이만 닫음, 배너 promo
   confirm  --[설정]---------------&gt;  weekday
   weekday  --[다음]---------------&gt;  rconfirm
@@ -1156,7 +1157,8 @@ func gestureRecognizerShouldBegin(_ g: UIGestureRecognizer) -&gt; Bool {
       <section class="dd-sec">
         <h3>접근성</h3>
         <table class="dd-t">
-          <tr><th>포커스</th><td>진입 시 <b>[요일 선택하기] 버튼</b>으로 포커스 이동. 헤드라인은 그 앞에서 읽히도록 순서 유지</td></tr>
+          <tr><th>포커스</th><td>진입 시 <b>[선택하기] 버튼</b>으로 포커스 이동. 헤드라인은 그 앞에서 읽히도록 순서 유지</td></tr>
+          <tr><th>버튼 접근성 이름</th><td>보이는 글자는 <code class="i">선택하기</code>, 읽히는 이름은 <b><code class="i">요일 선택하기</code></b>. 포커스가 버튼에 바로 꽂혀 헤드라인을 못 들을 수 있어서. Android <code class="i">contentDescription</code>, iOS <code class="i">accessibilityLabel</code>. 보이는 글자를 포함하므로 WCAG 2.5.3 충족</td></tr>
           <tr><th>시간 제한</th><td>없음. 자동 이동이 없어 스크린 리더 사용자도 끝까지 읽고 누를 수 있음 (WCAG 2.2.1 해당 없음)</td></tr>
           <tr><th>입력 가드</th><td>진입 후 <b>300ms</b> 는 버튼 입력 무시. 앞 화면 <code class="i">[다음]</code> 빠른 연타 대비</td></tr>
           <tr><th>최소 터치 영역</th><td>쿠폰 <code class="i">[보기]</code> 는 시각 34dp 라 <b>히트 영역만 48dp</b> 로 확장. 보이는 크기는 Figma 그대로</td></tr>
@@ -1396,10 +1398,16 @@ function fConfirm(kind){
    완료되지 않았습니다"라고 말한다) 사실과 어긋나는 약속이 된다.
 
    헤드라인은 "날짜"가 아니라 "요일"이다(2026-09-16). 다음 화면이 캘린더가 아니라
-   요일 칩 7개라서, 날짜라고 하면 캘린더를 예상했다가 어긋난다. 헤드라인 -> 버튼
-   [요일 선택하기] -> 다음 화면 제목 "반복할 요일을 선택해주세요" 가 같은 말로 이어진다.
+   요일 칩 7개라서, 날짜라고 하면 캘린더를 예상했다가 어긋난다.
 
-   자동 전환은 없다. 넘어가는 방법은 문구 바로 아래 가운데 버튼 [요일 선택하기] 하나다.
+   ⚠ 그래서 버튼은 "요일"을 다시 말하지 않는다. 32dp 위 헤드라인이 방금 말했고,
+   다음 화면 제목도 "반복할 요일을 선택해주세요"라 세 번 반복되면 사족이 된다.
+   목적어는 헤드라인이, 진행은 버튼이 맡는다. 다음 화면에서 다시 말하는 것은
+   중복이 아니라 도착 확인이라 그대로 둔다.
+   단 스크린 리더는 포커스가 버튼에 바로 꽂혀 헤드라인을 못 들을 수 있으므로
+   접근성 이름은 "요일 선택하기" 를 유지한다(보이는 레이블을 포함하므로 WCAG 2.5.3 충족).
+
+   자동 전환은 없다. 넘어가는 방법은 문구 바로 아래 가운데 버튼 [선택하기] 하나다.
    하단 CTA 자리에 두면 엄지가 [다음] 을 누른 흐름 그대로 버튼까지 눌러 문구를 안 읽고
    지나간다. 가운데 두면 아이콘 -> 헤드라인 -> 버튼 순서로 읽고 누르게 된다.
    서브 문구('잠시 후 자동으로 이동해요')는 사실이 아니게 되어 뺐다.
@@ -1411,7 +1419,7 @@ function fBridge(){
   return `${fConfirm()}<div class="fw-breaker">
     <img src="${A.icCal}" alt="">
     <div class="bk-tx"><b>마지막으로,<br>반복할 요일을 알려주세요</b></div>
-    <button type="button" class="bk-cta" data-flow="weekday">요일 선택하기</button>
+    <button type="button" class="bk-cta" data-flow="weekday" aria-label="요일 선택하기">선택하기</button>
   </div>`;
 }
 
@@ -1812,9 +1820,9 @@ function layout(){
 }
 
 /* ── 플로우 단계 전환 ────────────────────────────────────────────
-   차량 선택 [다음] 은 확인 화면과 bridge 를 한 번에 그리고, bridge 에서 [요일 선택하기] 로 넘어간다.
+   차량 선택 [다음] 은 확인 화면과 bridge 를 한 번에 그리고, bridge 에서 [선택하기] 로 넘어간다.
    flowTimers 는 지금 브릿지에서 쓰지 않지만, 단계 전환마다 비우는 안전장치로 남긴다. */
-/* 브릿지에는 자동 전환이 없다(2026-09-15). [요일 선택하기] 를 눌러야 넘어간다.
+/* 브릿지에는 자동 전환이 없다(2026-09-15). [선택하기] 를 눌러야 넘어간다.
    체류를 1900 -> 2600 -> 3500ms 로 늘려도 실기기에서 계속 '납치당하는 느낌'이었고,
    버튼을 넣고 나니 '누르면 넘어간다'(버튼)와 '안 눌러도 넘어간다'(자동)가 반대 신호가 됐다.
    자동 전환을 없애면 타이머·생명주기 재생·모션 축소 체류·스크린 리더 예외가 전부 사라진다.
