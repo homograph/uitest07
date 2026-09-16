@@ -217,7 +217,7 @@
   .pkbox .pktx{display:flex;flex-direction:column;gap:4px;white-space:normal;overflow:visible;}
   .pktx .l1,.pktx .l2{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pktx .l2[hidden]{display:none;}
-  .pktx.ph .l1{font-weight:700;color:var(--gray-800);}
+  .pktx.ph .l1{font-weight:700;color:var(--gray-900);}   /* 9/16: 로티 타일이 연해(배경 대비 1.19:1) 글자가 카드 중심을 잡는다. #383D4F 10.2:1 → #262A38 13.6:1, 완료 상태와 통일 */
   .pktx.ph .l2{color:var(--gray-600);}
   .pktx.fill .l1{color:var(--gray-900);font-weight:500;}   /* 9/16 Figma 12469:541338: #171A24 → #262A38 · Body_3_Medium */
   .pktx.fill .l2{color:var(--gray-600);}
@@ -833,8 +833,8 @@
   .plr{display:flex;align-items:flex-start;gap:16px;padding:20px;background:var(--navy);}
   .plr .pv30{flex:0 0 auto;display:block;width:30px;height:30px;}   /* 9/15 Figma 12371:523749: 원형 → 둥근 사각 r8(--svg 원본) */
   .plr[hidden]{display:none;}
-  .plr-chg{align-self:flex-start;font-size:15px;line-height:22px;font-weight:700;color:#32a2fa;}
-  .plr-chg.chg{color:#fe4c00;}
+  .plr-chg{align-self:flex-start;font-size:15px;line-height:22px;font-weight:700;color:#5cb4fa;}   /* navy #101A3D 위 6.2 → 7.6:1 */
+  .plr-chg.chg{color:#ff7a45;}   /* 5.1 → 6.6:1 */
   .plr-chg[hidden]{display:none;}
   .plr-bd{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:8px;}   /* 9/14 Info Container gap8 · Address Container gap4 */
   .plr-v{margin:0;font-size:20px;line-height:30px;font-weight:400;color:#e6e9ef;word-break:keep-all;overflow-wrap:anywhere;}
@@ -953,8 +953,10 @@
   .tbn-x:active{background:#1c1c1c;}
   .tbn-x[hidden]{display:none;}
   @media (prefers-reduced-motion:reduce){ .tbn,.tbn-full,.tbn-x{transition:none;} }
-  .tbn-st{font-size:16px;line-height:24px;font-weight:700;color:#32a2fa;}   /* Figma DP/16 Bold */
-  .tbn-st.chg{color:#fe4c00;}
+  /* 9/16 대비 조정: 위치 줄(흰색 21:1)과 격차가 커 상태 줄이 묻혔다. 색상은 그대로 두고 한 단계 밝게 —
+     작성 #32A2FA 7.7:1 → #5CB4FA 9.4:1 · 변경 #FE4C00 6.3:1 → #FF7A45 8.1:1 */
+  .tbn-st{font-size:16px;line-height:24px;font-weight:700;color:#5cb4fa;}   /* Figma DP/16 Bold */
+  .tbn-st.chg{color:#ff7a45;}
   .tbn[hidden]{display:none;}
   /* 9/15: 넘치면 계속 흐른다(무한 루프). 창을 좌우 여백(20)까지 넓혀 글자가 배너 끝까지 흐르고,
      잘리는 양 끝 24px 에 그라데이션을 준다. 넘치지 않으면 멈춘 채 그라데이션도 없다. */
