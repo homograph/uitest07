@@ -518,7 +518,14 @@ body.screenonly .col{margin:0;}
 /* D안(Figma 10766:65699, 현재 상태 그대로): 방법+쿠폰을 한 블록으로 묶고, 다시 예약하기는
    고정폭 240px 카드를 가로 스크롤(NO_WRAP)한다. 색 블록 대신 얇은 회색 띠(divider)로 섹션을
    가르고, 후기 카드마다 예약 종류 태그를 붙인다. */
-.fgd-top{padding:40px 28px 28px;display:flex;flex-direction:column;align-items:center;gap:24px;
+/* 상단 여백(Figma 12474:551876, 2026-09-16). ⚠ gap 과 아래 패딩은 한 쌍이다.
+   gap 은 [제목+부제] 와 히어로 그림을 묶는 안쪽 여백, 아래 패딩은 예약 방법과
+   갈라 놓는 바깥 여백이다. 안쪽이 바깥에 가까워지면 이 화면엔 테두리도 구분선도
+   없어서 묶임이 통째로 풀린다. 지금은 광학 32 : 68.5 = 1 : 2.14 다.
+   ⚠ 여기를 더 키우지 말 것. 하단 [예약 시작하기] CTA 가 719dp 에 고정인데
+   '다시 예약하기' 카드의 도착지 줄이 706.5dp 에서 끝난다. 남은 예산은 12.5dp 뿐이고,
+   넘기면 그 줄이 CTA 뒤로 숨는다. 상단 여백은 그 12.5dp 에서 꺼내 쓰는 것이다. */
+.fgd-top{padding:40px 28px 40px;display:flex;flex-direction:column;align-items:center;gap:20px;
   background:linear-gradient(180deg,#e2f2fe 0%,#ffffff 100%);}
 .fgd-top .tt{width:100%;display:flex;flex-direction:column;gap:8px;}
 .fgd-top h1{margin:0;font-size:24px;line-height:32px;font-weight:700;color:#000000;letter-spacing:-.4px;}
@@ -1055,6 +1062,11 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       <section class="dd-sec">
         <h3>변경 이력</h3>
         <p class="dd-n" style="margin:0 0 12px">처음 핸드오프 이후 바뀐 것만 모았습니다. <b>최신이 위</b>입니다. 아래 섹션은 전부 바뀐 값 기준입니다.</p>
+        <p class="dd-when">2026-09-16 · 예약 홈 상단 여백 (Figma 12474:551876)</p>
+        <table class="dd-t dd-log">
+          <tr><th>Top Section</th><td><span class="dd-was">gap 24 &middot; 패딩 40 / 28</span> &rarr; <span class="dd-now">gap <b>20</b> &middot; 패딩 40 / <b>40</b></span><span class="dd-why">히어로와 예약 방법의 경계가 약했음(광학 36 : 56.5 = 1 : 1.57). 안쪽을 4 조이고 바깥을 12 늘려 1 : 2.14 로. 전체 높이는 8dp 만 늘어남</span></td></tr>
+          <tr><th>⚠ 남은 여백 예산</th><td><span class="dd-now">12.5dp</span><span class="dd-why">하단 [예약 시작하기] CTA 가 719dp 고정. 다시 예약하기 카드의 도착지 줄이 706.5dp 에서 끝남. 상단에 12dp 넘게 더하면 그 줄이 가려짐</span></td></tr>
+        </table>
         <p class="dd-when">2026-09-16 · 브릿지 위계 조정 (Figma 12469:538681)</p>
         <table class="dd-t dd-log">
           <tr><th>달력 아이콘</th><td><span class="dd-was">120dp</span> &rarr; <span class="dd-now">88dp</span><span class="dd-why">아이콘 하나가 화면 잉크의 51.9% 를 먹어 장식이 헤드라인·버튼보다 무거웠음. 34.8% 로 내려가며 순위가 버튼 &gt; 아이콘 &gt; 헤드라인 으로 정상화. 덩어리 높이 208 &rarr; 176dp</span></td></tr>
