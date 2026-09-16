@@ -2949,35 +2949,37 @@
       <div class="pane" id="dc-guide">
         <h4>무엇인가</h4>
         <p>드라이버가 T맵 내비를 보는 동안, 타다 앱이 <b>화면 위에 그리는(draw over)</b> 하단 띠배너입니다.
-           고객이 남긴 <b>상세 위치</b>를 운전 중에도 흘끗 보게 하는 자리이고, 찾아오는 길은 여기에 넣지 않습니다.</p>
+           고객이 남긴 <b>상세 위치</b>만 싣고, 찾아오는 길은 앱 카드에서 봅니다.</p>
         <h4>상태</h4>
         <table>
           <tr><th>상태</th><th>보이는 것</th><th>들어가는 조건</th></tr>
-          <tr><td>펼침</td><td>상태 줄(16 Bold) + 위치(32 Bold)</td><td>픽업 구간 시작 · 위치 변경 · 300m 진입</td></tr>
+          <tr><td>펼침</td><td>상태 줄(16 Bold) + 위치(32 Bold) + 표식 화살표</td><td>픽업 구간 시작 · 위치 변경 · 300m 진입</td></tr>
           <tr><td>접힘</td><td>208×58 탭(P 30 · 위치 18 · ⌄)</td><td>× 또는 아래로 밀기</td></tr>
-          <tr><td>변경</td><td>상태 줄 주황 + 다시 흐름</td><td>배차 후 고객이 수정</td></tr>
-          <tr><td>접힘+변경</td><td><b>저절로 펼쳐지는 것</b>이 곧 알림</td><td>접힌 동안 수정됨</td></tr>
+          <tr><td>변경</td><td>상태 줄 주황 + 두 번 깜빡임 + 흐름 다시</td><td>배차 후 고객이 수정</td></tr>
+          <tr><td>접힘 + 변경</td><td><b>저절로 펼쳐지는 것이 곧 알림</b></td><td>접힌 동안 수정됨</td></tr>
         </table>
         <h4>치수</h4>
         <ul>
           <li>띠 <b>360×100</b> · 여백 14/20/12 · 줄 간격 2 · 상태 줄 24 · 위치 줄 48</li>
-          <li>접힌 탭 <b>208×58</b> · r16 · 흰 테두리 2 · 오른쪽 <b>0</b> · 화면 아래에서 <b>42</b>(하단 막대와 20 겹침)</li>
-          <li>× <b>50×50</b> 원형 · 흰 테두리 2 · 띠 위 끝선에 <b>절반 걸침(25)</b> · 오른쪽 16</li>
-          <li>흐름 속도 <b>초당 90px</b> · <b>오른쪽 66px</b> 그라데이션 · 모프 0.34초</li>
+          <li>× <b>50×50</b> 원형 · 흰 테두리 2 · 오른쪽 16 · 띠 위 끝선에 <b>절반(25) 걸침</b></li>
+          <li>접힘 탭 <b>208×58</b> · r16 · 흰 테두리 2 · 여백 12/14 · 간격 8 · 오른쪽 <b>0</b> · 화면 아래에서 <b>42</b>(하단 막대와 20 겹침)</li>
+          <li>탭 안: P 타일 <b>30 · r8</b> · 라벨 <b>18/26 Bold</b> · ⌄ 20</li>
+          <li>흐름 초당 <b>90px</b> · 오른쪽 <b>66px</b> 그라데이션 · 접힘/펼침 모프 0.34초</li>
         </ul>
         <h4>색</h4>
         <table>
           <tr><th>쓰임</th><th>값</th></tr>
           <tr><td>배너 바탕 / 글자</td><td>#000000 / #FFFFFF</td></tr>
           <tr><td>고객이 작성함</td><td>#32A2FA</td></tr>
-          <tr><td>고객이 변경함 · 변경 점</td><td>#FE4C00</td></tr>
-          <tr><td>접힘 탭 화살표</td><td>#C0C8D9</td></tr>
-          <tr><td>접힘 탭 P 타일</td><td>#053886 · r8 · 30</td></tr>
+          <tr><td>고객이 변경함</td><td>#FE4C00</td></tr>
+          <tr><td>표식 화살표 · 탭 ⌄</td><td>#C0C8D9</td></tr>
+          <tr><td>탭 P 타일</td><td>#053886</td></tr>
         </table>
         <h4>동작 규칙</h4>
         <ul>
           <li>위치가 한 줄에 들어가면 <b>흐르지 않습니다.</b> 넘칠 때만 흐르고, 넘치면 계속 돕니다.</li>
-          <li>배너 <b>어디를 눌러도</b>(360×100) 타다 앱 카드로 갑니다. × 만 예외이고 <b>위로 밀어도</b> 같습니다. 오른쪽 끝 화살표(28)는 버튼이 아니라 <b>표식</b>입니다. 찾아오는 길은 앱 카드에 있습니다.</li>
+          <li>누르는 자리는 <b>배너 전체(360×100)</b>입니다. 오른쪽 끝 화살표는 버튼이 아니라 표식입니다. × 만 예외입니다.</li>
+          <li>제스처: 펼침에서 <b>아래로 밀면 접기 · 위로 밀면 앱 카드</b>, 접힘에서는 어느 쪽으로 밀어도 펼칩니다.</li>
           <li>접힌 상태는 <b>같은 호출 동안</b> 유지됩니다. 저절로 펼치는 건 위치 변경과 300m 진입 두 가지뿐입니다.</li>
           <li>300m 진입 때는 <b>음성 1회</b>와 함께 흐름을 처음부터 다시 재생합니다.</li>
           <li>운행 시작 후(고객 탑승)에는 배너를 내립니다.</li>
@@ -2985,88 +2987,97 @@
         <h4>주의</h4>
         <ul>
           <li>흐르는 글은 주행 중 읽기 어렵습니다. 위치만 넣고, 그 이상은 <b>음성</b>으로 보냅니다.</li>
-          <li>접힌 탭은 T맵 하단 막대를 가리지 않습니다. 남은 시간·거리는 항상 보여야 합니다.</li>
+          <li>펼친 배너는 T맵 하단 막대를 덮습니다. 접으면 탭이 막대와 20만 겹쳐 남은 시간·거리가 보입니다.</li>
           <li>현장결제 안내와 자리가 같습니다. 겹치면 현장결제를 먼저 한 바퀴 돌리고 위치로 넘깁니다.</li>
+          <li>표식 화살표와 밀기 제스처는 Figma에 없는 추가분입니다(‘자세히’ 글자를 대신합니다).</li>
         </ul>
+        <p class="src" style="font-size:11px;color:var(--ink-3);margin-top:10px">기준: Figma 15610:42103 · 15610:39115 (드라이버 핸드오프)</p>
       </div>      <div class="pane" id="dc-code" hidden>
         <h4>payload (드라이버 앱이 받는 값)</h4>
         <div class="cpwrap"><button type="button" class="cp" data-cp="dc-code-1">복사</button>
         <pre><code id="dc-code-1">// 드라이버 앱이 받는 값 (라이더 앱 상세 위치 = 한 벌)
 {
   &quot;pickupDetail&quot;: {
-    &quot;level&quot;:        &quot;UNDER&quot;,              // UNDER | GROUND
-    &quot;floor&quot;:        1,                    // 1글자, 라이더 앱 제한
-    &quot;dong&quot;:         &quot;1902&quot;,               // 최대 8자
-    &quot;line&quot;:         &quot;3-4&quot;,                // 최대 8자 · 없을 수 있음(36.2%만 입력)
-    &quot;directions&quot;:   &quot;게이트2로 들어와서 좌회전해주세요&quot;,   // 최대 30자 · 선택
-    &quot;changed&quot;:      false,                // 배차 후 고객이 수정했는가
-    &quot;updatedAt&quot;:    &quot;2026-09-16T10:12:33+09:00&quot;
+    &quot;level&quot;:      &quot;UNDER&quot;,             // UNDER | GROUND
+    &quot;floor&quot;:      &quot;1&quot;,                 // 1글자 · 문자열(&#x27;L&#x27; 같은 값이 있다)
+    &quot;dong&quot;:       &quot;1902&quot;,              // 최대 8자
+    &quot;line&quot;:       &quot;3-4&quot;,               // 최대 8자 · 없을 수 있다(36.2%만 입력)
+    &quot;directions&quot;: &quot;게이트2로 들어와서 좌회전해주세요&quot;,  // 최대 30자 · 선택
+    &quot;changed&quot;:    false,               // 배차 후 고객이 수정했는가
+    &quot;updatedAt&quot;:  &quot;2026-09-16T10:12:33+09:00&quot;
   }
 }
 
-// 배너 문구 = 위치만. &#x27;에서 탈게요&#x27; 같은 꼬리와 찾아오는 길은 넣지 않는다.
-//   1줄: `${level===&#x27;UNDER&#x27;?&#x27;지하&#x27;:&#x27;지상&#x27;} ${floor}층 ${dong}동${line ? &#x27; &#x27;+line+&#x27;라인&#x27; : &#x27;&#x27;}`
-//   찾아오는 길은 타다 앱 카드에서 본다(배너 탭 → 카드).</code></pre></div>
+// 배너 문구 = 위치만. &#x27;에서 탈게요&#x27; 꼬리와 찾아오는 길은 넣지 않는다.
+//   `${level===&#x27;UNDER&#x27;?&#x27;지하&#x27;:&#x27;지상&#x27;} ${floor}층 ${dong}동${line ? &#x27; &#x27;+line+&#x27;라인&#x27; : &#x27;&#x27;}`
+// 찾아오는 길은 타다 앱 카드에서 본다(배너를 누르면 카드로).</code></pre></div>
         <h4>HTML</h4>
         <div class="cpwrap"><button type="button" class="cp" data-cp="dc-code-2">복사</button>
-        <pre><code id="dc-code-2">&lt;!-- T맵 위에 그리는 드라이버 앱 오버레이(draw over). 상자는 늘 360×112, 보이는 영역만 clip-path 로 자른다 --&gt;
+        <pre><code id="dc-code-2">&lt;!-- T맵 위에 그리는 드라이버 앱 오버레이(draw over).
+     상자는 늘 360×112 로 두고 clip-path 로 보이는 영역만 자른다(펼침 100 / 접힘 208×58). --&gt;
 &lt;div class=&quot;tbn&quot; id=&quot;tbn&quot; role=&quot;button&quot; tabindex=&quot;0&quot; aria-label=&quot;고객 픽업 위치 자세히 보기&quot;&gt;
+
+  &lt;!-- 펼침 --&gt;
   &lt;span class=&quot;tbn-full&quot;&gt;
     &lt;span class=&quot;tbn-top&quot;&gt;
-      &lt;span class=&quot;tbn-lead&quot;&gt;
-        &lt;span class=&quot;tbn-st&quot; id=&quot;tbn-st&quot;&gt;고객이 작성함&lt;/span&gt;
-      &lt;/span&gt;
+      &lt;span class=&quot;tbn-st&quot; id=&quot;tbn-st&quot;&gt;고객이 작성함&lt;/span&gt;   &lt;!-- 변경 시 .chg --&gt;
     &lt;/span&gt;
-    &lt;!-- 앱으로 간다는 표식. 버튼이 아니라 배너 전체가 누르는 자리다 --&gt;
-    &lt;svg class=&quot;tbn-go&quot; width=&quot;28&quot; height=&quot;28&quot;&gt;&lt;!-- › --&gt;&lt;/svg&gt;
-    &lt;span hidden&gt;
-    &lt;/span&gt;
-    &lt;span class=&quot;tbn-win&quot; id=&quot;tbn-win&quot;&gt;
+    &lt;span class=&quot;tbn-win&quot; id=&quot;tbn-win&quot;&gt;                      &lt;!-- 넘치면 흐르는 창 --&gt;
       &lt;span class=&quot;tbn-trk&quot; id=&quot;tbn-trk&quot;&gt;
         &lt;span class=&quot;tbn-t&quot; id=&quot;tbn-t&quot;&gt;지하 1층 1902동 3-4라인&lt;/span&gt;
         &lt;span class=&quot;tbn-t tbn-t2&quot; aria-hidden=&quot;true&quot;&gt;지하 1층 1902동 3-4라인&lt;/span&gt;
       &lt;/span&gt;
     &lt;/span&gt;
+    &lt;!-- 앱으로 간다는 표식. 버튼이 아니라 배너 전체가 누르는 자리다 --&gt;
+    &lt;svg class=&quot;tbn-go&quot; width=&quot;28&quot; height=&quot;28&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot; aria-hidden=&quot;true&quot;&gt;
+      &lt;path d=&quot;M9 5l7 7-7 7&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.4&quot; stroke-linecap=&quot;round&quot;/&gt;
+    &lt;/svg&gt;
   &lt;/span&gt;
+
+  &lt;!-- 접힘 탭 --&gt;
   &lt;span class=&quot;tbn-mini&quot; aria-hidden=&quot;true&quot;&gt;
-    &lt;svg width=&quot;30&quot; height=&quot;30&quot;&gt;&lt;!-- P 타일 · r8 · #053886 --&gt;&lt;/svg&gt;
+    &lt;svg class=&quot;tbn-mp&quot; width=&quot;30&quot; height=&quot;30&quot;&gt;&lt;!-- P 타일 · r8 · #053886 --&gt;&lt;/svg&gt;
     &lt;span class=&quot;tbn-mt&quot;&gt;지하 1층 1902동 3-4라인&lt;/span&gt;
-    &lt;svg class=&quot;tbn-up&quot; width=&quot;20&quot; height=&quot;20&quot;&gt;&lt;!-- ⌄ --&gt;&lt;/svg&gt;
+    &lt;svg class=&quot;tbn-up&quot; width=&quot;20&quot; height=&quot;20&quot;&gt;&lt;!-- ⌄ · #C0C8D9 --&gt;&lt;/svg&gt;
   &lt;/span&gt;
 &lt;/div&gt;
-&lt;!-- × 는 띠 밖 형제다. 띠는 overflow 를 자르므로 안에 두면 위쪽 절반이 잘린다 --&gt;
+
+&lt;!-- × 는 띠 밖 형제다. 띠가 overflow 를 자르므로 안에 두면 위쪽 절반이 잘린다 --&gt;
 &lt;button type=&quot;button&quot; class=&quot;tbn-x&quot; id=&quot;tbn-x&quot; aria-label=&quot;배너 접기&quot;&gt;✕&lt;/button&gt;</code></pre></div>
         <h4>CSS</h4>
         <div class="cpwrap"><button type="button" class="cp" data-cp="dc-code-3">복사</button>
-        <pre><code id="dc-code-3">/* 펼침 360×100 · 접힘 208×58. 상자(112)는 그대로 두고 clip-path 만 움직인다 —
-   폭·높이를 바꾸면 글자가 다시 배치돼 흐르던 위치가 튄다. */
+        <pre><code id="dc-code-3">/* 상자는 고정, clip-path 만 움직인다 — 폭·높이를 바꾸면 글자가 다시 배치돼 흐르던 위치가 튄다 */
 .tbn{position:absolute; left:0; right:0; bottom:0; height:112px; z-index:7;
      background:#000; color:#fff; cursor:pointer;
-     clip-path:inset(12px 0 0 0 round 0);
+     clip-path:inset(12px 0 0 0 round 0);                      /* 펼침 = 아래 100 */
      transition:clip-path .34s cubic-bezier(.32,.72,.24,1);}
-.tbn.min{clip-path:inset(12px 0 42px calc(100% - 208px) round 16px);}   /* 오른쪽 끝 · 아래에서 42 */
+.tbn.min{clip-path:inset(12px 0 42px calc(100% - 208px) round 16px);}  /* 접힘 = 208×58 · 오른쪽 0 · 아래 42 */
 
 .tbn-full{position:absolute; left:0; right:0; bottom:0; height:100px;
           display:flex; flex-direction:column; gap:2px; padding:14px 20px 12px;
           transition:opacity .2s ease .12s;}
 .tbn.min .tbn-full{opacity:0; pointer-events:none; transition:opacity .14s ease;}
+
 .tbn-mini{position:absolute; right:0; top:12px; width:208px; height:58px;
           display:flex; align-items:center; gap:8px; padding:0 14px 0 12px;
-          border:2px solid #fff; border-radius:16px;
+          border:2px solid #fff; border-radius:16px; box-sizing:border-box;
           opacity:0; pointer-events:none; transition:opacity .12s ease;}
 .tbn.min .tbn-mini{opacity:1; transition:opacity .2s ease .14s;}
+.tbn-mt{flex:1 1 auto; min-width:0; font-size:18px; line-height:26px; font-weight:700; color:#fff;
+        white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
 
-/* 상태 줄 16 Bold(DP/16 Bold) — 앱 안 카드와 같은 문구, 한 단계 큰 글자 */
+/* 상태 줄 DP/16 Bold — 앱 안 카드와 같은 문구 */
 .tbn-st{font-size:16px; line-height:24px; font-weight:700; color:#32a2fa;}
 .tbn-st.chg{color:#fe4c00;}
-.tbn-go{position:absolute; right:16px; bottom:22px; color:#c0c8d9; pointer-events:none;}   /* 표식만 */
+.tbn-go{position:absolute; right:16px; bottom:22px; color:#c0c8d9; pointer-events:none;}
 
-/* 위치 줄 32 Bold. 창을 좌우 여백(20)까지 넓혀 글자가 배너 끝까지 흐르게 한다 */
+/* 위치 줄 SP/32 Bold. 창을 좌우 여백(20)까지 넓혀 글자가 배너 끝까지 흐르게 한다 */
 .tbn-win{display:block; overflow:hidden; white-space:nowrap; margin:0 -20px; padding:0 20px;}
 .tbn-t{font-size:32px; line-height:48px; font-weight:700; color:#fff;}
-.tbn.ovf .tbn-win{                                 /* 넘칠 때만 오른쪽 66px 그라데이션 */
-  mask-image:linear-gradient(90deg,#000 calc(100% - 66px),transparent 100%);}
-.tbn.run .tbn-t2{display:inline;}                  /* 이어 붙는 두 번째 복사본 */
+.tbn.ovf .tbn-win{                                  /* 넘칠 때만 오른쪽 66px 그라데이션 */
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 66px),transparent 100%);
+          mask-image:linear-gradient(90deg,#000 calc(100% - 66px),transparent 100%);}
+.tbn.run .tbn-t2{display:inline;}                   /* 이어 붙는 두 번째 복사본 */
 .tbn.run .tbn-trk{animation:mq var(--mq-dur) linear infinite;}
 .tbn.min .tbn-trk{animation-play-state:paused;}
 @keyframes mq{from{transform:translateX(0)} to{transform:translateX(calc(-1 * var(--mq-d)))}}
@@ -3074,55 +3085,59 @@
 /* × 는 띠 위 끝에 절반 걸친다: 띠 100 · 버튼 50 → bottom 75 */
 .tbn-x{position:absolute; right:16px; bottom:75px; z-index:8; width:50px; height:50px;
        border:2px solid #fff; border-radius:50%; background:#000; color:#fff;}
-.tbn-x.off{opacity:0; transform:scale(.7); pointer-events:none;}</code></pre></div>
+.tbn-x.off{opacity:0; transform:scale(.7); pointer-events:none;}   /* 접히면 같이 사라진다 */
+
+@media (prefers-reduced-motion:reduce){ .tbn,.tbn-full,.tbn-mini,.tbn-x{transition:none;}
+                                        .tbn.run .tbn-trk{animation:none;} }</code></pre></div>
         <h4>JS</h4>
         <div class="cpwrap"><button type="button" class="cp" data-cp="dc-code-4">복사</button>
-        <pre><code id="dc-code-4">/* ── 1) 값 그리기 ─────────────────────────────────────────── */
-function paintBanner(pickup) {          // pickup: 아래 payload
-  const b = document.getElementById(&#x27;tbn&#x27;);
-  const text = [pickup.floorText, pickup.dongLineText].filter(Boolean).join(&#x27; &#x27;);  // &#x27;지하 1층 1902동 3-4라인&#x27;
-  tbnT.textContent = tbnT2.textContent = tbnMini.textContent = text;
+        <pre><code id="dc-code-4">/* ── 1) 값 그리기 ───────────────────────────────────────── */
+function paintBanner(pickup, state) {
+  const text = locText(pickup);                    // &#x27;지하 1층 1902동 3-4라인&#x27;
+  tbnT.textContent = tbnT2.textContent = tbnMt.textContent = text;
   tbnSt.textContent = pickup.changed ? &#x27;고객이 변경함&#x27; : &#x27;고객이 작성함&#x27;;
   tbnSt.classList.toggle(&#x27;chg&#x27;, pickup.changed);
-  b.classList.toggle(&#x27;min&#x27;, state.collapsed);
-  document.getElementById(&#x27;tbn-x&#x27;).classList.toggle(&#x27;off&#x27;, state.collapsed);
-  if (!state.collapsed) playMarquee();
+  banner.classList.toggle(&#x27;min&#x27;, state.collapsed);
+  closeBtn.classList.toggle(&#x27;off&#x27;, state.collapsed);
+  if (!state.collapsed) playMarquee();              // 접힘은 흐름을 멈춘다(CSS)
 }
 
-/* ── 2) 흐름: 넘칠 때만, 넘치면 계속 ───────────────────────── */
+/* ── 2) 흐름: 넘칠 때만, 넘치면 계속 ─────────────────────── */
 function playMarquee() {
-  const win = document.getElementById(&#x27;tbn-win&#x27;);
-  const t   = document.getElementById(&#x27;tbn-t&#x27;);
-  const avail = mapWidth - 40;                  // 좌우 여백 20씩
-  const over  = t.scrollWidth &gt; avail + 1;
-  const b = document.getElementById(&#x27;tbn&#x27;);
-  b.classList.toggle(&#x27;ovf&#x27;, over);
-  b.classList.remove(&#x27;run&#x27;, &#x27;rest&#x27;);
-  if (!over) return;                            // 한 줄에 들어가면 흐르지 않는다
-  const gap = 48, d = t.scrollWidth + gap;
-  b.style.setProperty(&#x27;--mq-gap&#x27;, gap + &#x27;px&#x27;);
-  b.style.setProperty(&#x27;--mq-d&#x27;,   d   + &#x27;px&#x27;);
-  b.style.setProperty(&#x27;--mq-dur&#x27;, (d / 90).toFixed(2) + &#x27;s&#x27;);   // 초당 90px
-  void b.offsetWidth;                           // 리플로우 → 처음부터 다시
-  b.classList.add(&#x27;run&#x27;);
+  const avail = screenWidth - 40;                   // 좌우 여백 20씩
+  const over  = tbnT.scrollWidth &gt; avail + 1;
+  banner.classList.toggle(&#x27;ovf&#x27;, over);             // 그라데이션도 이때만
+  banner.classList.remove(&#x27;run&#x27;);
+  if (!over) return;                                // 한 줄에 들어가면 흐르지 않는다
+  const gap = 48, d = tbnT.scrollWidth + gap;
+  banner.style.setProperty(&#x27;--mq-gap&#x27;, gap + &#x27;px&#x27;);
+  banner.style.setProperty(&#x27;--mq-d&#x27;,   d   + &#x27;px&#x27;);
+  banner.style.setProperty(&#x27;--mq-dur&#x27;, (d / 90).toFixed(2) + &#x27;s&#x27;);   // 초당 90px
+  void banner.offsetWidth;                          // 리플로우 → 처음부터 다시
+  banner.classList.add(&#x27;run&#x27;);
 }
 
-/* ── 3) 접기 · 펼치기 ──────────────────────────────────────── */
-xBtn.onclick = e =&gt; { e.stopPropagation(); state.collapsed = true;  render(); };
-banner.onclick = e =&gt; {                          // 배너 전체가 누르는 자리다
-  if (e.target.closest(&#x27;#tbn-x&#x27;) || swiped) return;
-  if (state.collapsed) { state.collapsed = false; render(); return; }
-  openTadaApp();                                 // 펼친 상태의 탭 → 앱 카드
+/* ── 3) 접기 · 펼치기 · 앱으로 ───────────────────────────── */
+closeBtn.onclick = e =&gt; { e.stopPropagation(); state.collapsed = true; render(); };
+banner.onclick   = e =&gt; {
+  if (e.target.closest(&#x27;.tbn-x&#x27;) || swiped) return;
+  if (state.collapsed) { state.collapsed = false; render(); return; }  // 탭 → 펼침
+  openTadaApp();                                    // 펼침 → 앱 카드(찾아오는 길)
 };
-// 아래로 36px 밀면 접기 · 위로 36px 밀면 앱 카드 / 접힌 탭은 어느 쪽이든 24px 이상이면 펼치기
+// 제스처: 펼침에서 아래로 36px = 접기 · 위로 36px = 앱 카드
+//        접힘에서 위·아래 24px = 펼치기
+// 누르는 자리는 배너 전체(360×100)다. .tbn-go 화살표는 표식이라 pointer-events:none.
 
-/* ── 4) 저절로 다시 펼치는 두 경우 ────────────────────────── */
+/* ── 4) 저절로 펼치는 두 경우 ────────────────────────────── */
 function onPickupEvent(ev) {
-  if (ev.type === &#x27;CHANGED&#x27;)        { state.collapsed = false; speak(line(ev)); }   // 접혀 있었다면 펼쳐지는 것이 알림
-  else if (ev.type === &#x27;NEAR_300M&#x27;) { state.collapsed = false; speak(line(ev)); }   // 도착 60초 전 또는 500m 권장
-  render();
+  if (ev.type === &#x27;CHANGED&#x27;) {          // 접혀 있었다면 &#x27;펼쳐지는 것&#x27;이 곧 알림이다
+    state.collapsed = false; speak(line(ev));
+  } else if (ev.type === &#x27;NEAR_300M&#x27;) { // 권장 발동: 도착 60초 전 또는 500m 중 먼저
+    state.collapsed = false; speak(line(ev));
+  }
+  render();                             // 그 밖에는 접은 상태를 같은 호출 동안 지킨다
 }
-function line(ev) {                              // TTS 한 문장
+function line(ev) {                     // TTS 한 문장
   return (ev.type === &#x27;CHANGED&#x27; ? &#x27;고객이 위치를 변경했어요. &#x27; : &#x27;고객 요청 위치, &#x27;)
        + ev.text + &#x27;.&#x27; + (ev.directions ? &#x27; &#x27; + ev.directions + &#x27;.&#x27; : &#x27;&#x27;);
 }</code></pre></div>
