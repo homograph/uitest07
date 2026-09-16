@@ -926,20 +926,26 @@
   /* 9/15 접기 2차: × 는 36 원형(흰 50% 테두리 · 아이콘 18) — 20 은 주행 중 겨누기 작았다. 윗줄 높이 36 · 배너 108.
      접으면 그 자리에서 오른쪽 아래 작은 탭(204×48 · r24 · T맵 하단 막대 위 10)으로 줄어들고, 탭을 누르거나
      위로 밀면 같은 자리에서 다시 펼쳐진다. ('운행중' 버튼 P 뱃지는 멀어서 찾기 어려워 걷어냈다) */
-  .tbn{position:absolute;left:0;right:0;bottom:0;height:98px;z-index:7;box-sizing:border-box;overflow:hidden;
-    background:#000;color:#fff;cursor:pointer;border-radius:0;
-    transition:left .34s cubic-bezier(.32,.72,.24,1),right .34s cubic-bezier(.32,.72,.24,1),bottom .34s cubic-bezier(.32,.72,.24,1),
-      height .34s cubic-bezier(.32,.72,.24,1),border-radius .34s cubic-bezier(.32,.72,.24,1),transform .22s cubic-bezier(.22,.61,.36,1),box-shadow .34s;}
-  .tbn.min{left:calc(100% - 216px);right:12px;bottom:72px;height:48px;border-radius:24px;box-shadow:0 4px 14px rgba(0,0,0,.35);}
+  /* 9/16 모프 2차: 상자는 늘 358×98 로 두고 clip-path 만 줄여 '한 덩어리가 오른쪽 아래로 말린다'.
+     폭·높이·위치를 한꺼번에 바꾸면 글자가 다시 흐르고 줄이 튀는데, 잘라 내기만 하면 안쪽 내용은 그대로 있다.
+     접힌 탭은 화면 아래 끝(여백 6)에 붙인다 — 펼치면 위로 자라므로 탭의 ⌃ 방향과 움직임이 같아진다.
+     (전에는 탭이 띠보다 위에 있어 펼침이 아래로 내려가면서 ⌃ 와 반대였다) */
+  .tbn{position:absolute;left:0;right:0;bottom:0;height:98px;z-index:7;box-sizing:border-box;
+    background:#000;color:#fff;cursor:pointer;
+    clip-path:inset(0 0 0 0 round 0);
+    transition:clip-path .34s cubic-bezier(.32,.72,.24,1),transform .22s cubic-bezier(.22,.61,.36,1);}
+  .tbn.min{clip-path:inset(44px 12px 6px 142px round 24px);}
   .tbn.drag{transition:none;}
   .tbn-full{position:absolute;left:0;right:0;bottom:0;height:98px;display:flex;flex-direction:column;gap:2px;padding:14px 20px 12px;box-sizing:border-box;
-    transition:opacity .18s ease .12s;}
-  .tbn.min .tbn-full{opacity:0;pointer-events:none;transition:opacity .12s ease;}
-  .tbn-mini{position:absolute;inset:0;display:flex;align-items:center;gap:8px;padding:0 14px 0 12px;opacity:0;pointer-events:none;transition:opacity .12s ease;}
-  .tbn.min .tbn-mini{opacity:1;transition:opacity .18s ease .18s;}
+    transition:opacity .2s ease .12s;}
+  .tbn.min .tbn-full{opacity:0;pointer-events:none;transition:opacity .14s ease;}
+  /* 접힌 탭의 내용은 잘라 낸 자리(오른쪽 아래 204×48)에 그대로 놓는다 */
+  .tbn-mini{position:absolute;right:12px;bottom:6px;width:204px;height:48px;display:flex;align-items:center;gap:8px;
+    padding:0 14px 0 12px;box-sizing:border-box;opacity:0;pointer-events:none;transition:opacity .12s ease;}
+  .tbn.min .tbn-mini{opacity:1;transition:opacity .2s ease .14s;}
   .tbn-mt{flex:1 1 auto;min-width:0;font-size:17px;line-height:24px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .tbn-up{flex:0 0 auto;color:#c0c8d9;}
-  .tbn-mdot{position:absolute;top:8px;left:30px;width:10px;height:10px;border-radius:50%;background:#fe4c00;border:2px solid #000;}
+  .tbn-mdot{position:absolute;top:6px;left:26px;width:10px;height:10px;border-radius:50%;background:#fe4c00;border:2px solid #000;}
   .tbn-mdot[hidden]{display:none;}
   .tbn.min .tbn-trk{animation-play-state:paused;}
   .tbn-top{display:flex;align-items:center;justify-content:space-between;gap:12px;height:22px;}
@@ -955,7 +961,7 @@
   .tbn-x:active{background:#1c1c1c;}
   .tbn-x[hidden]{display:none;}
   .tbn-x.off{opacity:0;transform:scale(.7);pointer-events:none;}
-  @media (prefers-reduced-motion:reduce){ .tbn,.tbn-full,.tbn-mini{transition:none;} }
+  @media (prefers-reduced-motion:reduce){ .tbn,.tbn-full,.tbn-mini,.tbn-x{transition:none;} }
   .tbn-st{font-size:15px;line-height:22px;font-weight:700;color:#32a2fa;}
   .tbn-st.chg{color:#fe4c00;}
   .tbn[hidden]{display:none;}
