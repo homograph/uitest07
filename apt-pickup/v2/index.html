@@ -935,13 +935,13 @@
     clip-path:inset(12px 0 0 0 round 0);
     transition:clip-path .34s cubic-bezier(.32,.72,.24,1),transform .22s cubic-bezier(.22,.61,.36,1);}
   /* 접힘 = 208×58 · r16 · 오른쪽 끝(여백 0) · 화면 아래에서 42(하단 막대와 20 겹침) */
-  .tbn.min{clip-path:inset(12px 0 42px calc(100% - 208px) round 16px);}
+  .tbn.min{clip-path:inset(12px 12px 42px calc(100% - 220px) round 16px);}   /* 9/16 결정: 오른쪽 12(엣지 제스처 회피) · 아래 = 내비 인셋+12 */
   .tbn.drag{transition:none;}
   .tbn-full{position:absolute;left:0;right:0;bottom:0;height:100px;display:flex;flex-direction:column;gap:2px;padding:14px 20px 12px;box-sizing:border-box;
     transition:opacity .2s ease .12s;}
   .tbn.min .tbn-full{opacity:0;pointer-events:none;transition:opacity .14s ease;}
   /* 접힌 탭의 내용은 잘라 낸 자리(오른쪽 아래 204×48)에 그대로 놓는다 */
-  .tbn-mini{position:absolute;right:0;top:12px;width:208px;height:58px;display:flex;align-items:center;gap:8px;
+  .tbn-mini{position:absolute;right:12px;top:12px;width:208px;height:58px;display:flex;align-items:center;gap:8px;
     padding:0 14px 0 12px;box-sizing:border-box;border:2px solid #fff;border-radius:16px;opacity:0;pointer-events:none;transition:opacity .12s ease;}
   .tbn.min .tbn-mini{opacity:1;transition:opacity .2s ease .14s;}
   .tbn-mt{flex:1 1 auto;min-width:0;font-size:18px;line-height:26px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -2962,7 +2962,10 @@
         <ul>
           <li>띠 <b>360×100</b> · 여백 14/20/12 · 줄 간격 2 · 상태 줄 24 · 위치 줄 48</li>
           <li>× <b>50×50</b> 원형 · 흰 테두리 2 · 오른쪽 16 · 띠 위 끝선에 <b>절반(25) 걸침</b></li>
-          <li>접힘 탭 <b>208×58</b> · r16 · 흰 테두리 2 · 여백 12/14 · 간격 8 · 오른쪽 <b>0</b> · 화면 아래에서 <b>42</b>(하단 막대와 20 겹침)</li>
+          <li>접힘 탭 <b>208×58</b> · r16 · 흰 테두리 2 · 여백 12/14 · 간격 8</li>
+          <li>탭 배치 <b>오른쪽 12dp</b> · 아래 <b>시스템 내비게이션 인셋 + 12dp</b>(3버튼 48 → 60, 제스처 24 → 36)</li>
+          <li>탭 폭은 <b>208dp 고정</b> · 글자 영역 112dp · 넘치면 말줄임 — 값에 따라 늘리지 않는다</li>
+          <li>좁은 화면(≤340dp)에서는 글자 영역만 줄여 <b>탭 폭 = min(208, 화면폭 × 0.58)</b>, 글자 최소 72dp</li>
           <li>탭 안: P 타일 <b>30 · r8</b> · 라벨 <b>18/26 Bold</b> · ⌄ 20</li>
           <li>흐름 초당 <b>90px</b> · 오른쪽 <b>66px</b> 그라데이션 · 접힘/펼침 모프 0.34초</li>
         </ul>
@@ -2987,7 +2990,8 @@
         <h4>주의</h4>
         <ul>
           <li>흐르는 글은 주행 중 읽기 어렵습니다. 위치만 넣고, 그 이상은 <b>음성</b>으로 보냅니다.</li>
-          <li>펼친 배너는 T맵 하단 막대를 덮습니다. 접으면 탭이 막대와 20만 겹쳐 남은 시간·거리가 보입니다.</li>
+          <li>펼친 배너는 T맵 하단 막대를 덮습니다. 접으면 탭만 남아 막대 대부분이 보입니다 — T맵 UI 높이는 알 수 없으므로 <b>시스템 인셋</b>을 기준으로 잡습니다.</li>
+          <li>오버레이 창은 <code>TYPE_APPLICATION_OVERLAY</code> + <code>FLAG_NOT_FOCUSABLE</code>, 폭 <code>MATCH_PARENT</code> · 높이 <code>WRAP_CONTENT</code>, <code>gravity = BOTTOM</code> 입니다.</li>
           <li>현장결제 안내와 자리가 같습니다. 겹치면 현장결제를 먼저 한 바퀴 돌리고 위치로 넘깁니다.</li>
           <li>표식 화살표와 밀기 제스처는 Figma에 없는 추가분입니다(‘자세히’ 글자를 대신합니다).</li>
         </ul>
