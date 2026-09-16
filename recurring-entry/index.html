@@ -664,9 +664,15 @@ body.mock.flowopen{overflow:hidden;}
    무거워 보인다. 색·높이·굵기는 주요 CTA 와 같게 둬 '눌러도 되는 버튼'임을 유지한다.
    등장은 베일(.fw-breaker)과 함께 페이드된다. */
 .fw-breaker{padding:0 24px;box-sizing:border-box;}
-.fw-breaker .bk-cta{flex:0 0 auto;height:52px;padding:0 32px;border:0;border-radius:8px;
-  background:#19254d;color:#fff;font-family:inherit;font-size:16px;line-height:24px;font-weight:700;cursor:pointer;}
-.fw-breaker .bk-cta:active{transform:scale(.97);}
+/* 디자인 시스템 컴포넌트다(26_Rider Design System 1484:2289).
+   Action Button > Solid Button > Neutral Solid Button / Large
+   · icon=TextOnly · state=Enabled · layout=Hug.
+   손으로 만든 값이 아니므로 padding/radius/색을 임의로 바꾸지 말 것.
+   Pressed 도 시스템 값이라 scale(.97) 같은 자체 효과 대신 색으로 처리한다. */
+.fw-breaker .bk-cta{flex:0 0 auto;height:52px;padding:14px 18px;border:0;border-radius:4px;
+  box-sizing:border-box;background:#19254d;color:#fff;font-family:inherit;
+  font-size:16px;line-height:24px;font-weight:700;cursor:pointer;}
+.fw-breaker .bk-cta:active{background:#101a3d;color:#556895;}
 .fw-cta .p{flex:1 1 auto;display:flex;flex-direction:column;gap:2px;}
 .fw-cta .p i{font-style:normal;font-size:13px;color:#73788b;}
 .fw-cta .p b{font-size:18px;font-weight:700;color:#171a24;}
@@ -1038,8 +1044,9 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
       <section class="dd-sec">
         <h3>변경 이력</h3>
         <p class="dd-n" style="margin:0 0 12px">처음 핸드오프 이후 바뀐 것만 모았습니다. <b>최신이 위</b>입니다. 아래 섹션은 전부 바뀐 값 기준입니다.</p>
-        <p class="dd-when">2026-09-16 · 브릿지 문구</p>
+        <p class="dd-when">2026-09-16 · 브릿지 문구 · 버튼 컴포넌트</p>
         <table class="dd-t dd-log">
+          <tr><th>브릿지 버튼 컴포넌트</th><td><span class="dd-was">직접 그린 값 (r8 &middot; 좌우 패딩 32 &middot; 눌림은 scale .97)</span> &rarr; <span class="dd-now"><code class="i">Neutral Solid Button / Large</code> (r4 &middot; 패딩 14/18 &middot; 눌림은 <code class="i">#101a3d</code>)</span><span class="dd-why">디자인 시스템 1484:2289 채택. 높이 52 &middot; 색 &middot; 타이포는 원래 일치했고 radius 와 좌우 패딩만 어긋나 있었음</span></td></tr>
           <tr><th>브릿지 버튼</th><td><span class="dd-was">요일 선택하기</span> &rarr; <span class="dd-now">선택하기 (읽히는 이름은 <code class="i">날짜 선택하기</code>)</span><span class="dd-why">32dp 위 헤드라인이 방금 목적어를 말했고 다음 화면 제목도 같은 종류의 말이라 사족이 됨. 목적어는 헤드라인이, 진행은 버튼이 맡음</span></td></tr>
           <tr><th>브릿지 헤드라인</th><td colspan="1"><span class="dd-now">마지막으로, 반복할 <b>날짜</b>를 알려주세요 (변경 없음)</span><span class="dd-why">&ldquo;요일&rdquo;로 바꿨다가 되돌림. 브릿지 다음은 요일 하나가 아니라 <b>요일 &rarr; 기간(최대 4주)</b> 두 단계이고 그 결과물이 날짜라서, 요일이라고 하면 목표를 첫 입력으로 축소하게 됨</span></td></tr>
         </table>
@@ -1077,10 +1084,23 @@ code{font-family:var(--mono);font-size:.92em;color:var(--ink-2);}
         </table>
         <p class="dd-n"><b>레이아웃</b> 아이콘 120dp &middot; 아이콘~헤드라인 gap 32dp &middot; 헤드라인~버튼 gap 32dp &middot;
           좌우 패딩 24dp &middot; 전체 세로 가운데 정렬.
-          <b>버튼</b>은 폭 내용에 맞춤(좌우 패딩 32dp), 높이 52dp, r8, <code class="i">#19254d</code>, 16sp Bold.
-          가운데에서 전폭으로 늘리면 무거워 보입니다.
+          <b>버튼은 디자인 시스템 컴포넌트</b>입니다. 직접 그리지 말고
+          <code class="i">Action Button &rsaquo; Solid Button &rsaquo; Neutral Solid Button / Large</code>
+          (<code class="i">icon=TextOnly &middot; state=Enabled &middot; layout=Hug</code>) 를 그대로 쓰세요.
+          <code class="i">layout=Fill</code> 로 바꾸지 마세요, 가운데에서 전폭이면 무거워 보입니다.
           <b>베일은 단색이 아니라 세로 그라디언트</b>입니다 (위 <code class="i">rgba(255,255,255,.5)</code>,
           50% 지점부터 <code class="i">#ffffff</code> 불투명). 뒤 확인 화면이 위쪽에 비쳐야 합니다.</p>
+        <table class="dd-t">
+          <tr><th>컴포넌트</th><td><code class="i">Neutral Solid Button / Large</code> &middot; icon=TextOnly &middot; layout=Hug<br><span class="dd-why">26_Rider Design System <code class="i">1484:2289</code></span></td></tr>
+          <tr><th>크기 &middot; 모양</th><td>높이 <b>52dp</b> &middot; 패딩 <b>14 / 18dp</b> &middot; radius <b>4dp</b></td></tr>
+          <tr><th>타이포</th><td><code class="i">Semantic26/Body_1_Bold</code> 16/24 w700</td></tr>
+          <tr><th>Enabled</th><td>바탕 <code class="i">#19254d</code> &middot; 글자 <code class="i">#ffffff</code></td></tr>
+          <tr><th>Pressed</th><td>바탕 <code class="i">#101a3d</code> &middot; 글자 <code class="i">#556895</code>. <b>축소(scale) 효과를 직접 넣지 마세요</b></td></tr>
+          <tr><th>Disabled</th><td>바탕 <code class="i">#99a5c0</code> &middot; 글자 <code class="i">#c0c8d9</code> (이 화면에선 쓰지 않음)</td></tr>
+        </table>
+        <p class="dd-n">⚠ <b>Chip 으로 만들지 마세요.</b> <code class="i">chip_filter</code> 는 r9999 &middot; 34dp &middot; Caption_1_Medium 인
+          필터 컨트롤이고, <b>바로 다음 화면의 요일 칩이 정확히 그 컴포넌트</b>입니다.
+          브릿지 CTA 를 칩으로 만들면 &ldquo;고르는 것&rdquo;으로 보여 진행 버튼 역할이 흐려집니다.</p>
         <p class="dd-n">⚠ <b>자동 이동을 다시 넣지 마세요.</b> 체류를 1900 &rarr; 2600 &rarr; 3500ms 로 늘려도 실기기에서 계속
           납치감이 났습니다. 버튼을 <b>하단 CTA 자리로 옮기지도 마세요.</b> [다음] 을 누른 엄지가 그대로 눌러
           문구를 안 읽고 지나가서 브릿지를 둔 의미가 사라집니다.</p>
