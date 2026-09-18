@@ -289,9 +289,11 @@
   .chip2.on{border-color:#31487d;background:#31487d;color:#fff;font-weight:500;}
 
   .tinwrap{position:relative;width:100%;}
-  /* Figma text box / monoline 실측: #f5f6f7 · r6 · pad16 · 15px/22 · 값 #000.
+  /* 9/18 Figma(상세 위치 입력 12845:43123) 로 바뀜: 회색 면(#f5f6f7) → 배경 없음 + 1px #e3e4e8.
+     문장 칩과 같은 회색 면이면 필수·선택이 같은 무게로 읽힌다. 테두리로 갈라 둔다.
      오른쪽 여백 53 = pad16 + 카운터 27 + gap10 (카운터는 절대배치라 자리를 비워 준다). */
-  .tin{width:100%;border:none;border-radius:6px;background:var(--gray-30);padding:16px 53px 16px 16px;
+  .tin{width:100%;border:none;border-radius:6px;background:transparent;
+    box-shadow:inset 0 0 0 1px var(--gray-80);padding:16px 53px 16px 16px;
     font:inherit;font-size:15px;line-height:22px;color:#000;outline:none;
     white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}   /* 9/15 spec: 넘치면 '게이트2…' (포커스 중엔 스크롤) */
   .tin::placeholder{color:var(--gray-500);}
@@ -299,6 +301,14 @@
   .tin:focus{box-shadow:inset 0 0 0 1px #000;}
   .tcnt{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--gray-500);}
   .tcnt b{font-weight:700;}
+  /* 9/18: 지우는 수단. '접기 = 삭제' 를 걷어낸 자리를 흔한 입력칸 문법(칸 안 ×)으로 대신한다.
+     값이 있을 때만 나온다 — 빈 칸에 지울 것이 없는데 버튼부터 보이면 압박만 준다. */
+  .tclr{position:absolute;right:16px;top:50%;transform:translateY(-50%);
+    width:20px;height:20px;padding:0;border:none;background:none;line-height:0;cursor:pointer;}
+  .tclr::after{content:'';position:absolute;inset:-12px;}   /* 44px 터치 영역 */
+  .tclr[hidden]{display:none;}
+  .tinwrap.hasx .tin{padding-right:81px;}
+  .tinwrap.hasx .tcnt{right:44px;}
   .askhelp{margin:9px 0 0;font-size:13px;line-height:19px;color:var(--gray-500);word-break:keep-all;}
   .askhelp b{color:var(--gray-700);font-weight:600;}
   .askhelp.warn{color:#a8620a;}
@@ -428,7 +438,7 @@
     background:var(--gray-30);box-shadow:none;}
   /* 찾아오는 길 칸만 한 톤 더 눌러 둔다(#f5f6f7 → #efeff1). 여기만 '입력란' 이라
      테두리 없는 회색 면이 비어 보이기 쉬운데, 한 단계 어두우면 채워진 칸으로 읽힌다. */
-  .ph-scr.ro .tin{background:var(--gray-50);color:var(--gray-500);}
+  .ph-scr.ro .tin{background:var(--gray-50);color:var(--gray-500);box-shadow:none;}
   .ph-scr.ro .tin:focus{box-shadow:none;}
   /* 취소 = Neutral Weak Solid Button / Large · 120×52 고정폭
      ⚠ 9/6 Figma: 12개 변형 전부에서 취소가 빠지고 저장이 전폭(FILL)이 됐다.
@@ -659,22 +669,20 @@
      한 줄짜리 링크만 조용히 나타나고, 필요한 사람(26.9%)이 눌렀을 때 필드를 연다. */
   /* 토글은 오른쪽 끝. 펼침 컨트롤이 관습적으로 있는 자리이기도 하고,
      아이콘이 사라질 때(값이 있을 때) 라벨이 밀리지 않는다 — 왼쪽에 두면 21px 왼쪽으로 튄다. */
-  /* Figma etc-header(9/15 12371:523337): 312×60 · 위쪽 stroke #e3e4e8 · pad 20/0/20 · gap4 ·
+  /* 9/18 Figma(12845:43123) etc-header: 312×48 · 구분선 없음 · pad 20/0/8 · gap4 ·
      '찾아오는 길' 14/20 Bold #262A38 + '(선택)' 14/20 Regular #73788B.
-     위 선은 inset 으로 그려 60 을 지킨다(테두리가 자리를 먹으면 61 이 된다). */
+     +/− 가 빠지면서 버튼이 아니라 라벨이 됐다 — 누를 것이 없으니 커서·선도 없앤다. */
   .addetc{display:flex;align-items:center;gap:4px;
-    width:100%;margin-top:0;border:none;background:none;padding:20px 0;
-    font:inherit;font-size:14px;line-height:20px;font-weight:700;color:var(--gray-900);text-align:left;cursor:pointer;
-    box-shadow:inset 0 1px 0 0 var(--gray-80);border-radius:0;
+    width:100%;margin-top:0;border:none;background:none;padding:20px 0 8px;
+    font:inherit;font-size:14px;line-height:20px;font-weight:700;color:var(--gray-900);text-align:left;
+    border-radius:0;
     animation:askIn .26s cubic-bezier(.22,.61,.36,1);}
   .addetc>span:first-child{flex:1 1 auto;min-width:0;}
   .addetc em{font-style:normal;font-weight:400;color:var(--gray-500);margin-left:4px;}
   .addetc[hidden]{display:none;}
-  /* − 는 '안 쓸래' 다. 쓴 내용이 있어도 살아 있고, 누르면 접히면서 내용을 비운다.
-     접기와 지우기를 나누면 '접었는데 값은 남아 있는' 상태가 생기는데,
-     그 값은 화면에 안 보이면서 기사에게는 가므로 사용자가 통제를 잃는다. */
-  .addetc.open #f-etc-v{display:none;}
-  /* Figma container = [etc-header 50 + text box] 간격 0. .fform 의 gap20 이 둘 사이에 끼지 않게 당긴다 */
+  /* 9/18: 접기(−)를 없앴다. '접으면 지워진다' 는 규칙은 펼침이 기본이 된 뒤로 사고만 부른다.
+     지우기는 칸 안 × 하나로 모으고, 헤더는 무엇을 쓰는 칸인지 말하는 라벨로만 둔다. */
+  /* Figma container = [etc-header + text box] 간격 0. .fform 의 gap20 이 둘 사이에 끼지 않게 당긴다 */
   .addetc + .fopt{margin-top:-20px;}
   .fopt .askhelp{margin-top:20px;}
   .fopt{width:100%;margin-top:0;padding-top:0;border-top:none;
@@ -1039,6 +1047,7 @@
   .tp-chg.blink,.plr-chg.blink,.tbn-st.blink{animation:chgBlink .6s ease-in-out 2;}
   /* 9/16 Figma 주석: 픽업 위치 버블을 누르고 앱으로 돌아오면 카드 상태 줄이 3회 깜빡인다 */
   .plr-chg.blink3{animation:chgBlink .6s ease-in-out 3;}
+  .plr-chg.blink1{animation:chgBlink .6s ease-in-out 1;}   /* 9/18 삭제 알림 — 작성/변경보다 한 번 적게 */
   @media (prefers-reduced-motion:reduce){ .tp-chg.blink,.plr-chg.blink,.tbn-st.blink{animation:none;} }
   /* 실제 T맵은 턴 배너 아래 왼쪽에 차선 안내칩이 붙는다 — 알약이 피해야 하는 자리라 목업에 둔다 */
   .tlane{position:absolute;top:0;left:0;z-index:5;display:flex;align-items:baseline;gap:6px;
@@ -1294,12 +1303,13 @@
                 type="button" class="fa" id="f-hint-a2" hidden></button></span>
             </div>
 
-            <button type="button" class="addetc" id="f-addetc" hidden><span>찾아오는 길<em>(선택)</em></span><svg class="ic tg" id="f-etc-ic" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><rect id="f-etc-v" x="9" y="4" width="2" height="12" rx="1" fill="currentColor"/><rect x="4" y="9" width="12" height="2" rx="1" fill="currentColor"/></svg></button>
+            <div class="addetc" id="f-addetc" hidden><span>찾아오는 길<em>(선택)</em></span></div>
             <div class="fopt" id="fopt" hidden>
 
-              <div class="tinwrap">
+              <div class="tinwrap" id="f-etc-wrap">
                 <input class="tin" id="f-etc" maxlength="30" />
                 <span class="tcnt"><b id="f-etc-c">0</b>/30</span>
+                <button type="button" class="tclr" id="f-etc-x" hidden aria-label="찾아오는 길 지우기"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="10" cy="10" r="10" fill="#b4b8c5"/><path d="M6.8 6.8l6.4 6.4M13.2 6.8l-6.4 6.4" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg></button>
               </div>
               <p class="askhelp" id="f-etc-help"></p>
             </div>
@@ -1457,14 +1467,23 @@
 
   <div class="note">
     <h3><i>9</i>드라이버가 받는 자리</h3>
-    <p><b>타다 앱 카드</b>: 여백 20 · 간격 16 · 높이 100(찾아오는 길 있으면 156). 층만 굵게, 설명 줄은 <b>고객이 작성함</b> #32A2FA ↔ <b>고객이 변경함</b> #FE4C00.</p>
+    <p><b>타다 앱 카드</b>: 여백 20 · 간격 16 · 높이 100(찾아오는 길 있으면 156). 층만 굵게, 설명 줄은 <b>고객이 작성함</b> #32A2FA ↔ <b>고객이 변경함</b> #FE4C00 ↔ <b>고객이 삭제함</b>.</p>
+    <p><b>삭제(9/18)</b>: 배차 뒤에도 승객이 &lsquo;사용 안함&rsquo;으로 지울 수 있습니다. 지우면 T맵의 <b>픽업 위치 버블과 하단 배너를 거둡니다</b> — 없는 정보를 가리키는 버튼을 남기지 않습니다. 카드에는 &lsquo;지도상의 출발지에서 탑승 · 고객의 픽업 장소 요청이 삭제되었습니다&rsquo;가 남고, 상태 줄이 <b>한 번</b> 깜빡입니다(작성·변경은 세 번·두 번).</p>
     <p><b>T맵 하단 배너</b>: 내비 위에 그리는 오버레이. <b>위치만</b> 32 Bold로 싣고 찾아오는 길은 넣지 않습니다. ×나 아래로 밀기로 접히면 오른쪽 아래 탭(204×48)이 되고, 탭을 누르거나 밀면 다시 펼쳐집니다.</p>
     <p>저절로 다시 펼치는 건 <b>위치 변경</b>과 <b>300m 진입</b> 두 가지뿐입니다. 300m에서는 음성 한 번이 같이 나갑니다 — 흐르는 글은 주행 중 읽기 어려우니, 그 이상은 소리로 보냅니다.</p>
     <p class="src">값·코드는 오른쪽 <b>개발 콘솔</b> 참고 · Figma 12371:523749</p>
   </div>
 
   <div class="note">
-    <h3><i>10</i>찾아오는 길 30자</h3>
+    <h3><i>10</i>찾아오는 길을 언제 보여주고, 어떻게 지우나 <em>9/18</em></h3>
+    <p><b>노출</b>은 필수(층·동)가 채워지면입니다. &lsquo;동 없음&rsquo;이면 층만으로 나옵니다. 다만 이 조건은 <b>처음 나타날 때만</b> 씁니다 — 이미 쓴 내용이 있으면 층·동을 지워도 칸을 치우지 않습니다. 다른 칸을 고치는 행동이 내가 쓴 문장을 화면에서 없애면, 값이 남아 있어도 잃은 것으로 보입니다. 전송은 <b>입력 완료</b>가 막으므로 층·동 없이 나갈 일은 없습니다.</p>
+    <p><b>지우기</b>는 칸 안 <b>×</b>입니다. 값이 있을 때만 나옵니다. 접기(−)는 없앴습니다 — 펼침이 기본이 된 뒤로 &lsquo;접으면 지워진다&rsquo;는 규칙은 실수만 부릅니다.</p>
+    <p><b>모양</b>은 회색 면에서 <b>흰 바탕 + 1px #E3E4E8</b>로 바꿨습니다(포커스 검정 1px · 읽기 전용 #EFEFF1). 문장 칩과 같은 면이면 필수·선택이 같은 무게로 읽힙니다. 안내 문구는 <b>포커스이거나 값이 있을 때만</b> 붙습니다.</p>
+    <p class="src">Figma 상세 위치 입력 12845:43123(14개 변형) · 정리 문서 12867:21011</p>
+  </div>
+
+  <div class="note">
+    <h3><i>11</i>찾아오는 길 30자</h3>
     <p>요청사항 원문에서 <b>경로·입구 절만</b> 떼어(구조화로 흡수되는 층·동·라인, 맺음말, 짐·인원 제외) 다시 셌습니다. 경로 안내가 있는 요청 <b>557건(32.3%)</b> · 중앙값 <b>21자</b> · 평균 24.9자 · P80 37 · P90 48.</p>
     <p>담기는 비율: 20자 47.0% · 25자 61.0% · <b>30자 72.2%</b> · 40자 83.7% · 50자 90.8%.</p>
     <p>40자면 84%까지 오르지만 기사 카드가 2줄에서 3줄이 됩니다. 넘치는 문장은 대부분 <b>두 번 이상 꺾이는 안내</b>라 운전 중 읽기 어렵고, 음성으로 보내는 편이 맞습니다. <b>30자 유지</b>로 두었습니다.</p>
@@ -1472,7 +1491,7 @@
   </div>
 
   <div class="note">
-    <h3><i>11</i>실제 요청사항 1,727건이 말해준 것</h3>
+    <h3><i>12</i>실제 요청사항 1,727건이 말해준 것</h3>
     <p>상위 180개 단지 3년치 표본(174단지 · 1,040명). <b>지하 82.3% 대 지상 0.8%</b>라 수직 위치를 50:50으로 묻는 것 자체가 낭비입니다. 지하를 기본값으로 두고 바꿀 수 있게만 했습니다.</p>
     <p>층은 지하 1~5층에 전부 분포하고 6층 이상은 0건입니다. 라인은 <b>36.2%</b>가 적고 표기가 제각각입니다(구분자 - 227, 쉼표 185, / 51). 그래서 칩이 아니라 자유 입력입니다.</p>
     <p><b>프리필 근거.</b> 문구를 바꾸는 유저 313명 안에서도 동이 84.0%, 층이 77.3% 고정입니다. 한 문장이 529회 반복된 사례도 있습니다. 다만 셋 다 일치는 56.9%라 <b>채워 두되 바꾸기 쉬워야</b> 합니다.</p>
@@ -1480,14 +1499,14 @@
   </div>
 
   <div class="note">
-    <h3><i>12</i>구조화가 흡수할 수 없는 것</h3>
+    <h3><i>13</i>구조화가 흡수할 수 없는 것</h3>
     <p>구조화로 완전히 담기는 건 <b>28.1%</b>뿐입니다. 나머지에는 짐·동승자 <b>32.9%</b>(캐리어만 272건)와 경로 안내가 섞여 있습니다. 이건 픽업 필드가 흡수할 수 없고 요청사항이 계속 담아야 합니다.</p>
     <p>그래서 PRD의 성공 지표를 손봐야 합니다. <b>자유 텍스트 감소율</b>을 그대로 KPI로 두면 구조적으로 달성 불가능합니다. 흡수 대상을 <b>픽업 위치 언급분</b>으로 좁혀 정의해야 합니다.</p>
     <p class="src">같은 표본 · 강미래 PO: GPS 보정 없이는 결국 헤맨다</p>
   </div>
 
   <div class="note">
-    <h3><i>13</i>아직 안 정한 것</h3>
+    <h3><i>14</i>아직 안 정한 것</h3>
     <p><span class="mk warn"></span><b>읽기 전용 안내 색.</b> &lsquo;차량이 도착해 수정할 수 없습니다&rsquo; 가 #32A2FA 14sp라 흰 배경에서 대비가 낮습니다.</p>
     <p><span class="mk warn"></span><b>T맵 말풍선 폭.</b> Figma 주석은 화면 너비의 30%인데 그림의 말풍선은 46%(164px)입니다. 프로토는 주석을 따랐습니다.</p>
     <p><span class="mk warn"></span><b>P 타일 모서리.</b> 카드 스펙은 r5, 로티 원본은 r4.8(스무딩)입니다. 로티를 그대로 두기로 해서 0.2px 차이가 남아 있습니다.</p>
@@ -1495,7 +1514,7 @@
   </div>
 
   <div class="note">
-    <h3><i>14</i>지난 결정 기록</h3>
+    <h3><i>15</i>지난 결정 기록</h3>
     <p>되돌린 판단과 그 이유를 접어 두었습니다. 지금 화면과는 다른 옛 값이라, 참고용으로만 보세요.</p>
     <details>
       <summary style="cursor:pointer;font-size:12.5px;color:var(--ink-2)">펼쳐 보기</summary>
@@ -1786,18 +1805,22 @@
 
     renderHint();
 
-    /* 헤더 한 줄이 곧 토글이다 — 자리도 문구도 고정, 아이콘만 + / −.
-       펼치는 지점과 접는 지점이 다르면 어디를 눌러야 하는지 매번 다시 찾게 된다. */
-    const showEtc = ok && S.etcOpen;
+    /* 9/18 노출 규칙: 필수(층·동)가 채워지면 나온다. 단 '처음 나타날 때' 의 조건이다 —
+       이미 쓴 값이 있으면 필수를 지워도 칸을 치우지 않는다. 다른 칸을 고치는 행동이
+       내가 쓴 문장을 화면에서 없애 버리면, 값은 남아 있어도 사용자는 잃은 것으로 본다.
+       ('입력 완료' 는 여전히 필수로 막히므로 층·동 없이 전송될 일은 없다) */
+    const keep = !!d.etc.trim();
+    const vis = ok || keep;
+    const showEtc = vis && S.etcOpen;
     const hd=el('f-addetc');
-    hd.hidden = !ok;
-    hd.classList.toggle('open', showEtc);
-    hd.classList.toggle('lab', !!d.etc.trim());
+    hd.hidden = !vis;
+    hd.classList.toggle('lab', keep);
     el('fopt').hidden = !showEtc;
     fitAll();
     if(showEtc){
       const et=el('f-etc');
       et.value=d.etc;  el('f-etc-c').textContent=d.etc.length;
+      paintEtcClear();
       /* 예시는 이 칸에 실제로 남는 것을 보여주고 층·동·라인과 겹치지 않게 둔다.
          요청사항 1,727건 재분류(9/13): 찾아오는 길 성격 311건(18%) = 단지 입구 지정 67% · 들어온 뒤 방향 59% · 둘 다 26%.
          입구는 정문 94 > 게이트 61 이지만 정문은 내비 기본 목적지라 정보가 없어 게이트로 든다(표기도 '게이트N' 이 한국어 중 최다).
@@ -1879,9 +1902,20 @@
   function paintFEtc(){
     const p=el('f-etc-help'); if(!p) return;
     /* Figma 는 한 문장 · 강조 없음 · #73788b 13sp 다. 60자 경고 분기는 maxlength 가
-       20 이 되면서 도달할 수 없게 돼 함께 걷어냈다. */
+       20 이 되면서 도달할 수 없게 돼 함께 걷어냈다.
+       9/18: 포커스이거나 값이 있을 때만 보인다 — 빈 칸 아래 설명이 늘 붙어 있으면
+       읽을 것만 늘고, 정작 쓰는 순간에는 이미 읽은 문장이 된다. */
+    const on = S.focus==='etc' || !!(S.d.etc||'').trim();
     p.className='askhelp';
-    p.textContent='길 안내는 드라이버가 멈춰 있을 때 펼쳐 봅니다.';
+    p.textContent = on ? '길 안내는 드라이버가 멈춰 있을 때 펼쳐 봅니다.' : '';
+    p.hidden = !on;
+  }
+  /* 값이 있을 때만 × 를 세운다. 카운터는 왼쪽으로 물러난다(.hasx). */
+  function paintEtcClear(){
+    const x=el('f-etc-x'), w=el('f-etc-wrap'); if(!x||!w) return;
+    const on = !!(S.d.etc||'').trim();
+    x.hidden = !on;
+    w.classList.toggle('hasx', on);
   }
   /* 문장형 빈칸은 한 번만 묶어 둔다. 매 렌더마다 다시 그리면 포커스가 날아간다 */
   function bindSentence(){
@@ -1902,8 +1936,8 @@
     dg.addEventListener('input',ev=>{
       S.d.dong = ev.target.value.replace(/동\s*$/,'');
       ev.target.value=S.d.dong; fitBv(ev.target);
-      const ok=ready(S.d), was=!el('f-addetc').hidden || !el('fopt').hidden;
-      if(ok!==was) renderSentence(); else paintFoot();
+      const vis=ready(S.d)||!!S.d.etc.trim(), was=!el('f-addetc').hidden;
+      if(vis!==was) renderSentence(); else paintFoot();
       if(S.d.dong.length>=8) toNextEmpty('f-dong');
     });
     /* mousedown 을 막아야 링크를 누르는 순간 포커스가 빠져 슬롯이 먼저 사라지지 않는다 */
@@ -1915,7 +1949,7 @@
     a2.addEventListener('click',()=>{ const c=HINT[S.focus]; if(c && c.go2) c.go2(); });
     [['floor',fl],['dong',dg],['line',el('f-line2')],['etc',el('f-etc')]].forEach(([k,i])=>{
       i.addEventListener('focus',()=>{
-        S.focus=k; renderHint();
+        S.focus=k; renderHint(); paintFEtc();
         /* 다시 들어올 때 커서는 이미 친 글자 뒤에.
            다만 지상이 제안한 층 값은 통째로 선택한다 — 지우지 않고 바로 덮어쓰게. */
         const n=i.value.length;
@@ -1928,7 +1962,7 @@
           }catch(e){}
         },0);
       });
-      i.addEventListener('blur', ()=>{ if(S.focus===k){ S.focus=null; renderHint(); } });
+      i.addEventListener('blur', ()=>{ if(S.focus===k){ S.focus=null; renderHint(); paintFEtc(); } });
     });
     /* '동 없음' 을 눌러 되돌린다 */
     el('f-fld-dong').addEventListener('click',ev=>{
@@ -1954,19 +1988,19 @@
     /* 누르는 순간 포커스가 칩으로 넘어가지 않게 — 입력 중이던 칸·키패드를 지킨다(찾아오는 길 헤더와 같은 처리) */
     el('f-lvl').addEventListener('mousedown',ev=>ev.preventDefault());
     el('f-lvl').addEventListener('click',()=>setLvl(S.d.lvl==='under'?'ground':'under'));
-    el('f-addetc').addEventListener('mousedown',ev=>ev.preventDefault());
-    el('f-addetc').addEventListener('click',()=>{
-      S.etcOpen = !S.etcOpen;
-      /* 접는다 = 안 쓴다. 값을 남겨 두면 안 보이는 채로 기사에게 간다. */
-      if(!S.etcOpen){ S.d.etc=''; el('f-etc').value=''; el('f-etc-c').textContent='0'; }
-      S.focus = S.etcOpen ? S.focus : null;
-      renderSentence(); paintFoot();
-      if(S.etcOpen) setTimeout(()=>el('f-etc').focus(),40);
+    /* 9/18: 헤더는 더 이상 토글이 아니다(라벨). 지우기는 칸 안 × 하나로 모았다 —
+       누르는 순간 포커스가 칸에서 빠지지 않게 mousedown 은 막는다. */
+    el('f-etc-x').addEventListener('mousedown',ev=>ev.preventDefault());
+    el('f-etc-x').addEventListener('click',()=>{
+      S.d.etc=''; const et=el('f-etc');
+      et.value=''; el('f-etc-c').textContent='0';
+      paintEtcClear(); paintFEtc(); paintFoot();
+      et.focus();
     });
     el('f-etc').addEventListener('input',ev=>{
       S.d.etc=ev.target.value; el('f-etc-c').textContent=ev.target.value.length;
-      /* 쓴 내용이 생기면 접기 아이콘을 거둔다 — 눌러도 안 되는 컨트롤을 남기지 않는다 */
       el('f-addetc').classList.toggle('lab', !!ev.target.value.trim());
+      paintEtcClear();
       paintFEtc(); paintFoot();
     });
     /* 엔터는 제출이 아니라 '다음 빈 칸으로' 다. 다 찼으면 키패드만 내린다 —
@@ -2075,6 +2109,7 @@
 
   function submitForm(){
     if(!ready(S.d)) return;
+    S.delFlag=false;   /* 다시 넣었으면 삭제 안내는 걷는다 */
     S.edited=(S.opened==='voyage') && !!S.value;
     /* 덮어쓰기 전에 직전 값을 남긴다 — '어디가 바뀌었나' 는 이것 없이는 못 만든다. */
     S.before = S.edited && S.current ? Object.assign({},S.current) : null;
@@ -2246,9 +2281,13 @@
     /* 픽업 위치 — T맵 알약과 타다 앱 블록, 두 자리가 같은 값을 말한다 (Figma 12061:51991).
        표기는 앱 기준 하나: '지하 1층  1902동 3-4호 라인'. 알약은 층과 동 사이에서만 줄이 바뀐다. */
     const show = !!(got && S.current);
+    /* 9/18: 고객이 지웠고, 그 값이 이미 기사에게 갔던 경우. 픽업 위치 버블·배너는
+       show 가 false 라 저절로 사라진다(없는 정보를 가리키는 버튼을 남기지 않는다).
+       대신 카드에는 왜 사라졌는지가 남아야 한다. */
+    const del = !show && !!S.delFlag;
     const bnMode = (S.ovMode||'banner')==='banner';
     el('tovb-loc').hidden = !show || !!S.driving || bnMode;
-    el('plr').hidden = !show;
+    el('plr').hidden = !show && !del;
     if(show){
       const d=S.current;
       /* 층은 굵게 따로, 동·라인은 이어서 — 알약은 머리 행/둘째 줄, 앱 블록은 한 줄 안의 글자 굵기로 나눈다(시안 9/11 13:54).
@@ -2263,6 +2302,7 @@
       el('tp-chg').hidden = !S.chgFlag;
       el('plr-chg').textContent = S.chgFlag ? '고객이 변경함' : '고객이 작성함';   /* 9/15 드라이버앱 1안(12345:437629): 알약 설명 줄과 같은 문구 */
       el('plr-chg').classList.toggle('chg', !!S.chgFlag);
+      el('plr-chg').classList.remove('blink1');   /* 삭제 알림 잔상 제거 */
       el('tp-go').hidden = !!S.chgFlag;
       if(S.pickBlink !== S.pickSeen){
         S.pickSeen = S.pickBlink;
@@ -2271,6 +2311,18 @@
       if(S.chgBlink !== S.chgSeen){
         S.chgSeen = S.chgBlink;
         ['tp-chg','plr-chg','tbn-st'].forEach(id=>{ const c=el(id); c.classList.remove('blink'); void c.offsetWidth; c.classList.add('blink'); });
+      }
+    } else if(del){
+      /* 문구는 Figma 드라이버 카드(12860:20307) 그대로 두되, 상태 줄은 '작성함/변경함' 과
+         같은 형식으로 맞춘다 — 세 사건이 같은 자리에서 같은 말투로 읽혀야 한다. */
+      el('plr-fl').textContent='지도상의 출발지에서 탑승';
+      el('plr-v').textContent=''; el('plr-b').textContent=''; el('plr-b').hidden=true;
+      el('plr-s').textContent='고객의 픽업 장소 요청이 삭제되었습니다.'; el('plr-s').hidden=false;
+      const c=el('plr-chg');
+      c.textContent='고객이 삭제함'; c.classList.add('chg'); c.hidden=false;
+      if(S.delBlink !== S.delSeen){
+        S.delSeen = S.delBlink;
+        c.classList.remove('blink1'); void c.offsetWidth; c.classList.add('blink1');
       }
     }
     /* 9/16 Figma 최종본: 상세 위치가 있으면 T맵 스택에 '픽업 위치' 버블이 선다 */
@@ -2506,7 +2558,7 @@
   function setMode(m){
     S.mode=m; S.screen='start'; S.pmPlayed=false;
     clearTimeout(S.tmr); S.tmr=null;
-    S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='go'; S.chgFlag=false; S.near=false; S.chgBlink=0; S.chgSeen=0;
+    S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='go'; S.chgFlag=false; S.near=false; S.chgBlink=0; S.chgSeen=0; S.delFlag=false; S.delBlink=0; S.delSeen=0;
     S.drover=false; S.hilite=false; S.before=null; apprEnd(true); S.bnClosed=false; S.bnEvKey=null; S.pickBlink=0; S.pickSeen=0;
     S.drKind=null; S.ack=true; S.rphase='match'; S.dview='app'; S.dstage='go'; S.driving=false; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     if(m==='repeat'){
@@ -2761,12 +2813,15 @@
      매칭 전: 삭제 확인 다이얼로그 → 예 면 지우고 닫는다(되돌리기 토스트는 다이얼로그가 대신하므로 뗐다).
      매칭 후: 지울 수 없다 — 차량이 이미 그 값을 보고 오고 있다. 내용 변경만 된다. */
   el('ph-del').addEventListener('click',()=>{
-    if(S.opened==='voyage'){ askDialog('차량이 출발지로 이동 중입니다. 지금은 내용 변경만 가능합니다.', null, true); return; }
+    /* 9/18 Figma 로 바뀜: 매칭 뒤에도 지울 수 있다. 대신 기사에게 이미 갔던 값이면
+       지운 사실을 알려야 한다 — 버블을 거두고 카드 상태 줄을 '고객이 삭제함' 으로 한 번 깜빡인다. */
     askDialog('입력했던 상세 위치를 삭제합니다.\n계속하시겠습니까?', ()=>{
+      const wasGot = reached();
       clearTimeout(S.tmr); S.tmr=null;
       S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
       S.fromSaved=false; S.edited=false; S.sending=false; S.sent=false; S.etcOpen=false;
       S.drover=false; S.hilite=false;
+      S.delFlag = wasGot; if(wasGot) S.delBlink=(S.delBlink||0)+1;
       $('#phscr').classList.remove('on');
       render();
     });
@@ -2946,6 +3001,7 @@
           <tr><td>배너 표시</td><td>상태 줄(16 Bold) + 위치(32 Bold) + ×</td><td>상세 위치를 받은 때 · 위치 변경 · 300m 진입</td></tr>
           <tr><td>배너 닫힘</td><td>없음(버블만 남음)</td><td>× 또는 아래로 밀기</td></tr>
           <tr><td>변경</td><td>상태 줄이 ‘고객이 변경함’(주황)으로, 다시 흐름</td><td>배차 후 고객이 수정</td></tr>
+          <tr><td>삭제</td><td>버블·배너를 <b>거둔다</b>. 타다 앱 카드만 ‘고객이 삭제함’으로 한 번 깜빡임</td><td>배차 후 고객이 ‘사용 안함’</td></tr>
           <tr><td>픽업 위치 버블</td><td>스택 3번째 버블</td><td>상세 위치가 있는 동안 계속</td></tr>
         </table>
         <h4>치수</h4>
