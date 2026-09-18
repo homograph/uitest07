@@ -841,13 +841,14 @@
   .plr{display:flex;align-items:flex-start;gap:16px;padding:20px;background:var(--navy);}
   .plr .pv30{flex:0 0 auto;display:block;width:30px;height:30px;}   /* 9/15 Figma 12371:523749: 원형 → 둥근 사각 r8(--svg 원본) */
   .plr[hidden]{display:none;}
-  /* 9/18 Figma(디자인 스펙 case 12884:24536): 상태 줄이 두 조각이 됐다 —
-     라벨 '픽업 장소'(색이 신호: 작성 #32A2FA 6.2:1 · 변경 #FE4C00 5.1:1, 둘 다 AA 통과)
-     + 상태 문구 15/22 Regular #EFEFF1(14.8:1). 색은 DS 토큰으로 되돌렸다. */
+  /* 9/18(오후 Figma 12897:66870): 색이 라벨에서 상태 문구로 옮겨졌다 —
+     라벨 '픽업 장소' 15/22 Bold #FFFFFF(16.8:1) + 상태 문구 15/22 Regular
+     작성 #32A2FA(6.2:1) · 변경·삭제 #FE4C00(5.05:1). 둘 다 AA 통과.
+     바뀌는 말에 색이 붙어야 색과 정보가 같은 자리에서 읽힌다. */
   .plr-chg{align-self:flex-start;display:flex;align-items:baseline;gap:8px;
-    font-size:15px;line-height:22px;font-weight:400;color:#efeff1;}
-  .plr-chg .lb{font-weight:700;color:#32a2fa;}
-  .plr-chg.chg .lb{color:#fe4c00;}
+    font-size:15px;line-height:22px;font-weight:400;color:#32a2fa;}
+  .plr-chg.chg{color:#fe4c00;}
+  .plr-chg .lb{font-weight:700;color:#fff;}
   .plr-chg[hidden]{display:none;}
   /* 9/18 Figma(디자인 스펙 12890:35448): Info Container = [상태 줄 → Address Container] 순서다.
      상태 줄을 위에 두면 자리가 고정된다 — 찾아오는 길이 2~3줄로 늘어나도 깜빡이는 줄이 떠다니지 않는다.
@@ -1476,7 +1477,7 @@
 
   <div class="note">
     <h3><i>9</i>드라이버가 받는 자리</h3>
-    <p><b>타다 앱 카드</b>: 여백 20 · 간격 16 · 높이 100(찾아오는 길 있으면 156). 층만 굵게. <b>상태 줄이 첫 줄</b>이고 그 아래 주소·찾아오는 길이 옵니다(Info Container gap 8 · Address Container gap 4). 상태 줄은 두 조각입니다 — 라벨 <b>‘픽업 장소’</b>가 색으로 상태를 말하고(작성 #32A2FA · 변경/삭제 #FE4C00), 뒤에 <b>고객이 작성함 / 변경함 / 삭제함</b>이 15/22 Regular #EFEFF1로 붙습니다. 세 사건 모두 <b>3회</b> 깜빡입니다.</p>
+    <p><b>타다 앱 카드</b>: 여백 20 · 간격 16 · 높이 100(찾아오는 길 있으면 156). 층만 굵게. <b>상태 줄이 첫 줄</b>이고 그 아래 주소·찾아오는 길이 옵니다(Info Container gap 8 · Address Container gap 4). 상태 줄은 두 조각입니다 — 라벨 <b>‘픽업 장소’</b>는 15/22 Bold 흰색으로 고정이고, 뒤에 붙는 <b>고객이 작성함 / 변경함 / 삭제함</b>이 색을 갖습니다(작성 #32A2FA · 변경·삭제 #FE4C00). 바뀌는 말에 색이 있어야 색과 정보를 한 번에 읽습니다. 배너는 상태 문구가 없어 라벨 ‘픽업 장소’ 자체가 색으로 갈립니다. 세 사건 모두 <b>3회</b> 깜빡입니다.</p>
     <p><b>삭제(9/18)</b>: 배차 뒤에도 승객이 &lsquo;사용 안함&rsquo;으로 지울 수 있습니다. 지우면 T맵의 <b>픽업 위치 버블과 하단 배너를 거둡니다</b> — 없는 정보를 가리키는 버튼을 남기지 않습니다. 카드에는 &lsquo;지도상의 출발지에서 탑승 · 고객의 픽업 장소 요청이 삭제되었습니다&rsquo;가 남고, 상태 줄이 <b>세 번</b> 깜빡입니다(작성·변경과 같은 세기).</p>
     <p><b>T맵 하단 배너</b>: 첫 줄은 <b>‘픽업 장소’</b> 18/26 Bold 한 마디로 고정이고 작성·변경은 색으로만 갈립니다. <b>위치만</b> 32 Bold로 싣고 찾아오는 길은 넣지 않습니다. 닫기 ×는 테두리 #32A2FA 2px · 배경 #101A3D. ×나 아래로 밀기로 접히면 오른쪽 아래 탭(204×48)이 되고, 탭을 누르거나 밀면 다시 펼쳐집니다.</p>
     <p>저절로 다시 펼치는 건 <b>위치 변경</b>과 <b>300m 진입</b> 두 가지뿐입니다. 300m에서는 음성 한 번이 같이 나갑니다 — 흐르는 글은 주행 중 읽기 어려우니, 그 이상은 소리로 보냅니다.</p>
@@ -2326,7 +2327,7 @@
     } else if(del){
       /* 문구는 Figma 드라이버 카드(12860:20307) 그대로 두되, 상태 줄은 '작성함/변경함' 과
          같은 형식으로 맞춘다 — 세 사건이 같은 자리에서 같은 말투로 읽혀야 한다. */
-      el('plr-fl').textContent='지도상의 출발지에서 탑승';
+      el('plr-fl').textContent='지도상의 출발지에서 고객 탑승';
       el('plr-v').textContent=''; el('plr-b').textContent=''; el('plr-b').hidden=true;
       el('plr-s').textContent='고객의 픽업 장소 요청이 삭제되었습니다.'; el('plr-s').hidden=false;
       const c=el('plr-chg');
@@ -3027,7 +3028,7 @@
         <h4>문구</h4>
         <ul>
           <li>첫 줄은 <b>‘픽업 장소’</b> 한 마디로 고정(18/26 Bold). 작성·변경은 <b>색으로만</b> 갈립니다 — 작성 #32A2FA · 변경 #FE4C00 (검정 위 7.7 · 6.3:1)</li>
-          <li>앱 카드 상태 줄은 두 조각입니다: <b>‘픽업 장소’</b>(같은 색 규칙) + <b>‘고객이 작성함/변경함/삭제함’</b> 15/22 Regular #EFEFF1</li>
+          <li>앱 카드 상태 줄은 두 조각입니다: 라벨 <b>‘픽업 장소’</b> 15/22 Bold #FFFFFF + 상태 문구 <b>‘고객이 작성함/변경함/삭제함’</b> 15/22 Regular — <b>색은 문구에</b> 붙습니다(작성 #32A2FA · 변경·삭제 #FE4C00). 배너는 상태 문구가 없어 라벨 자체가 색을 갖습니다</li>
           <li>버블 <b>픽업 / 위치</b> 두 줄</li>
         </ul>
         <h4>동작 규칙</h4>
