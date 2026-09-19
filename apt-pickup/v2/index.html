@@ -670,7 +670,9 @@
      .fform gap20 을 14 로 당긴다. 칩(hint-slot)은 이 줄을 대신하지 않고 아래에 붙는다 */
   /* 9/19 Figma: #73788B(4.4:1) → #262A38. 문장형 입력의 값어치는 '한 문장으로 읽히는 것' 인데
      꼬리만 연하면 칩만 둥둥 뜨고 문장이 사라진다. */
-  .stail{margin:-6px 0 0;font-size:16px;line-height:24px;font-weight:500;color:var(--gray-900);}
+  /* 9/19 Figma(sentence row2): 꼬리는 라인 칸 오른쪽에 바로 붙는다. 자리가 없을 때만
+     wrap 으로 다음 줄에 떨어진다 — 늘 아랫줄에 두면 한 문장이 두 문장처럼 읽힌다. */
+  .stail{margin:0;font-size:16px;line-height:24px;font-weight:500;color:var(--gray-900);white-space:nowrap;}
   /* Figma: 쉴 때 hint-slot 이 아예 없다(예전 12 → 0). 포커스일 때만 칩 한 줄(38) + body gap20 */
   .fhint{margin-top:0;}
   .fhint[hidden]{display:none;}
@@ -1333,9 +1335,8 @@
               <span class="srow" id="f-row2"><label class="fld" id="f-fld-dong"><input class="bv dg" id="f-dong" inputmode="text" maxlength="8"
                      placeholder="101" aria-label="몇 동" /><span class="u">동</span><span class="nn" id="f-dong-nn" hidden>동 없음</span></label>
               <label class="fld" id="f-fld-line"><input class="bv ln" id="f-line2" inputmode="text" maxlength="8"
-                     placeholder="1-2" aria-label="라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label></span>
+                     placeholder="1-2" aria-label="라인" /><span class="u">라인</span><span class="nn" id="f-line-nn" hidden>라인 없음</span></label><span class="stail" id="f-tail">에서 탈게요.</span></span>
             </div>
-            <p class="stail" id="f-tail">에서 탈게요.</p>
             <div class="fhint" id="f-hint" hidden>
               <p class="ft" id="f-hint-t"></p>
               <span class="fas"><button type="button" class="fa" id="f-hint-a" hidden></button><button
