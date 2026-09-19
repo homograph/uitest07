@@ -299,7 +299,11 @@
   .tin::placeholder{color:var(--gray-500);}
   /* 포커스는 검정 1px 이다(navy 1.5 가 아니었다). */
   .tin:focus{box-shadow:inset 0 0 0 1px #000;}
-  .tcnt{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--gray-500);}
+  /* 9/19 Figma DS(text box / monoline): 글자 수는 그 칸에 포커스가 있을 때만 보인다.
+     빈 칸에 셀 것도 없이 숫자부터 보이면 '써야 하나' 로 읽힌다. */
+  .tcnt{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--gray-500);
+    opacity:0;transition:opacity .12s ease;}
+  .tinwrap:focus-within .tcnt{opacity:1;}
   .tcnt b{font-weight:700;}
   /* 9/18: 지우는 수단. '접기 = 삭제' 를 걷어낸 자리를 흔한 입력칸 문법(칸 안 ×)으로 대신한다.
      값이 있을 때만 나온다 — 빈 칸에 지울 것이 없는데 버튼부터 보이면 압박만 준다. */
@@ -1486,9 +1490,9 @@
 
   <div class="note">
     <h3><i>10</i>찾아오는 길을 언제 보여주고, 어떻게 지우나 <em>9/18</em></h3>
-    <p><b>노출</b>은 필수(층·동)가 채워지면입니다. &lsquo;동 없음&rsquo;이면 층만으로 나옵니다. 다만 이 조건은 <b>처음 나타날 때만</b> 씁니다 — 이미 쓴 내용이 있으면 층·동을 지워도 칸을 치우지 않습니다. 다른 칸을 고치는 행동이 내가 쓴 문장을 화면에서 없애면, 값이 남아 있어도 잃은 것으로 보입니다. 전송은 <b>입력 완료</b>가 막으므로 층·동 없이 나갈 일은 없습니다.</p>
+    <p><b>노출</b>은 조건이 없습니다(9/19). 화면에 들어가면 <b>처음부터</b> 같은 자리에 있습니다. 칸을 흰 바탕 1px로 낮추고 안내 문구를 포커스일 때만 붙인 뒤로는 숨겨 둘 이유가 없어졌고, &lsquo;언제 생기지?&rsquo;와 &lsquo;값이 있으면 남긴다&rsquo;는 규칙 두 개가 함께 사라졌습니다. 전송은 <b>입력 완료</b>가 막으므로 층·동 없이 나갈 일은 없습니다.</p>
     <p><b>지우기</b>는 칸 안 <b>×</b>입니다. 값이 있을 때만 나옵니다. 접기(−)는 없앴습니다 — 펼침이 기본이 된 뒤로 &lsquo;접으면 지워진다&rsquo;는 규칙은 실수만 부릅니다.</p>
-    <p><b>모양</b>은 회색 면에서 <b>흰 바탕 + 1px #E3E4E8</b>로 바꿨습니다(포커스 검정 1px · 읽기 전용 #EFEFF1). 문장 칩과 같은 면이면 필수·선택이 같은 무게로 읽힙니다. 안내 문구는 <b>포커스이거나 값이 있을 때만</b> 붙습니다.</p>
+    <p><b>모양</b>은 회색 면에서 <b>흰 바탕 + 1px #E3E4E8</b>로 바꿨습니다(포커스 검정 1px · 읽기 전용 #EFEFF1). 문장 칩과 같은 면이면 필수·선택이 같은 무게로 읽힙니다. 안내 문구와 <b>글자 수(0/30)</b>는 <b>포커스일 때만</b> 붙습니다. placeholder는 예시 문장 대신 <b>&lsquo;입구가 헷갈리면 적어 주세요&rsquo;</b> — 안 써도 된다는 뜻이 먼저 읽혀야 합니다.</p>
     <p class="src">Figma 상세 위치 입력 12845:43123(14개 변형) · 정리 문서 12867:21011</p>
   </div>
 
@@ -1815,15 +1819,14 @@
 
     renderHint();
 
-    /* 9/18 노출 규칙: 필수(층·동)가 채워지면 나온다. 단 '처음 나타날 때' 의 조건이다 —
-       이미 쓴 값이 있으면 필수를 지워도 칸을 치우지 않는다. 다른 칸을 고치는 행동이
-       내가 쓴 문장을 화면에서 없애 버리면, 값은 남아 있어도 사용자는 잃은 것으로 본다.
+    /* 9/19 노출 규칙: 처음부터 보인다. 등장 조건을 없앴다 —
+       칸이 조용해진 뒤로는(흰 바탕 1px · 도움말은 포커스일 때만) 숨겨 둘 이유가 없고,
+       '언제 생기지?' 와 '값이 있으면 남긴다' 라는 두 규칙이 같이 사라진다.
        ('입력 완료' 는 여전히 필수로 막히므로 층·동 없이 전송될 일은 없다) */
     const keep = !!d.etc.trim();
-    const vis = ok || keep;
-    const showEtc = vis && S.etcOpen;
+    const showEtc = true;
     const hd=el('f-addetc');
-    hd.hidden = !vis;
+    hd.hidden = false;
     hd.classList.toggle('lab', keep);
     el('fopt').hidden = !showEtc;
     fitAll();
@@ -1836,7 +1839,8 @@
          입구는 정문 94 > 게이트 61 이지만 정문은 내비 기본 목적지라 정보가 없어 게이트로 든다(표기도 '게이트N' 이 한국어 중 최다).
          말투는 기사에게 쓰는 존댓말 — 진입 동사 들어오셔서 76 · 들어오시면 41 · 진입후 26 · 들어와서 20.
          지상: 후문·쪽문은 입주민·보행자 전용인 단지가 있어 특정 문을 예로 들지 않는다. */
-      et.placeholder = S.d.lvl==='ground'?'예 : 경비실 지나셔서 바로 좌회전':'예 : 게이트2로 들어오셔서 좌회전';
+      /* 9/19: 예시 문장 → 조건형. 경로 안내를 남기는 사람은 32.3% 뿐이라 '안 써도 된다' 가 먼저 읽혀야 한다 */
+      et.placeholder = '입구가 헷갈리면 적어 주세요';
       paintFEtc();
     }
     paintFoot();
@@ -1917,7 +1921,7 @@
        읽을 것만 늘고, 정작 쓰는 순간에는 이미 읽은 문장이 된다. */
     const on = S.focus==='etc' || !!(S.d.etc||'').trim();
     p.className='askhelp';
-    p.textContent = on ? '길 안내는 드라이버가 멈춰 있을 때 펼쳐 봅니다.' : '';
+    p.textContent = on ? '드라이버는 차가 멈췄을 때 이 내용을 봐요.' : '';   /* 9/19 Figma 컴포넌트와 동일 */
     p.hidden = !on;
   }
   /* 값이 있을 때만 × 를 세운다. 카운터는 왼쪽으로 물러난다(.hasx). */
@@ -1946,8 +1950,7 @@
     dg.addEventListener('input',ev=>{
       S.d.dong = ev.target.value.replace(/동\s*$/,'');
       ev.target.value=S.d.dong; fitBv(ev.target);
-      const vis=ready(S.d)||!!S.d.etc.trim(), was=!el('f-addetc').hidden;
-      if(vis!==was) renderSentence(); else paintFoot();
+      paintFoot();   /* 9/19: 찾아오는 길은 늘 보이므로 노출 재계산이 필요 없다 */
       if(S.d.dong.length>=8) toNextEmpty('f-dong');
     });
     /* mousedown 을 막아야 링크를 누르는 순간 포커스가 빠져 슬롯이 먼저 사라지지 않는다 */
