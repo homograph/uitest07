@@ -985,7 +985,9 @@
   /* 9/16: × 를 띠 위 끝에 절반 걸치게 빼고 36 → 47(130%). 띠 안(overflow:hidden)이면 잘려서 형제로 둔다.
      자리: 띠 높이 98 · 버튼 47 → bottom 74.5 면 위 절반이 지도 위로 나온다. 접히면 같이 사라진다. */
   .tbn-x{position:absolute;right:16px;bottom:75px;z-index:8;width:50px;height:50px;padding:0;
-    border:2px solid #32a2fa;border-radius:50%;background:#101a3d;color:#fff;cursor:pointer;   /* 9/18 Figma close: stroke #32A2FA 2 · fill #101A3D */
+    border:2px solid #fff;border-radius:50%;background:#101a3d;color:#fff;cursor:pointer;
+    /* 9/19 Figma DS(overlay banner 29325:181198) close: stroke color/palette/white 2 · fill tada-navy_heavy.
+       닫기는 상태와 무관한 컨트롤이라 상태색(#32A2FA)과 같으면 '변경' 상태(#FE4C00)에서 두 색이 부딪힌다. */
     display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.35);
     transition:opacity .16s ease,transform .16s ease;}
   .tbn-x::after{content:"";position:absolute;inset:-4px;}
