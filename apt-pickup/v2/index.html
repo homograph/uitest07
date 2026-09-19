@@ -170,7 +170,9 @@
   .pkbox.filled{background:var(--blue-050);box-shadow:inset 0 0 0 1px var(--blue-100);}
   /* 9/19 Figma: 전송 중도 값이 있으므로 바탕은 파랑이다. 회색이면 '입력 전' 과 구분이 안 됐다.
      테두리만 #e6e9ef 로 남아 아직 닿지 않았음을 말하고, 상태는 왼쪽 스피너가 맡는다. */
-  .pkbox.sending{background:var(--blue-050);box-shadow:inset 0 0 0 1px var(--gray-e6);}
+  /* 9/20 Figma 57886:146098 실측: 전달중도 테두리가 #E2F2FE 다. 값이 있는 카드는 면도 선도 파랑이고,
+     아직 닿지 않았다는 것은 왼쪽 스피너와 사라진 화살표가 말한다. */
+  .pkbox.sending{background:var(--blue-050);box-shadow:inset 0 0 0 1px var(--blue-100);}
   /* 아이콘은 이제 상태를 나르지 않는다 — 네 상태가 모두 같은 연파랑 배지에 파란 P 다.
      상태 신호를 내려놓고 '여기가 주차장 위치 자리' 라는 표시만 맡는다. blue-150 @60%. */
   /* 실측(LAYOUT=1): 배지 24×24 · r5 · 아이콘 프레임 14×14 (벡터 자체는 8×11).
@@ -268,6 +270,9 @@
   @media (prefers-reduced-motion:reduce){ .spin::after{animation-duration:2.4s;} }
   .pkbox[hidden]{display:none;}
   .pkbox.locked{cursor:default;}
+  /* 9/20 Figma: 화살표가 없는 상태는 오른쪽 여백이 10 이 아니라 18 이다.
+     화살표(24)가 빠진 자리를 여백이 일부 대신해 글자가 모서리에 붙지 않게 한다. */
+  .pkbox.sending,.pkbox.locked{padding-right:18px;}
   .ic{display:block;flex:0 0 auto;}
 
   /* 토스식: 답한 것은 위로 쌓이고, 지금 묻는 것만 아래에서 크게 */
