@@ -2398,9 +2398,10 @@
     } else if(del){
       /* 문구는 Figma 드라이버 카드(12860:20307) 그대로 두되, 상태 줄은 '작성함/변경함' 과
          같은 형식으로 맞춘다 — 세 사건이 같은 자리에서 같은 말투로 읽혀야 한다. */
-      el('plr-fl').textContent='지도에 표시된 출발지에서 탑승';
+      /* 9/19 Figma(디자인 스펙 · 삭제 카드) 기준 문구 */
+      el('plr-fl').textContent='내비에 표시된 출발지에서 탑승';
       el('plr-v').textContent=''; el('plr-b').textContent=''; el('plr-b').hidden=true;
-      el('plr-s').textContent='고객이 입력했던 위치를 지웠습니다.'; el('plr-s').hidden=false;
+      el('plr-s').textContent='고객이 설정한 픽업 안내가 없습니다'; el('plr-s').hidden=false;
       const c=el('plr-chg');
       el('plr-lb').textContent='픽업 장소'; el('plr-st').textContent='고객이 삭제함';
       c.classList.add('chg'); c.hidden=false;
