@@ -1199,7 +1199,6 @@
     <button class="tab on" data-mode="new">첫 이용</button>
     <button class="tab" data-mode="repeat">재방문 · 지난번 값 있음</button>
     <span class="sp"></span>
-    <button class="rst" id="tts">음성 안내 끔</button>
     <button class="rst" id="rst">처음부터</button>
   </div>
   <div class="tabs" id="wrow">
@@ -1222,10 +1221,7 @@
       <span class="dsw"><button type="button" class="dswb pmc on" data-pm="motion">P 모션</button><button
         type="button" class="dswb pmc" data-pm="static">P 정지</button></span>
       <!-- 9/14: 로티 구간을 보이는 카드 아이콘에서 바로 재생 — 끝나면 카드의 원래 상태로 돌아간다 -->
-      <span class="dsw" id="pmdemo"><button type="button" class="dswb pmd" data-seq="hint">▶ 힌트</button><button
-        type="button" class="dswb pmd" data-seq="spin">▶ 전송 중</button><button
-        type="button" class="dswb pmd" data-seq="done">▶ 체크 완료</button><button
-        type="button" class="dswb pmd" data-seq="all">▶ 전체 흐름</button></span></div>
+</div>
     <div class="phbox" id="riderbox"><div class="phone" id="rider">
 
       <!-- 출발지 설정 -->
@@ -1378,11 +1374,9 @@
       <!-- 9/19: T맵 ↔ 타다 앱 전환 칩을 뺐다. 화면 안에 이미 있다 —
            타다 앱 [운행 시작하기](#dstart) → T맵, T맵의 타다 버블(#tovb-back)·✕(#tb-x) → 타다 앱.
            드라이버 상태는 콘솔이 아니라 화면에서 바뀌어야 실제 순서를 검증할 수 있다. -->
-      <span class="dsw"><button type="button" class="rst" id="d300" style="padding:5px 11px;font-size:11.5px" title="추천안 시뮬레이션: 300m 진입 시 음성 안내 1회 + 정차하면 말풍선에 찾아오는 길">300m 진입</button><button
-        type="button" class="rst" id="dreplay" style="padding:5px 11px;font-size:11.5px" hidden>다시 듣기</button></span>
       <!-- 9/19: 단계 칩(출발 전/이동 중/전체 경로)을 뺐다. 화면 안 버튼이 그대로 그 순서다 —
            [고객 위치로 출발하기] → [고객에게 도착 알리기] → [운행 시작하기]. 되돌리려면 '처음부터'. -->
-      <span class="dsw"><button type="button" class="dswb tth on" data-th="light">T맵 라이트</button><button type="button" class="dswb tth" data-th="dark">T맵 다크</button></span></div>
+</div>
     <div class="phbox"><div class="phone">
       <div class="scr on dscr">
         <div class="sb dark"><span class="ic"><i class="wifi"></i><i class="sig"></i><i class="bat"></i></span><span>12:30</span></div>
@@ -1512,7 +1506,7 @@
     <p><b>타다 앱 카드</b>: 여백 20 · 간격 16 · 높이 100(찾아오는 길 있으면 156). 층만 굵게. <b>상태 줄이 첫 줄</b>이고 그 아래 주소·찾아오는 길이 옵니다(Info Container gap 8 · Address Container gap 4). 상태 줄은 두 조각입니다 — 라벨 <b>‘픽업 장소’</b>는 15/22 Bold 흰색으로 고정이고, 뒤에 붙는 <b>고객이 입력함 / 수정함 / 삭제함</b>이 색을 갖습니다(작성 #32A2FA · 변경·삭제 #FE4C00). 바뀌는 말에 색이 있어야 색과 정보를 한 번에 읽습니다. 배너는 상태 문구가 없어 라벨 ‘픽업 장소’ 자체가 색으로 갈립니다. 세 사건 모두 <b>3회</b> 깜빡입니다.</p>
     <p><b>삭제(9/18)</b>: 배차 뒤에도 승객이 &lsquo;지우기&rsquo;로 지울 수 있습니다. 지우면 T맵의 <b>픽업 장소 버블과 하단 배너를 거둡니다</b> — 없는 정보를 가리키는 버튼을 남기지 않습니다. 카드에는 &lsquo;지도상의 출발지에서 탑승 · 고객의 픽업 장소 요청이 삭제되었습니다&rsquo;가 남고, 상태 줄이 <b>세 번</b> 깜빡입니다(작성·변경과 같은 세기).</p>
     <p><b>T맵 하단 배너</b>: 첫 줄은 <b>‘픽업 장소’</b> 18/26 Bold 한 마디로 고정이고 작성·변경은 색으로만 갈립니다. <b>위치만</b> 32 Bold로 싣고 찾아오는 길은 넣지 않습니다. 닫기 ×는 <b>테두리 흰색 2px</b> · 배경 #101A3D입니다(9/19 DS overlay banner 29325:181198). 닫기는 상태와 무관한 컨트롤이라 테두리가 상태색이면 &lsquo;수정&rsquo;(#FE4C00)에서 두 색이 부딪히고, 같은 컴포넌트를 쓰는 현장결제 배너(흰 테두리)와도 규칙이 갈립니다. ×나 아래로 밀기로 접히면 오른쪽 아래 탭(204×48)이 되고, 탭을 누르거나 밀면 다시 펼쳐집니다.</p>
-    <p>저절로 다시 펼치는 건 <b>위치 변경</b>과 <b>300m 진입</b> 두 가지뿐입니다. 300m에서는 음성 한 번이 같이 나갑니다 — 흐르는 글은 주행 중 읽기 어려우니, 그 이상은 소리로 보냅니다.</p>
+    <p><b>저절로 다시 펼치는 건 위치 변경 하나뿐입니다(9/19).</b> 300m 진입에 맞춰 한 번 더 펼치고 음성을 얹는 안은 접었습니다 — 음성을 쓰지 않기로 했고, 음성이 빠지면 300m 발동은 ‘이미 본 배너를 한 번 더 미는 것’ 밖에 안 됩니다. T맵 음성과 순서를 다투는 문제도 함께 사라졌습니다.</p>
     <p class="src">값·코드는 오른쪽 <b>개발 콘솔</b> 참고 · Figma 12371:523749</p>
   </div>
 
@@ -1532,7 +1526,7 @@
     <h3><i>11</i>찾아오는 길 30자</h3>
     <p>요청사항 원문에서 <b>경로·입구 절만</b> 떼어(구조화로 흡수되는 층·동·라인, 맺음말, 짐·인원 제외) 다시 셌습니다. 경로 안내가 있는 요청 <b>557건(32.3%)</b> · 중앙값 <b>21자</b> · 평균 24.9자 · P80 37 · P90 48.</p>
     <p>담기는 비율: 20자 47.0% · 25자 61.0% · <b>30자 72.2%</b> · 40자 83.7% · 50자 90.8%.</p>
-    <p>40자면 84%까지 오르지만 기사 카드가 2줄에서 3줄이 됩니다. 넘치는 문장은 대부분 <b>두 번 이상 꺾이는 안내</b>라 운전 중 읽기 어렵고, 음성으로 보내는 편이 맞습니다. <b>30자 유지</b>로 두었습니다.</p>
+    <p>40자면 84%까지 오르지만 기사 카드가 2줄에서 3줄이 됩니다. 넘치는 문장은 대부분 <b>두 번 이상 꺾이는 안내</b>라 운전 중 읽기 어렵습니다. <b>30자 유지</b>로 두었습니다.</p>
     <p class="src">아파트_요청사항_샘플_상위180단지.csv · 2026-09-16 집계</p>
   </div>
 
@@ -1555,7 +1549,6 @@
     <h3><i>14</i>아직 안 정한 것</h3>
     <p><span class="mk warn"></span><b>읽기 전용 안내 색.</b> &lsquo;차량이 도착해 지금은 고칠 수 없어요&rsquo; 가 #32A2FA 14sp라 흰 배경에서 대비가 낮습니다.</p>
     <p><span class="mk warn"></span><b>T맵 말풍선 폭.</b> Figma 주석은 화면 너비의 30%인데 그림의 말풍선은 46%(164px)입니다. 프로토는 주석을 따랐습니다.</p>
-    <p><span class="mk warn"></span><b>300m 음성과 정차 펼침.</b> 발동 기준(도착 60초 전 또는 500m 권장)과 T맵 음성과의 순서는 드라이버 쪽 정책 확인이 필요합니다.</p>
   </div>
 
   <div class="note">
@@ -2437,9 +2430,8 @@
     $$('.dstg').forEach(b=>b.classList.toggle('on', b.dataset.dg===stg));
     el('dtmap').classList.toggle('dark', !!S.tmapDark);
     el('dtsel').classList.toggle('dark', !!S.tmapDark);
-    $$('.tth').forEach(b=>b.classList.toggle('on', (b.dataset.th==='dark')===!!S.tmapDark));
     /* 라이더 컨트롤러는 승객이 아는 것만 비춘다 — 기사가 도착해 있어도 안 눌렀으면 '접근 중' 이다. */
-    $$('.dswb:not(.dstg):not(.tth):not(.tov):not(.tlp):not(.pmc):not(.pmd)').forEach(b=>b.classList.toggle('on',
+    $$('.dswb:not(.pmc)').forEach(b=>b.classList.toggle('on',
       b.dataset.ds === (b.dataset.side==='r' ? S.rphase : S.dview)));
 
     el('fdesc').innerHTML = S.screen==='start'
@@ -2549,8 +2541,6 @@
     el('tp-etc').hidden = !open;
     el('tovb-loc').classList.toggle('open', open);
     el('tp-spk').hidden = !(on && S.appr.speaking);
-    el('dreplay').hidden = !S.appr;   /* 9/19: '정차' 는 말풍선안 전용이었고 그 안이 사라져 함께 걷었다 */
-    el('d300').textContent = S.appr ? '시뮬레이션 끝' : '300m 진입';
     if(S.appr){
       const m=Math.max(0,Math.round(S.appr.dist));
       el('tb-eta').textContent = Math.max(1,Math.round(m/12))+'초';
@@ -2660,11 +2650,7 @@
      기사가 그 값을 실제로 쓴 시점(출발 누름 · 도착)에 거둔다. */
   /* 스펙: 오버레이 영역을 터치해도 닫힌다(확인 탭과 동일). */
   el('drover').addEventListener('click',ev=>{ if(ev.target===el('drover')) el('drover-ok').click(); });
-  el('tts').addEventListener('click',()=>{
-    S.tts=!S.tts;
-    el('tts').textContent = S.tts ? '음성 안내 켬' : '음성 안내 끔';
-    if(!S.tts && window.speechSynthesis) speechSynthesis.cancel();
-  });
+  /* 9/19: 음성 안내를 쓰지 않기로 해 토글을 걷었다. S.tts 는 false 로 고정이라 speak() 는 바로 돌아온다. */
   /* 출발/도착을 누른 건 그 값을 실제로 썼다는 뜻이다. 강조도 미확인도 여기서 거둔다. */
   el('dgo').addEventListener('click',()=>{
     S.hilite=false; S.ack=true;
@@ -2700,7 +2686,6 @@
   /* 알약 = '보기'. 누르면 타다 앱의 픽업 장소 블록으로 간다. 3px 넘게 끌면 드래그라 가지 않는다. */
   el('tovb-loc').addEventListener('click',()=>{ S.dview='app'; S.msgUnread=false; render(); });
   /* 실제 T맵은 라이트/다크가 바뀐다 — 두 모드에서 알약을 확인한다 */
-  $$('.tth').forEach(b=>b.addEventListener('click',()=>{ S.tmapDark = (b.dataset.th==='dark'); S.dview='tmap'; render(); }));
   /* 메시지는 타다 앱에 들어가면 읽은 것으로 본다 — 대화는 거기 있다. */
   el('drover-ok').addEventListener('click',()=>{ if(S.drKind==='msg'){ S.msgUnread=false; render(); } });
   /* 타다 앱 → 내비. driver-v2 의 cnavrow(이름 + 내비 아이콘)가 그 길이다. */
@@ -2747,20 +2732,8 @@
   /* 지도 위 '내비' 버블도 같은 길이다 — 기사가 내비로 돌아가는 자리는 둘 다 살아 있어야 한다. */
   el('dbub-nav').addEventListener('click',()=>{ S.dview='tmap'; render(); });
   /* 반경 500m 진입은 기사 쪽 사건이다 — 승객 화면은 그대로고 내비 위 오버레이만 뜬다. */
-  el('d300').addEventListener('click',()=>{
-    if(S.appr){ apprEnd(); return; }
-    S.dview='tmap'; S.driving=false; S.near=true;
-    if(!reached()){ render(); dtoast('전달된 픽업 장소가 없어 음성·펼침이 없습니다'); return; }
-    S.appr={dist:300, stopped:false, speaking:false, said:''};
-    S.appr.tick=setInterval(()=>{
-      const a=S.appr; if(!a) return;
-      if(a.stopped) return;
-      a.dist-=5;
-      if(a.dist<=0){ apprEnd(); dtoast('픽업 장소에 도착했어요'); return; }
-      paintAppr(!el('tovb-loc').hidden);
-    },400);
-    render(); apprSpeak('first');
-  });
+  /* 9/19: 300m 진입 시뮬레이션을 걷었다 — 음성을 쓰지 않기로 했고, 이 버튼은 그 음성을 들려주려고 있던 것이다.
+     S.appr 은 늘 null 이라 접근 구간 분기는 모두 지나간다. */
   el('tbn').addEventListener('click',e=>{ if(e.target.closest('#tbn-x')) return; if(S.bnSwiped){ S.bnSwiped=false; return; }
     S.dview='app'; S.msgUnread=false; render(); });
   el('tbn-trk').addEventListener('animationend',()=>el('tbn').classList.add('rest'));
@@ -2783,7 +2756,6 @@
   $$('.tlp').forEach(b=>b.addEventListener('click',()=>{ S.bnLoop=b.dataset.lp; $$('.tlp').forEach(x=>x.classList.toggle('on',x===b)); S.bnKey=null; render(); }));
   el('tbn').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el('tbn').click(); } });
   $$('.tov').forEach(b=>b.addEventListener('click',()=>{ S.ovMode=b.dataset.ov; if(S.appr) S.appr.stopped=false; render(); }));
-  el('dreplay').addEventListener('click',()=>{ apprSpeak('first'); mqPlay(); });
   /* 픽업 알약과 버블 스택은 화면 안에서 끌어 옮긴다 — 세로는 자유, 가로는 가까운 쪽 끝(좌/우)에 붙는다(시안 '운행 시작 전' 두 변형).
      둘은 늘 같은 쪽에 선다.
      버블은 언제나 카드보다 아래를 유지한다 — 순서가 뒤집히면 두 층의 관계가 깨진다.
@@ -2833,7 +2805,6 @@
     window.__reflowOverlays = reflow;
   })();
   el('tb-x').addEventListener('click', backFromTmap);
-  /* 단계 칩(.dstg)·T맵 모드 칩(.tth)은 data-ds 가 없다 — 각자 핸들러가 있어 여기서 뷰를 덮지 않는다 */
   $$('.dswb[data-ds]').forEach(b=>b.addEventListener('click',()=>{
     const prev=S.rphase;
     /* 라이더 칩 = 승객이 아는 것, 드라이버 칩 = 기사 화면(타다 앱 / T맵). 서로 독립이다. */
@@ -3013,13 +2984,6 @@
     done:['spin1','done','restore'],
     all:['hint','spin1','done','restore']
   };
-  $$('.pmd').forEach(b=>b.addEventListener('click',()=>{
-    /* 지금 보이는 라이더 화면의 카드에서 재생(매칭 중 화면엔 카드가 없어 출발지 카드를 쓴다) */
-    const onVoy = el('s-voyage').classList.contains('on') && !el('pk-voy').hidden;
-    const pi = (onVoy ? el('pk-voy') : el('pk-start')).querySelector('.pico');
-    if(!icoAnim(pi)) return;
-    pi._q=DEMO[b.dataset.seq].slice(); icoNext(pi);
-  }));
   /* 실패는 화면에서 만들 수 없는 현실(네트워크)이라 콘솔에 남긴다. 한 번만 걸리고 스스로 풀린다. */
   function setFailSw(){ const b=el('failsw'); if(b){ b.classList.toggle('on', !!S.failNext); b.textContent = S.failNext ? '다음 전송 실패 ✓' : '다음 전송 실패'; } }
   el('failsw').addEventListener('click',()=>{ S.failNext=!S.failNext; setFailSw(); });
