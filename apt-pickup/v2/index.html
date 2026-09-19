@@ -978,8 +978,10 @@
      탭은 T맵 하단 막대 바로 위에 뜬다. 상자는 110 으로 두고 펼침은 위 12 를 잘라 보이는 띠를 98 로 맞춘다.
      탭 = 상자 맨 위 204×48(막대 위 62 에 바닥을 맞춤) → 펼치면 아래로 자라므로 탭 화살표는 ⌄ 다. */
   /* 9/16 최종본: 접힘 탭이 없어져 clip-path 모프도 뺐다. 배너는 뜨거나 닫히거나 둘 중 하나다. */
+  /* 9/19 Figma DS(overlay banner · type=입력/수정): 배경은 검정이 아니라 tada-navy_heavy 다.
+     검정은 현장결제 타입에만 쓴다. 카드와 같은 면색이라 두 자리가 한 기능으로 읽힌다. */
   .tbn{position:absolute;left:0;right:0;bottom:0;height:100px;z-index:7;box-sizing:border-box;
-    background:#000;color:#fff;cursor:pointer;
+    background:#101a3d;color:#fff;cursor:pointer;
     transition:transform .22s cubic-bezier(.22,.61,.36,1);}
   /* 접힘 = 208×58 · r16 · 오른쪽 끝(여백 0) · 화면 아래에서 42(하단 막대와 20 겹침) */
   /* 9/16 최종본: 접힘 탭 폐기 — × 는 닫기만 한다. 다시 보는 길은 T맵 스택의 '픽업 장소' 버블이다. */
