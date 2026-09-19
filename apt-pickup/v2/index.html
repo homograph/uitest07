@@ -2044,10 +2044,15 @@
        누르는 순간 포커스가 칸에서 빠지지 않게 mousedown 은 막는다. */
     el('f-etc-x').addEventListener('mousedown',ev=>ev.preventDefault());
     el('f-etc-x').addEventListener('click',()=>{
-      S.d.etc=''; const et=el('f-etc');
+      const et=el('f-etc');
+      /* 9/19: 누르기 전에 그 칸이 포커스였는지 본다. 쓰던 중이면 이어서 쓸 수 있게 포커스를 지키고,
+         포커스가 없던 상태에서 눌렀다면 값만 지운다 — 지우려고 누른 것이지 쓰려고 누른 게 아니다.
+         (안 그러면 키패드가 저절로 올라온다) */
+      const had = document.activeElement === et;
+      S.d.etc='';
       et.value=''; el('f-etc-c').textContent='0';
       paintEtcClear(); paintFEtc(); paintFoot();
-      et.focus();
+      if(had) et.focus();
     });
     el('f-etc').addEventListener('input',ev=>{
       S.d.etc=ev.target.value; el('f-etc-c').textContent=ev.target.value.length;
