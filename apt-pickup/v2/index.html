@@ -173,9 +173,11 @@
   .pkbox.sending{background:var(--blue-050);box-shadow:inset 0 0 0 1px var(--gray-e6);}
   /* 아이콘은 이제 상태를 나르지 않는다 — 네 상태가 모두 같은 연파랑 배지에 파란 P 다.
      상태 신호를 내려놓고 '여기가 주차장 위치 자리' 라는 표시만 맡는다. blue-150 @60%. */
-  /* 실측(LAYOUT=1): 배지 24×24 · r4.8 · 아이콘 프레임 14×14 (벡터 자체는 8×11).
+  /* 실측(LAYOUT=1): 배지 24×24 · r5 · 아이콘 프레임 14×14 (벡터 자체는 8×11).
+     9/19: DS(detail_pickuplocation 58074:147695)가 r4.8 → r5 로 정리됐다. 20→24 로 키우며
+     비례로 늘어난 4.8 이 어중간했던 것 — 카드 r8 과 함께 4/5/6/8/9999 로 값이 떨어진다.
      배지가 20→24 로 커지면서 카드 hug 높이도 12+24+12 = 48 이 된다. */
-  .pico{flex:0 0 auto;width:24px;height:24px;border-radius:4.8px;display:grid;place-items:center;
+  .pico{flex:0 0 auto;width:24px;height:24px;border-radius:5px;display:grid;place-items:center;
     background:rgba(185,221,253,.6);}
   /* 손으로 그리지 않고 Figma 원본을 --svg 로 추출해 넣었다(viewBox 44). */
   /* 9/14: '> svg' 로 한정 — 자손 선택자(.pico svg path)가 로티 SVG 경로까지 CSS fill 로 덮어써 타일이 #0094f9 60% 로 진해졌다(속성 fill 보다 CSS 가 이긴다) */
@@ -1541,7 +1543,7 @@
     <h3><i>14</i>아직 안 정한 것</h3>
     <p><span class="mk warn"></span><b>읽기 전용 안내 색.</b> &lsquo;차량이 도착해 수정할 수 없습니다&rsquo; 가 #32A2FA 14sp라 흰 배경에서 대비가 낮습니다.</p>
     <p><span class="mk warn"></span><b>T맵 말풍선 폭.</b> Figma 주석은 화면 너비의 30%인데 그림의 말풍선은 46%(164px)입니다. 프로토는 주석을 따랐습니다.</p>
-    <p><span class="mk warn"></span><b>P 타일 모서리.</b> 카드 스펙은 r5, 로티 원본은 r4.8(스무딩)입니다. 로티를 그대로 두기로 해서 0.2px 차이가 남아 있습니다.</p>
+    <p><span class="mk warn"></span><b>P 타일 모서리.</b> DS가 9/19에 r5로 정리됐고 배지도 r5입니다. 다만 <b>로티 안의 타일 도형은 r4.8(스무딩)</b> 그대로라 0.2px 차이가 남아 있습니다 — 로티를 다시 뽑을 때 맞추면 됩니다.</p>
     <p><span class="mk warn"></span><b>300m 음성과 정차 펼침.</b> 발동 기준(도착 60초 전 또는 500m 권장)과 T맵 음성과의 순서는 드라이버 쪽 정책 확인이 필요합니다.</p>
   </div>
 
