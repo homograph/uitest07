@@ -2683,11 +2683,20 @@
       /* 변경됨은 여기서 꺼진다 — 스트립도 이 순간 할 일이 끝난다 */
       S.chgFlag=false;
       const first = !told();
+      let kicked = false;
       if(first){
         S.rphase='arrived';
-        if(S.opened==='voyage' && $('#phscr').classList.contains('on') && S.value) openForm('voyage', true);
+        /* 9/19 Figma(12969:67648 주석) · PRD AC-2-05: 입력 화면에 머무는 도중 차가 도착하면
+           화면을 닫고 운행 화면으로 보낸 뒤 토스트로 알린다.
+           전에는 읽기 전용으로 바꿔서 열어 뒀는데, 그건 '도착 뒤에 스스로 카드를 눌러 연' 경우의
+           처리(AC-0-05)다. 두 상황은 다르다 — 스스로 연 것은 값을 보려는 것이고,
+           쓰던 중 도착한 것은 '더는 못 쓴다' 를 알려야 하는 상황이다. */
+        if(S.opened==='voyage' && $('#phscr').classList.contains('on')){
+          $('#phscr').classList.remove('on'); kicked = true;
+        }
       }
       render();
+      if(kicked) toast('차량이 도착해 지금은 고칠 수 없어요. 위치를 바꾸려면 드라이버에게 전화해 주세요.');
       /* 04 로 그린 뒤에 띄워야 운행 시작하기 위로 비껴간다(v2 toast) */
       if(first) dtoast('고객에게 도착을 알렸어요');
       return;
