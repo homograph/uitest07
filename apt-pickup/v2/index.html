@@ -2974,7 +2974,11 @@
   };
   /* 실패는 화면에서 만들 수 없는 현실(네트워크)이라 콘솔에 남긴다. 한 번만 걸리고 스스로 풀린다. */
   function setFailSw(){ const b=el('failsw'); if(b){ b.classList.toggle('on', !!S.failNext); b.textContent = S.failNext ? '다음 전송 실패 ✓' : '다음 전송 실패'; } }
-  el('failsw').addEventListener('click',()=>{ S.failNext=!S.failNext; setFailSw(); });
+  /* 개발 콘솔은 이 스크립트보다 아래에 있어 로드 시점엔 #failsw 가 아직 없다 — 문서에 위임한다 */
+  document.addEventListener('click', ev=>{
+    if(!ev.target.closest || !ev.target.closest('#failsw')) return;
+    S.failNext=!S.failNext; setFailSw();
+  });
   function startMatching(){
     /* 새 호출이 잡히면 기사 화면은 01 pickup-go(타다 앱)에서 시작한다 — driver-v2 resetState() 의 screen:'pickup', pphase:'go' */
     S.rphase='match'; S.dstage='go'; S.dview='app'; S.driving=false; S.chgFlag=false; render();
