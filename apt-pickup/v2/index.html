@@ -1218,6 +1218,7 @@
       <span class="dsw"><button type="button" class="dswb on" data-side="r" data-ds="match">매칭 중</button><button
         type="button" class="dswb" data-side="r" data-ds="go">이동 중</button><button
         type="button" class="dswb" data-side="r" data-ds="arrived">차량 도착</button></span>
+      <span class="dsw" title="다음 [입력 완료] 한 번만 전송이 실패한다 — 네트워크 끊김 재현"><button type="button" class="dswb" id="failsw">다음 전송 실패</button></span>
       <span class="dsw"><button type="button" class="dswb pmc on" data-pm="motion">P 모션</button><button
         type="button" class="dswb pmc" data-pm="static">P 정지</button></span>
       <!-- 9/14: 로티 구간을 보이는 카드 아이콘에서 바로 재생 — 끝나면 카드의 원래 상태로 돌아간다 -->
@@ -1374,16 +1375,13 @@
 
   <div>
     <div class="cap"><span class="dot d"></span><b>드라이버 앱</b><em>기사님</em>
-      <span class="dsw"><button type="button" class="dswb on" data-side="d" data-ds="tmap">T맵 내비</button><button
-        type="button" class="dswb" data-side="d" data-ds="app">타다 앱</button><button
-        type="button" class="rst" id="d300" style="padding:5px 11px;font-size:11.5px" title="추천안 시뮬레이션: 300m 진입 시 음성 안내 1회 + 정차하면 말풍선에 찾아오는 길">300m 진입</button><button
-        type="button" class="rst" id="dstop" style="padding:5px 11px;font-size:11.5px" hidden>정차</button><button
+      <!-- 9/19: T맵 ↔ 타다 앱 전환 칩을 뺐다. 화면 안에 이미 있다 —
+           타다 앱 [운행 시작하기](#dstart) → T맵, T맵의 타다 버블(#tovb-back)·✕(#tb-x) → 타다 앱.
+           드라이버 상태는 콘솔이 아니라 화면에서 바뀌어야 실제 순서를 검증할 수 있다. -->
+      <span class="dsw"><button type="button" class="rst" id="d300" style="padding:5px 11px;font-size:11.5px" title="추천안 시뮬레이션: 300m 진입 시 음성 안내 1회 + 정차하면 말풍선에 찾아오는 길">300m 진입</button><button
         type="button" class="rst" id="dreplay" style="padding:5px 11px;font-size:11.5px" hidden>다시 듣기</button></span>
-      <span class="dsw" id="dstagesw"><button type="button" class="dswb dstg" data-dg="go">출발 전</button><button
-        type="button" class="dswb dstg on" data-dg="arrived">이동 중</button><button
-        type="button" class="dswb dstg" data-dg="preview">전체 경로</button></span>
-      <span class="dsw" title="T맵 위 픽업 장소 표시 방식 비교"><button type="button" class="dswb tov on" data-ov="banner">하단 배너</button><button type="button" class="dswb tov" data-ov="bubble">말풍선</button></span>
-      <span class="dsw" title="하단 배너 흐름 반복"><button type="button" class="dswb tlp on" data-lp="inf">배너 무한 루프</button><button type="button" class="dswb tlp" data-lp="6">6바퀴 후 멈춤</button></span>
+      <!-- 9/19: 단계 칩(출발 전/이동 중/전체 경로)을 뺐다. 화면 안 버튼이 그대로 그 순서다 —
+           [고객 위치로 출발하기] → [고객에게 도착 알리기] → [운행 시작하기]. 되돌리려면 '처음부터'. -->
       <span class="dsw"><button type="button" class="dswb tth on" data-th="light">T맵 라이트</button><button type="button" class="dswb tth" data-th="dark">T맵 다크</button></span></div>
     <div class="phbox"><div class="phone">
       <div class="scr on dscr">
@@ -2189,7 +2187,17 @@
        '전달했어요' 토스트로 '지웠어요' 를 덮어쓴다. 반드시 취소해야 한다. */
     clearTimeout(S.tmr);
     S.tmr=setTimeout(()=>{
-      S.tmr=null; S.sending=false; S.sent=true;
+      S.tmr=null; S.sending=false;
+      /* 9/19 실패 경로(Figma 02 보드). 값은 화면에 그대로 두고 카드만 '입력됨' 으로 되돌린다 —
+         쓴 것을 지우면 다시 쓰게 만든다. 다시 누르면 그 값 그대로 재전송된다.
+         기사 쪽으로는 아무것도 내보내지 않는다(raiseDrover 를 타지 않는다). */
+      if(S.failNext){
+        S.failNext=false; S.sent=false; S.confirmed=false;
+        setFailSw(); render();
+        toast('드라이버에게 전달하지 못했어요. 잠시 뒤 다시 시도해 주세요.');
+        return;
+      }
+      S.sent=true;
       /* 값이 실제로 기사에게 닿은 순간에 띄운다.
          보내는 중(0.4초)에 띄우면 아직 안 간 걸 갔다고 말하는 셈이다.
          첫 입력도 기사에겐 똑같이 '모르고 지나칠 수 있는' 정보라 함께 띄우되,
@@ -2541,9 +2549,7 @@
     el('tp-etc').hidden = !open;
     el('tovb-loc').classList.toggle('open', open);
     el('tp-spk').hidden = !(on && S.appr.speaking);
-    el('dstop').hidden = el('dreplay').hidden = !S.appr;
-    if((S.ovMode||'banner')==='banner') el('dstop').hidden = true;   /* 정차 펼침(B)은 말풍선안 전용 */
-    if(S.appr) el('dstop').textContent = S.appr.stopped ? '출발' : '정차';
+    el('dreplay').hidden = !S.appr;   /* 9/19: '정차' 는 말풍선안 전용이었고 그 안이 사라져 함께 걷었다 */
     el('d300').textContent = S.appr ? '시뮬레이션 끝' : '300m 진입';
     if(S.appr){
       const m=Math.max(0,Math.round(S.appr.dist));
@@ -2777,7 +2783,6 @@
   $$('.tlp').forEach(b=>b.addEventListener('click',()=>{ S.bnLoop=b.dataset.lp; $$('.tlp').forEach(x=>x.classList.toggle('on',x===b)); S.bnKey=null; render(); }));
   el('tbn').addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); el('tbn').click(); } });
   $$('.tov').forEach(b=>b.addEventListener('click',()=>{ S.ovMode=b.dataset.ov; if(S.appr) S.appr.stopped=false; render(); }));
-  el('dstop').addEventListener('click',()=>{ if(!S.appr) return; S.appr.stopped=!S.appr.stopped; render(); });
   el('dreplay').addEventListener('click',()=>{ apprSpeak('first'); mqPlay(); });
   /* 픽업 알약과 버블 스택은 화면 안에서 끌어 옮긴다 — 세로는 자유, 가로는 가까운 쪽 끝(좌/우)에 붙는다(시안 '운행 시작 전' 두 변형).
      둘은 늘 같은 쪽에 선다.
@@ -3015,6 +3020,9 @@
     if(!icoAnim(pi)) return;
     pi._q=DEMO[b.dataset.seq].slice(); icoNext(pi);
   }));
+  /* 실패는 화면에서 만들 수 없는 현실(네트워크)이라 콘솔에 남긴다. 한 번만 걸리고 스스로 풀린다. */
+  function setFailSw(){ const b=el('failsw'); if(b){ b.classList.toggle('on', !!S.failNext); b.textContent = S.failNext ? '다음 전송 실패 ✓' : '다음 전송 실패'; } }
+  el('failsw').addEventListener('click',()=>{ S.failNext=!S.failNext; setFailSw(); });
   $$('.pmc').forEach(b=>b.addEventListener('click',()=>{
     S.pmotion=b.dataset.pm;
     $$('.pmc').forEach(x=>x.classList.toggle('on', x===b));
