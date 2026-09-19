@@ -1357,7 +1357,7 @@
         </div>
         <div class="ph-foot">
           <div class="prev2" id="prev2"><span id="prev2-tx">고르면 기사님께 갈 문장이 여기 만들어져요</span></div>
-          <p class="rowarn" id="rowarn" hidden>차량이 도착해 수정할 수 없습니다.<br>위치 변경이 필요하면 드라이버와 통화해주세요.</p>
+          <p class="rowarn" id="rowarn" hidden>차량이 도착해 지금은 고칠 수 없어요.<br>위치를 바꾸려면 드라이버에게 전화해 주세요.</p>
           <label class="savechk" id="savewrap" hidden><input type="checkbox" id="chk-save" /><svg class="cb" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M27 54C12.0883 54 0 41.9117 0 27C0 12.0883 12.0883 0 27 0C41.9117 0 54 12.0883 54 27C54 41.9117 41.9117 54 27 54Z" fill="currentColor"/><path d="M23.6252 30.897L38.5115 16.0107L42.4889 19.9882L23.6252 38.852L11.5115 26.7382L15.4889 22.7607L23.6252 30.897Z" fill="white"/></svg>
             <span>다음에도 이 주소에서 이렇게 보내기</span></label>
           <p class="nearnote" id="nearnote" hidden><span>⚠</span><span>기사님이 이미 진입 중일 수 있어요.</span></p>
@@ -1761,9 +1761,12 @@
         });
         ctl.appendChild(w);
       } else {
-        const cfg={dong:{max:5,ph:'예: 101, 1901, C'},
-                   line:{max:5,ph:'예: 1-2, 3,4호'},
-                   etc:{max:100,ph:S.d.lvl==='ground'?'예: 정문으로 들어와서 우회전'
+        /* 9/19: 표기를 '예)' 로 통일한다(콜론 앞 공백은 국문 표기에 없다).
+           지상 예시는 도움말과 같은 문장으로 맞춘다 — 두 자리가 다른 예를 주면 어느 쪽이 맞는지 알 수 없고,
+           '정문' 은 출입구 명칭을 하드코딩하지 않는다는 결정과도 어긋난다(후문이 입주민 전용인 단지가 있다). */
+        const cfg={dong:{max:5,ph:'예) 101, 1901, C'},
+                   line:{max:5,ph:'예) 1-2, 3,4호'},
+                   etc:{max:100,ph:S.d.lvl==='ground'?'예) 경비실 지나서 바로 좌회전'
                                                      :'예) 게이트2로 들어와서 좌회전'}}[S.step];
         const w=document.createElement('div'); w.className='tinwrap';
         w.innerHTML='<input class="tin" id="tin" inputmode="text" maxlength="'+cfg.max+'" placeholder="'+cfg.ph+'" />'
@@ -2193,7 +2196,8 @@
          첫 입력은 없던 정보가 생긴 것이다. */
       S.droverEdit=S.edited; raiseDrover(S.edited ? 'change' : 'first');
       render();
-      toast('드라이버에게 전달했습니다. 이동 중 확인이 늦어질 수 있습니다.');
+      /* 9/19: 합쇼체 → 해요체. 이 기능의 기본 말투는 해요체다('타시나요?'·'적어 주세요'·'지울까요?') */
+      toast('드라이버에게 전달했어요. 이동 중이라 확인이 늦을 수 있어요.');
     },400);   /* 9/14: 스피너가 딱 한 바퀴(spin-in 0.2s + 0.6s) 돌고 체크로 넘어가도록 응답을 0.4초로 */
   }
 
@@ -2877,7 +2881,9 @@
   el('ph-del').addEventListener('click',()=>{
     /* 9/18 Figma 로 바뀜: 매칭 뒤에도 지울 수 있다. 대신 기사에게 이미 갔던 값이면
        지운 사실을 알려야 한다 — 버블을 거두고 카드 상태 줄을 '고객이 삭제함' 으로 한 번 깜빡인다. */
-    askDialog('입력했던 상세 위치를 삭제합니다.\n계속하시겠습니까?', ()=>{
+    /* 9/19 Figma 문구 표(12980:1876) 기준. '삭제합니다' 는 이미 지운 것처럼 읽히고,
+       무엇이 함께 사라지는지(기사에게 간 값)를 말해 주지 않았다. */
+    askDialog('상세 위치를 지울까요?\n드라이버에게 전달된 내용도 함께 사라집니다.', ()=>{
       const wasGot = reached();
       clearTimeout(S.tmr); S.tmr=null;
       S.value=null; S.current=null; S.saved=null; S.confirmed=false; S.always=false;
