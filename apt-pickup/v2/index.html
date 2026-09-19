@@ -631,7 +631,7 @@
   /* Figma 가 '입력 필드 / 값' DS 컴포넌트로 갈아끼우면서 값이 바뀌었다:
      pad[0,14] → [6,14] · 높이 44 → 42 · 안쪽 gap 5 → 4. */
   .fld{display:inline-flex;align-items:center;gap:4px;flex:0 0 auto;
-    height:46px;margin:0 8px 0 0;padding:8px 14px;box-sizing:border-box;   /* 9/14 Figma 입력 필드 스펙: pad 6→8, 42→46 */
+    height:48px;margin:0 8px 0 0;padding:8px 14px;box-sizing:border-box;   /* 9/19 Figma 실측(입력 필드 / 값 · 위치): 46 → 48, pad 8/14 */
     background:var(--gray-30);border-radius:6px;cursor:text;}
   .fld:focus-within{box-shadow:inset 0 0 0 1.5px #000;}
   /* 가운데 정렬이면 빈 칸의 커서가 플레이스홀더 한가운데(2-5|호)에 찍힌다.
@@ -693,7 +693,9 @@
   .fld .nn{flex:0 0 auto;font-size:16px;font-weight:500;color:var(--gray-500);}
   /* '없음' 만 남은 칸은 22px 값이 빠져 16px 한 줄이 된다. DS 는 이때 위아래 여백을
      6 → 12 로 늘려 42 대신 48 로 세운다(pad[12,14] · 91×48). */
-  .fld.nnonly{height:40px;padding:8px 14px;}   /* 9/14 스펙 '사용 안함' 칸: 16/24 + pad 8 = 40 */
+  /* 9/19 Figma('동 없음' 칸 76×48 · pad 12/14): 값 칸과 같은 높이다. 40 으로 두면
+     한 줄 안에서 칩 높이가 어긋나 문장이 계단처럼 보인다. 글자가 16/24 라 위아래 여백만 12 로 늘린다. */
+  .fld.nnonly{height:48px;padding:12px 14px;}
   /* 필수를 채우자마자 라벨·필드·도움말이 통째로 끼어들면 문장을 쓰는 도중에 방해가 된다.
      한 줄짜리 링크만 조용히 나타나고, 필요한 사람(26.9%)이 눌렀을 때 필드를 연다. */
   /* 토글은 오른쪽 끝. 펼침 컨트롤이 관습적으로 있는 자리이기도 하고,
