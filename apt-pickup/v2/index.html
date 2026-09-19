@@ -157,12 +157,14 @@
      오른쪽 패딩만 18 인 건 액션 글자('입력'/'수정')가 모서리에 붙지 않게 하는 여백이다. */
   .pkbox{box-sizing:border-box;width:100%;font:inherit;text-align:left;
     background:#f9f9f9;box-shadow:inset 0 0 0 1px var(--gray-e6);border:none;border-radius:4px;   /* 9/14 Figma 12190:275041: off white 단색 + 테두리 #e6e9ef */
-    padding:12px 10px 12px 14px;display:flex;flex-direction:row;align-items:center;gap:12px;cursor:pointer;}   /* 9/16 Figma 12469:541338: 왼쪽 12 → 14 */
+    padding:14px 10px 14px 14px;display:flex;flex-direction:row;align-items:center;gap:12px;cursor:pointer;}   /* 9/19 Figma 57886:146098: 상하 12 → 14 (한 줄 52 · 두 줄 72) */
   /* 9/6 재설계: 상태를 나르는 축이 아이콘에서 '카드 면' 으로 옮겨졌다.
      값이 기사에게 가 있으면 면 전체가 파랗게 물들고, 아직이면 회색으로 남는다.
      전송 중은 값이 있어도 아직 안 닿았으므로 회색이다(.filled 뒤에 와서 이긴다). */
   .pkbox.filled{background:var(--blue-050);box-shadow:inset 0 0 0 1px var(--blue-100);}
-  .pkbox.sending{background:#f9f9f9;box-shadow:inset 0 0 0 1px var(--gray-e6);}
+  /* 9/19 Figma: 전송 중도 값이 있으므로 바탕은 파랑이다. 회색이면 '입력 전' 과 구분이 안 됐다.
+     테두리만 #e6e9ef 로 남아 아직 닿지 않았음을 말하고, 상태는 왼쪽 스피너가 맡는다. */
+  .pkbox.sending{background:var(--blue-050);box-shadow:inset 0 0 0 1px var(--gray-e6);}
   /* 아이콘은 이제 상태를 나르지 않는다 — 네 상태가 모두 같은 연파랑 배지에 파란 P 다.
      상태 신호를 내려놓고 '여기가 주차장 위치 자리' 라는 표시만 맡는다. blue-150 @60%. */
   /* 실측(LAYOUT=1): 배지 24×24 · r4.8 · 아이콘 프레임 14×14 (벡터 자체는 8×11).
@@ -217,11 +219,15 @@
   .pkbox .pktx{display:flex;flex-direction:column;gap:4px;white-space:normal;overflow:visible;}
   .pktx .l1,.pktx .l2{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .pktx .l2[hidden]{display:none;}
-  .pktx.ph .l1{font-weight:700;color:var(--gray-900);}   /* 9/16: 로티 타일이 연해(배경 대비 1.19:1) 글자가 카드 중심을 잡는다. #383D4F 10.2:1 → #262A38 13.6:1, 완료 상태와 통일 */
+  /* 9/19 Figma 57886:146098 로 되돌림. 굵기에 일을 하나만 맡긴다 — Bold = '아직 안 했다'.
+     입력 전의 1줄은 값이 아니라 라벨('상세 위치 입력')이라 굵어야 한다. #383D4F 는 10.2:1 로 AA 를 넘는다. */
+  .pktx.ph .l1{font-weight:700;color:var(--gray-800);}
   .pktx.ph .l2{color:var(--gray-600);}
-  .pktx.fill .l1{color:var(--gray-900);font-weight:500;}   /* 9/16 Figma 12469:541338: #171A24 → #262A38 · Body_3_Medium */
+  /* 9/19: 값은 Regular 다. 카드는 파란 면·P 타일·화살표로 이미 눈에 띄므로 굵기가 더할 것이 없고,
+     굵게 두면 '약 N분 후 도착' 과 강조가 경합한다. 예약·이용내역 카드와도 이제 같은 모양이다. */
+  .pktx.fill .l1{color:var(--gray-900);font-weight:400;}
   .pktx.fill .l2{color:var(--gray-600);}
-  .pkbox.sending .pktx.fill .l1{color:var(--gray-600);}
+  .pkbox.sending .pktx.fill .l1{color:var(--gray-900);}   /* 9/19: 값은 이미 확정된 정보다. 진행 중이라는 건 스피너가 말한다 */
   .pkbox.sending .pktx.fill .l2{color:var(--gray-600);}
   /* 오른쪽: 빈 칸 > · 값 '수정' · 전송 중 스피너 · 도착 후 없음 */
   .pchev{display:block;flex:0 0 auto;}
@@ -644,10 +650,13 @@
      비어 있을 때 86px 을 남겨 두면 그 구멍이 상시 보인다 — 아래엔 이미 231px 이 남아 있다. */
   /* Figma: 쉴 때 12, 포커스 시 38(칩 한 줄). body gap 20 이 위아래 간격을 맡으므로
      여기서 margin 을 또 주지 않는다. 예전의 min-height 52 는 안내문이 있던 시절의 값이다. */
-  /* 9/15 Figma 12371:523337 '에서 탈게요.' — sentence 안 row2 아래 gap14 · Body_1 Medium 16/24 #73788B · 늘 보인다(편집·읽기 전용 같은 색).
+  /* 9/15 Figma 12371:523337 '에서 탈게요.' — sentence 안 row2 아래 gap14 · Body_1 Medium 16/24 · 늘 보인다(편집·읽기 전용 같은 색).
+     9/19: 색이 #73788B → #262A38 로 올라갔다(칩과 한 문장으로 읽히게).
      '사는 층' 을 적는 실수를 막는 틀이다: 이 칸들이 '차에 타는 곳' 이라는 걸 문장이 말한다.
      .fform gap20 을 14 로 당긴다. 칩(hint-slot)은 이 줄을 대신하지 않고 아래에 붙는다 */
-  .stail{margin:-6px 0 0;font-size:16px;line-height:24px;font-weight:500;color:var(--gray-500);}
+  /* 9/19 Figma: #73788B(4.4:1) → #262A38. 문장형 입력의 값어치는 '한 문장으로 읽히는 것' 인데
+     꼬리만 연하면 칩만 둥둥 뜨고 문장이 사라진다. */
+  .stail{margin:-6px 0 0;font-size:16px;line-height:24px;font-weight:500;color:var(--gray-900);}
   /* Figma: 쉴 때 hint-slot 이 아예 없다(예전 12 → 0). 포커스일 때만 칩 한 줄(38) + body gap20 */
   .fhint{margin-top:0;}
   .fhint[hidden]{display:none;}
@@ -1288,7 +1297,7 @@
       <div class="ph-scr" id="phscr">
         <div class="sb light"><span>12:45</span>
           <span class="ic"><i class="sig"></i><i class="wifi"></i><i class="bat"></i></span></div>
-        <div class="ph-bar"><button id="phclose"><svg class="ic" width="15.0" height="15" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M22.4999 26.7669L4.26702 44.9997L0 40.7327L18.2328 22.4999L1.79841e-07 4.26702L4.26702 1.25889e-06L22.4999 18.2328L40.7327 0L44.9997 4.26702L26.7669 22.4999L44.9997 40.7327L40.7327 44.9997L22.4999 26.7669Z" fill="black"/></svg></button><b id="ph-title">상세 위치</b><span class="sp"></span><button type="button" class="phdel" id="ph-del" hidden>사용 안함</button></div>
+        <div class="ph-bar"><button id="phclose"><svg class="ic" width="15.0" height="15" viewBox="0 0 45 45" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M22.4999 26.7669L4.26702 44.9997L0 40.7327L18.2328 22.4999L1.79841e-07 4.26702L4.26702 1.25889e-06L22.4999 18.2328L40.7327 0L44.9997 4.26702L26.7669 22.4999L44.9997 40.7327L40.7327 44.9997L22.4999 26.7669Z" fill="black"/></svg></button><b id="ph-title">상세 위치</b><span class="sp"></span><button type="button" class="phdel" id="ph-del" hidden>지우기</button></div>
         <!-- Figma 핸드오프 Dialog 280 · Dim #000 40% -->
         <div class="pdim" id="pdlg" hidden><div class="pdlg" role="dialog" aria-modal="true"><p class="pdlg-t" id="pdlg-t"></p><div class="pdlg-b"><button type="button" id="pdlg-no">아니오</button><button type="button" id="pdlg-yes">예</button></div></div></div>
         <div class="ph-body">
@@ -1333,7 +1342,7 @@
           <div class="prev2" id="prev2"><span id="prev2-tx">고르면 기사님께 갈 문장이 여기 만들어져요</span></div>
           <p class="rowarn" id="rowarn" hidden>차량이 도착해 수정할 수 없습니다.<br>위치 변경이 필요하면 드라이버와 통화해주세요.</p>
           <label class="savechk" id="savewrap" hidden><input type="checkbox" id="chk-save" /><svg class="cb" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M27 54C12.0883 54 0 41.9117 0 27C0 12.0883 12.0883 0 27 0C41.9117 0 54 12.0883 54 27C54 41.9117 41.9117 54 27 54Z" fill="currentColor"/><path d="M23.6252 30.897L38.5115 16.0107L42.4889 19.9882L23.6252 38.852L11.5115 26.7382L15.4889 22.7607L23.6252 30.897Z" fill="white"/></svg>
-            <span>이 주소에서 항상 이렇게 보내기</span></label>
+            <span>다음에도 이 주소에서 이렇게 보내기</span></label>
           <p class="nearnote" id="nearnote" hidden><span>⚠</span><span>기사님이 이미 진입 중일 수 있어요.</span></p>
           <div class="footrow">
             <button class="skipb" id="ph-skip" hidden>건너뛰기</button>
@@ -1421,7 +1430,7 @@
     <h3><i>1</i>한 화면 문장형</h3>
     <p>주소를 이루는 것(위치·층·동·라인)을 처음부터 전부 펼칩니다. 층과 동은 라벨을 따로 두지 않고 <b>문장 안의 빈칸</b>으로 받습니다. 문장 속 &lsquo;층&rsquo; &lsquo;동&rsquo; 글자가 그대로 라벨이고, <b>입력하는 화면이 곧 기사님이 받을 문장</b>입니다.</p>
     <p>나누는 축은 필수·선택이 아니라 정보의 종류입니다. 위치·층·동·라인은 전부 주소 성분이라 한 문장에 들어가고, <b>찾아오는 길만 자유 서술</b>이라 문장 밖으로 뺐습니다.</p>
-    <p>끝의 <b>&lsquo;에서 탈게요.&rsquo;</b>(16 Medium #73788B)는 이 칸들이 사는 곳이 아니라 <b>차를 타는 곳</b>임을 말합니다. 지상을 고르면 사는 층을 적는 오해가 생길 수 있는데, 문장이 &lsquo;지상 7층에서 탈게요&rsquo; 로 읽히면 스스로 이상해집니다.</p>
+    <p>끝의 <b>&lsquo;에서 탈게요.&rsquo;</b>(16 Medium #262A38)는 이 칸들이 사는 곳이 아니라 <b>차를 타는 곳</b>임을 말합니다. 지상을 고르면 사는 층을 적는 오해가 생길 수 있는데, 문장이 &lsquo;지상 7층에서 탈게요&rsquo; 로 읽히면 스스로 이상해집니다.</p>
     <p class="src">Figma 12371:523337 · 12469:541338</p>
   </div>
 
@@ -1459,8 +1468,9 @@
 
   <div class="note">
     <h3><i>6</i>진입 카드</h3>
-    <p>여백 <b>12/10/12/14</b> · 간격 12 · r4 · 높이 <b>한 줄 48 / 두 줄 68</b>. 두 줄 모두 최대 1줄이고 넘치면 말줄임입니다.</p>
-    <p><b>입력 전</b> #F9F9F9 / 테두리 #E6E9EF · 1줄 14 Bold #383D4F. <b>입력 완료·도착 후</b> #F1F9FE / #E2F2FE · 1줄 14 Medium #262A38. <b>전송 중</b>은 입력 전 바탕에 1줄이 #60667A로 내려앉습니다.</p>
+    <p>여백 <b>14/10/14/14</b> · 간격 12 · r4 · 높이 <b>한 줄 52 / 두 줄 72</b>. 두 줄 모두 최대 1줄이고 넘치면 말줄임입니다. 최소 폭은 <b>288</b>입니다 — 320dp 화면에서 좌우 16을 뺀 값이자, 첫 줄의 최장 케이스(&lsquo;지하 12층 · 1902동 11-12라인&rsquo; 188px)가 잘리지 않는 폭입니다.</p>
+    <p><b>입력 전</b> #F9F9F9 / 테두리 #E6E9EF · 1줄 14 <b>Bold</b> #383D4F. <b>입력 완료·도착 후</b> #F1F9FE / #E2F2FE · 1줄 14 <b>Regular</b> #262A38. <b>전송 중</b>도 바탕은 #F1F9FE이고 테두리만 #E6E9EF로 남습니다 — 값이 있는데 회색이면 입력 전과 구분되지 않습니다.</p>
+    <p>굵기에는 일을 <b>하나만</b> 맡깁니다 — <b>Bold는 &lsquo;아직 안 했다&rsquo;</b>. 입력 전의 1줄은 값이 아니라 라벨이라 굵고, 값이 들어오면 Regular로 내려옵니다. 누를 수 있다는 것은 화살표와 파란 면이 이미 말하므로 굵기까지 쓰지 않습니다. 덕분에 예약 확인·이용내역 카드와 값의 모양이 같아졌습니다.</p>
     <p>화살표(&gt;)는 <b>누를 수 있을 때만</b> 있습니다 — 입력 전·입력 완료엔 있고, 전송 중·도착 후엔 없습니다.</p>
     <p>왼쪽 P 자리는 로티입니다: 입력 전 힌트 → 전송 중 스피너 → 완료 체크 뒤 P 상승. 파일은 <code>p_hint · p_spin · p_done</code> 셋입니다.</p>
     <p class="src">Figma 12469:541338 · 로티 12336:421410</p>
@@ -1482,7 +1492,7 @@
   <div class="note">
     <h3><i>9</i>드라이버가 받는 자리</h3>
     <p><b>타다 앱 카드</b>: 여백 20 · 간격 16 · 높이 100(찾아오는 길 있으면 156). 층만 굵게. <b>상태 줄이 첫 줄</b>이고 그 아래 주소·찾아오는 길이 옵니다(Info Container gap 8 · Address Container gap 4). 상태 줄은 두 조각입니다 — 라벨 <b>‘픽업 장소’</b>는 15/22 Bold 흰색으로 고정이고, 뒤에 붙는 <b>고객이 입력함 / 변경함 / 삭제함</b>이 색을 갖습니다(작성 #32A2FA · 변경·삭제 #FE4C00). 바뀌는 말에 색이 있어야 색과 정보를 한 번에 읽습니다. 배너는 상태 문구가 없어 라벨 ‘픽업 장소’ 자체가 색으로 갈립니다. 세 사건 모두 <b>3회</b> 깜빡입니다.</p>
-    <p><b>삭제(9/18)</b>: 배차 뒤에도 승객이 &lsquo;사용 안함&rsquo;으로 지울 수 있습니다. 지우면 T맵의 <b>픽업 장소 버블과 하단 배너를 거둡니다</b> — 없는 정보를 가리키는 버튼을 남기지 않습니다. 카드에는 &lsquo;지도상의 출발지에서 탑승 · 고객의 픽업 장소 요청이 삭제되었습니다&rsquo;가 남고, 상태 줄이 <b>세 번</b> 깜빡입니다(작성·변경과 같은 세기).</p>
+    <p><b>삭제(9/18)</b>: 배차 뒤에도 승객이 &lsquo;지우기&rsquo;로 지울 수 있습니다. 지우면 T맵의 <b>픽업 장소 버블과 하단 배너를 거둡니다</b> — 없는 정보를 가리키는 버튼을 남기지 않습니다. 카드에는 &lsquo;지도상의 출발지에서 탑승 · 고객의 픽업 장소 요청이 삭제되었습니다&rsquo;가 남고, 상태 줄이 <b>세 번</b> 깜빡입니다(작성·변경과 같은 세기).</p>
     <p><b>T맵 하단 배너</b>: 첫 줄은 <b>‘픽업 장소’</b> 18/26 Bold 한 마디로 고정이고 작성·변경은 색으로만 갈립니다. <b>위치만</b> 32 Bold로 싣고 찾아오는 길은 넣지 않습니다. 닫기 ×는 테두리 #32A2FA 2px · 배경 #101A3D. ×나 아래로 밀기로 접히면 오른쪽 아래 탭(204×48)이 되고, 탭을 누르거나 밀면 다시 펼쳐집니다.</p>
     <p>저절로 다시 펼치는 건 <b>위치 변경</b>과 <b>300m 진입</b> 두 가지뿐입니다. 300m에서는 음성 한 번이 같이 나갑니다 — 흐르는 글은 주행 중 읽기 어려우니, 그 이상은 소리로 보냅니다.</p>
     <p class="src">값·코드는 오른쪽 <b>개발 콘솔</b> 참고 · Figma 12371:523749</p>
@@ -1729,7 +1739,7 @@
         const cfg={dong:{max:5,ph:'예: 101, 1901, C'},
                    line:{max:5,ph:'예: 1-2, 3,4호'},
                    etc:{max:100,ph:S.d.lvl==='ground'?'예: 정문으로 들어와서 우회전'
-                                                     :'예: 게이트2로 들어와서 좌회전'}}[S.step];
+                                                     :'예) 게이트2로 들어와서 좌회전'}}[S.step];
         const w=document.createElement('div'); w.className='tinwrap';
         w.innerHTML='<input class="tin" id="tin" inputmode="text" maxlength="'+cfg.max+'" placeholder="'+cfg.ph+'" />'
                    +'<span class="tcnt"><b id="tcnt">0</b>/'+cfg.max+'</span>';
@@ -2065,7 +2075,7 @@
        재편집에만 두던 취소가 이제 상시다 — 빈 상태에서도 '안 쓸래' 로 나갈 길이 생긴다.
        reedit 은 저장 버튼의 활성 조건(바꾼 게 있는가)에만 계속 쓴다. */
     const reedit = S.opened==='start' ? !!S.value : !!(S.value && S.confirmed);
-    /* 9/13 Figma: 입력 내용이 있는 채로 다시 들어오면 상단 오른쪽에 '사용 안함'. 처음 입력·읽기 전용엔 없다. */
+    /* 9/13 Figma: 입력 내용이 있는 채로 다시 들어오면 상단 오른쪽에 '지우기'(9/19 '사용 안함' 에서 개명 — 확인창이 말하는 결과와 라벨을 맞췄다). 처음 입력·읽기 전용엔 없다. */
     el('ph-cancel').hidden = true;
     el('ph-del').hidden = !(S.current && !S.ro);
     el('chk-save').checked = S.always;
@@ -2825,7 +2835,7 @@
     el('pdlg-no').onclick=close;
     d.hidden=false;
   }
-  /* '사용 안함' (Figma '사용 안함 1·2')
+  /* '지우기' (Figma '사용 안함 1·2' → 9/19 '지우기')
      매칭 전: 삭제 확인 다이얼로그 → 예 면 지우고 닫는다(되돌리기 토스트는 다이얼로그가 대신하므로 뗐다).
      매칭 후: 지울 수 없다 — 차량이 이미 그 값을 보고 오고 있다. 내용 변경만 된다. */
   el('ph-del').addEventListener('click',()=>{
@@ -2930,7 +2940,7 @@
     if(RM()){ icoStill(pi,st); return; }
     if(st==='spin') icoRun(pi,['spin']);
     else if(st==='filled') icoRun(pi, prev==='spin' ? ['done'] : ['spin1','done']);   /* 전송 단계가 없어도 스피너 한 바퀴 */
-    else icoStill(pi,'empty');   /* 사용 안함 — 빈 칸 정지 이미지로 즉시 */
+    else icoStill(pi,'empty');   /* 지우기 — 빈 칸 정지 이미지로 즉시 */
   }
   function stopPm(){
     const pi=$('#pk-start .pico'); if(!pi) return;
@@ -3017,7 +3027,7 @@
           <tr><td>배너 표시</td><td>상태 줄(16 Bold) + 위치(32 Bold) + ×</td><td>상세 위치를 받은 때 · 위치 변경 · 300m 진입</td></tr>
           <tr><td>배너 닫힘</td><td>없음(버블만 남음)</td><td>× 또는 아래로 밀기</td></tr>
           <tr><td>변경</td><td>상태 줄이 ‘고객이 수정함’(주황)으로, 다시 흐름</td><td>배차 후 고객이 수정</td></tr>
-          <tr><td>삭제</td><td>버블·배너를 <b>거둔다</b>. 타다 앱 카드만 ‘픽업 장소 · 고객이 삭제함’으로 <b>3회</b> 깜빡임</td><td>배차 후 고객이 ‘사용 안함’</td></tr>
+          <tr><td>삭제</td><td>버블·배너를 <b>거둔다</b>. 타다 앱 카드만 ‘픽업 장소 · 고객이 삭제함’으로 <b>3회</b> 깜빡임</td><td>배차 후 고객이 ‘지우기’</td></tr>
           <tr><td>픽업 장소 버블</td><td>스택 3번째 버블</td><td>상세 위치가 있는 동안 계속</td></tr>
         </table>
         <h4>치수</h4>
