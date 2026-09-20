@@ -350,7 +350,9 @@
   .footrow{padding:10px;}
   /* 수정 불가에서는 체크박스 자리를 안내가 대신한다. 주황 경고였던 것이 파란 안내로 바뀌었다
      (#fe4c00 → #32a2fa) — 잘못한 게 아니라 시점이 지난 것이므로 톤이 맞다. */
-  .rowarn{margin:0;padding:20px 24px 10px;font-size:14px;line-height:20px;color:#32a2fa;word-break:keep-all;}
+  /* 9/20 Figma 58074:155724('편집 불가' 두 변형): #32A2FA(2.73:1) → #0074D7(4.69:1).
+     읽고 나가는 것 말고 할 게 없는 화면에서, 유일하게 읽을 것이 안 읽히면 화면이 비는 것과 같다. */
+  .rowarn{margin:0;padding:20px 24px 10px;font-size:14px;line-height:20px;color:var(--blue-600);word-break:keep-all;}
   .rowarn[hidden]{display:none;}
   .prev2{display:flex;align-items:flex-start;gap:8px;background:var(--gray-30);border-radius:8px;
     padding:11px 12px;min-height:44px;}
@@ -454,7 +456,13 @@
   /* 수정 불가에서는 ＋/− 자체가 없다 — 접거나 펼 수 없으니 아이콘도 남기지 않는다. */
   .ph-scr.ro .addetc .tg{display:none;}
   .ph-scr.ro .fld.pick svg{display:none;}   /* 9/14 Figma: 비활성 지상/지하 칩엔 화살표 없음 */
-  .ph-scr.ro .bv,.ph-scr.ro .fld .u,.ph-scr.ro .fld .nn,.ph-scr.ro .fld.pick{color:var(--gray-500);}
+  /* 화살표가 빠지면 오른쪽 12 는 왼쪽 14 와 어긋난다. Figma 편집 불가는 pad[8,14,8,14] 로 대칭이다. */
+  .ph-scr.ro .fld.pick{padding-right:14px;}
+  /* 9/20: .stail 을 빠뜨려 읽기 전용에서 꼬리('에서 탈게요.')만 #262A38(14.3:1)로 남았다.
+     값이 4.17:1 로 물러난 화면에서 꼬리가 제일 진한 글자가 되면, 한 문장이 거꾸로 읽힌다.
+     Figma 편집 불가 두 변형은 꼬리까지 #73788B 다. */
+  .ph-scr.ro .bv,.ph-scr.ro .fld .u,.ph-scr.ro .fld .nn,.ph-scr.ro .fld.pick,
+  .ph-scr.ro .stail{color:var(--gray-500);}
   /* Figma 입력 필드 '비활성화': 배경 #EFEFF1 · 값·단위 #73788B (지하 칩도 같은 면으로 맞췄다) */
   /* 9/19 Figma('편집 불가2'): 읽기 전용은 칩·입력칸 모두 off-white #F9F9F9 · 글자 gray-500.
      같은 면 · 같은 글자색이라 화면 전체가 한 번에 눌린 것으로 읽힌다(이전 #EFEFF1 + gray-400 혼용). */
@@ -646,7 +654,10 @@
     font:inherit;font-size:22px;font-weight:700;color:var(--gray-950);}   /* 9/15 Figma 12371:523337: 값 #19254D → #171A24 */
   /* 예시는 값과 확실히 갈라져야 한다. gray-500(3.82:1)까지 올리니 22px 에서는
      입력된 값처럼 읽혔다. gray-300 은 2.15:1 로 무게 400 과 함께 값(navy 700)과 구분된다. */
-  .bv::placeholder{color:var(--gray-300);font-weight:500;}   /* 9/14 Heading_2_Medium */
+  /* 9/20 Figma 실측(14개 변형 전부): 플레이스홀더는 #9DA0AE 다. 칩 위 2.40:1 로 gray-300(2.28:1)
+     보다 반 단계 진하다. ⚠ 이 값은 DS 그레이 토큰(gray-300 #99A5C0 · gray-400 #868B9C) 어디에도
+     없다 — 토큰으로 정리되면 그 값으로 다시 맞춘다. */
+  .bv::placeholder{color:#9da0ae;font-weight:500;}   /* 9/14 Heading_2_Medium */
   /* 단위는 고정 문구다. 값보다 한 단계 작게 두면 상자 안에서 무엇이 내용인지 바로 보인다.
      가운데 정렬만 하면 22px 과 16px 의 베이스라인이 어긋나 2px 내려 앉힌다. */
   /* 지하 층 뒤에 자동으로 붙는 B 표기 — '지하주차장 1층' 이 B1 인지 헷갈린 요청 88건. 칸·선택지는 늘리지 않는다.
@@ -686,16 +697,20 @@
   .fhint .ft:empty{display:none;}
   /* 9/16 DS chip_button(781:2076) 채움형으로 위계를 올렸다 — '라인 없음' 이 선택지라는 걸 칩이 말해야 한다.
      흰 면 + 회색 1px 은 배경(#fff)에 묻혀 '누를 수 있는 답' 으로 안 읽혔다. */
-  .fhint .fa{margin-top:0;border:none;background:#f1f9fe;border-radius:9999px;
+  /* 9/20 Figma 실측: 칩 면은 blue-050 이 아니라 blue-100(#E2F2FE)이다. blue-050 은 카드 배경색이라
+     같은 값을 쓰면 '눌리는 칩' 과 '깔린 면' 이 같은 톤이 된다. */
+  .fhint .fa{margin-top:0;border:none;background:var(--blue-100);border-radius:9999px;
     padding:10px 14px;font:inherit;font-size:13px;line-height:18px;font-weight:400;
     color:var(--gray-800);text-decoration:none;cursor:pointer;}
-  .fhint .fa:active{background:#e3f1fb;}
+  .fhint .fa:active{background:var(--blue-150);}
   .fhint .fa[hidden]{display:none;}
   /* Figma: 힌트 액션이 밑줄 링크에서 DS chip_button / Neutral Weak Outline 으로 바뀌었다.
      설명문이 빠지고 액션만 남으면서, 누를 수 있다는 것을 밑줄 대신 알약 모양이 말한다. */
   .fhint .fas{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
   /* 빈칸이 '안 정했다' 인지 '없다' 인지 모르던 상태를, 고른 답으로 바꾼다 */
-  .fld .nn{flex:0 0 auto;font-size:16px;font-weight:500;color:var(--gray-500);}
+  /* 9/20 Figma('동 없음'·'라인 없음' 칸): Body_1_Regular w400 이다. '없음' 은 사용자가 고른 답이지
+     타이핑한 값이 아니라, 값(w700)과도 단위(w500)와도 다른 무게를 가진다. */
+  .fld .nn{flex:0 0 auto;font-size:16px;font-weight:400;color:var(--gray-500);}
   /* '없음' 만 남은 칸은 22px 값이 빠져 16px 한 줄이 된다. DS 는 이때 위아래 여백을
      6 → 12 로 늘려 42 대신 48 로 세운다(pad[12,14] · 91×48). */
   /* 9/19 Figma('동 없음' 칸 76×48 · pad 12/14): 값 칸과 같은 높이다. 40 으로 두면
@@ -1142,6 +1157,7 @@
   .note .src{font-size:11px;color:var(--ink-3);margin-top:8px;padding-top:8px;border-top:1px dashed var(--line);}
   .mk{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:1px;}
   .mk.warn{background:var(--warn);}
+  .mk.ok{background:var(--good);}   /* 9/20: 닫힌 항목 — 초록 */
 
   /* ══ 개발 콘솔 (PC 전용) — 드라이버 T맵 하단 배너 구현 가이드 ══════════════════
      1180px 이상에서만 오른쪽에 고정으로 붙는다. 그보다 좁으면 본문 아래로 내려간다(폰 2대 배치가 먼저다). */
@@ -1578,7 +1594,7 @@
 
   <div class="note">
     <h3><i>14</i>아직 안 정한 것</h3>
-    <p><span class="mk warn"></span><b>읽기 전용 안내 색.</b> &lsquo;차량이 도착해 지금은 고칠 수 없어요&rsquo; 가 #32A2FA 14sp라 흰 배경에서 대비가 낮습니다.</p>
+    <p><span class="mk ok"></span><b>읽기 전용 안내 색 &mdash; 닫혔습니다.</b> Figma 가 이미 #0074D7 로 고쳐 둔 것을 프로토가 못 따라간 것이었습니다(2.73:1 &rarr; 4.69:1). 9/20 반영.</p>
     <p><span class="mk warn"></span><b>T맵 말풍선 폭.</b> Figma 주석은 화면 너비의 30%인데 그림의 말풍선은 46%(164px)입니다. 프로토는 주석을 따랐습니다.</p>
   </div>
 
