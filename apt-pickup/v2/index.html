@@ -2132,14 +2132,19 @@
     /* 9/13 Figma: 입력 내용이 있는 채로 다시 들어오면 상단 오른쪽에 '지우기'(9/19 '사용 안함' 에서 개명 — 확인창이 말하는 결과와 라벨을 맞췄다). 처음 입력·읽기 전용엔 없다. */
     el('ph-cancel').hidden = true;
     el('ph-del').hidden = !(S.current && !S.ro);
-    el('chk-save').checked = S.always;
+    el('chk-save').checked = (S.alwaysDraft!=null) ? !!S.alwaysDraft : !!S.always;
     if(sf){
       el('ph-skip').hidden = true;
       const n=el('ph-next');
-      /* 읽기 전용은 확인만 하고 닫는다 */
-      n.classList.toggle('weak', S.ro);
-      if(S.ro){ n.disabled=false; n.textContent='확인'; return; }
-      n.disabled = !ok || (reedit && !dirty());
+      /* 9/20 확정할 것이 없으면 죽은 버튼 대신 '확인'(weak)이다.
+         읽기 전용이 이미 쓰던 패턴을 재편집 진입까지 넓혔다. 하단 CTA 는 엄지가
+         먼저 닿는 자리인데 거기가 비활성이면, 값만 보러 들어온 사람에게 나갈 길이
+         좌상단 ✕ 하나뿐이었다. 대비도 1.47:1 → 9:1 로 올라간다
+         (#c0c8d9 on #99a5c0 → #283873 on #e6e9ef). */
+      const clean = S.ro || (reedit && !dirty());
+      n.classList.toggle('weak', clean);
+      if(clean){ n.disabled=false; n.textContent='확인'; return; }
+      n.disabled = !ok;
       n.textContent = '입력 완료';
       return;
     }
@@ -2164,6 +2169,7 @@
     S.etcOpen = true;
     S.d = S.current ? Object.assign({},S.current) : {lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false};
     S.d0 = flat(S.d);   /* 닫을 때 '바꾼 게 있나' 의 기준 */
+    S.alwaysDraft = !!S.always;   /* 9/20 체크박스도 CTA 에서만 확정된다 */
     el('pdlg').hidden = true;
     [['f-floor','floor'],['f-dong','dong'],['f-line2','line']].forEach(([id,k])=>{ el(id).inputMode='text'; });
     /* Figma 24개 변형 모두 제목이 '상세 위치 입력' 이다 — 상태별로 나누지 않기로 했다.
@@ -2186,6 +2192,14 @@
 
   function submitForm(){
     if(!ready(S.d)) return;
+    /* 9/20 체크박스만 바뀐 경우 — 값도 전송 이력도 그대로다. 저장 설정만 반영하고
+       조용히 닫는다. 전송 스피너·"드라이버에게 전달했어요" 토스트·카드 '고객이 수정함'
+       깜빡임·T맵 배너를 모두 타지 않는다. 기사 쪽에는 바뀐 것이 하나도 없다. */
+    if(flat(S.d) === flat(S.current)){
+      S.always = !!S.alwaysDraft;
+      $('#phscr').classList.remove('on');
+      render(); return;
+    }
     S.delFlag=false;   /* 다시 넣었으면 삭제 안내는 걷는다 */
     S.edited=(S.opened==='voyage') && !!S.value;
     /* 덮어쓰기 전에 직전 값을 남긴다 — '어디가 바뀌었나' 는 이것 없이는 못 만든다. */
@@ -2194,7 +2208,7 @@
     S.value=sentence(S.d);
     S.routeOpen=null;
     S.fromSaved=false;
-    S.always=el('chk-save').checked;
+    S.always=!!S.alwaysDraft;
     S.origin=S.opened;
     $('#phscr').classList.remove('on');
     if(S.origin==='start'){ S.sending=false; S.sent=true; S.confirmed=false; render(); return; }
@@ -2239,7 +2253,9 @@
     d.noDong ? '\u0001' : (d.dong||'').trim(),
     d.noLine ? '\u0000' : (d.line||'').trim(), (d.etc||'').trim()
   ].join('|');
-  const dirty = () => flat(S.d) !== flat(S.current);
+  /* 9/20 '바꾼 게 있나' 에는 저장 체크박스도 든다 — 이 화면의 모든 변경은 CTA 에서 확정된다. */
+  const chkDirty = () => !!S.alwaysDraft !== !!S.always;
+  const dirty = () => flat(S.d) !== flat(S.current) || chkDirty();
 
   /* 지난번 값이라는 표시는 뗐다. [상세] 옆에 배지가 하나 더 붙으면 배지가 둘이 되는데,
      '지난번' 은 사용자가 할 일을 바꾸지 않는다 — 맞으면 그냥 두고 틀리면 고친다.
@@ -2852,7 +2868,8 @@
   })();
   el('tb-x').addEventListener('click', backFromTmap);
   el('ph-next').addEventListener('click',()=>{
-    if(S.ro){ closeSheet(); return; }
+    /* '확인' = 확정할 것이 없다(읽기 전용이거나 바꾼 게 없다). 그냥 닫는다. */
+    if(S.ro || el('ph-next').classList.contains('weak')){ closeSheet(); return; }
     (S.form==='sform'||S.step===null) ? submitForm() : advance();
   });
   el('ph-skip').addEventListener('click',()=>{ S.skipped[S.step]=true; S.d[S.step]=''; advance(); });
@@ -2871,7 +2888,9 @@
     toast('메시지를 보냈습니다.');
   });
   /* 체크 토글 토스트 2종은 Figma 에서 삭제됐다(전엔 있었다). 토스트는 두 개만 남는다. */
-  el('chk-save').addEventListener('change',()=>{ S.always=el('chk-save').checked; });
+  /* 9/20 누르는 즉시 적용하면 ✕ 로 나가도 남아서, 'CTA 를 눌러야 저장된다' 는
+     화면의 약속과 어긋난다. 초안만 바꾸고 확정은 CTA 가 한다. */
+  el('chk-save').addEventListener('change',()=>{ S.alwaysDraft=el('chk-save').checked; paintFoot(); });
   /* Figma 핸드오프 Dialog — '예/아니오' 또는 '확인' 하나 */
   function askDialog(text, onYes, single){
     const d=el('pdlg'); el('pdlg-t').textContent=text;
@@ -2910,7 +2929,7 @@
   }
   /* 입력 내용이 바뀐 채로 닫으면 묻는다(Figma 뒤로가기_1·2). 안 바꿨으면 바로 닫는다. 읽기 전용은 묻지 않는다. */
   function tryClose(){
-    if(!S.ro && S.d0!=null && flat(S.d)!==S.d0){ askDialog('변경 사항이 적용되지 않습니다.\n계속하시겠습니까?', closeSheet); return; }
+    if(!S.ro && S.d0!=null && (flat(S.d)!==S.d0 || chkDirty())){ askDialog('변경 사항이 적용되지 않습니다.\n계속하시겠습니까?', closeSheet); return; }
     closeSheet();
   }
   $('#phclose').addEventListener('click', tryClose);
