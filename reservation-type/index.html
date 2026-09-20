@@ -88,22 +88,45 @@
   .rt-appbar-title{
     font-size:18px;font-weight:700;color:var(--ink);
   }
+  /* Task: 예약 유형 오선택 교정. 세그먼트 pill 2개를 가로 2열 카드로 교체.
+     .rt-seg는 flex row(기본 align-items:stretch)라 두 카드가 자동으로 같은 높이를 갖는다.
+     선택 표시는 이 예약 흐름의 차종 선택 화면(파란 테두리 + 우상단 체크 배지)을 그대로 따른다. */
   .rt-seg{
     flex:0 0 auto;
     display:flex;gap:8px;
-    padding:8px 20px 16px;
+    padding:8px 16px 16px;
     box-sizing:border-box;
   }
   .rt-seg-btn{
-    appearance:none;border:none;cursor:pointer;
-    border-radius:999px;
-    padding:10px 20px;
-    font-size:15px;font-weight:700;
-    background:#ffffff;color:var(--ink);
+    appearance:none;cursor:pointer;
+    flex:1 1 0;
+    min-width:0;
+    position:relative;
+    display:flex;flex-direction:column;
+    align-items:flex-start;
+    text-align:left;
+    border-radius:12px;
+    padding:14px;
+    box-sizing:border-box;
+    background:#ffffff;
+    border:1px solid #E3E4E8;
   }
   .rt-seg-btn.is-active{
-    background:var(--navy);
-    color:#ffffff;
+    background:#F1F9FE;
+    border:1.5px solid #0094F9;
+  }
+  .rt-type-title{
+    font-size:15px;font-weight:700;color:var(--ink);
+  }
+  .rt-type-desc{
+    font-size:12px;font-weight:400;color:var(--ink-sub);
+    margin-top:4px;
+  }
+  .rt-type-check{
+    position:absolute;top:8px;right:8px;
+    width:20px;height:20px;
+    display:block;
+    line-height:0;
   }
   .rt-scroll{
     flex:1 1 auto;
@@ -524,8 +547,8 @@
       </div>
 
       <div class="rt-seg" role="tablist">
-        <button type="button" id="seg-normal" class="rt-seg-btn" role="tab">일반예약</button>
-        <button type="button" id="seg-charter" class="rt-seg-btn" role="tab">시간대절</button>
+        <button type="button" id="seg-normal" class="rt-seg-btn" role="tab" aria-selected="true"></button>
+        <button type="button" id="seg-charter" class="rt-seg-btn" role="tab" aria-selected="false"></button>
       </div>
 
       <div class="rt-scroll">
@@ -1114,11 +1137,29 @@ function charterCardHtml(s, isOpen){
     </div>`;
 }
 
+// Figma 원본 ic_checkbox_on_blue.svg (72x72 viewBox, 원 색 #32A2FA) 그대로 인라인.
+// 손으로 배지를 그리지 않고 원본 벡터를 20x20으로 스케일만 한다.
+const TYPE_CHECK_SVG = '<svg width="20" height="20" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">'
+  + '<path d="M36 72C16.1177 72 0 55.8822 0 36C0 16.1177 16.1177 0 36 0C55.8822 0 72 16.1177 72 36C72 55.8822 55.8822 72 36 72Z" fill="#32A2FA"/>'
+  + '<path d="M31.5003 41.197L51.3486 21.3486L56.6519 26.6519L31.5003 51.8036L15.3486 35.6519L20.6519 30.3486L31.5003 41.197Z" fill="white"/>'
+  + '</svg>';
+
+// 유형 카드(세그먼트) 하나를 채운다. 선택 상태 표현은 이 예약 흐름의 차종 선택 화면 패턴
+// (파란 테두리 + 우상단 파란 체크 배지)을 그대로 따른다. 새 표현을 발명하지 않는다.
+function renderTypeCard(btn, title, desc, isActive){
+  btn.classList.toggle('is-active', isActive);
+  btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  btn.innerHTML =
+    `<span class="rt-type-title">${escapeHtml(title)}</span>` +
+    `<span class="rt-type-desc">${escapeHtml(desc)}</span>` +
+    (isActive ? `<span class="rt-type-check" data-role="type-check">${TYPE_CHECK_SVG}</span>` : '');
+}
+
 function renderInput(){
   const openName = S.openCard || 'route';
 
-  document.getElementById('seg-normal').classList.toggle('is-active', S.type === 'normal');
-  document.getElementById('seg-charter').classList.toggle('is-active', S.type === 'charter');
+  renderTypeCard(document.getElementById('seg-normal'), '일반예약', '목적지까지 한 번에', S.type === 'normal');
+  renderTypeCard(document.getElementById('seg-charter'), '시간대절', '기다리거나 왕복할 때', S.type === 'charter');
 
   const routeEl = document.getElementById('card-route');
   const isRouteOpen = openName === 'route';
@@ -1527,8 +1568,38 @@ function runInputTests(){
     S.screen = 'input'; render();
   });
   test('세그먼트 라벨이 일반예약 / 시간대절', ()=>{
-    eq(document.getElementById('seg-normal').textContent.trim(), '일반예약');
-    eq(document.getElementById('seg-charter').textContent.trim(), '시간대절');
+    // 카드 안에 설명이 함께 들어가므로 textContent 전체가 아니라 제목 요소만 읽는다.
+    eq(document.getElementById('seg-normal').querySelector('.rt-type-title').textContent.trim(), '일반예약');
+    eq(document.getElementById('seg-charter').querySelector('.rt-type-title').textContent.trim(), '시간대절');
+  });
+  test('유형 카드 두 개가 설명을 함께 보여 준다', ()=>{
+    S = fresh('normal','normal'); render();
+    const n = document.getElementById('seg-normal').innerText;
+    const c = document.getElementById('seg-charter').innerText;
+    if (!n.includes('목적지까지 한 번에')) throw new Error('normal desc missing: ' + n);
+    if (!c.includes('기다리거나 왕복할 때')) throw new Error('charter desc missing: ' + c);
+  });
+  test('선택된 유형 카드에만 체크 배지가 있다', ()=>{
+    S = fresh('normal','normal'); render();
+    const badge = sel => document.getElementById(sel).querySelector('[data-role="type-check"]');
+    if (!badge('seg-normal')) throw new Error('selected card has no badge');
+    if (badge('seg-charter')) throw new Error('unselected card has a badge');
+    setType('charter');
+    if (badge('seg-normal')) throw new Error('badge left on deselected card');
+    if (!badge('seg-charter')) throw new Error('badge not moved');
+  });
+  test('유형 카드 두 개는 높이가 같다', ()=>{
+    S = fresh('normal','normal'); render();
+    const a = document.getElementById('seg-normal').getBoundingClientRect().height;
+    const b = document.getElementById('seg-charter').getBoundingClientRect().height;
+    if (Math.abs(a-b) > 1) throw new Error(`heights differ: ${a} vs ${b}`);
+  });
+  test('aria-selected 가 선택 상태를 따라간다', ()=>{
+    S = fresh('normal','normal'); render();
+    eq(document.getElementById('seg-normal').getAttribute('aria-selected'), 'true');
+    eq(document.getElementById('seg-charter').getAttribute('aria-selected'), 'false');
+    setType('charter');
+    eq(document.getElementById('seg-charter').getAttribute('aria-selected'), 'true');
   });
 }
 function runSheetTests(){
