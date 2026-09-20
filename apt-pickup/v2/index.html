@@ -253,13 +253,11 @@
   .pkbox.filled:not(.sending) .pico > svg path{fill:#fff;}
   .pkbox .fill{color:#000;}
   .pkbox.sending .fill{color:var(--gray-700);}
-  /* 액션 글자 — 빈 상태 '입력', 찬 상태 '수정'. 전송 중엔 스피너가 대신하고
-     도착 후엔 아예 사라진다(더 이상 할 수 있는 일이 없다). */
-  .pact{flex:0 0 auto;padding:0 8px;font-size:13px;line-height:18px;font-weight:700;color:var(--gray-800);}
-  .pact[hidden]{display:none;}
+  /* 9/20: '수정' 글자(.pact)를 마크업째 걷었다. 9/14 에 '값이 있어도 >' 로 정하면서
+     항상 hidden 이 됐고, Figma hail_location 4개 변형 어디에도 이 글자가 없다.
+     화면에 절대 안 나오는 요소가 남아 있으면 구현할 때 '언제 나오나' 를 한 번 찾게 된다. */
   .pkbox .ipw.load{display:none;width:24px;height:24px;}
   .pkbox.sending .ipw.load{display:grid;}
-  .pkbox.sending .pact{display:none;}   /* 전송 중엔 스피너가 그 자리를 쓴다 */
   /* Loading Indicator: 24×24 자리에 19×19 원 · 흰 트랙 4 · 파란 호 5.33 */
   .spin{position:relative;width:19px;height:19px;box-sizing:border-box;
     border:4px solid #fff;border-radius:50%;}
@@ -1270,7 +1268,7 @@
               <span>차량이 도착하는 위치를 확인해주세요.</span>
             </div>
             <div class="fields">
-              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="상세 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg><span class="pm-b1" aria-hidden="true">B1</span></span><span class="pktx ph" id="pk-start-tx"><span class="l1"></span><span class="l2"></span></span><span class="pact" id="pk-start-act">수정</span><svg class="pchev" width="24" height="24" viewBox="0 0 72 72" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M43.7576 36.0002L24.8789 17.1215L29.1215 12.8789L52.2429 36.0002L29.1215 59.1215L24.8789 54.8789L43.7576 36.0002Z" fill="#383D4F"/></svg><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></button>
+              <div class="addr"><span class="ipw"><svg class="ic" width="8" height="8" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#clip0_10518_129948_1)"><path fill-rule="evenodd" clip-rule="evenodd" d="M6 6V18H18V6H6ZM0 0H24V24H0V0Z" fill="#283873"/></g><defs><clipPath id="clip0_10518_129948_1"><rect width="8" height="8" fill="white" transform="scale(3)"/></clipPath></defs></svg></span><span>래미안원베일리</span></div><button type="button" class="pkbox" data-open="start" id="pk-start" aria-label="상세 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg><span class="pm-b1" aria-hidden="true">B1</span></span><span class="pktx ph" id="pk-start-tx"><span class="l1"></span><span class="l2"></span></span><svg class="pchev" width="24" height="24" viewBox="0 0 72 72" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M43.7576 36.0002L24.8789 17.1215L29.1215 12.8789L52.2429 36.0002L29.1215 59.1215L24.8789 54.8789L43.7576 36.0002Z" fill="#383D4F"/></svg><span class="ipw load" aria-hidden="true"><span class="spin"></span></span></button>
 
             </div>
           </div>
@@ -1313,7 +1311,7 @@
             <button class="obtn">경로 변경</button>
           </div>
           <div class="vpk">
-            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="상세 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="pktx ph" id="pk-voy-tx"><span class="l1"></span><span class="l2"></span></span><span class="pact" id="pk-voy-act">수정</span><svg class="pchev" width="24" height="24" viewBox="0 0 72 72" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M43.7576 36.0002L24.8789 17.1215L29.1215 12.8789L52.2429 36.0002L29.1215 59.1215L24.8789 54.8789L43.7576 36.0002Z" fill="#383D4F"/></svg><span class="ipw load" aria-hidden="true"><span class="spin"></span></span><span class="sr" id="pk-voy-sr"></span></button>
+            <button type="button" class="pkbox voy" data-open="voyage" id="pk-voy" aria-label="상세 위치 입력하기"><span class="pico"><svg viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.0004 38.5012V5.50093H23.8338C26.8894 5.50093 29.4866 6.57038 31.6255 8.70929C33.7644 10.8482 34.8339 13.4454 34.8339 16.501C34.8339 19.5566 33.7644 22.1538 31.6255 24.2927C29.4866 26.4316 26.8894 27.5011 23.8338 27.5011H18.3338V38.5012H11.0004ZM18.3338 20.1677H24.2005C25.2088 20.1677 26.072 19.8087 26.7901 19.0906C27.5081 18.3725 27.8672 17.5093 27.8672 16.501C27.8672 15.4927 27.5081 14.6295 26.7901 13.9114C26.072 13.1933 25.2088 12.8343 24.2005 12.8343H18.3338V20.1677Z"/></svg></span><span class="pktx ph" id="pk-voy-tx"><span class="l1"></span><span class="l2"></span></span><svg class="pchev" width="24" height="24" viewBox="0 0 72 72" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M43.7576 36.0002L24.8789 17.1215L29.1215 12.8789L52.2429 36.0002L29.1215 59.1215L24.8789 54.8789L43.7576 36.0002Z" fill="#383D4F"/></svg><span class="ipw load" aria-hidden="true"><span class="spin"></span></span><span class="sr" id="pk-voy-sr"></span></button>
 
           </div>
           <div class="vdiv"></div>
@@ -2295,9 +2293,6 @@
     l1.textContent=t1; l2.textContent=t2; l2.hidden=!t2;
     tx.className = 'pktx ' + (has ? 'fill' : 'ph');
     el(txId).closest('.pkbox').classList.toggle('filled', has);
-    /* 액션 글자가 곧 '지금 할 수 있는 일' 이다. 빈 칸이면 입력, 값이 있으면 수정. */
-    const act = el(txId.replace('-tx','-act'));
-    if(act) act.hidden = true;   /* 9/14: '수정' 글자 폐기 — 값이 있어도 > */
   }
   function render(){
     $$('.tab[data-mode]').forEach(t=>t.classList.toggle('on',t.dataset.mode===S.mode));
