@@ -136,8 +136,8 @@ td .num{font-family:var(--mono)}
 <div class="panel" id="panel" role="region" aria-label="설정">
   <div class="row"><div class="lab">할인</div><div class="chips" data-key="discount">
     <button class="chip" data-v="none">없음</button>
-    <button class="chip" data-v="ok">10% 정상 (30,000→27,000)</button>
-    <button class="chip" data-v="odd">서지 어긋남 (30,000→28,300)</button>
+    <button class="chip" data-v="ok">10% 정상 (24,500→22,100)</button>
+    <button class="chip" data-v="odd">서지 어긋남 (24,500→23,100)</button>
   </div></div>
   <div class="row"><div class="lab">서지 고지</div><div class="chips" data-key="surge">
     <button class="chip" data-v="1">이용료·탄력요금 적용 중</button>
@@ -148,8 +148,9 @@ td .num{font-family:var(--mono)}
     <button class="chip" data-v="0">없음</button>
   </div></div>
   <div class="row"><div class="lab">선택 라인업</div><div class="chips" data-key="lineup">
-    <button class="chip" data-v="prime">프라임 (할인 대상)</button>
-    <button class="chip" data-v="carseat">카시트 (할인 비대상)</button>
+    <button class="chip" data-v="next">넥스트 (대상)</button>
+    <button class="chip" data-v="plus">플러스 (대상)</button>
+    <button class="chip" data-v="prime">프라임 (앱 기본 · 비대상)</button>
   </div></div>
   <div class="row"><div class="lab">B 문구</div><input type="text" data-text="tB"></div>
   <div class="row"><div class="lab">C 문구</div><input type="text" data-text="tC"></div>
@@ -167,11 +168,13 @@ td .num{font-family:var(--mono)}
     <section>
       <h3>고정한 것 (as-is 실측)</h3>
       <ul>
+        <li><b>할인 범위는 넥스트·플러스만</b> (킥오프 메모 "서지조정 (운행 요금만) / 넥스트, 플러스만"). 프라임·카시트·반려동물·모든타다·라이트는 정가 그대로.</li>
         <li>기준 프레임: Main flow <code>confirm_discount_applied</code> (39145:98146, <code>_2025</code> 컴포넌트). as-is Design Spec 섹션은 미최신화라 쓰지 않음.</li>
+        <li>배차 넛지 <code>호출 시 빠른 배차!</code>는 선택 여부와 무관하게 프라임 위 고정 (Figma 주석).</li>
         <li>요금 스택은 네 안 공통: 정가 취소선 + 할인가. 선택행 <code>#32A2FA</code> 둘 다, 비선택행 취소선 <code>#D5D7DC</code> + 할인가 <code>#9DA0AE</code>.</li>
         <li>서지 고지 <code>이용료·탄력요금 적용 중</code> 10/14 <code>#9DA0AE</code>는 선택 상태일 때만 (Figma 주석 규칙).</li>
         <li>넛지 말풍선: <code>#32A2FA</code> r1000 pad 4/8, 10px bold 흰 글씨, 선택 라인업 타이틀 위.</li>
-        <li>할인 적용 시 CTA navy <code>#19254D</code> → <code>#32A2FA</code>, 쿠폰 행 <code>할인 적용하기</code> → <code>할인 적용됨</code>. 할인 비대상 라인업을 고르면 둘 다 되돌아감.</li>
+        <li>할인 라인업 선택 시 CTA navy <code>#19254D</code> → <code>#32A2FA</code>. 쿠폰 행은 할인이 있는 한 <code>할인 적용됨</code> (as-is Group 48104183: 비대상 라인업을 골라도 유지).</li>
         <li>숫자: 정상 케이스는 10% 뒤 100원 반올림, 어긋남 케이스는 서지 조정 결과가 5.67%로 떨어진 상황.</li>
       </ul>
     </section>
@@ -180,9 +183,10 @@ td .num{font-family:var(--mono)}
       <ul>
         <li><b>본문 vs AC-2-02 모순.</b> 본문은 "호출 이후 화면에 표기 안 함", AC-2-02는 "영수증에 할인 사유·할인액 표기". 서지 조정은 운행요금 자체가 바뀌어 예약3.0의 <code>Discount Breakdown</code>(-N원 줄)에 못 들어간다.</li>
         <li><b>B안은 서지 고지와 한 자리를 못 나눈다.</b> 서지 고지 켜고 할인도 켜 보면 B에서 서지 고지가 사라진다. 서지가 오른 상태에서 할인이 같이 붙을 때 무엇을 보여줄지 정책 필요.</li>
-        <li><b>C안은 배차 넛지와 자리를 다툰다.</b> 넛지 켜고 할인 켜면 C에서 넛지가 밀린다. 우선순위(할인 &gt; 배차?) 확정 필요.</li>
-        <li><b>C의 "10%"는 어긋남 케이스에서 거짓이 된다.</b> 28,300원이면 "10% 할인"이라 쓸 수 없다. %를 쓰려면 서버가 표시용 %를 따로 내려주거나, 금액만 쓰는 쪽으로.</li>
-        <li><b>D안은 라인업별 차등을 못 담는다.</b> 카시트 선택으로 바꿔 보면 배너는 그대로인데 행에는 취소선이 없다.</li>
+        <li><b>앱 기본 선택이 프라임인데 프라임은 할인 대상이 아니다.</b> B·C는 사유가 선택행에 붙으므로 넥스트/플러스를 눌러야 비로소 보인다. 호출뷰에 들어온 순간엔 취소선 두 줄(회색)만 보인다. D만 기본 상태에서 사유가 보인다. 비교표 "프라임 선택 시 사유" 열.</li>
+        <li><b>C안은 넛지 말풍선과 56px 간격으로 두 개가 뜬다.</b> 넛지는 프라임 위 고정, C 말풍선은 넥스트 위. 같은 색 같은 모양이 두 줄 연달아 나온다.</li>
+        <li><b>C의 "10%"는 어긋남 케이스에서 거짓이 된다.</b> 23,100원이면 "10% 할인"이라 쓸 수 없다. %를 쓰려면 서버가 표시용 %를 따로 내려주거나, 금액만 쓰는 쪽으로.</li>
+        <li><b>D안은 라인업별 차등을 못 담는다.</b> 프라임 선택으로 바꿔 보면 배너는 그대로인데 선택행에는 취소선이 없다. "회원님께만 적용된 가격"인데 지금 고른 차엔 적용이 안 된 상태.</li>
         <li><b>쿠폰 행 <code>할인 적용됨</code> 표기.</b> 서지 할인은 쿠폰이 아닌데 같은 행이 켜진다(AC-2-01 동일 렌더). 탭하면 쿠폰함이 열리는 동선이 맞는지 확인 필요.</li>
       </ul>
     </section>
@@ -219,13 +223,13 @@ const IC_INFO=`<svg width="16" height="16" viewBox="0 0 48 48" fill="none" xmlns
 </svg>`;
 
 const ROWS=[
-  {id:'prime',name:'프라임 호출⚡️',info:true,desc:'배차 확률이 높은 타다',base:30000},
+  {id:'prime',name:'프라임 호출⚡️',info:true,desc:'배차 확률이 높은 타다',base:30000,nodisc:true},
   {id:'next',name:'넓고 쾌적한 넥스트',desc:'스타리아, 카니발 등',pax:5,base:24500},
   {id:'plus',name:'편안한 플러스',desc:'그랜저, K8 등',pax:3,base:24500},
   {id:'carseat',name:'카시트가 있는 타다',desc:'아이와 함께 타기',pax:5,base:24500,nodisc:true},
-  {id:'pet',name:'반려동물과 타다',desc:'케이지 준비해서 타기',pax:5,base:24500},
-  {id:'any',name:'모든 타다 부르기',desc:'차종 관계없이 부르기',base:24500},
-  {id:'lite',name:'부담없는 라이트',desc:'소나타, K5 등',pax:3,base:22500},
+  {id:'pet',name:'반려동물과 타다',desc:'케이지 준비해서 타기',pax:5,base:24500,nodisc:true},
+  {id:'any',name:'모든 타다 부르기',desc:'차종 관계없이 부르기',base:24500,nodisc:true},
+  {id:'lite',name:'부담없는 라이트',desc:'소나타, K5 등',pax:3,base:22500,nodisc:true},
 ];
 const VARIANTS=[
   {k:'A',title:'명분 없음',short:'명분 없음',sub:'취소선 + 할인가만. 기준선 (Glen 설계의 Group B).'},
@@ -233,7 +237,7 @@ const VARIANTS=[
   {k:'C',title:'상황 명분 · 말풍선',short:'말풍선',sub:'넛지 말풍선 자리에 "언제라서"를 적는다. 가장 세다.'},
   {k:'D',title:'개인화 · 시트 배너',short:'시트 배너',sub:'리스트 위 한 줄로 "당신이라서"를 전역 선언한다.'},
 ];
-const DEF={discount:'ok',surge:'1',nudge:'1',lineup:'prime',tB:'신규 회원 혜택 적용 중',tC:'금요일 밤이라 10% 할인',tD:'회원님께만 적용된 가격이에요',tab:'A'};
+const DEF={discount:'ok',surge:'1',nudge:'1',lineup:'next',tB:'신규 회원 혜택 적용 중',tC:'금요일 밤이라 10% 할인',tD:'회원님께만 적용된 가격이에요',tab:'A'};
 let S=Object.assign({},DEF);
 try{const s=localStorage.getItem('pd-state');if(s)S=Object.assign({},DEF,JSON.parse(s));}catch(e){}
 const save=()=>{try{localStorage.setItem('pd-state',JSON.stringify(S))}catch(e){}};
@@ -271,10 +275,8 @@ function phoneHTML(v){
       pr=disc?`<span class="strike">${won(p.base)}</span><span class="p">예상 ${won(p.now)}</span>`:`<span class="p">예상 ${won(p.base)}</span>`;
     }
     let pill='';
-    if(isSel){
-      if(v==='C' && disc) pill=`<div class="pill" data-signal="pill"><span>${esc(S.tC)}</span></div>`;
-      else if(nudgeOn && r.id==='prime') pill=`<div class="pill" data-nudge="1"><span>호출 시 빠른 배차!</span></div>`;
-    }
+    if(isSel && v==='C' && disc) pill=`<div class="pill" data-signal="pill"><span>${esc(S.tC)}</span></div>`;
+    if(nudgeOn && r.id==='prime') pill+=`<div class="pill" data-nudge="1"><span>호출 시 빠른 배차!</span></div>`;  // Figma 주석: 접힘/펼침 관계없이 프라임 위 고정
     const pax=r.pax?`<span class="pax">${IC_PAX}<b>${r.pax}</b></span>`:'';
     list+=`<div class="item${isSel?' sel':''}" data-row="${r.id}">${pill}
       <div class="lu"><div class="th" style="background-image:url('${TH[r.id]}')"></div>
@@ -336,12 +338,17 @@ function compare(){
     return {v,signals,surgeKept,nudgeKept,reasonShown,extra,pillOver,perLineup};
   });
   const anyDisc=S.discount!=='none';
+  // 앱 기본 선택(프라임)에서도 사유가 보이는가
+  const keep=S.lineup; S.lineup='prime';
+  const tmp=document.createElement('div'); tmp.innerHTML=VARIANTS.map(v=>phoneHTML(v.k)).join('');
+  const atDefault={}; tmp.querySelectorAll('.phone').forEach(ph=>{atDefault[ph.dataset.variant]=!!ph.querySelector('[data-signal="reason"],[data-signal="pill"],[data-signal="banner"]')});
+  S.lineup=keep;
   const max=Math.max(...rows.map(r=>r.signals),1);
-  const yn=(b,goodWhenTrue=true)=>`<span class="mark ${b===goodWhenTrue?'good':'crit'}"></span>${b?'유지':'밀림'}`;
+  const yn=(b)=>`<span class="mark ${b?'good':'crit'}"></span>${b?'유지':'밀림'}`;
   const html=`<h3>비교 (화면 밖 프로브에서 실측)</h3>
-  <p class="note">파란 요소 = 선택행과 하단에서 <code>#32A2FA</code>로 칠해진 요소 수(배차 넛지 포함). 요금 스택은 1개로 센다. 현재 설정: 할인 ${ {none:'없음',ok:'10% 정상',odd:'서지 어긋남'}[S.discount] } · 선택 ${S.lineup==='prime'?'프라임':'카시트'}</p>
+  <p class="note">파란 요소 = 선택행과 하단에서 <code>#32A2FA</code>로 칠해진 요소 수(배차 넛지 포함). 요금 스택은 1개로 센다. 현재 설정: 할인 ${ {none:'없음',ok:'10% 정상',odd:'서지 어긋남'}[S.discount] } · 선택 ${ {prime:'프라임',next:'넥스트',plus:'플러스'}[S.lineup] }</p>
   <div style="overflow-x:auto"><table>
-  <thead><tr><th>안</th><th>사유 노출</th><th>파란 요소 수</th><th>서지 고지</th><th>배차 넛지</th><th>라인업별 차등</th><th>리스트 위 추가 높이</th></tr></thead>
+  <thead><tr><th>안</th><th>사유 노출</th><th>파란 요소 수</th><th>서지 고지</th><th>배차 넛지</th><th>라인업별 차등</th><th>프라임(앱 기본) 선택 시 사유</th><th>리스트 위 추가 높이</th></tr></thead>
   <tbody>${rows.map(r=>`<tr>
     <td><span class="k">${r.v}</span>${VARIANTS.find(x=>x.k===r.v).title}</td>
     <td>${anyDisc?(r.reasonShown?'<span class="mark good"></span>있음':'<span class="mark warn"></span>없음'):'<span class="mark warn"></span>할인 없음'}</td>
@@ -349,6 +356,7 @@ function compare(){
     <td>${S.surge==='1'?yn(r.surgeKept):'<span class="mark warn"></span>꺼짐'}</td>
     <td>${S.nudge==='1'?yn(r.nudgeKept):'<span class="mark warn"></span>꺼짐'}</td>
     <td>${r.perLineup?'<span class="mark good"></span>가능':'<span class="mark crit"></span>불가 (전역)'}</td>
+    <td>${anyDisc?(atDefault[r.v]?'<span class="mark good"></span>보임':'<span class="mark crit"></span>안 보임'):'<span class="mark warn"></span>할인 없음'}</td>
     <td><span class="num">${r.extra}px</span>${r.pillOver?` <span style="color:var(--ink3)">+ 말풍선 ${r.pillOver}px 위로 돌출</span>`:''}</td>
   </tr>`).join('')}</tbody></table></div>`;
   document.getElementById('compare').innerHTML=html;
