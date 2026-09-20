@@ -2595,24 +2595,29 @@
     b.style.setProperty('--mq-n', S.bnLoop==='6' ? '6' : 'infinite');
     void b.offsetWidth; b.classList.add('run');
   }
-  function paintBanner(on){
+  /* 9/20 배너는 '화면 상태' 가 아니라 '사건' 이다 (스펙 3-1·3-2).
+     사건 = 고객이 입력함(chg 0) 또는 n번째 수정. 한 사건은 한 번만 알린다.
+     ctx  = 배너를 그릴 수 있는 화면인가(값 있음 · 운행 전 · T맵 · 배너 모드).
+     본 것으로 치는 순간: × 를 누르거나, 배너를 띄운 채 내비 화면을 떠날 때.
+       → 안 닫고 타다 앱에 갔다 와도 다시 올라오지 않는다. 다시 보는 길은
+         T맵 스택의 '픽업 장소' 버블 하나뿐이다("배너를 되살리는 길은 만들지 않는다").
+     아직 한 번도 못 보여준 사건은 소비하지 않는다 — 입력이 타다 앱에 있을 때
+     도착했다면 T맵에 처음 들어갈 때 알린다.
+     9/20: 300m 진입으로 배너를 되살리던 조건은 걷어냈다(음성 안내·300m 폐기). */
+  function paintBanner(ctx){
     const b=el('tbn'); const was=!b.hidden;
-    /* 9/16 최종본: × 는 닫기다(접힘 탭 폐기). 닫아도 새 변경·300m 진입이면 다시 뜬다.
-       닫힌 동안 다시 보는 길은 T맵 스택의 '픽업 장소' 버블이다. */
-    const chgN = S.chgFlag ? S.chgBlink : 0, apprOn = !!S.appr;
-    if(on && S.bnClosed && S.bnEvKey){
-      if(chgN > S.bnEvKey.chg || (apprOn && !S.bnEvKey.appr)) S.bnClosed=false;
-    }
-    S.bnEvKey={chg:chgN, appr:apprOn};
-    on = on && !S.bnClosed;
+    const chgN = S.chgFlag ? S.chgBlink : 0;
+    const txt  = S.current ? loc(S.current).replace(/\u2002/g,' ') : '';
+    const ev   = txt ? chgN+'|'+txt : null;
+    const on   = !!(ctx && ev && S.bnSeen !== ev);
+    if(was && !on && S.bnEv) S.bnSeen = S.bnEv;   /* 보여준 뒤 닫혔거나 화면을 떠났다 */
+    S.bnEv = ev;
     b.hidden=!on; el('tbn-x').hidden=!on;
     if(!on){ b.classList.remove('run'); S.bnKey=null; return; }
-    const txt=loc(S.current).replace(/\u2002/g,' ');
     el('tbn-t').textContent=el('tbn-t2').textContent=txt;
     el('tbn-st').textContent = '픽업 장소';   /* 9/18 Figma(case): 문구는 고정 · 작성/변경은 색으로만 */
     el('tbn-st').classList.toggle('chg', !!S.chgFlag);
-    const key=txt+'|'+(S.chgFlag?S.chgBlink:0)+'|'+(S.appr?'a':'');
-    if(!was || key!==S.bnKey){ S.bnKey=key; requestAnimationFrame(mqPlay); }
+    if(!was || ev!==S.bnKey){ S.bnKey=ev; requestAnimationFrame(mqPlay); }
   }
     function voiceLine(){
     if(S.drKind==='msg') return '고객 메시지. '+S.msg;
@@ -2648,7 +2653,7 @@
     S.mode=m; S.screen='start'; S.pmPlayed=false;
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='go'; S.chgFlag=false; S.near=false; S.chgBlink=0; S.chgSeen=0; S.delFlag=false; S.delBlink=0; S.delSeen=0;
-    S.drover=false; S.hilite=false; S.before=null; apprEnd(true); S.bnClosed=false; S.bnEvKey=null; S.pickBlink=0; S.pickSeen=0;
+    S.drover=false; S.hilite=false; S.before=null; apprEnd(true); S.bnEv=null; S.bnSeen=null; S.pickBlink=0; S.pickSeen=0;
     S.drKind=null; S.ack=true; S.rphase='match'; S.dview='app'; S.dstage='go'; S.driving=false; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
@@ -2778,7 +2783,7 @@
   el('tbn-trk').addEventListener('animationend',()=>el('tbn').classList.add('rest'));
   /* 버블 → 타다 앱 카드. 돌아온 카드의 상태 줄이 3회 깜빡여 '이 값을 보라' 고 말한다 */
   el('tovb-pick').addEventListener('click',()=>{ S.dview='app'; S.msgUnread=false; S.pickBlink=(S.pickBlink||0)+1; render(); });
-  const bnCollapse=()=>{ S.bnClosed=true; render(); };   /* × = 닫기 */
+  const bnCollapse=()=>{ S.bnSeen=S.bnEv; render(); };   /* × = 닫기 · 그 사건은 알린 것으로 친다 */
   el('tbn-x').addEventListener('click',e=>{ e.stopPropagation(); bnCollapse(); });
   /* 아래로 밀어 접기 — 운전 중엔 작은 × 보다 배너 전체를 쓸어내리는 쪽이 정확하다 */
   (function(){
