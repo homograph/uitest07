@@ -2299,9 +2299,14 @@
      라인이 '2-5호' 형태면 28자 ≈ 302dp 로 한계 241dp 를 넘겨 잘렸다.
      꼬리를 떼면 라인이 있어도 여유가 남는다. */
   /* 재편집 진입값과 지금 값을 같은 규칙으로 납작하게 만들어 비교한다.
-     지하가 아니면 층은 비교에서 뺀다 — 지상으로 바꾸면 층 칸이 접히기 때문이다. */
+     9/21 층을 조건 없이 넣는다. 전엔 '지상이면 층을 뺀다' 였는데 칸이 접히던 시절의 잔재였고,
+     지금은 지상에도 층 칸이 있고 고칠 수 있다(renderSentence 가 늘 펴 두고 disabled 도 아니다).
+     그래서 지상에서 층만 고치면 바뀐 게 없다고 읽혀 [확인] 이 weak 그대로였다 —
+     누르면 closeSheet 라 고친 값이 버려지고, ✕ 로 나가도 변경이 아니라 묻지도 않았다.
+     지상이 채워 주는 1 은 늘 '지하→지상' 전환과 함께 생겨 lvl 이 이미 달라지므로,
+     층을 넣어도 '칩만 눌렀다 돌아오면 CTA 가 안 켜진다' 는 그대로 지켜진다. */
   const flat = d => !d ? '' : [
-    d.lvl, d.lvl==='under' ? (d.floor==null?'':String(d.floor)) : '',
+    d.lvl, (d.floor==null?'':String(d.floor)),
     d.noDong ? '\u0001' : (d.dong||'').trim(),
     d.noLine ? '\u0000' : (d.line||'').trim(), (d.etc||'').trim()
   ].join('|');
@@ -3431,7 +3436,10 @@ function onPickupEvent(ev) {            // type: CREATED | CHANGED | DELETED
           <li>지상 선택 · 층이 비어 있으면 <code>1</code> 이 들어가고 <b>제안 표식</b>이 켜집니다.</li>
           <li>지하로 되돌리면 <b>제안이었던 1 만</b> 거둡니다. 직접 친 값은 그대로 둡니다.</li>
           <li>제안된 1 은 층 칸에 포커스가 가면 <b>통째로 선택</b>돼 바로 덮어써집니다. 한 번 선택되면 표식은 꺼집니다.</li>
-          <li>이 1 은 비교용 값에서 빠집니다 — 칩만 눌렀다 돌아왔는데 CTA 가 켜지면 안 됩니다.</li>
+          <li><b>층은 비교값에 조건 없이 넣으세요.</b> &lsquo;지상이면 층을 뺀다&rsquo;로 두면 지상에서 층만 고쳤을 때
+              바뀐 게 없다고 읽혀 저장할 길이 없어집니다 — 이 프로토타입이 9/21 까지 실제로 그랬습니다.</li>
+          <li>&lsquo;칩만 눌렀다 돌아오면 CTA 가 안 켜진다&rsquo;는 <b>되돌릴 때 1 을 거두는 쪽이 책임집니다.</b>
+              비교에서 빼서가 아닙니다 — 한 가지 일은 한 곳에서 합니다.</li>
           <li>지하로 돌아올 때 거두는 이유: 실제로 제일 많은 건 <b>지하 2층</b>이라, 고르지도 않은 &lsquo;지하 1층&rsquo;이 저장되면 안 됩니다.</li>
         </ul>
 
@@ -3482,10 +3490,10 @@ struct DetailLocation: Equatable {
     // 지상에도 층은 필수다 — 대신 지상을 고르면 1 이 들어간다
     var isComplete: Bool { !floor.isEmpty &amp;&amp; (noDong || !dong.isEmpty) }
 
-    // 비교용. 지상이면 층은 뺀다 — 제안한 1 로 CTA 가 켜지면 안 된다
+    // 비교용. 층은 조건 없이 넣는다 — 지상에서 층만 고쳐도 '바뀌었다' 가 돼야 한다
     var flattened: String {
         [String(describing: level),
-         level == .under ? floor : "",
+         floor,
          noDong ? "__NO_DONG__" : dong.trimmed,
          noLine ? "__NO_LINE__" : line.trimmed,
          etc.trimmed].joined(separator: "|")
@@ -3565,11 +3573,11 @@ data class DetailLocation(
     // 지상에도 층은 필수다 — 대신 지상을 고르면 1 이 들어간다
     val isComplete get() = floor.isNotEmpty() &amp;&amp; (noDong || dong.isNotEmpty())
 
-    // 비교용. 지상이면 층은 뺀다 — 제안한 1 로 CTA 가 켜지면 안 된다.
+    // 비교용. 층은 조건 없이 넣는다 — 지상에서 층만 고쳐도 '바뀌었다' 가 돼야 한다.
     // '없음' 은 8자 제한 때문에 사용자가 칠 수 없는 문자열로 표시한다.
     val flattened get() = listOf(
         level.name,
-        if (level == Level.UNDER) floor else "",
+        floor,
         if (noDong) "__NO_DONG__" else dong.trim(),
         if (noLine) "__NO_LINE__" else line.trim(),
         etc.trim(),
