@@ -86,7 +86,9 @@ body{font-variant-numeric:tabular-nums}
 .cdn{width:6px;height:10px;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat;transform:rotate(90deg);flex:none}
 .cup{width:6px;height:10px;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat;transform:rotate(-90deg);flex:none}
 .tag{display:inline-block;height:14px;padding:0 5px;border-radius:2px;background:#19254D;color:#fff;font-size:10px;line-height:14px;font-weight:700;white-space:nowrap}
-.reasonchip{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 8px 8px;padding:7px 10px;border-radius:6px;background:#19254D;color:#fff;font-size:11px;line-height:16px;font-weight:700}
+.reasonchip{width:calc(100% - 16px);display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 8px 8px;padding:7px 10px;border:0;border-radius:6px;background:#19254D;color:#fff;font:inherit;font-family:inherit;font-size:11px;line-height:16px;font-weight:700;text-align:left;cursor:pointer}
+.reasonchip:hover{background:#22305f}
+.reasonchip .r{display:flex;align-items:center;gap:6px}
 .reasonchip b{font-weight:700}
 .barbtn{width:100%;border:0;font-family:inherit;cursor:pointer}
 .barbtn:hover{background:#22305f}
@@ -149,8 +151,8 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
     <button class="chip" data-v="always">할인이면 항상</button>
   </div></div>
   <div class="row"><div class="lab">할인 라인업</div><div class="chips" data-key="pin">
+    <button class="chip" data-v="1">가장 싼 할인 라인업 1개 고정 (추천)</button>
     <button class="chip" data-v="0">창에서 밀릴 수 있음 (그랩 그대로)</button>
-    <button class="chip" data-v="1">창에 고정</button>
   </div></div>
   <div class="row"><div class="lab">할인</div><div class="chips" data-key="discount">
     <button class="chip" data-v="none">없음</button>
@@ -216,8 +218,8 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
       <div class="box">
         <h3>이 프로토로 정할 것</h3>
         <ul>
-          <li><b>할인 라인업을 창에 고정할 것인가.</b> 설정 첫 줄로 바꿔 보세요. 그랩 규칙 그대로면 다른 라인업을 두 번 고르는 순간 <b>넥스트가 창에서 밀려나</b> 할인이 화면에서 사라집니다. 고정하면 항상 보이지만 그랩 관용구에서 벗어납니다.</li>
-          <li><b>인라인 확장을 기본으로 펼쳐 둘 것인가.</b> 접어 두면 <code>⌄</code> 를 누른 사람만 명분을 봅니다.</li>
+          <li><b>할인 라인업 고정 — 기본값으로 켜 뒀습니다.</b> 1차 판정 지표가 콜뷰 전환율인데, 할인 노출이 "다른 라인업을 몇 번 골랐는가"에 따라 켜졌다 꺼졌다 하면 처치가 일정하지 않아 측정이 오염됩니다. 그랩은 라인업별 차등 할인이 없어 이 문제를 겪지 않으므로 그 규칙은 여기서 답을 주지 못합니다. <b>대상이 여럿이면 가장 싼 하나만</b> 고정해 3칸 중 1칸만 씁니다. 끄고 비교해 보실 수 있습니다.</li>
+          <li><b>인라인 확장은 접어 둡니다.</b> 명분은 이미 칩이 말하고(<code>금요일 밤이라 10% 할인 · 2,600원 낮아졌어요</code>), 확장 안은 사유가 아니라 <b>내역</b>이라 궁금한 사람만 열면 됩니다. 기본으로 펴면 상단 바와 <code>모두 보기</code> 가 접혀 접힘 3줄의 장점이 깎입니다. 대신 <b>칩 전체를 확장 버튼으로</b> 바꿔 타깃을 <code>6×10</code> 셰브런에서 <code>320×30</code> 으로 키웠습니다.</li>
           <li><b>쿠폰과의 동시 표기.</b> 쿠폰을 켜면 확장 안에 줄이 하나 더 붙습니다. 정가 → 서지 할인 → 쿠폰 → 예상 요금 네 단이 한 곳에 모입니다.</li>
         </ul>
       </div>
@@ -249,7 +251,7 @@ const R=[
 const BY=Object.fromEntries(R.map(r=>[r.id,r]));
 const COUPON=5000, REASON='금요일 밤';
 const BASE_WIN=['prime','next','carseat'];   // 접힌 창의 기본 구성
-const DEF={open:'0', expand:'0', lineup:'prime', discount:'ok', coupon:'0', pin:'0', strike:'thr', win:BASE_WIN.join(',')};
+const DEF={open:'0', expand:'0', lineup:'prime', discount:'ok', coupon:'0', pin:'1', strike:'thr', win:BASE_WIN.join(',')};
 let S=Object.assign({},DEF);
 try{const s=localStorage.getItem('pd-g');if(s)S=Object.assign({},DEF,JSON.parse(s));}catch(e){}
 const save=()=>{try{localStorage.setItem('pd-g',JSON.stringify(S))}catch(e){}};
@@ -272,14 +274,21 @@ function calc(id){
 }
 const paxH=n=>n?`<span class="pax">${IC_PAX}<i>${n}</i></span>`:'';
 
+// 고정 대상 = 할인 라인업 중 "가장 싼 하나". 여럿이 대상이어도 3칸 중 1칸만 쓴다.
+function pinTarget(){
+  if(S.pin!=='1' || S.discount==='none') return null;
+  const ds=R.filter(r=>r.surge).map(r=>({id:r.id, fare:calc(r.id).fare})).sort((a,b)=>a.fare-b.fare);
+  return ds.length?ds[0].id:null;
+}
 // 그랩 규칙: 창 밖의 것을 고르면 가운데(2번)에 끼어들고 뒤로 밀려 3번 초과분 탈락
 function pick(id){
   let w=S.win.split(',');
-  if(!w.includes(id)){
-    w=[w[0], id, ...w.slice(1)];
-    if(S.pin==='1' && !w.includes('next')) w=[w[0], w[1], 'next'];
-    w=w.slice(0,3);
-    if(S.pin==='1' && !w.includes('next')) w[2]='next';
+  if(!w.includes(id)) w=[w[0], id, ...w.slice(1)].slice(0,3);
+  // 고정: 밀려났으면 선택 행을 건드리지 않는 맨 뒤 칸에 되돌려 놓는다
+  const t=pinTarget();
+  if(t && !w.includes(t)){
+    const slot = w[2]===id ? 1 : 2;   // 방금 고른 건 자리를 지킨다
+    w[slot]=t;
   }
   S.win=w.join(','); S.lineup=id; S.open='0'; S.expand='0';
 }
@@ -320,7 +329,7 @@ function rowHTML(id){
       <span class="stx"><span class="n">${esc(r.name)}${r.info?IC_INFO:''}${c.discounted?'<span class="tag">'+(c.pct?c.pct+'%':'할인')+'</span>':''}</span>
       <span class="d">${esc(r.desc)}${paxH(r.pax)}</span></span>
       <span class="spr">${priceRow(c,true)}</span></button>
-    ${c.discounted&&S.expand!=='1'?`<div class="reasonchip"><span>${esc(REASON)}이라 ${c.pct?c.pct+'% 할인':'할인 적용 중'}</span><b>${won(c.base-c.fare)} 낮아졌어요</b></div>`:''}
+    ${c.discounted&&S.expand!=='1'?`<button class="reasonchip" data-exp="1"><span>${esc(REASON)}이라 ${c.pct?c.pct+'% 할인':'할인 적용 중'}</span><span class="r"><b>${won(c.base-c.fare)} 낮아졌어요</b><span class="caret"></span></span></button>`:''}
     ${S.expand==='1'?expandBody(id):''}</div>`;
   return `<button class="row" data-pick="${id}">
     <img src="${TH[id]}" alt="">
@@ -402,7 +411,7 @@ const open=o=>{panel.dataset.open=o?'1':'0';gear.setAttribute('aria-expanded',St
 gear.addEventListener('click',()=>open(panel.dataset.open!=='1'));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')open(false)});
 panel.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;const k=b.closest('[data-key]').dataset.key;
-  if(k==='lineup'){ pick(b.dataset.v); } else { S[k]=b.dataset.v; if(k==='pin'&&b.dataset.v==='1'&&!S.win.split(',').includes('next')){const w=S.win.split(',');w[2]='next';S.win=w.join(',');} }
+  if(k==='lineup'){ pick(b.dataset.v); } else { S[k]=b.dataset.v; const t=pinTarget(); if(t){const w=S.win.split(','); if(!w.includes(t)){ w[w[2]===S.lineup?1:2]=t; S.win=w.join(','); }} }
   save();render();});
 document.getElementById('reset').addEventListener('click',()=>{S=Object.assign({},DEF);save();render();});
 render();
