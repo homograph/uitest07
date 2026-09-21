@@ -26,7 +26,17 @@ body{font-variant-numeric:tabular-nums}
 
 .panel{position:fixed;top:54px;right:12px;width:min(430px,calc(100vw - 24px));background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 40px rgba(0,0,0,.18);padding:10px 12px 12px;z-index:30;display:none}
 .panel[data-open="1"]{display:block}
-@media (max-width:720px){.panel{top:auto;right:0;left:0;bottom:0;width:auto;border-radius:14px 14px 0 0;max-height:70vh;overflow:auto}}
+@media (max-width:720px){.panel{top:auto;right:0;left:0;bottom:0;width:auto;border-radius:14px 14px 0 0;max-height:56vh;overflow:auto}}
+.panel .hint{margin:0 0 8px;padding:7px 10px;border-radius:8px;background:color-mix(in srgb,var(--accent) 10%,transparent);font-size:12px;line-height:17px;color:var(--ink)}
+.panel .hint b{font-weight:700}
+.prev{position:sticky;top:0;z-index:1;margin:0 0 8px;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.prev .l1{display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.prev .nm{font-size:13px;font-weight:700}
+.prev .pay{font-family:var(--mono);font-size:14px;font-weight:700}
+.prev .was{font-family:var(--mono);font-size:11px;color:var(--ink3);text-decoration:line-through}
+.prev .chip2{display:inline-block;margin-top:5px;padding:3px 7px;border-radius:5px;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:15px;font-weight:700}
+.prev .win2{margin-top:5px;font-family:var(--mono);font-size:11px;color:var(--ink3)}
+.panel .foot .close{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:4px 10px;font-size:12px}
 .panel .row{display:grid;grid-template-columns:62px 1fr;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
 .panel .row:first-of-type{border-top:0}
 .panel .lab{font-size:12px;color:var(--ink2)}
@@ -156,6 +166,8 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
 </div>
 
 <div class="panel" id="panel" role="region" aria-label="설정">
+  <p class="hint"><b>적용 버튼이 없습니다.</b> 칩을 고르면 바로 반영돼요. 아래 미리보기로 결과를 확인하고, 폰을 보려면 <b>닫기</b>를 누르세요.</p>
+  <div class="prev" id="prev"></div>
   <div class="row"><div class="lab">되돌아가기</div><div class="chips" data-key="nav">
     <button class="chip" data-v="strip">A 라인업 스트립 상주</button>
     <button class="chip" data-v="dropdown">B 헤더 드롭다운</button>
@@ -177,7 +189,7 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
     <button class="chip" data-v="0">없음</button>
   </div></div>
   <div class="row"><div class="lab">선택</div><div class="chips" data-key="lineup"></div></div>
-  <div class="foot"><span>즉시 반영 · 폰 안을 직접 눌러 왔다갔다 해보세요</span><button id="reset">처음으로</button></div>
+  <div class="foot"><button class="close" id="closePanel">닫고 폰 보기</button><span style="flex:1;text-align:center">폰 안을 직접 눌러 왔다갔다</span><button id="reset">처음으로</button></div>
 </div>
 
 <main class="page">
@@ -376,7 +388,24 @@ function render(){
   const g=document.querySelector('[data-key="lineup"]');
   g.innerHTML=R.map(r=>`<button class="chip" data-v="${r.id}">${r.short}${r.surge?' (할인)':''}</button>`).join('');
   document.querySelectorAll('[data-key]').forEach(grp=>{const k=grp.dataset.key;grp.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S[k])))});
-  trail(); compareNav(); compare();
+  preview(); trail(); compareNav(); compare();
+}
+
+// 패널이 폰을 덮어도 결과를 바로 볼 수 있게, 설정 안에 현재 상태를 요약한다
+function preview(){
+  const el=document.getElementById('prev'); if(!el) return;
+  const r=BY[S.lineup], c=calc(S.lineup);
+  const was = c.couponOn ? (c.discounted ? c.fare : c.base) : c.base;
+  const wasH = (c.discounted||c.couponOn) ? `<span class="was">${won(was)}</span>` : '';
+  let line='';
+  if(c.discounted) line = c.pct ? `${REASON}이라 ${c.pct}% 할인 · ${won(c.base-c.fare)} 낮아졌어요`
+                                : `${REASON} 할인 · ${won(c.base-c.fare)} 낮아졌어요`;
+  else if(c.couponOn) line = `쿠폰 · ${won(COUPON)} 낮아졌어요`;
+  const chip = line ? `<div class="chip2">${esc(line)}</div>` : '';
+  const navName = NAVS.find(n=>n[0]===S.nav)[1];
+  el.innerHTML=`<div class="l1"><span class="nm">${esc(r.short)}</span><span class="pay">${won(c.pay)}</span>${wasH}</div>
+    ${chip}
+    <div class="win2">${S.screen==='confirm'?'호출 확인 화면':'라인업 선택 화면'} · ${esc(navName)}</div>`;
 }
 
 function trail(){
@@ -451,6 +480,7 @@ document.getElementById('phone').addEventListener('click',e=>{
 const gear=document.getElementById('gear'),panel=document.getElementById('panel');
 const open=o=>{panel.dataset.open=o?'1':'0';gear.setAttribute('aria-expanded',String(o))};
 gear.addEventListener('click',()=>open(panel.dataset.open!=='1'));
+document.getElementById('closePanel').addEventListener('click',()=>open(false));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')open(false)});
 panel.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;const k=b.closest('[data-key]').dataset.key;S[k]=b.dataset.v;if(k==='nav')S.screen='confirm';save();render();});
 document.getElementById('reset').addEventListener('click',()=>{S=Object.assign({},DEF);save();render();});
