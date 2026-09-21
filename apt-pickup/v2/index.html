@@ -1544,8 +1544,13 @@
 
   <div class="note">
     <h3><i>9</i>드라이버가 받는 자리</h3>
-    <p><b>타다 앱 카드</b>: 여백 20 · 간격 16 · 높이는 내용이 정합니다 — 찾아오는 길이 없으면 <b>100</b>, 한 줄이면 <b>130</b>, 두 줄이면 <b>156</b>. 층만 굵게. <b>상태 줄이 첫 줄</b>이고 그 아래 주소·찾아오는 길이 옵니다(Info Container gap 8 · Address Container gap 4). 상태 줄은 두 조각입니다 — 라벨 <b>‘픽업 장소’</b>는 15/22 Bold 흰색으로 고정이고, 뒤에 붙는 <b>고객이 입력함 / 수정함 / 삭제함</b>이 색을 갖습니다(작성 #32A2FA · 변경·삭제 #FE4C00). 바뀌는 말에 색이 있어야 색과 정보를 한 번에 읽습니다. 배너는 상태 문구가 없어 라벨 ‘픽업 장소’ 자체가 색으로 갈립니다. 세 사건 모두 <b>3회</b> 깜빡입니다.</p>
-    <p><b>삭제(9/18)</b>: 배차 뒤에도 승객이 &lsquo;지우기&rsquo;로 지울 수 있습니다. 지우면 T맵의 <b>픽업 장소 버블과 하단 배너를 거둡니다</b> — 없는 정보를 가리키는 버튼을 남기지 않습니다. 카드에는 제목 <b>&lsquo;내비에 표시된 출발지에서 탑승&rsquo;</b>과 안내 <b>&lsquo;고객이 설정한 픽업 안내가 없습니다&rsquo;</b>가 남고, 상태 줄 <b>&lsquo;픽업 장소 · 고객이 삭제함&rsquo;</b>(#FE4C00)이 <b>세 번</b> 깜빡입니다(작성·변경과 같은 세기). 제목이 &lsquo;지도&rsquo;가 아니라 <b>&lsquo;내비&rsquo;</b>인 것은 기사가 실제로 보는 것이 T맵 안내 화면이기 때문이고, 안내가 &lsquo;지웠습니다&rsquo;가 아니라 <b>&lsquo;없습니다&rsquo;</b>인 것은 지금 상태를 말해야지 고객이 한 일을 따질 자리가 아니기 때문입니다.</p>
+    <p><b>타다 앱 카드</b>: 여백 20 · 간격 16 · 높이는 내용이 정합니다 — 찾아오는 길이 없으면 <b>100</b>, 한 줄이면 <b>130</b>, 두 줄이면 <b>156</b>. 층만 굵게. <b>상태 줄이 첫 줄</b>이고 그 아래 주소·찾아오는 길이 옵니다(Info Container gap 8 · Address Container gap 4). 상태 줄은 두 조각입니다 — 라벨 <b>‘픽업 장소’</b>는 15/22 Bold 흰색으로 고정이고, 뒤에 붙는 <b>고객이 입력함 / 수정함 / 삭제함</b>이 색을 갖습니다(작성 #32A2FA · 변경·삭제 #FE4C00). 바뀌는 말에 색이 있어야 색과 정보를 한 번에 읽습니다. 배너는 상태 문구가 없어 라벨 ‘픽업 장소’ 자체가 색으로 갈립니다.</p>
+    <p><b>깜빡임도 배너와 같은 사건 모델입니다(9/21).</b> 한 번 깜빡이면 0.6초 × <b>3회</b>이고, 그게 <b>언제</b> 도느냐가 화면에 따라 갈립니다 — 카드와 배너는 같은 사건을 각자의 화면에서 한 번씩만 알립니다.</p>
+    <p><b>최초 입력</b> — 받은 순간 기사가 <b>타다 앱</b>이면 카드가 깜빡입니다. <b>내비</b>였으면 배너가 이미 알렸으므로 카드는 조용히 값만 채웁니다.</p>
+    <p><b>수정</b> — 언제 받았든 기사가 타다 앱에 들어올 때 <b>한 번</b> 깜빡입니다. 놓치면 이미 세운 진입 계획대로 틀린 곳으로 갑니다.</p>
+    <p><b>삭제 · 버블 탭</b>은 한 번입니다. 버블 탭은 사건이 아니라 ‘여기다’ 라는 응답입니다. 그리고 <b>배너 라벨은 깜빡이지 않습니다</b> — 배너는 떴다는 것 자체가 알림입니다.</p>
+    <p>전에는 트리거가 사건이 아니라 <b>렌더</b>에 걸려 있어, 기사가 T맵을 보는 동안에도 카드가 ‘깜빡인 것’ 으로 소비됐습니다. 그리고 최초 입력은 아예 깜빡이지 않았습니다 — Figma 스펙 3-1 과 달랐습니다.</p>
+    <p><b>삭제(9/18)</b>: 배차 뒤에도 승객이 &lsquo;지우기&rsquo;로 지울 수 있습니다. 지우면 T맵의 <b>픽업 장소 버블과 하단 배너를 거둡니다</b> — 없는 정보를 가리키는 버튼을 남기지 않습니다. 카드에는 제목 <b>&lsquo;내비에 표시된 출발지에서 탑승&rsquo;</b>과 안내 <b>&lsquo;고객이 설정한 픽업 안내가 없습니다&rsquo;</b>가 남고, 상태 줄 <b>&lsquo;픽업 장소 · 고객이 삭제함&rsquo;</b>(#FE4C00)이 한 번 <b>깜빡입니다</b>(작성·변경과 같은 세기 — 0.6초 × 3회). 제목이 &lsquo;지도&rsquo;가 아니라 <b>&lsquo;내비&rsquo;</b>인 것은 기사가 실제로 보는 것이 T맵 안내 화면이기 때문이고, 안내가 &lsquo;지웠습니다&rsquo;가 아니라 <b>&lsquo;없습니다&rsquo;</b>인 것은 지금 상태를 말해야지 고객이 한 일을 따질 자리가 아니기 때문입니다.</p>
     <p><b>픽업 장소 버블은 경로 선택 화면에도 섭니다(9/19).</b> 값이 전달돼 있으면 안내 화면뿐 아니라 <b>기사가 경로를 고르는 화면</b>에도 있고, 눌러서 타다 앱 카드로 가는 동작도 같습니다. 경로를 고르는 동안이야말로 &lsquo;어디로 가야 하나&rsquo; 를 확인하는 때입니다. 다만 <b>배너는 그 화면에 뜨지 않습니다</b> — 경로를 고르는 화면은 고르는 일에 집중해야 하고, 배너는 안내가 시작된 뒤의 자리입니다.</p>
     <p><b>T맵 하단 배너</b>: 첫 줄은 <b>‘픽업 장소’</b> 18/26 Bold 한 마디로 고정이고 작성·변경은 색으로만 갈립니다. <b>위치만</b> 32 Bold로 싣고 찾아오는 길은 넣지 않습니다. 배너 바탕은 <b>#101A3D</b>(tada-navy_heavy)입니다 — 검정(#000)은 현장결제 배너 전용이고, 타다 앱 카드와 같은 면색이어야 두 자리가 한 기능으로 읽힙니다. 닫기 ×는 <b>테두리 흰색 2px</b> · 배경 #101A3D입니다(9/19 DS overlay banner 29325:181198). 닫기는 상태와 무관한 컨트롤이라 테두리가 상태색이면 &lsquo;수정&rsquo;(#FE4C00)에서 두 색이 부딪히고, 같은 컴포넌트를 쓰는 현장결제 배너(흰 테두리)와도 규칙이 갈립니다. ×나 아래로 밀기는 <b>닫기</b>입니다 — 오른쪽 아래 탭으로 접히는 안은 9/16에 폐기했고, 다시 보는 길은 버블 하나뿐입니다.</p>
     <p><b>배너 안의 두 줄 사이 간격은 0입니다.</b> 높이가 100으로 고정이고 여백 14/12 + 라벨 줄 26 + 위치 줄 48이 정확히 100을 채웁니다 — 사이에 간격을 두면 그만큼 아래가 눌립니다. 흐르는 글은 <b>넘칠 때만</b> 움직이고 속도는 90px/초입니다.</p>
@@ -3170,26 +3175,29 @@
         </ul>
         <h4>문구</h4>
         <ul>
-          <li>첫 줄은 <b>‘픽업 장소’</b> 한 마디로 고정(18/26 Bold). 작성·변경은 <b>색으로만</b> 갈립니다 — 작성 #32A2FA · 변경 #FE4C00 (검정 위 7.7 · 6.3:1)</li>
+          <li>첫 줄은 <b>‘픽업 장소’</b> 한 마디로 고정(18/26 Bold). 작성·변경은 <b>색으로만</b> 갈립니다 — 작성 #32A2FA · 변경 #FE4C00 (배너 바탕 #101A3D 위 6.2 · 5.1:1)</li>
           <li>앱 카드 상태 줄은 두 조각입니다: 라벨 <b>‘픽업 장소’</b> 15/22 Bold #FFFFFF + 상태 문구 <b>‘고객이 입력함/수정함/삭제함’</b> 15/22 Regular — <b>색은 문구에</b> 붙습니다(작성 #32A2FA · 변경·삭제 #FE4C00). 배너는 상태 문구가 없어 라벨 자체가 색을 갖습니다</li>
           <li>버블 <b>픽업 / 위치</b> 두 줄</li>
         </ul>
         <h4>동작 규칙</h4>
         <ul>
           <li>× 는 <b>닫기</b>입니다. 접었다 펴는 탭은 없앴습니다.</li>
-          <li>닫아도 <b>위치 변경 · 300m 진입</b> 때는 다시 뜹니다. 그 밖에는 같은 호출 동안 닫힌 채로 둡니다.</li>
+          <li><b>배너는 상태가 아니라 사건입니다.</b> 값이 있다고 떠 있지 않습니다 — <b>최초 입력</b>은 받은 순간 기사가 내비일 때만, <b>수정</b>은 언제 받았든 내비에서 한 번 뜹니다. 300m 진입 재등장은 폐기했습니다(9/19).</li>
+          <li>소비는 <b>×</b> 를 누르거나 <b>띄운 채 내비를 떠날 때</b>입니다. 아직 한 번도 못 보여준 사건은 소비하지 않습니다. 다시 보는 길은 버블뿐입니다.</li>
           <li>배너를 누르면 타다 앱 픽업 카드로 갑니다(찾아오는 길은 거기에 있습니다).</li>
-          <li><b>버블을 누르면</b> 타다 앱으로 넘어가고, 카드의 상태 줄이 <b>3회 깜빡입니다.</b></li>
+          <li><b>버블을 누르면</b> 타다 앱으로 넘어가고, 카드의 상태 줄이 깜빡입니다(0.6s × <b>3회</b>).</li>
+          <li><b>카드 깜빡임도 같은 사건 모델입니다.</b> 최초 입력은 받은 순간 기사가 <b>타다 앱</b>일 때만(내비였으면 배너가 알렸으니 카드는 조용히), 수정은 언제 받았든 <b>타다 앱에 들어올 때</b> 한 번. 삭제·버블 탭은 한 번. 카드와 배너가 같은 사건을 각자의 화면에서 한 번씩 알립니다.</li>
+          <li>클래스는 <code>blink</code> <b>한 종류</b>입니다(<code>blink3</code>·<code>blink1</code> 은 없앴습니다). <code>animationend</code> 에 떼어야 다음 사건에 다시 돕니다.</li>
           <li>위치가 한 줄에 들어가면 흐르지 않고, 넘칠 때만 계속 흐릅니다.</li>
           <li>운행 시작 후(고객 탑승)에는 배너를 내리고 버블만 남깁니다.</li>
         </ul>
         <h4>주의</h4>
         <ul>
-          <li>흐르는 글은 주행 중 읽기 어렵습니다. 위치만 싣고 나머지는 음성으로 보냅니다.</li>
+          <li>흐르는 글은 주행 중 읽기 어렵습니다. 그래서 <b>위치만</b> 싣고 찾아오는 길은 카드에 둡니다. 음성 안내는 쓰지 않기로 했습니다(9/19).</li>
           <li>배너는 T맵 하단 막대를 덮습니다. 닫으면 막대가 그대로 보입니다.</li>
           <li>현장결제 안내와 배너 자리가 같습니다. 겹치면 현장결제를 먼저 한 바퀴 돌리고 위치로 넘깁니다.</li>
         </ul>
-        <p class="src" style="font-size:11px;color:var(--ink-3);margin-top:10px">기준: Figma 15610:39115 최종본 · DS overlay banner 29325:181198</p>
+        <p class="src" style="font-size:11px;color:var(--ink-3);margin-top:10px">기준: 드라이버 핸드오프 스펙 15795:8271 (2-3 숏컷 오버레이 · 3-1 알림 자리 · 3-2 배너 동작) · DS overlay banner 29325:181198</p>
       </div>      <div class="pane" id="dc-code" hidden>
         <h4>payload (드라이버 앱이 받는 값)</h4>
         <div class="cpwrap"><button type="button" class="cp" data-cp="dc-code-1">복사</button>
@@ -3271,9 +3279,10 @@
           font-size:20px; line-height:24px; font-weight:700; color:#EFEFF1;}
 .tconn{width:32px; height:10px; background:#19254D;}
 
-/* 앱 카드 상태 줄: 버블로 들어오면 3회 깜빡인다 */
-.plr-chg.blink3{animation:chgBlink .6s ease-in-out 3;}
-@keyframes chgBlink{0%,100%{opacity:1} 50%{opacity:.25}}</code></pre></div>
+/* 앱 카드 상태 줄 깜빡임 — 클래스는 한 종류다. 0.6s × 3회 */
+.plr-chg.blink{animation:chgBlink .6s ease-in-out 3;}
+@keyframes chgBlink{0%,100%{opacity:1} 50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){ .plr-chg.blink{animation:none;} }</code></pre></div>
         <h4>JS</h4>
         <div class="cpwrap"><button type="button" class="cp" data-cp="dc-code-4">복사</button>
         <pre><code id="dc-code-4">/* ── 1) 배너 그리기 ─────────────────────────────────────── */
@@ -3308,27 +3317,46 @@ closeBtn.onclick = e =&gt; { e.stopPropagation(); state.bannerClosed = true; ren
 
 pickBubble.onclick = () =&gt; {
   openTadaApp();                                    // 타다 앱 픽업 카드
-  state.pickupBlink = (state.pickupBlink || 0) + 1; // 카드에서 3회 깜빡임
+  state.cardQueue = { type: &#x27;BUBBLE_TAP&#x27; };         // 사건이 아니라 &#x27;여기다&#x27; 라는 응답
   render();
 };
 
 function paintCard(state) {                         // 앱 카드 쪽
-  if (state.pickupBlink !== state.pickupBlinkSeen) {
-    state.pickupBlinkSeen = state.pickupBlink;
-    cardStatus.classList.remove(&#x27;blink3&#x27;);
-    void cardStatus.offsetWidth;                    // 리플로우 → 애니메이션 재시작
-    cardStatus.classList.add(&#x27;blink3&#x27;);             // 0.6s × 3회
+  if (state.driverView !== &#x27;app&#x27;) return;           // 보고 있을 때만 소비한다
+  if (state.cardQueue &amp;&amp; state.cardQueue !== state.cardSeen) {
+    state.cardSeen = state.cardQueue;
+    blinkOnce(cardStatus);
   }
 }
 
-/* ── 4) 저절로 다시 뜨는 두 경우 ─────────────────────────── */
-function onPickupEvent(ev) {
-  if (ev.type === &#x27;CHANGED&#x27; || ev.type === &#x27;NEAR_300M&#x27;) {
-    state.bannerClosed = false;                     // 닫아 두었어도 다시 띄운다
-    speak(line(ev));
+function blinkOnce(el) {                            // 깜빡임은 한 종류다
+  el.classList.remove(&#x27;blink&#x27;);
+  void el.offsetWidth;                              // 리플로우 → 애니메이션 재시작
+  el.classList.add(&#x27;blink&#x27;);
+  el.addEventListener(&#x27;animationend&#x27;,              // 떼어 둬야 다음 사건에 다시 돈다
+    () =&gt; el.classList.remove(&#x27;blink&#x27;), { once: true });
+}
+
+/* ── 4) 무엇이 배너를 띄우나 — 상태가 아니라 사건이다 ───── */
+// 알림 자리는 화면마다 하나씩 있다: 타다 앱 = 카드 상태 줄, 내비 = 이 배너.
+// 그래서 &#x27;무엇을 알리나&#x27; 가 아니라 &#x27;받은 순간 기사가 어느 화면이었나&#x27; 로 가른다.
+function onPickupEvent(ev) {            // type: CREATED | CHANGED | DELETED
+  const view = state.driverView;        // &#x27;app&#x27; | &#x27;nav&#x27; | &#x27;route&#x27;
+  if (ev.type === &#x27;DELETED&#x27;) {          // 버블·배너를 거두고 카드만 남긴다
+    state.bannerQueue = null; state.bubble = false;
+    state.cardQueue = ev; render(); return;
+  }
+  state.bubble = true;                  // 값이 있는 동안 버블은 늘 선다
+  if (ev.type === &#x27;CREATED&#x27; &amp;&amp; view === &#x27;app&#x27;) {
+    state.cardQueue = ev;               // 카드가 알린다 — 배너는 큐에 넣지 않는다
+  } else {
+    state.bannerQueue = ev;             // 내비에서 한 번 (경로 선택 중 수신도 여기)
+    if (ev.type === &#x27;CHANGED&#x27;) state.cardQueue = ev;   // 수정은 양쪽 각각 한 번씩
   }
   render();
-}</code></pre></div>
+}
+// 소비: × 를 누르거나, 띄운 채 내비 화면을 떠날 때.
+// 아직 한 번도 못 보여준 사건은 소비하지 않는다. 다시 보는 길은 &#x27;픽업 장소&#x27; 버블뿐이다.</code></pre></div>
       </div>
     </div>
   </div>
