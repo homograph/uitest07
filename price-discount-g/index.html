@@ -86,7 +86,11 @@ body{font-variant-numeric:tabular-nums}
 .cdn{width:6px;height:10px;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat;transform:rotate(90deg);flex:none}
 .cup{width:6px;height:10px;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat;transform:rotate(-90deg);flex:none}
 .tag{display:inline-block;height:14px;padding:0 5px;border-radius:2px;background:#19254D;color:#fff;font-size:10px;line-height:14px;font-weight:700;white-space:nowrap}
-.chipmeta{display:inline-block;height:16px;padding:0 6px;border:1px solid #D5D7DC;border-radius:3px;font-size:10px;line-height:14px;color:#4B5064;white-space:nowrap}
+.reasonchip{display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 8px 8px;padding:7px 10px;border-radius:6px;background:#19254D;color:#fff;font-size:11px;line-height:16px;font-weight:700}
+.reasonchip b{font-weight:700}
+.barbtn{width:100%;border:0;font-family:inherit;cursor:pointer}
+.barbtn:hover{background:#22305f}
+.caret{width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid #fff;flex:none}
 
 /* 인라인 확장 */
 .exp{border-top:1px solid #D7E6F4;padding:7px 12px 8px;background:#fff}
@@ -140,6 +144,10 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
 </div>
 
 <div class="panel" id="panel" role="region" aria-label="설정">
+  <div class="row"><div class="lab">취소선</div><div class="chips" data-key="strike">
+    <button class="chip" data-v="thr">10% 이상만 (Airbnb 규칙)</button>
+    <button class="chip" data-v="always">할인이면 항상</button>
+  </div></div>
   <div class="row"><div class="lab">할인 라인업</div><div class="chips" data-key="pin">
     <button class="chip" data-v="0">창에서 밀릴 수 있음 (그랩 그대로)</button>
     <button class="chip" data-v="1">창에 고정</button>
@@ -168,6 +176,22 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
     <div class="side">
       <div class="box" id="cmp"></div>
       <div class="box">
+        <h3>다른 서비스는 "자동 적용된 할인"을 어떻게 말하나 (데스크 리서치)</h3>
+        <p class="note">유저가 직접 고르지 않은 할인의 명분을 어떤 형식으로 전달하는지만 봤습니다. 1차 자료는 앱스토어 현행 스크린샷, 규칙은 각 사 도움말.</p>
+        <div style="overflow-x:auto"><table>
+          <thead><tr><th>서비스</th><th>명분을 두는 자리</th><th>형식</th></tr></thead>
+          <tbody>
+            <tr><td>우버</td><td>시트 최상단</td><td>회색 pill + 아이콘 <code>Earning 6% Uber One credits</code></td></tr>
+            <tr data-on="1"><td>볼트</td><td>리스트 최상단</td><td><b>전체폭 컬러 바 + 펼치기</b> <code>✓ 15% promo applied ⌄</code></td></tr>
+            <tr><td>그랩</td><td>하단 배너 · 선택 행 확장</td><td><code>Save 100.000đ with Travel Pass →</code> + 인라인 확장</td></tr>
+            <tr data-on="1"><td>리프트</td><td><b>선택 카드 안</b></td><td>전체폭 칩 <code>Newer &amp; roomier car</code></td></tr>
+            <tr data-on="1"><td>Airbnb</td><td>가격 옆 · 내역</td><td><b>10% 이상일 때만 취소선</b>, 나머지는 내역 줄로만</td></tr>
+            <tr><td>Booking Genius</td><td>가격 옆</td><td>멤버십 배지 + 취소선</td></tr>
+          </tbody>
+        </table></div>
+        <p class="note" style="margin:10px 0 0">골라 쓴 셋: <b>볼트의 펼쳐지는 전체폭 바</b>(명분과 내역 진입을 한 요소가 겸함), <b>리프트의 카드 안 칩</b>(그 라인업에 적용된 결과를 카드 안에서 말함), <b>Airbnb의 10% 임계값</b>(서지 조정이라 할인율이 안 떨어지는 우리 문제의 답).</p>
+      </div>
+      <div class="box">
         <h3>그랩에서 그대로 가져온 것</h3>
         <ul>
           <li><b>접힘 3줄.</b> 라인업 전체를 늘어놓지 않고 세 줄만 둔다. 나머지는 <code>라인업 5개 모두 보기</code>로 연다.</li>
@@ -183,7 +207,9 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
         <ul>
           <li><b>인라인 확장의 내용이 할인 내역이다.</b> 그랩은 여기에 하위 차종(4 seater / EV)을 넣지만 타다 라인업엔 하위 옵션이 없다. 대신 <code>정가 / 금요일 밤 할인 −2,600원 / 예상 요금</code> 를 넣었다 — PRD의 "원래 금액 · 내 금액 · 필요시 사유"가 여기서 한 번에 해결된다.</li>
           <li><b>할인 라인업이 접힌 창의 기본 구성에 들어간다.</b> 기본 창은 <code>프라임 · 넥스트 · 카시트</code> 라 진입 직후에 넥스트의 <code>10%</code> 태그와 낮은 가격이 보인다. 크로스셀 넛지가 필요 없다.</li>
-          <li><b>취소선은 할인가 아래.</b> 우버·볼트 문법 유지.</li>
+          <li><b>취소선은 10% 이상일 때만</b>(Airbnb 규칙). 서지 조정이라 5.7% 같은 값이 나오면 취소선 대신 <code>−1,450원</code> 으로 말한다. 설정에서 <code>할인이면 항상</code> 과 비교할 수 있다. 쿠폰은 유저가 직접 고른 것이라 늘 취소선.</li>
+          <li><b>명분은 두 자리가 배타적으로 나눠 맡는다.</b> 고른 라인업이 할인 대상이면 <b>카드 안 전체폭 칩</b>(리프트), 대상이 아니면 <b>상단 전체폭 바</b>(볼트). 둘이 같이 뜨지 않으니 중복이 없다.</li>
+          <li><b>상단 바를 누르면 리스트가 펼쳐진다.</b> 볼트의 <code>⌄</code> 처럼 바가 명분과 진입을 겸한다.</li>
           <li><b>서지 할인 navy / 쿠폰 <code>#32A2FA</code></b> 색 분리 유지.</li>
         </ul>
       </div>
@@ -223,7 +249,7 @@ const R=[
 const BY=Object.fromEntries(R.map(r=>[r.id,r]));
 const COUPON=5000, REASON='금요일 밤';
 const BASE_WIN=['prime','next','carseat'];   // 접힌 창의 기본 구성
-const DEF={open:'0', expand:'0', lineup:'prime', discount:'ok', coupon:'0', pin:'0', win:BASE_WIN.join(',')};
+const DEF={open:'0', expand:'0', lineup:'prime', discount:'ok', coupon:'0', pin:'0', strike:'thr', win:BASE_WIN.join(',')};
 let S=Object.assign({},DEF);
 try{const s=localStorage.getItem('pd-g');if(s)S=Object.assign({},DEF,JSON.parse(s));}catch(e){}
 const save=()=>{try{localStorage.setItem('pd-g',JSON.stringify(S))}catch(e){}};
@@ -238,7 +264,11 @@ function calc(id){
     else { fare=24150; pct=null; }
   }
   const couponOn=S.coupon==='1';
-  return {base, fare, pay:fare-(couponOn?COUPON:0), pct, discounted:fare<base, couponOn};
+  const discounted=fare<base;
+  const rate=discounted?(base-fare)/base*100:0;
+  // Airbnb 규칙: 10% 이상일 때만 취소선. 미만이면 할인액만 말한다.
+  const strikeOK = S.strike==='always' || rate>=10;
+  return {base, fare, pay:fare-(couponOn?COUPON:0), pct, discounted, rate, strikeOK, couponOn};
 }
 const paxH=n=>n?`<span class="pax">${IC_PAX}<i>${n}</i></span>`:'';
 
@@ -257,7 +287,9 @@ function pick(id){
 function priceRow(c, sel){
   const cls = c.discounted||c.couponOn ? ' dc' : '';
   const was = c.couponOn ? (c.discounted?c.fare:c.base) : c.base;
-  const show = (c.discounted||c.couponOn) ? `<span class="was">${won(was)}</span>` : '';
+  const useStrike = c.couponOn ? true : c.strikeOK;      // 쿠폰은 유저가 고른 것이라 늘 취소선
+  const show = ((c.discounted&&useStrike)||c.couponOn) ? `<span class="was">${won(was)}</span>`
+             : (c.discounted ? `<span class="was" style="text-decoration:none;color:#19254D;font-weight:700">−${won(c.base-c.fare)}</span>` : '');
   return sel
     ? `<span class="prow"><span class="now${cls}">${won(c.pay)}</span><span class="${S.expand==='1'?'cup':'cdn'}"></span></span>${show}`
     : `<span class="now${cls}">${won(c.pay)}</span>${show}`;
@@ -273,7 +305,7 @@ function expandBody(id){
   if(c.discounted) rows+=`<dt class="dc">${esc(REASON)} 할인${c.pct?' '+c.pct+'%':''}</dt><dd class="dc">−${won(c.base-c.fare)}</dd>`;
   if(c.couponOn) rows+=`<dt>쿠폰</dt><dd>−${won(COUPON)}</dd>`;
   const note=c.discounted
-    ? (c.pct?'신고된 탄력요금 범위 안에서 조정된 금액이에요.':'서지 조정이라 할인율이 딱 떨어지지 않아요.')
+    ? (c.strikeOK?'신고된 탄력요금 범위 안에서 조정된 금액이에요.':`할인율이 ${c.rate.toFixed(1)}%라 정가 취소선 대신 할인액으로 알려드려요.`)
     : '이용료·탄력요금이 반영된 금액이에요.';
   return `<div class="exp"><dl>${rows}</dl>
     <div class="tot"><span>예상 요금</span><span>${won(c.pay)}</span></div>
@@ -288,6 +320,7 @@ function rowHTML(id){
       <span class="stx"><span class="n">${esc(r.name)}${r.info?IC_INFO:''}${c.discounted?'<span class="tag">'+(c.pct?c.pct+'%':'할인')+'</span>':''}</span>
       <span class="d">${esc(r.desc)}${paxH(r.pax)}</span></span>
       <span class="spr">${priceRow(c,true)}</span></button>
+    ${c.discounted&&S.expand!=='1'?`<div class="reasonchip"><span>${esc(REASON)}이라 ${c.pct?c.pct+'% 할인':'할인 적용 중'}</span><b>${won(c.base-c.fare)} 낮아졌어요</b></div>`:''}
     ${S.expand==='1'?expandBody(id):''}</div>`;
   return `<button class="row" data-pick="${id}">
     <img src="${TH[id]}" alt="">
@@ -300,8 +333,10 @@ function phoneHTML(){
   const anyDisc=S.discount!=='none';
   const ids = S.open==='1' ? R.map(r=>r.id) : S.win.split(',');
   const list = ids.map(rowHTML).join('');
-  const showBar = anyDisc && S.expand!=='1' && S.open!=='1';          // 확장하면 명분이 확장 안에 있으므로 바를 접는다
-  const bar = showBar ? `<div class="bar"><span>${esc(REASON)}이라 넥스트·플러스 할인 중</span></div>` : '';
+  // 볼트식 전체폭 바 — 지금 고른 라인업이 할인 대상이 아닐 때만 띄운다(대상일 땐 카드 안 칩이 말한다)
+  const selDisc = calc(S.lineup).discounted;
+  const showBar = anyDisc && !selDisc && S.expand!=='1' && S.open!=='1';
+  const bar = showBar ? `<button class="bar barbtn" data-open="1"><span>${esc(REASON)}이라 넥스트·플러스 할인 중</span><span class="caret"></span></button>` : '';
   const more = S.expand==='1' ? '' : (S.open==='1'
     ? `<button class="more" data-open="0">접기<span class="cup"></span></button>`
     : `<button class="more" data-open="1">라인업 ${R.length}개 모두 보기<span class="cdn"></span></button>`);
