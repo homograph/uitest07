@@ -88,37 +88,35 @@
   .rt-appbar-title{
     font-size:18px;font-weight:700;color:var(--ink);
   }
-  /* Task: 예약 유형 오선택 교정 → Figma 재조정판: "칩 2개 + 20px 헤드라인" 세로 구성이
-     언더라인 탭으로 바뀌었다. 탭 줄은 배경이 없다(화면 배경 --bg가 그대로 비친다).
-     선택 표시는 글자색 + 그 아래 4px 언더라인만으로 하고, 흰 박스나 칩 채움은 쓰지 않는다.
-     선택된 유형의 설명은 더 이상 이 줄에 있지 않다(#type-lead, 스크롤 영역 맨 위로 이동). */
+  /* Task: 예약 유형 오선택 교정 → Figma 최종판: 언더라인 탭이 다시 pill 칩으로 바뀌었다.
+     탭 줄(.rt-seg)은 배경 없이 칩 두 개를 가로로 늘어놓는다(가로 gap 8, 상하좌우 패딩 16
+     사방, 전부 Figma 실측). 칩은 높이 38, radius 999, 상하 패딩 8, 좌우 패딩 14, 폭은 글자에
+     맞춰(hug) 늘어나지 않는다. 선택된 유형의 설명은 이 줄에 있지 않다(#type-lead, 스크롤
+     영역 맨 위로 이동, 아래 참고). */
   .rt-seg{
     flex:0 0 auto;
-    display:flex;gap:12px;
-    padding:0 16px;
+    display:flex;gap:8px;
+    padding:16px;
     box-sizing:border-box;
   }
   .rt-seg-tab{
-    appearance:none;cursor:pointer;border:none;background:transparent;
+    appearance:none;cursor:pointer;border:none;
     flex:0 0 auto;
-    height:52px;
-    display:flex;flex-direction:column;
+    height:38px;
+    border-radius:999px;
+    padding:8px 14px;
     box-sizing:border-box;
-    padding:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:15px;line-height:1;
+    background:#FFFFFF;
+    color:#383D4F;
+    font-weight:400;
   }
-  .rt-seg-tab-label{
-    height:48px;
-    box-sizing:border-box;
-    padding:14px 0 6px;
-    font-size:20px;font-weight:700;line-height:28px;
-    color:#99A5C0;
+  .rt-seg-tab[aria-selected="true"]{
+    background:#31487D;
+    color:#FFFFFF;
+    font-weight:500;
   }
-  .rt-seg-tab-underline{
-    width:100%;height:4px;
-    background:transparent;
-  }
-  .rt-seg-tab[aria-selected="true"] .rt-seg-tab-label{color:#283873;}
-  .rt-seg-tab[aria-selected="true"] .rt-seg-tab-underline{background:#283873;}
   /* 보조 문구(구 #type-headline, 20px)를 대신한다. 스크롤 영역 맨 위, 카드와 같은 좌우
      여백(.rt-scroll의 padding)을 그대로 쓴다. */
   #type-lead{
@@ -197,10 +195,11 @@
   }
   .rt-card.rt-enter{animation: rt-card-enter .3s ease-out;}
 
-  /* Task 9913 → 되돌림: 넛지가 하단 고정 영역(.rt-footer)에서 스크롤 영역 안, 카드 목록
-     맨 아래로 돌아왔다. 이제 다른 카드와 나란히 스크롤에 실리므로 radius도 카드와 같은
-     12로 되돌리고, 등장 애니메이션도 카드와 같은 rt-card-enter(translateY+fade)를 쓴다
-     (footer 밀착 때문에 넣었던 페이드 전용 키프레임은 더 이상 필요 없다).
+  /* Task 9913/9915 분리(Figma 최종판): #nudge 요소 하나를 방향에 따라 renderNudge()가
+     DOM에서 옮긴다. 9913(to-normal, 강제 아님)은 .rt-scroll 맨 뒤(카드와 나란히),
+     9915(to-charter, CTA를 바텀시트로 막는 강제 경로)는 .rt-footer 안 CTA 바로 위.
+     radius는 두 자리 모두 4(Figma 실측, 카드 radius 12와는 다르다). 등장 애니메이션은
+     두 자리 모두 카드와 같은 rt-card-enter(translateY+fade)를 그대로 쓴다.
      아이콘 자리: assets_reservation_type/icons/ 에 이 자리에 맞는 아이콘이 없어 자리를
      비우고(가짜 아이콘을 그리지 않고) 텍스트만 둔다. */
   #nudge{
@@ -208,7 +207,7 @@
     align-items:flex-start;
     gap:10px;
     background:var(--nudge-bg);
-    border-radius:12px;
+    border-radius:4px;
     padding:20px;
     box-sizing:border-box;
   }
@@ -239,11 +238,22 @@
   .rt-footer{
     flex:0 0 auto;
     box-sizing:border-box;
+    /* flex column: 9915 넛지가 이 안에 들어올 때 margin이 형제(#cta)와 접히지 않게 한다
+       (block 서식 맥락이었다면 넛지 margin-bottom과 CTA margin-top이 접혀 의도한 간격이
+       안 나온다). 자식이 CTA 하나뿐일 때도 동작은 그대로다. */
+    display:flex;
+    flex-direction:column;
   }
   .rt-footer > .rt-cta{
     display:block;
     width:calc(100% - 32px);
     margin:16px;
+  }
+  /* 9915(to-charter): 넛지가 하단 고정 영역, CTA 바로 위. "가로 꽉(좌우 10 안쪽 여백)":
+     flex column의 기본 align-items:stretch가 폭을 채우고, 좌우 margin 10이 그 안쪽 여백을
+     만든다(카드 쪽 좌우 16과는 다른 값, Figma 실측 그대로). */
+  .rt-footer #nudge{
+    margin:16px 10px 0;
   }
   .rt-cta{
     width:100%;
@@ -558,14 +568,8 @@
       </div>
 
       <div class="rt-seg" role="tablist">
-        <button type="button" id="seg-normal" class="rt-seg-tab" role="tab" aria-selected="true">
-          <span class="rt-seg-tab-label"></span>
-          <span class="rt-seg-tab-underline"></span>
-        </button>
-        <button type="button" id="seg-charter" class="rt-seg-tab" role="tab" aria-selected="false">
-          <span class="rt-seg-tab-label"></span>
-          <span class="rt-seg-tab-underline"></span>
-        </button>
+        <button type="button" id="seg-normal" class="rt-seg-tab" role="tab" aria-selected="true"></button>
+        <button type="button" id="seg-charter" class="rt-seg-tab" role="tab" aria-selected="false"></button>
       </div>
 
       <div class="rt-scroll">
@@ -1167,14 +1171,14 @@ function charterCardHtml(s, isOpen){
     </div>`;
 }
 
-// Figma 재조정판: 언더라인 탭. 선택 표시는 라벨 글자색 + 언더라인 배경색(둘 다 CSS의
-// [aria-selected="true"] 룰이 맡는다)만으로 하고, 여기서는 라벨 텍스트와 aria-selected만 채운다.
+// Figma 최종판: pill 칩. 선택 표시는 칩 배경, 글자색, 굵기(전부 CSS의 [aria-selected="true"]
+// 룰이 맡는다)만으로 하고, 여기서는 버튼 텍스트와 aria-selected만 채운다.
 function renderTypeTab(btn, title, isActive){
   btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-  btn.querySelector('.rt-seg-tab-label').textContent = title;
+  btn.textContent = title;
 }
 
-// 선택된 유형의 보조 문구. 탭을 누르면 이 줄이 바뀐다(컨트롤은 탭, 결과는 #type-lead).
+// 선택된 유형의 보조 문구. 칩을 누르면 이 줄이 바뀐다(컨트롤은 칩, 결과는 #type-lead).
 const TYPE_LEAD = {
   normal:  '목적지까지 한 번에 이동할 때',
   charter: '이동해서 기다리거나 왕복할 때',
@@ -1224,6 +1228,22 @@ function renderNudge(){
   const el = document.getElementById('nudge');
   const n = judgeNudge(S);
   if (!n){ el.hidden = true; return; }
+  // 방향에 따라 자리를 옮긴다. 9915(to-charter)는 CTA를 바텀시트로 가로막는 강제 경로라
+  // 입력 내내 보여야 하므로 하단 고정 영역(.rt-footer, CTA 바로 위)에 둔다. 9913(to-normal)은
+  // 막지 않는 안내라 카드 흐름 안, 스크롤 영역(.rt-scroll) 맨 뒤에 둔다. 이미 맞는 자리에
+  // 있으면 건드리지 않는다(매 렌더마다 불필요한 DOM 변경을 피한다).
+  if (n.dir === 'to-charter'){
+    const footer = document.querySelector('#screen-input .rt-footer');
+    const cta = document.getElementById('cta');
+    if (el.parentElement !== footer || el.nextElementSibling !== cta){
+      footer.insertBefore(el, cta);
+    }
+  } else {
+    const scroll = document.querySelector('#screen-input .rt-scroll');
+    if (el.parentElement !== scroll || scroll.lastElementChild !== el){
+      scroll.appendChild(el);
+    }
+  }
   const c = COPY[n.reason];
   document.getElementById('nudge-title').textContent = c.title(S);
   document.getElementById('nudge-body').textContent = c.body(S);
@@ -1594,9 +1614,10 @@ function runInputTests(){
     S.screen = 'input'; render();
   });
   test('세그먼트 라벨이 일반예약 / 시간대절', ()=>{
-    // 탭 안 라벨 요소만 읽는다(설명은 이제 탭이 아니라 #type-lead가 보여준다).
-    eq(document.getElementById('seg-normal').querySelector('.rt-seg-tab-label').textContent.trim(), '일반예약');
-    eq(document.getElementById('seg-charter').querySelector('.rt-seg-tab-label').textContent.trim(), '시간대절');
+    // Figma 최종판(pill 칩)은 라벨을 감싸는 별도 span이 없다. 버튼 자신의 textContent를 읽는다
+    // (설명은 칩이 아니라 #type-lead가 보여준다).
+    eq(document.getElementById('seg-normal').textContent.trim(), '일반예약');
+    eq(document.getElementById('seg-charter').textContent.trim(), '시간대절');
   });
   test('유형 카드 두 개는 높이가 같다', ()=>{
     S = fresh('normal','normal'); render();
@@ -1605,7 +1626,7 @@ function runInputTests(){
     if (Math.abs(a-b) > 1) throw new Error(`heights differ: ${a} vs ${b}`);
   });
   // '헤드라인이 선택된 유형의 설명을 보여 준다'는 #type-headline(칩 구성) 전용이었다.
-  // 언더라인 탭 + #type-lead 구조에서는 '보조 문구가 선택된 유형을 따라간다'로 대체한다
+  // pill 칩 + #type-lead 구조에서는 '보조 문구가 선택된 유형을 따라간다'로 대체한다
   // (아래, 원래 문구 "목적지까지 한 번에" → "목적지까지 한 번에 이동할 때"로도 바뀌었다).
   test('보조 문구가 선택된 유형을 따라간다', ()=>{
     S = fresh('normal','normal'); render();
@@ -1613,21 +1634,23 @@ function runInputTests(){
     setType('charter');
     eq(document.getElementById('type-lead').textContent.trim(), '이동해서 기다리거나 왕복할 때');
   });
-  // '칩이 헤드라인보다 위에 있다'는 같은 .rt-seg 안 세로 배치를 봤다. 지금은 탭 줄(.rt-seg)과
-  // 보조 문구(#type-lead)가 서로 다른 컨테이너(.rt-seg vs .rt-scroll)에 있지만, 탭이 여전히
+  // '칩이 헤드라인보다 위에 있다'는 같은 .rt-seg 안 세로 배치를 봤다. 지금은 칩 줄(.rt-seg)과
+  // 보조 문구(#type-lead)가 서로 다른 컨테이너(.rt-seg vs .rt-scroll)에 있지만, 칩이 여전히
   // 보조 문구보다 위에 그려져야 한다는 요구는 남아 있어 같은 방식으로 확인한다.
-  test('탭이 보조 문구보다 위에 있다', ()=>{
+  test('칩이 보조 문구보다 위에 있다', ()=>{
     S = fresh('normal','normal'); render();
-    const tab = document.getElementById('seg-normal').getBoundingClientRect();
+    const chip = document.getElementById('seg-normal').getBoundingClientRect();
     const lead = document.getElementById('type-lead').getBoundingClientRect();
-    if (!(tab.bottom <= lead.top)) throw new Error(`tab bottom ${tab.bottom} > lead top ${lead.top}`);
+    if (!(chip.bottom <= lead.top)) throw new Error(`chip bottom ${chip.bottom} > lead top ${lead.top}`);
   });
-  // '칩 터치 타깃이 44 이상이다'를 탭 구조로 그대로 옮긴다(이름만 바뀜, id·기준은 동일).
-  test('탭 터치 타깃이 44 이상이다', ()=>{
+  // 언더라인 탭이던 시절 '탭 터치 타깃이 44 이상이다'였다. Figma 최종판은 pill 칩 높이가
+  // 38로 실측돼(44 미만) 그 단언이 더는 성립하지 않는다. 44 기준을 지우는 대신, 실측값
+  // 38을 하한으로 낮춰 그 밑으로 줄어드는 회귀만 잡는다(44 이상을 요구하지 않는다).
+  test('칩 높이가 38 이상이다(Figma 실측)', ()=>{
     S = fresh('normal','normal'); render();
     for (const id of ['seg-normal','seg-charter']) {
       const h = document.getElementById(id).getBoundingClientRect().height;
-      if (h < 44) throw new Error(id + ' height ' + h);
+      if (h < 38) throw new Error(id + ' height ' + h);
     }
   });
   test('aria-selected 가 선택 상태를 따라간다', ()=>{
@@ -1637,17 +1660,18 @@ function runInputTests(){
     setType('charter');
     eq(document.getElementById('seg-charter').getAttribute('aria-selected'), 'true');
   });
-  // 선택 표시가 칩 채움(is-active 배경)에서 언더라인으로 바뀌었다. 구현이 ::after가 아니라
-  // 별도 요소(.rt-seg-tab-underline)라 그 배경색으로 "선택된 쪽에만 언더라인이 있다"를 잰다.
-  test('선택된 탭만 언더라인을 가진다', ()=>{
+  // 선택 표시가 언더라인(별도 .rt-seg-tab-underline 요소)에서 다시 칩 채움(배경색)으로
+  // 돌아갔다. 언더라인은 더 이상 DOM에 없으므로 '선택된 탭만 언더라인을 가진다'는 그
+  // 구조를 그대로 옮겨 검사할 수 없어, 칩 자신의 배경색으로 같은 의도("선택된 쪽만 채워짐")를
+  // 검사하는 테스트로 대체한다.
+  test('선택된 칩만 채워진다', ()=>{
     S = fresh('normal','normal'); render();
-    const underlineColor = id =>
-      getComputedStyle(document.getElementById(id).querySelector('.rt-seg-tab-underline')).backgroundColor;
-    eq(underlineColor('seg-normal'), 'rgb(40, 56, 115)');   // #283873, 선택된 쪽
-    eq(underlineColor('seg-charter'), 'rgba(0, 0, 0, 0)');  // 미선택은 배경 없음
+    const bg = id => getComputedStyle(document.getElementById(id)).backgroundColor;
+    eq(bg('seg-normal'), 'rgb(49, 72, 125)');
+    eq(bg('seg-charter'), 'rgb(255, 255, 255)');
     setType('charter');
-    eq(underlineColor('seg-normal'), 'rgba(0, 0, 0, 0)');
-    eq(underlineColor('seg-charter'), 'rgb(40, 56, 115)');
+    eq(bg('seg-charter'), 'rgb(49, 72, 125)');
+    eq(bg('seg-normal'), 'rgb(255, 255, 255)');
   });
 }
 function runSheetTests(){
@@ -2020,9 +2044,9 @@ function runLayoutTests(){
     S = fresh('golf','normal'); render();
     eq(getComputedStyle(document.getElementById('nudge')).backgroundColor, 'rgb(241, 249, 254)');
   });
-  // '넛지는 CTA 바로 위에 있다'는 .rt-footer 안 DOM 형제 관계(#nudge 다음이 #cta)를 봤다.
-  // 넛지가 스크롤 영역 안, 카드 목록 맨 아래로 되돌아가면서 더는 #cta와 형제가 아니다.
-  // 아래 '넛지가 스크롤 영역 안 카드들 뒤에 있다'로 대체한다.
+  // '넛지는 CTA 바로 위에 있다'(.rt-footer 안 DOM 형제 관계, #nudge 다음이 #cta)는 방향에
+  // 따라 자리가 갈리면서 9915(to-charter)일 때만 참이다. 아래 '9915 넛지는 하단 고정 영역
+  // CTA 위에 있다'가 그 조건으로 이 검사를 이어받는다.
   test('경로 칩 두 개가 한 줄에 들어간다', ()=>{
     S = fresh('short','charter'); S.charterHours = 3; S.screen = 'preview'; render();
     const chips = [...document.querySelectorAll('#route-chips > *')];
@@ -2039,17 +2063,16 @@ function runLayoutTests(){
   // 예외 셀렉터가 '.wheel'인데 실제 클래스는 '.rt-wheel-col'이라 이중으로 죽어 있었다.
   // 이제 color·backgroundColor 둘 다 보고, 이 프로젝트가 문서화한 강조색만 각자의 자리에서만
   // 허용한다. 그 밖에 채도가 높은(무채색이 아닌) rgb 색이 나오면 잡는다.
-  // 언더라인 탭에서 선택된 쪽 글자색·언더라인 배경 #283873가 새 강조색이다(구 칩 채움
-  // #31487D는 탭으로 바뀌며 없어졌다). 넛지 CTA는 navy(#19254d, AA 대비 확보)로 바뀌어
-  // --nudge-accent(#0086EA)는 더 이상 실제로 쓰이지 않지만, 과거 스냅샷과의 호환을 위해
-  // 예외 목록에는 남겨둔다.
+  // pill 칩으로 되돌아오며 선택된 칩 배경 #31487D가 다시 강조색이다(언더라인 탭 시절 쓰던
+  // 선택 글자색·언더라인 배경 #283873/미선택 글자 #99A5C0는 언더라인과 함께 없어졌다).
+  // 넛지 CTA는 navy(#19254d, AA 대비 확보)를 쓰고, --nudge-accent(#0086EA)는 더 이상 실제로
+  // 쓰이지 않지만 과거 스냅샷과의 호환을 위해 예외 목록에는 남겨둔다.
   test('강조색은 navy 하나뿐 (폰 프레임 안)', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'pickup'; render();
     const NAVY = 'rgb(25, 37, 77)';          // --navy #19254d, 유일한 전역 강조색
     const NUDGE_ACCENT = 'rgb(0, 134, 234)'; // --nudge-accent #0086EA, #nudge 안에서만 허용(현재 미사용)
     const WHEEL_INK = 'rgb(0, 148, 249)';    // --wheel-band-ink #0094F9, 휠 컬럼 안에서만 허용
-    const TAB_ACCENT = 'rgb(40, 56, 115)';   // 선택된 탭 글자·언더라인 #283873, .rt-seg 안에서만 허용
-    const TAB_INACTIVE = 'rgb(153, 165, 192)'; // 미선택 탭 글자 #99A5C0, .rt-seg 안에서만 허용
+    const PILL_ACCENT = 'rgb(49, 72, 125)';  // 선택된 칩 배경 #31487D, .rt-seg 안에서만 허용
     const rgbRe = /^rgb\((\d+), (\d+), (\d+)\)$/;
     const els = document.querySelectorAll('#phone *');
     for (const el of els){
@@ -2065,7 +2088,7 @@ function runLayoutTests(){
           if (el.closest('.rt-wheel-col')) continue;
           throw new Error(`unexpected accent ${prop}=${v} outside wheel column`);
         }
-        if (v === TAB_ACCENT || v === TAB_INACTIVE){
+        if (v === PILL_ACCENT){
           if (el.closest('.rt-seg')) continue;
           throw new Error(`unexpected accent ${prop}=${v} outside .rt-seg`);
         }
@@ -2083,16 +2106,43 @@ function runLayoutTests(){
   test('폰 프레임은 항상 360px 폭이다', ()=>{
     eq(document.getElementById('phone').offsetWidth, 360);
   });
-  // '넛지는 스크롤 영역 밖 고정 영역에 있다'는 정반대로 뒤집혔다(넛지가 .rt-footer에서
-  // .rt-scroll 안으로 되돌아갔다). '스크롤을 끝까지 내려도 넛지가 보인다'도 이제 넛지가
-  // 스크롤과 함께 움직이므로(더는 화면에 고정돼 있지 않으므로) 성립하지 않는다. 둘 다
-  // 아래 '넛지가 스크롤 영역 안 카드들 뒤에 있다'로 대체한다.
+  // Figma 최종판: 넛지 자리가 방향에 따라 갈린다. 이 테스트가 쓰던 fresh('golf','normal')은
+  // 9915(to-charter) 조건이라, 넛지가 이제 스크롤이 아니라 .rt-footer(CTA 바로 위)로 간다
+  // (아래 '9915 넛지는 하단 고정 영역 CTA 위에 있다' 참고). '스크롤 영역 카드들 뒤'는 이제
+  // 9913(to-normal)일 때만 참이라, 시나리오를 그쪽으로 바꿔 같은 이름·같은 단언을 유지한다.
   test('넛지가 스크롤 영역 안 카드들 뒤에 있다', ()=>{
-    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
     const n = document.getElementById('nudge');
     if (!n.closest('.rt-scroll')) throw new Error('nudge is not inside the scroll area');
     const scroll = n.closest('.rt-scroll');
     eq(scroll.lastElementChild, n);
+  });
+  test('9913 넛지는 스크롤 영역 맨 뒤에 있다', ()=>{
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
+    const n = document.getElementById('nudge');
+    eq(n.hidden, false);
+    const sc = document.querySelector('#screen-input .rt-scroll');
+    if (!sc.contains(n)) throw new Error('9913 nudge is not in the scroll area');
+    eq(sc.lastElementChild, n);
+  });
+  test('9915 넛지는 하단 고정 영역 CTA 위에 있다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    const n = document.getElementById('nudge');
+    eq(n.hidden, false);
+    const ft = document.querySelector('#screen-input .rt-footer');
+    if (!ft.contains(n)) throw new Error('9915 nudge is not in the footer');
+    const cta = document.getElementById('cta');
+    eq(n.nextElementSibling, cta);
+  });
+  test('방향이 바뀌면 넛지 자리도 옮겨간다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    const inFooter = document.querySelector('#screen-input .rt-footer')
+      .contains(document.getElementById('nudge'));
+    if (!inFooter) throw new Error('setup failed');
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
+    const inScroll = document.querySelector('#screen-input .rt-scroll')
+      .contains(document.getElementById('nudge'));
+    if (!inScroll) throw new Error('nudge did not move to the scroll area');
   });
   // COPY[key].banner가 없어져(2줄 넛지는 title+body를 쓴다) title+body 조합이
   // reason 별로 다른지로 검사를 바꾼다. 이름은 그대로 둔다.
