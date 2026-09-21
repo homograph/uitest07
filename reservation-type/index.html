@@ -18,6 +18,8 @@
     --ink:#171A24;
     --ink-sub:#8C93A6;
     --nudge-bg:#F1F9FE;
+    --nudge-border:#E3E4E8;
+    --nudge-body-ink:#31487D;
     --nudge-accent:#0086EA;
     /* Task 5에서 추가한 토큰. 휠 선택 밴드 전용. */
     --wheel-band-bg:#F1F9FE;
@@ -195,52 +197,76 @@
   }
   .rt-card.rt-enter{animation: rt-card-enter .3s ease-out;}
 
-  /* Task 9913/9915 분리(Figma 최종판): #nudge 요소 하나를 방향에 따라 renderNudge()가
-     DOM에서 옮긴다. 9913(to-normal, 강제 아님)은 .rt-scroll 맨 뒤(카드와 나란히),
-     9915(to-charter, CTA를 바텀시트로 막는 강제 경로)는 .rt-footer 안 CTA 바로 위.
-     radius는 두 자리 모두 4(Figma 실측, 카드 radius 12와는 다르다). 등장 애니메이션은
-     두 자리 모두 카드와 같은 rt-card-enter(translateY+fade)를 그대로 쓴다.
+  /* Task 9913/9915 통합(Figma 최종판, v5): 방향에 따라 자리가 갈리던 것을 없애고 #nudge는
+     항상 .rt-scroll 맨 뒤(카드와 나란히)에 고정한다(renderNudge() 참고). 고정 영역(.rt-footer)에는
+     #cta만 남는다. 세로 스택(제목+본문 묶음 위, 버튼 아래)으로 바뀌면서 카드 자체에 테두리(1px
+     #E3E4E8)와 radius 12(카드 radius와 동일)가 생겼다(기존엔 border 없이 radius 4였다).
+     등장 애니메이션은 카드와 같은 rt-card-enter(translateY+fade)를 그대로 쓴다.
      아이콘 자리: assets_reservation_type/icons/ 에 이 자리에 맞는 아이콘이 없어 자리를
-     비우고(가짜 아이콘을 그리지 않고) 텍스트만 둔다. */
+     비우고(가짜 아이콘을 그리지 않고) 텍스트만 둔다. .rt-nudge-row는 Figma의 "가로 묶음"
+     (아이콘 자리+텍스트 열, gap 16) 구조를 남겨 둬 나중에 아이콘 에셋이 생기면 그 자리에
+     끼워 넣을 수 있게 한다. */
   #nudge{
     display:flex;
-    align-items:flex-start;
-    gap:10px;
+    flex-direction:column;
+    gap:4px;
     background:var(--nudge-bg);
-    border-radius:4px;
-    padding:20px;
+    border:1px solid var(--nudge-border);
+    border-radius:12px;
+    padding:20px 20px 10px 20px;
     box-sizing:border-box;
   }
   /* 위의 display:flex 가 hidden 속성의 기본 display:none 을 덮어쓴다. 그대로 두면
      조건이 거짓일 때 글자만 비고 파란 띠가 남는다. 속성을 다시 이기게 한다. */
   #nudge[hidden]{display:none;}
   #nudge.rt-enter{animation: rt-card-enter .3s ease-out;}
+  /* v6: 넛지가 스크롤 안으로 내려가 유저가 스크롤을 안 하면 안 보일 수 있다. 조건이 참인데
+     '설정 완료'를 누르면(flashNudge, onCtaPress 참고) 배너로 스크롤해 데려온 뒤 한 번
+     강조한다. 등장 애니메이션(rt-enter)과 같은 요소에 걸리므로 둘이 같이 걸리지 않게
+     flashNudge()가 rt-enter를 먼저 지운다. */
+  @keyframes rt-nudge-flash{
+    0%   { border-color:var(--nudge-border); box-shadow:0 0 0 0 rgba(25,37,77,0); }
+    15%  { border-color:var(--navy);         box-shadow:0 0 0 3px rgba(25,37,77,.18); }
+    70%  { border-color:var(--navy);         box-shadow:0 0 0 3px rgba(25,37,77,.18); }
+    100% { border-color:var(--nudge-border); box-shadow:0 0 0 0 rgba(25,37,77,0); }
+  }
+  #nudge.rt-flash{ animation: rt-nudge-flash .9s ease-out; }
+  @media (prefers-reduced-motion: reduce){
+    #nudge.rt-flash{ animation:none; }
+    .rt-scroll{ scroll-behavior:auto; }
+  }
+  .rt-nudge-row{
+    display:flex;
+    align-items:flex-start;
+    gap:16px;
+  }
   #nudge-text{
     flex:1 1 auto;
     min-width:0;
-    display:flex;flex-direction:column;gap:2px;
+    display:flex;flex-direction:column;gap:4px;
   }
   #nudge-title{
-    font-size:14px;font-weight:700;color:var(--ink);
+    font-size:15px;font-weight:700;color:var(--navy);
+    word-break:keep-all;overflow-wrap:break-word;
   }
   #nudge-body{
-    font-size:13px;font-weight:400;color:var(--ink-sub);
+    font-size:13px;font-weight:400;color:var(--nudge-body-ink);
+    word-break:keep-all;overflow-wrap:break-word;
   }
   #nudge-cta{
-    flex:0 0 auto;
+    align-self:flex-start;
     appearance:none;border:none;background:transparent;cursor:pointer;
-    width:44px;height:44px;
-    display:flex;align-items:center;justify-content:center;
-    color:var(--navy);font-weight:700;font-size:14px;
-    padding:0;margin:0;white-space:nowrap;
+    font-weight:700;font-size:14px;
+    padding:14px 18px;border-radius:4px;
+    color:var(--navy);
+    margin:0;white-space:nowrap;
   }
 
+  /* v5: 넛지가 방향과 무관하게 항상 .rt-scroll에 있으므로 .rt-footer에는 #cta만 남는다.
+     flex column은 그대로 둔다(자식이 하나뿐이라도 동작에 영향 없음). */
   .rt-footer{
     flex:0 0 auto;
     box-sizing:border-box;
-    /* flex column: 9915 넛지가 이 안에 들어올 때 margin이 형제(#cta)와 접히지 않게 한다
-       (block 서식 맥락이었다면 넛지 margin-bottom과 CTA margin-top이 접혀 의도한 간격이
-       안 나온다). 자식이 CTA 하나뿐일 때도 동작은 그대로다. */
     display:flex;
     flex-direction:column;
   }
@@ -248,12 +274,6 @@
     display:block;
     width:calc(100% - 32px);
     margin:16px;
-  }
-  /* 9915(to-charter): 넛지가 하단 고정 영역, CTA 바로 위. "가로 꽉(좌우 10 안쪽 여백)":
-     flex column의 기본 align-items:stretch가 폭을 채우고, 좌우 margin 10이 그 안쪽 여백을
-     만든다(카드 쪽 좌우 16과는 다른 값, Figma 실측 그대로). */
-  .rt-footer #nudge{
-    margin:16px 10px 0;
   }
   .rt-cta{
     width:100%;
@@ -578,9 +598,11 @@
         <div class="rt-card" id="card-pickup"></div>
         <div class="rt-card" id="card-charter" hidden></div>
         <div id="nudge" hidden>
-          <div id="nudge-text">
-            <span id="nudge-title"></span>
-            <span id="nudge-body"></span>
+          <div class="rt-nudge-row">
+            <div id="nudge-text">
+              <span id="nudge-title"></span>
+              <span id="nudge-body"></span>
+            </div>
           </div>
           <button type="button" id="nudge-cta"></button>
         </div>
@@ -702,7 +724,7 @@ function fresh(scenarioKey, type){
     etaMin: sc.etaMin,
     flags: { ...sc.flags },
     convertedTo: null,               // 'normal' | 'charter' | null  (왕복 방지)
-    sheetDismissed: false,
+    nudgeAcked: false,
     screen: 'input',                 // 'input' | 'vehicle' | 'preview'
     openCard: null,                  // null | 'none' | 'route' | 'pickup' | 'charter'  (아코디언: 하나만 열림)
                                       // null=아직 안 고름(기본값, renderInput에서 'route'로 취급),
@@ -768,7 +790,7 @@ function setType(next){
   if (S.type === next) return;
   S.type = next;
   if (next === 'normal') S.charterHours = null;
-  S.sheetDismissed = false;
+  S.nudgeAcked = false;
   // 수정 5: 스펙 §6의 왕복 방지는 "전환으로 진입한 유형"만 억제 대상이다. 유저가 세그먼트를
   // 직접 눌러 고른 유형은 대상이 아니므로 convertedTo를 비운다. 안 비우면 예전 전환 표식이
   // 세그먼트를 몇 번 오가도 계속 남아, 유저가 직접 고른 유형에서도 넛지가 영구히 억제된다.
@@ -814,13 +836,42 @@ function onCtaPress(){
   if (S.openCard === 'pickup'){ confirmPickupWheelFromCard(); return; }
   if (S.openCard === 'charter'){ confirmCharterWheelFromCard(); return; }
   if (ctaLabel(S) !== '설정 완료'){ onCtaClick(); return; }
-  const n = judgeNudge(S);
-  const blocks = n && n.dir === 'to-charter' && !S.sheetDismissed;
-  if (blocks){ openSheet(n.reason); return; }
+  if (judgeNudge(S) && !S.nudgeAcked){ S.nudgeAcked = true; flashNudge(); return; }
   S.screen = 'vehicle';
   render();
 }
 
+// v6: 넛지가 스크롤 안으로 내려가면서(v5) 유저가 스크롤을 안 하면 안 보일 수 있게 됐다.
+// 조건이 참인데('judgeNudge'가 참) 유저가 그냥 '설정 완료'를 누르면, 화면을 넘기는 대신
+// 배너로 스크롤해 데려와 한 번 강조한다. 방향(9913/9915) 구분 없이 둘 다 막는다. 딱 한
+// 번만 막는다: S.nudgeAcked가 그 표식이다(이 예약 세션 동안 다시 막지 않는다는 뜻은
+// 예전 시트 확인 플래그와 동일해 이름만 바꿔 그대로 재사용한다). judgeNudge() 자체는
+// nudgeAcked를 보지 않으므로 강조 뒤에도 배너(인라인 카드)는 조건이 참인 한 계속 떠 있다.
+function flashNudge(){
+  const el = document.getElementById('nudge');
+  if (!el || el.hidden) return;
+  const scroll = document.querySelector('#screen-input .rt-scroll');
+  if (!scroll) return;
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // scrollIntoView는 바깥 페이지까지 움직일 수 있어 쓰지 않는다. 넛지가 .rt-scroll의
+  // 마지막 자식이므로(renderNudge 참고) 그 컨테이너를 바닥까지 스크롤하는 것으로 충분하다.
+  scroll.scrollTo({ top: scroll.scrollHeight, behavior: reduceMotion ? 'auto' : 'smooth' });
+  // rt-enter(등장 애니메이션)와 같은 요소에 걸리므로 먼저 지워 서로 덮어쓰지 않게 한다.
+  el.classList.remove('rt-enter');
+  el.classList.remove('rt-flash');
+  void el.offsetWidth; // 리플로우: 재실행(remove -> add)이 실제로 애니메이션을 다시 타게 한다.
+  el.classList.add('rt-flash');
+  // 애니메이션이 끝나면 클래스를 지운다(재실행을 위한 remove는 위에서 이미 add 전에 했다).
+  // prefers-reduced-motion에서는 애니메이션이 없어(animation:none) animationend가 안 오지만,
+  // 시각적으로 아무 효과도 없는 클래스라 남아 있어도 무해하다.
+  el.addEventListener('animationend', function onFlashEnd(){
+    el.classList.remove('rt-flash');
+    el.removeEventListener('animationend', onFlashEnd);
+  }, { once: true });
+}
+
+// v5부터 CTA 경로에서는 쓰이지 않는다. 강조(flashNudge)가 대체. 되돌리려면 onCtaPress의
+// flash 분기를 openSheet로 바꾸면 된다.
 // 9915 방향(일반예약 → 시간대절)만 가로막는 확인 바텀시트.
 // 요금이 아니라 '복귀 위험'을 확인시키는 절차라 인라인 카드로 그치지 않는다.
 function openSheet(reason){
@@ -840,9 +891,9 @@ function closeSheet(){
   document.getElementById('sheet-backdrop').hidden = true;
 }
 // '그대로 진행': 이 예약 세션 동안 다시 가로막지 않는다. 단 인라인 카드는
-// judgeNudge()가 sheetDismissed를 보지 않으므로(조건이 여전히 참이면) 그대로 남는다.
+// judgeNudge()가 nudgeAcked를 보지 않으므로(조건이 여전히 참이면) 그대로 남는다.
 function dismissSheet(){
-  S.sheetDismissed = true;
+  S.nudgeAcked = true;
   closeSheet();
   S.screen = 'vehicle';
   render();
@@ -853,7 +904,7 @@ function convert(to){
   S.type = to;
   if (to === 'normal') S.charterHours = null;
   S.convertedTo = to;          // 왕복 방지 표식
-  S.sheetDismissed = false;
+  S.nudgeAcked = false;
   if (to === 'charter') S.openCard = 'charter';   // 대절 시간 카드 열린 상태로 착지
   // 수정 4: 스펙 §5.4는 시간대절 → 일반예약 착지 상태를 "카드 모두 접힘"으로 요구한다.
   // null을 넣으면 renderInput()의 `S.openCard || 'route'` 폴백에 흡수돼 경로 카드가 열려
@@ -868,7 +919,7 @@ function convert(to){
 // 호출하면 재판정이 저절로 된다. 넛지 표시 여부를 따로 들고 있는 변수를 만들지 않는다.
 function setRoute(patch){
   Object.assign(S.route, patch);
-  S.sheetDismissed = false;     // 경로가 바뀌면 판단의 전제가 바뀐다
+  S.nudgeAcked = false;     // 경로가 바뀌면 판단의 전제가 바뀐다
   render();
 }
 function setCharterHours(h){
@@ -1228,27 +1279,18 @@ function renderNudge(){
   const el = document.getElementById('nudge');
   const n = judgeNudge(S);
   if (!n){ el.hidden = true; return; }
-  // 방향에 따라 자리를 옮긴다. 9915(to-charter)는 CTA를 바텀시트로 가로막는 강제 경로라
-  // 입력 내내 보여야 하므로 하단 고정 영역(.rt-footer, CTA 바로 위)에 둔다. 9913(to-normal)은
-  // 막지 않는 안내라 카드 흐름 안, 스크롤 영역(.rt-scroll) 맨 뒤에 둔다. 이미 맞는 자리에
-  // 있으면 건드리지 않는다(매 렌더마다 불필요한 DOM 변경을 피한다).
-  if (n.dir === 'to-charter'){
-    const footer = document.querySelector('#screen-input .rt-footer');
-    const cta = document.getElementById('cta');
-    if (el.parentElement !== footer || el.nextElementSibling !== cta){
-      footer.insertBefore(el, cta);
-    }
-  } else {
-    const scroll = document.querySelector('#screen-input .rt-scroll');
-    if (el.parentElement !== scroll || scroll.lastElementChild !== el){
-      scroll.appendChild(el);
-    }
+  // v5(Figma 최종판): 방향에 따라 자리를 옮기던 분기를 없앴다. 9913(to-normal)·9915(to-charter)
+  // 모두 카드 흐름 안, 스크롤 영역(.rt-scroll) 맨 뒤에 둔다. 이미 맞는 자리에 있으면 건드리지
+  // 않는다(매 렌더마다 불필요한 DOM 변경을 피한다).
+  const scroll = document.querySelector('#screen-input .rt-scroll');
+  if (el.parentElement !== scroll || scroll.lastElementChild !== el){
+    scroll.appendChild(el);
   }
   const c = COPY[n.reason];
   document.getElementById('nudge-title').textContent = c.title(S);
   document.getElementById('nudge-body').textContent = c.body(S);
   const cta = document.getElementById('nudge-cta');
-  cta.textContent = '변경';
+  cta.textContent = n.dir === 'to-normal' ? '일반예약으로 변경하기' : '시간대절로 변경하기';
   cta.onclick = ()=> convert(n.dir === 'to-normal' ? 'normal' : 'charter');
   const wasHidden = el.hidden;
   el.hidden = false;
@@ -1521,6 +1563,7 @@ function resetForTest(){
   const nudgeEl = document.getElementById('nudge');
   nudgeEl.hidden = true;
   nudgeEl.classList.remove('rt-enter');
+  nudgeEl.classList.remove('rt-flash');   // v6: 강조 애니메이션 클래스도 테스트 간에 새지 않게 한다.
   // 휠의 "프로그램 스크롤 진행 중" 표식(열마다 colEl._wheelProgramTarget)도 초기화한다.
   // 남아 있으면 앞 테스트가 만든 표식이 뒤 테스트의 스크롤 판정에 새어 들어갈 수 있다.
   document.querySelectorAll('.rt-wheel-col').forEach(el => { el._wheelProgramTarget = null; });
@@ -1675,44 +1718,55 @@ function runInputTests(){
   });
 }
 function runSheetTests(){
-  test('9915 · 골프장이면 CTA가 바텀시트로 가로막힌다', ()=>{
+  // v6: 9915(to-charter) 방향을 가로막던 바텀시트를 강조(flashNudge)가 대체했다(onCtaPress
+  // 참고). 아래 시트 관련 테스트들은 "CTA가 시트로 가로막힌다"는 옛 전제 대신 "화면 전환을
+  // 막고 배너를 강조한다"는 새 전제로 고쳐졌다. openSheet()/closeSheet()/dismissSheet() 자체는
+  // 지우지 않았으므로(되돌리기용) 그 카피 렌더링은 함수를 직접 불러 계속 검사한다.
+  test('9915 · 골프장이면 첫 설정 완료는 화면을 막고 시트가 아니라 배너를 강조한다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
     onCtaPress();
-    eq(document.getElementById('sheet').hidden, false);
-    eq(S.screen, 'input');            // 아직 다음 화면으로 못 감
+    eq(document.getElementById('sheet').hidden, true);   // 시트는 더 이상 안 뜬다
+    eq(S.screen, 'input');                                // 아직 다음 화면으로 못 감
+    eq(S.nudgeAcked, true);
+    eq(document.getElementById('nudge').hidden, false);
+    if (!document.getElementById('nudge').classList.contains('rt-flash')) throw new Error('no flash class');
   });
-  test('9915 · 시트 카피가 조건에 맞게 들어감', ()=>{
+  test('9915 · 시트 카피는 (되돌리기용으로 남은) openSheet를 직접 불러도 조건에 맞게 들어간다', ()=>{
     S = fresh('noReturn','normal'); S.pickupAt = new Date(); render();
-    onCtaPress();
+    openSheet(judgeNudge(S).reason);
     eq(document.getElementById('sheet-title').textContent, '돌아올 차편은 준비되셨나요?');
     eq(document.getElementById('sheet-body').textContent,
        '이 지역은 돌아오는 타다를 부르기 어려워요\n시간대절은 기사가 목적지에서 기다렸다가 함께 돌아와요.');
     eq(document.getElementById('sheet-convert').textContent, '시간대절로 바꾸기');
     eq(document.getElementById('sheet-go').textContent, '그대로 진행');
   });
-  test('9913 방향은 CTA를 가로막지 않는다', ()=>{
+  test('9913 방향도 이제 9915와 동일하게 첫 CTA를 막는다(시트는 계속 거치지 않는다)', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
     onCtaPress();
     eq(document.getElementById('sheet').hidden, true);
+    eq(S.screen, 'input');
+    eq(S.nudgeAcked, true);
+  });
+  test('한 번 강조하면 그 세션에서 다시 안 막는다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    onCtaPress();                       // 1번째: 막고 강조
+    eq(S.screen, 'input');
+    onCtaPress();                       // 2번째: 그대로 진행
+    eq(S.screen, 'vehicle');
+    S.screen = 'input'; render();
+    onCtaPress();                       // 이미 nudgeAcked라 다시 막지 않는다
     eq(S.screen, 'vehicle');
   });
-  test('그대로 진행을 고르면 그 세션에서 다시 안 막는다', ()=>{
+  test('강조 후 진행해도 인라인 배너는 남는다(judgeNudge는 nudgeAcked를 안 본다)', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
-    onCtaPress(); dismissSheet();
-    eq(S.sheetDismissed, true);
+    onCtaPress(); onCtaPress();         // 2번째에 vehicle로 진행
     eq(S.screen, 'vehicle');
-    S.screen = 'input'; onCtaPress();
-    eq(document.getElementById('sheet').hidden, true);
-  });
-  test('그대로 진행해도 인라인 카드는 남는다', ()=>{
-    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
-    onCtaPress(); dismissSheet(); S.screen = 'input'; render();
+    S.screen = 'input'; render();
     eq(document.getElementById('nudge').hidden, false);
   });
-  test('시트에서 전환하면 대절 시간 카드가 열린 상태로 착지', ()=>{
+  test('배너 CTA에서 전환하면 대절 시간 카드가 열린 상태로 착지', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
-    onCtaPress();
-    document.getElementById('sheet-convert').click();
+    document.getElementById('nudge-cta').click();
     eq(S.type, 'charter');
     eq(S.openCard, 'charter');
     eq(S.screen, 'input');
@@ -1728,6 +1782,38 @@ function runSheetTests(){
   test('모르는 시나리오는 중립으로 떨어진다', ()=>{
     const s = stateFromQuery(new URLSearchParams('scenario=nope'));
     eq(s.scenario, 'normal');
+  });
+  test('조건이 참이면 첫 설정 완료는 화면을 넘기지 않고 배너를 강조한다', ()=>{
+    for (const [sc, tp, hrs] of [['golf','normal',null], ['short','charter',3]]) {
+      S = fresh(sc, tp); S.pickupAt = new Date(); if (hrs) S.charterHours = hrs;
+      S.openCard = 'none'; render();
+      eq(ctaLabel(S), '설정 완료');
+      onCtaPress();
+      eq(S.screen, 'input');                 // 안 넘어감
+      eq(S.nudgeAcked, true);
+      const el = document.getElementById('nudge');
+      eq(el.hidden, false);                  // 배너는 그대로 있음
+      if (!el.classList.contains('rt-flash')) throw new Error(sc + ': no flash class');
+    }
+  });
+  test('두 번째 설정 완료는 그대로 진행한다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
+    onCtaPress();
+    eq(S.screen, 'input');
+    onCtaPress();
+    eq(S.screen, 'vehicle');
+  });
+  test('조건이 거짓이면 첫 설정 완료에 바로 넘어간다', ()=>{
+    S = fresh('normal','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
+    eq(judgeNudge(S), null);
+    onCtaPress();
+    eq(S.screen, 'vehicle');
+  });
+  test('휠이 열린 상태의 설정 완료는 강조가 아니라 휠 확정이다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'pickup'; render();
+    onCtaPress();
+    eq(S.nudgeAcked, false);                 // 강조 경로를 안 탐
+    eq(S.screen, 'input');
   });
 }
 function runConvertTests(){
@@ -1770,13 +1856,13 @@ function runConvertTests(){
     eq(document.getElementById('nudge').hidden, false);
     eq(document.getElementById('nudge-title').textContent, '48분이면 도착하는 경로예요');
     eq(document.getElementById('nudge-body').textContent, '3시간을 빌리지 않아도 일반예약으로 갈 수 있어요');
-    eq(document.getElementById('nudge-cta').textContent, '변경');
+    eq(document.getElementById('nudge-cta').textContent, '일반예약으로 변경하기');
   });
   test('넛지가 제목과 본문 두 줄을 보여 준다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
     eq(document.getElementById('nudge-title').textContent, '라운딩 끝나고 돌아올 차가 없을 수 있어요');
     eq(document.getElementById('nudge-body').textContent, '시간대절은 기사가 기다렸다가 함께 돌아와요');
-    eq(document.getElementById('nudge-cta').textContent, '변경');
+    eq(document.getElementById('nudge-cta').textContent, '시간대절로 변경하기');
   });
   test('변경 버튼 터치 타깃이 44 이상이다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
@@ -2044,9 +2130,6 @@ function runLayoutTests(){
     S = fresh('golf','normal'); render();
     eq(getComputedStyle(document.getElementById('nudge')).backgroundColor, 'rgb(241, 249, 254)');
   });
-  // '넛지는 CTA 바로 위에 있다'(.rt-footer 안 DOM 형제 관계, #nudge 다음이 #cta)는 방향에
-  // 따라 자리가 갈리면서 9915(to-charter)일 때만 참이다. 아래 '9915 넛지는 하단 고정 영역
-  // CTA 위에 있다'가 그 조건으로 이 검사를 이어받는다.
   test('경로 칩 두 개가 한 줄에 들어간다', ()=>{
     S = fresh('short','charter'); S.charterHours = 3; S.screen = 'preview'; render();
     const chips = [...document.querySelectorAll('#route-chips > *')];
@@ -2067,12 +2150,14 @@ function runLayoutTests(){
   // 선택 글자색·언더라인 배경 #283873/미선택 글자 #99A5C0는 언더라인과 함께 없어졌다).
   // 넛지 CTA는 navy(#19254d, AA 대비 확보)를 쓰고, --nudge-accent(#0086EA)는 더 이상 실제로
   // 쓰이지 않지만 과거 스냅샷과의 호환을 위해 예외 목록에는 남겨둔다.
+  // v5: 넛지 본문(#nudge-body) 글자색도 Figma 실측대로 #31487D로 바뀌어, PILL_ACCENT가 이제
+  // .rt-seg 밖 #nudge 안에서도 나온다. 예외를 '.rt-seg 또는 #nudge'로 넓힌다.
   test('강조색은 navy 하나뿐 (폰 프레임 안)', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'pickup'; render();
     const NAVY = 'rgb(25, 37, 77)';          // --navy #19254d, 유일한 전역 강조색
     const NUDGE_ACCENT = 'rgb(0, 134, 234)'; // --nudge-accent #0086EA, #nudge 안에서만 허용(현재 미사용)
     const WHEEL_INK = 'rgb(0, 148, 249)';    // --wheel-band-ink #0094F9, 휠 컬럼 안에서만 허용
-    const PILL_ACCENT = 'rgb(49, 72, 125)';  // 선택된 칩 배경 #31487D, .rt-seg 안에서만 허용
+    const PILL_ACCENT = 'rgb(49, 72, 125)';  // #31487D, .rt-seg(선택된 칩 배경) 또는 #nudge(본문 글자) 안에서만 허용
     const rgbRe = /^rgb\((\d+), (\d+), (\d+)\)$/;
     const els = document.querySelectorAll('#phone *');
     for (const el of els){
@@ -2089,8 +2174,8 @@ function runLayoutTests(){
           throw new Error(`unexpected accent ${prop}=${v} outside wheel column`);
         }
         if (v === PILL_ACCENT){
-          if (el.closest('.rt-seg')) continue;
-          throw new Error(`unexpected accent ${prop}=${v} outside .rt-seg`);
+          if (el.closest('.rt-seg') || el.closest('#nudge')) continue;
+          throw new Error(`unexpected accent ${prop}=${v} outside .rt-seg/#nudge`);
         }
         const m = v.match(rgbRe);
         if (!m) continue;   // transparent, rgba(...) 등은 강조색 검사 대상이 아니다
@@ -2106,10 +2191,8 @@ function runLayoutTests(){
   test('폰 프레임은 항상 360px 폭이다', ()=>{
     eq(document.getElementById('phone').offsetWidth, 360);
   });
-  // Figma 최종판: 넛지 자리가 방향에 따라 갈린다. 이 테스트가 쓰던 fresh('golf','normal')은
-  // 9915(to-charter) 조건이라, 넛지가 이제 스크롤이 아니라 .rt-footer(CTA 바로 위)로 간다
-  // (아래 '9915 넛지는 하단 고정 영역 CTA 위에 있다' 참고). '스크롤 영역 카드들 뒤'는 이제
-  // 9913(to-normal)일 때만 참이라, 시나리오를 그쪽으로 바꿔 같은 이름·같은 단언을 유지한다.
+  // v5(Figma 최종판): 넛지 자리가 방향에 따라 갈리던 구분이 없어졌다. 9913(to-normal)·
+  // 9915(to-charter) 모두 항상 .rt-scroll 맨 뒤다.
   test('넛지가 스크롤 영역 안 카드들 뒤에 있다', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
     const n = document.getElementById('nudge');
@@ -2125,24 +2208,27 @@ function runLayoutTests(){
     if (!sc.contains(n)) throw new Error('9913 nudge is not in the scroll area');
     eq(sc.lastElementChild, n);
   });
-  test('9915 넛지는 하단 고정 영역 CTA 위에 있다', ()=>{
+  // 원래 이름은 '9915 넛지는 하단 고정 영역 CTA 위에 있다'였다. v5에서 9915도 더 이상 .rt-footer로
+  // 옮겨가지 않으므로(고정 영역엔 CTA만 남는다) 그 전제가 사라졌다. 같은 번호(9915)·같은 시나리오
+  // (fresh('golf','normal'))를 유지하되, 9913 테스트와 대응하는 '스크롤 맨 뒤' 검사로 대체한다.
+  test('9915 넛지도 스크롤 영역 맨 뒤에 있다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
     const n = document.getElementById('nudge');
     eq(n.hidden, false);
+    const sc = document.querySelector('#screen-input .rt-scroll');
+    if (!sc.contains(n)) throw new Error('9915 nudge is not in the scroll area');
+    eq(sc.lastElementChild, n);
     const ft = document.querySelector('#screen-input .rt-footer');
-    if (!ft.contains(n)) throw new Error('9915 nudge is not in the footer');
-    const cta = document.getElementById('cta');
-    eq(n.nextElementSibling, cta);
+    if (ft.contains(n)) throw new Error('9915 nudge should no longer live in the footer');
   });
-  test('방향이 바뀌면 넛지 자리도 옮겨간다', ()=>{
+  // 원래 이름은 '방향이 바뀌면 넛지 자리도 옮겨간다'였다(footer/scroll 분기 시절의 참). v5는
+  // 정확히 반대가 참이라 이름과 단언을 함께 뒤집는다: 방향이 바뀌어도 자리는 그대로다.
+  test('방향이 바뀌어도 넛지 자리는 그대로다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
-    const inFooter = document.querySelector('#screen-input .rt-footer')
-      .contains(document.getElementById('nudge'));
-    if (!inFooter) throw new Error('setup failed');
+    const scroll = document.querySelector('#screen-input .rt-scroll');
+    eq(scroll.lastElementChild, document.getElementById('nudge'));
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
-    const inScroll = document.querySelector('#screen-input .rt-scroll')
-      .contains(document.getElementById('nudge'));
-    if (!inScroll) throw new Error('nudge did not move to the scroll area');
+    eq(scroll.lastElementChild, document.getElementById('nudge'));
   });
   // COPY[key].banner가 없어져(2줄 넛지는 title+body를 쓴다) title+body 조합이
   // reason 별로 다른지로 검사를 바꾼다. 이름은 그대로 둔다.
@@ -2154,6 +2240,28 @@ function runLayoutTests(){
       if (seen[line]) throw new Error('duplicate copy: ' + line);
       seen[line] = 1;
     }
+  });
+  test('넛지는 방향과 무관하게 스크롤 맨 뒤에 있다', ()=>{
+    for (const [sc, tp, hrs] of [['golf','normal',null], ['short','charter',3]]) {
+      S = fresh(sc, tp); S.pickupAt = new Date(); if (hrs) S.charterHours = hrs; render();
+      const n = document.getElementById('nudge');
+      eq(n.hidden, false);
+      const s = document.querySelector('#screen-input .rt-scroll');
+      if (!s.contains(n)) throw new Error(sc + ': nudge not in scroll');
+      eq(s.lastElementChild, n);
+    }
+  });
+  test('배너 버튼 라벨이 방향을 말한다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    eq(document.getElementById('nudge-cta').textContent, '시간대절로 변경하기');
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
+    eq(document.getElementById('nudge-cta').textContent, '일반예약으로 변경하기');
+  });
+  test('넛지에 테두리와 radius 12 가 있다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    const cs = getComputedStyle(document.getElementById('nudge'));
+    eq(cs.borderTopLeftRadius, '12px');
+    eq(cs.borderTopColor, 'rgb(227, 228, 232)');
   });
 }
 function selftest(){
