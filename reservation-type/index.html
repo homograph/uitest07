@@ -201,25 +201,47 @@
   }
   .rt-card.rt-enter{animation: rt-card-enter .3s ease-out;}
 
+  /* Task 9913: 하단 고정 영역(.rt-footer) 안의 슬림한 한 줄 넛지 배너. 미리보기 화면
+     하단(nudge_banner + Container 패턴)의 선례를 따른다. 배경/강조색은 그 선례와 동일하고,
+     radius는 두지 않는다(모서리를 둥글리면 "하단 고정 띠" 느낌이 깨진다). 상하 10 좌우 24. */
   #nudge{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
     background:var(--nudge-bg);
-    border-radius:12px;
-    padding:20px 16px;
+    padding:10px 24px;
     box-sizing:border-box;
   }
-  #nudge.rt-enter{animation: rt-card-enter .3s ease-out;}
-  .rt-nudge-title{font-size:16px;font-weight:700;color:var(--ink);}
-  .rt-nudge-body{font-size:14px;color:var(--ink);margin-top:4px;}
-  .rt-nudge-cta{
+  /* rt-card-enter(translateY 20px)를 그대로 쓰면, 이제 nudge가 CTA 바로 위(같은 footer
+     안)에 있어 등장 애니메이션이 CTA 쪽으로 밀고 들어가 순간적으로 겹친다. footer 안에서는
+     밀림 없이 페이드만 쓴다. */
+  @keyframes rt-nudge-enter{
+    from{opacity:0;}
+    to{opacity:1;}
+  }
+  #nudge.rt-enter{animation: rt-nudge-enter .3s ease-out;}
+  #nudge-line{
+    flex:1 1 auto;
+    min-width:0;
+    font-size:14px;font-weight:400;color:var(--ink);
+    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  #nudge-cta{
+    flex:0 0 auto;
     appearance:none;border:none;background:transparent;cursor:pointer;
     color:var(--nudge-accent);font-weight:700;font-size:14px;
-    padding:0;margin-top:8px;
+    padding:0;margin:0;white-space:nowrap;
   }
 
   .rt-footer{
     flex:0 0 auto;
-    padding:16px;
     box-sizing:border-box;
+  }
+  .rt-footer > .rt-cta{
+    display:block;
+    width:calc(100% - 32px);
+    margin:16px;
   }
   .rt-cta{
     width:100%;
@@ -555,14 +577,13 @@
         <div class="rt-card" id="card-route"></div>
         <div class="rt-card" id="card-pickup"></div>
         <div class="rt-card" id="card-charter" hidden></div>
-        <div id="nudge" hidden>
-          <div id="nudge-title" class="rt-nudge-title"></div>
-          <div id="nudge-body" class="rt-nudge-body"></div>
-          <button type="button" id="nudge-cta" class="rt-nudge-cta"></button>
-        </div>
       </div>
 
       <div class="rt-footer">
+        <div id="nudge" hidden>
+          <span id="nudge-line"></span>
+          <button type="button" id="nudge-cta"></button>
+        </div>
         <button type="button" id="cta" class="rt-cta"></button>
       </div>
     </div>
@@ -724,18 +745,23 @@ function judgeNudge(s){
 }
 
 const COPY = {
+  // title/body/cta는 바텀시트(openSheet)가 계속 쓴다. banner는 #nudge 배너 전용 한 줄 문구.
   'short-trip':    { title:s=>`${s.etaMin}분이면 도착하는 경로예요`,
                      body: s=>`${s.charterHours}시간을 빌리지 않아도 일반예약으로 갈 수 있어요`,
-                     cta:'일반예약으로 바꾸기' },
+                     cta:'일반예약으로 바꾸기',
+                     banner:s=>`${s.etaMin}분 경로에 ${s.charterHours}시간을 빌리고 있어요` },
   'golf':          { title:()=>'라운딩 끝나고 돌아올 차가 없을 수 있어요',
                      body: ()=>'시간대절은 기사가 기다렸다가 함께 돌아와요',
-                     cta:'시간대절로 바꾸기' },
+                     cta:'시간대절로 바꾸기',
+                     banner:()=>'골프장은 돌아올 차가 없을 수 있어요' },
   'no-return':     { title:()=>'이 지역은 돌아오는 타다를 부르기 어려워요',
                      body: ()=>'시간대절로 돌아올 차편까지 미리 확보해 두세요',
-                     cta:'시간대절로 바꾸기' },
+                     cta:'시간대절로 바꾸기',
+                     banner:()=>'이 지역은 돌아오는 타다를 부르기 어려워요' },
   'long-distance': { title:()=>'왕복이라면 시간대절이 더 편해요',
                      body: ()=>'돌아올 차편까지 한 번에 확보할 수 있어요',
-                     cta:'시간대절로 바꾸기' },
+                     cta:'시간대절로 바꾸기',
+                     banner:()=>'왕복이라면 시간대절이 더 편해요' },
 };
 
 /* ---- 3. ACTIONS ---- */
@@ -1199,10 +1225,9 @@ function renderNudge(){
   const n = judgeNudge(S);
   if (!n){ el.hidden = true; return; }
   const c = COPY[n.reason];
-  document.getElementById('nudge-title').textContent = c.title(S);
-  document.getElementById('nudge-body').textContent  = c.body(S);
+  document.getElementById('nudge-line').textContent = c.banner(S);
   const cta = document.getElementById('nudge-cta');
-  cta.textContent = c.cta;
+  cta.textContent = '변경';
   cta.onclick = ()=> convert(n.dir === 'to-normal' ? 'normal' : 'charter');
   const wasHidden = el.hidden;
   el.hidden = false;
@@ -1692,8 +1717,8 @@ function runConvertTests(){
   test('9913 넛지 카피가 화면에 그려짐', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
     eq(document.getElementById('nudge').hidden, false);
-    eq(document.getElementById('nudge-title').textContent, '48분이면 도착하는 경로예요');
-    eq(document.getElementById('nudge-cta').textContent, '일반예약으로 바꾸기');
+    eq(document.getElementById('nudge-line').textContent, '48분 경로에 3시간을 빌리고 있어요');
+    eq(document.getElementById('nudge-cta').textContent, '변경');
   });
   // 수정 8: 원래 테스트는 코드에 존재하지도 않는 [data-role="close"] 속성을 찾아, 진짜
   // 닫기 버튼을 추가해도 영원히 통과하는 tautology였다. #nudge 안 버튼 개수(CTA 하나여야
@@ -1928,22 +1953,18 @@ function runLayoutTests(){
     S = fresh('golf','normal'); render();
     eq(getComputedStyle(document.getElementById('nudge')).backgroundColor, 'rgb(226, 242, 254)');
   });
-  // 수정 8: 원래 테스트는 n.bottom <= c.top만 봐서, 넛지가 CTA보다 위쪽 어디에 있든
-  // (스크롤 영역 맨 위로 옮겨도) 통과했다. "바로 위"는 둘 사이에 다른 카드가 끼지 않았다는
-  // 뜻이므로, 스크롤 영역에서 보이는 카드 중 넛지보다 더 아래(화면상 y가 더 큰)에 있는
-  // 것이 없는지, 그리고 DOM상으로도 넛지가 스크롤 영역의 마지막 자식인지 함께 본다.
+  // 넛지가 .rt-footer 안으로 옮겨지면서 "바로 위"는 이제 위치 좌표가 아니라 DOM 형제
+  // 관계로 보장된다: #nudge와 #cta가 같은 부모(.rt-footer)를 갖고, 넛지가 CTA 바로 앞
+  // 형제여야 한다(둘 사이에 다른 요소가 끼면 안 됨).
   test('넛지는 CTA 바로 위에 있다', ()=>{
     S = fresh('golf','normal'); render();
     const nudgeEl = document.getElementById('nudge');
+    const ctaEl = document.getElementById('cta');
+    if (nudgeEl.parentElement !== ctaEl.parentElement) throw new Error('nudge and cta do not share a parent');
+    if (nudgeEl.nextElementSibling !== ctaEl) throw new Error('nudge is not the immediate previous sibling of cta: ' + nudgeEl.nextElementSibling?.id);
     const n = nudgeEl.getBoundingClientRect();
-    const c = document.getElementById('cta').getBoundingClientRect();
+    const c = ctaEl.getBoundingClientRect();
     if (!(n.bottom <= c.top)) throw new Error(`nudge bottom ${n.bottom} > cta top ${c.top}`);
-    if (nudgeEl.nextElementSibling) throw new Error('nudge is not the last element in the scroll area: ' + nudgeEl.nextElementSibling.id);
-    const cards = [...document.querySelectorAll('.rt-scroll > .rt-card:not([hidden])')];
-    for (const card of cards){
-      const r = card.getBoundingClientRect();
-      if (r.top > n.top) throw new Error('a card sits between the nudge and the CTA: ' + card.id);
-    }
   });
   test('경로 칩 두 개가 한 줄에 들어간다', ()=>{
     S = fresh('short','charter'); S.charterHours = 3; S.screen = 'preview'; render();
@@ -1995,6 +2016,29 @@ function runLayoutTests(){
   // 받지 않으므로(지금은 scale을 안 쓰지만) getBoundingClientRect().width보다 안전하다.
   test('폰 프레임은 항상 360px 폭이다', ()=>{
     eq(document.getElementById('phone').offsetWidth, 360);
+  });
+  test('넛지는 스크롤 영역 밖 고정 영역에 있다', ()=>{
+    const n = document.getElementById('nudge');
+    if (n.closest('.rt-scroll')) throw new Error('nudge is inside the scroll area');
+    if (!n.closest('.rt-footer')) throw new Error('nudge is not in the footer');
+  });
+  test('스크롤을 끝까지 내려도 넛지가 보인다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    const sc = document.querySelector('#screen-input .rt-scroll');
+    sc.scrollTop = sc.scrollHeight;
+    const phone = document.getElementById('phone').getBoundingClientRect();
+    const n = document.getElementById('nudge').getBoundingClientRect();
+    if (n.bottom > phone.bottom + 1 || n.top < phone.top) throw new Error('nudge outside phone after scroll');
+    if (document.getElementById('nudge').hidden) throw new Error('nudge hidden after scroll');
+  });
+  test('배너 문구가 reason 별로 다르다', ()=>{
+    const seen = {};
+    for (const key of ['short-trip','golf','no-return','long-distance']) {
+      const s = fresh('normal','normal'); s.etaMin = 48; s.charterHours = 3;
+      const line = COPY[key].banner(s);
+      if (seen[line]) throw new Error('duplicate banner copy: ' + line);
+      seen[line] = 1;
+    }
   });
 }
 function selftest(){
