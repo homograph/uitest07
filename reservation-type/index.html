@@ -398,10 +398,13 @@
     display:flex;
     flex-direction:column;
   }
+  /* Figma 실측(§9 reserv_button_group): padding 10 24 20 24. 버튼은 그 안을 채우므로
+     폭 360 기준 x 24..336, 즉 312다. 카드(328, 좌우 16)보다 좁다. 좌우를 16으로 두면
+     버튼이 카드와 같은 폭이 돼 Figma와 16px 어긋난다. */
   .rt-footer > .rt-cta{
     display:block;
-    width:calc(100% - 32px);
-    margin:16px;
+    width:calc(100% - 48px);
+    margin:10px 24px 20px 24px;
   }
   .rt-cta{
     width:100%;
@@ -2499,6 +2502,22 @@ function runLayoutTests(){
     const b = document.getElementById('cta');
     eq(getComputedStyle(b).backgroundColor, 'rgb(25, 37, 77)');
     eq(px(b,'borderTopLeftRadius'), 4);
+  });
+  // Figma 실측(§9): reserv_button_group padding 10 24 20 24 -> 폭 360 기준 버튼은 x 24..336.
+  // 카드(328, 좌우 16)보다 좁다. 좌우를 카드와 같은 16으로 두는 실수를 잡는다.
+  test('CTA는 카드보다 좁고 좌우 24에 놓인다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
+    const phone = document.getElementById('phone').getBoundingClientRect();
+    const b = document.getElementById('cta').getBoundingClientRect();
+    const card = document.getElementById('card-route').getBoundingClientRect();
+    eq(Math.round(b.left - phone.left), 24);
+    eq(Math.round(phone.right - b.right), 24);
+    eq(Math.round(b.width), 312);
+    eq(Math.round(b.height), 52);
+    if (b.width >= card.width) throw new Error('CTA should be narrower than the cards');
+    const f = document.querySelector('#screen-input .rt-footer').getBoundingClientRect();
+    eq(Math.round(b.top - f.top), 10);
+    eq(Math.round(f.bottom - b.bottom), 20);
   });
   test('넛지 카드 배경은 #F1F9FE', ()=>{
     S = fresh('golf','normal'); render();
