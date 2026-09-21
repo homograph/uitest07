@@ -146,6 +146,15 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
 </div>
 
 <div class="panel" id="panel" role="region" aria-label="설정">
+  <div class="row"><div class="lab">중첩 표기</div><div class="chips" data-key="stack">
+    <button class="chip" data-v="surge">서지 할인만 (현재)</button>
+    <button class="chip" data-v="sum">합산해서</button>
+    <button class="chip" data-v="both">둘 다 이름으로</button>
+  </div></div>
+  <div class="row"><div class="lab">크레딧</div><div class="chips" data-key="credit">
+    <button class="chip" data-v="0">없음</button>
+    <button class="chip" data-v="1">10,000원 보유</button>
+  </div></div>
   <div class="row"><div class="lab">취소선</div><div class="chips" data-key="strike">
     <button class="chip" data-v="thr">10% 이상만 (Airbnb 규칙)</button>
     <button class="chip" data-v="always">할인이면 항상</button>
@@ -220,7 +229,12 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
         <ul>
           <li><b>할인 라인업 고정 — 기본값으로 켜 뒀습니다.</b> 1차 판정 지표가 콜뷰 전환율인데, 할인 노출이 "다른 라인업을 몇 번 골랐는가"에 따라 켜졌다 꺼졌다 하면 처치가 일정하지 않아 측정이 오염됩니다. 그랩은 라인업별 차등 할인이 없어 이 문제를 겪지 않으므로 그 규칙은 여기서 답을 주지 못합니다. <b>대상이 여럿이면 가장 싼 하나만</b> 고정해 3칸 중 1칸만 씁니다. 끄고 비교해 보실 수 있습니다.</li>
           <li><b>인라인 확장은 접어 둡니다.</b> 명분은 이미 칩이 말하고(<code>금요일 밤이라 10% 할인 · 2,600원 낮아졌어요</code>), 확장 안은 사유가 아니라 <b>내역</b>이라 궁금한 사람만 열면 됩니다. 기본으로 펴면 상단 바와 <code>모두 보기</code> 가 접혀 접힘 3줄의 장점이 깎입니다. 대신 <b>칩 전체를 확장 버튼으로</b> 바꿔 타깃을 <code>6×10</code> 셰브런에서 <code>320×30</code> 으로 키웠습니다.</li>
-          <li><b>쿠폰과의 동시 표기.</b> 쿠폰을 켜면 확장 안에 줄이 하나 더 붙습니다. 정가 → 서지 할인 → 쿠폰 → 예상 요금 네 단이 한 곳에 모입니다.</li>
+          <li><b>서지 할인 + 쿠폰이 겹쳤을 때 칩이 뭐라고 말할 것인가.</b> 설정 <code>중첩 표기</code> 로 셋을 비교하세요.
+            <br>· <b>서지 할인만</b>(현재) — 칩은 <code>금요일 밤이라 10% 할인</code>, 쿠폰은 아래 결제 행이 말한다. 취소선 기준은 쿠폰 직전 금액이라 <b>정가가 화면에서 사라진다</b>.
+            <br>· <b>합산해서</b> — <code>할인 2개 적용 중 · 7,600원 낮아졌어요</code>. 총액은 정확하지만 <b>명분이 사라진다</b>(PRD가 요구한 "사유"가 칩에서 없어짐).
+            <br>· <b>둘 다 이름으로</b> — <code>금요일 밤 10% + 쿠폰 · 7,600원 낮아졌어요</code>. 명분과 총액을 다 말하지만 길다.
+            <br>뒤의 둘은 총액을 말하므로 <b>취소선 기준이 정가</b>로 바뀐다 — 정가가 화면에 돌아온다.</li>
+          <li><b>크레딧은 예상 요금에서 빼지 않는다.</b> as-is 문구(<code>하차 시 남아있는 크레딧 전액이 적용됩니다</code>) 그대로, 확장에 보유액과 <code>하차 시 적용</code> 만 적는다. 켜서 확인하세요.</li>
         </ul>
       </div>
       <div class="box">
@@ -251,7 +265,7 @@ const R=[
 const BY=Object.fromEntries(R.map(r=>[r.id,r]));
 const COUPON=5000, REASON='금요일 밤';
 const BASE_WIN=['prime','next','carseat'];   // 접힌 창의 기본 구성
-const DEF={open:'0', expand:'0', lineup:'prime', discount:'ok', coupon:'0', pin:'1', strike:'thr', win:BASE_WIN.join(',')};
+const DEF={open:'0', expand:'0', lineup:'prime', discount:'ok', coupon:'0', credit:'0', stack:'surge', pin:'1', strike:'thr', win:BASE_WIN.join(',')};
 let S=Object.assign({},DEF);
 try{const s=localStorage.getItem('pd-g');if(s)S=Object.assign({},DEF,JSON.parse(s));}catch(e){}
 const save=()=>{try{localStorage.setItem('pd-g',JSON.stringify(S))}catch(e){}};
@@ -274,6 +288,22 @@ function calc(id){
 }
 const paxH=n=>n?`<span class="pax">${IC_PAX}<i>${n}</i></span>`:'';
 
+// 서지 할인 + 쿠폰이 겹쳤을 때 칩이 뭐라고 말하나 — 세 방식
+// 칩이 말하는 금액은 칩이 이름 붙인 할인과 일치해야 한다
+function chipCut(c){
+  if(!c.couponOn) return c.base-c.fare;
+  if(!c.discounted) return COUPON;
+  return S.stack==='surge' ? c.base-c.fare : c.base-c.pay;   // 서지만 말하면 서지분만
+}
+function chipLabel(c){
+  const surge = c.discounted ? `${REASON}이라 ${c.pct?c.pct+'% 할인':'할인 적용 중'}` : '';
+  if(!c.couponOn) return surge;
+  if(!c.discounted) return '쿠폰 적용 중';
+  if(S.stack==='sum')  return '할인 2개 적용 중';
+  if(S.stack==='both') return `${REASON} ${c.pct?c.pct+'%':'할인'} + 쿠폰`;
+  return surge;                       // 'surge' — 쿠폰은 아래 결제 행이 말한다
+}
+
 // 고정 대상 = 할인 라인업 중 "가장 싼 하나". 여럿이 대상이어도 3칸 중 1칸만 쓴다.
 function pinTarget(){
   if(S.pin!=='1' || S.discount==='none') return null;
@@ -295,7 +325,8 @@ function pick(id){
 
 function priceRow(c, sel){
   const cls = c.discounted||c.couponOn ? ' dc' : '';
-  const was = c.couponOn ? (c.discounted?c.fare:c.base) : c.base;
+  // 취소선 기준: '서지만' 말할 땐 쿠폰 직전 금액, 총액을 말할 땐 정가
+  const was = c.couponOn ? ((S.stack==='surge' && c.discounted) ? c.fare : c.base) : c.base;
   const useStrike = c.couponOn ? true : c.strikeOK;      // 쿠폰은 유저가 고른 것이라 늘 취소선
   const show = ((c.discounted&&useStrike)||c.couponOn) ? `<span class="was">${won(was)}</span>`
              : (c.discounted ? `<span class="was" style="text-decoration:none;color:#19254D;font-weight:700">−${won(c.base-c.fare)}</span>` : '');
@@ -316,9 +347,11 @@ function expandBody(id){
   const note=c.discounted
     ? (c.strikeOK?'신고된 탄력요금 범위 안에서 조정된 금액이에요.':`할인율이 ${c.rate.toFixed(1)}%라 정가 취소선 대신 할인액으로 알려드려요.`)
     : '이용료·탄력요금이 반영된 금액이에요.';
+  const creditRow = S.credit==='1' ? `<div class="tot" style="border-top:0;margin-top:2px;padding-top:0;font-weight:400;font-size:12px;line-height:18px;color:#4B5064"><span>크레딧 10,000원 보유</span><span>하차 시 적용</span></div>` : '';
   return `<div class="exp"><dl>${rows}</dl>
     <div class="tot"><span>예상 요금</span><span>${won(c.pay)}</span></div>
-    <p class="note">${note}</p></div>`;
+    ${creditRow}
+    <p class="note">${note}${S.credit==='1'?' 크레딧은 하차 시 남은 금액이 적용돼 예상 요금에는 빠져 있지 않아요.':''}</p></div>`;
 }
 
 function rowHTML(id){
@@ -329,7 +362,7 @@ function rowHTML(id){
       <span class="stx"><span class="n">${esc(r.name)}${r.info?IC_INFO:''}${c.discounted?'<span class="tag">'+(c.pct?c.pct+'%':'할인')+'</span>':''}</span>
       <span class="d">${esc(r.desc)}${paxH(r.pax)}</span></span>
       <span class="spr">${priceRow(c,true)}</span></button>
-    ${c.discounted&&S.expand!=='1'?`<button class="reasonchip" data-exp="1"><span>${esc(REASON)}이라 ${c.pct?c.pct+'% 할인':'할인 적용 중'}</span><span class="r"><b>${won(c.base-c.fare)} 낮아졌어요</b><span class="caret"></span></span></button>`:''}
+    ${(c.discounted||c.couponOn)&&S.expand!=='1'?`<button class="reasonchip" data-exp="1"><span>${chipLabel(c)}</span><span class="r"><b>${won(chipCut(c))} 낮아졌어요</b><span class="caret"></span></span></button>`:''}
     ${S.expand==='1'?expandBody(id):''}</div>`;
   return `<button class="row" data-pick="${id}">
     <img src="${TH[id]}" alt="">
