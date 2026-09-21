@@ -3461,7 +3461,7 @@ function onPickupEvent(ev) {            // type: CREATED | CHANGED | DELETED
 <table><tr><th>항목</th><th>값</th></tr><tr><td>높이</td><td><b>48</b> (고정)</td></tr><tr><td>안쪽 여백</td><td>8 / 14</td></tr><tr><td>값↔단위 간격</td><td>4</td></tr><tr><td>모서리</td><td>6</td></tr><tr><td>면</td><td><code>gray-30</code></td></tr><tr><td>칸 사이</td><td>8 · 줄 사이 14</td></tr></table>
 <p>지하/지상 칩만 안쪽 여백이 <b>8 / 12 / 8 / 14</b> 입니다(오른쪽에 화살표 14가 붙어 간격은 6).</p>
 <p><b>‘동 없음’·‘라인 없음’을 고르면</b> 그 칸이 답으로 바뀝니다. 22px 값과 단위가 빠지고 16px 한 줄만 남아서, 위아래 여백을 8 → <b>12</b>로 늘려 높이 48을 지킵니다(<code>pad 12/14</code>). 글자는 <code>Body_1_Regular</code> gray-500 입니다.</p>
-<p><b>모서리도 같이 바뀝니다 — r6 → r8.</b> 다른 칸과 같은 r6 으로 두면 Figma 와 어긋납니다. 입력칸이 아니라 고른 답이라는 걸 모양이 거듬니다.</p>
+<p><b>모서리도 같이 바뀝니다 — r6 → r8.</b> 다른 칸과 같은 r6 으로 두면 Figma 와 어긋납니다. 입력칸이 아니라 고른 답이라는 걸 모양이 말해 줍니다.</p>
 <p>이 칸은 버튼이 아니라 <b>고른 답</b>입니다 — 다시 누르면 빈 칸으로 돌아옵니다.</p>
 <p><b>칸 폭은 값의 글자 폭을 따라갑니다</b>(비어 있을 땐 플레이스홀더 폭). 고정 폭을 주면 ‘101’과 ‘1902’가 같은 칸에 앞뒤로 놓일 때 문장이 들쭉날쭉해집니다.</p>
 <h5>4-2. 힌트 칩 (<code>hint-slot</code>)</h5>
@@ -3494,7 +3494,8 @@ function onPickupEvent(ev) {            // type: CREATED | CHANGED | DELETED
 <p>변형 이름은 시안을 찾기 위한 북마크입니다. 그대로 분기 이름으로 쓰지 마세요.</p>
 <table><tr><th>변형</th><th>실제로는</th></tr><tr><td>빈 상태 / 층 입력 중 / 동 입력 중 / 라인 입력 중</td><td>첫 입력 × 포커스 위치 차이</td></tr><tr><td>동 없음 / 라인 없음</td><td>‘없음’ 답이 선택된 칸 상태</td></tr><tr><td>필수 완료</td><td>층·동 채움 · 포커스 없음</td></tr><tr><td>길 안내 펼침 / 입력됨</td><td>찾아오는 길의 포커스·값 조합</td></tr><tr><td>재편집 / 재편집 변경됨</td><td>재편집 × 변경 여부</td></tr><tr><td>지상</td><td>지하/지상 칩의 반대쪽</td></tr><tr><td>편집 불가 (길 없음 / 길 있음)</td><td>읽기 전용 × 찾아오는 길 값 유무</td></tr></table>
 <h4>6. 입력 규칙</h4>
-<table><tr><th>칸</th><th>최대</th><th>키패드</th><th>개행</th><th>자동 이동</th></tr><tr><td>층</td><td>1자</td><td>기본(숫자+문자)</td><td>불가</td><td>채우는 즉시 다음 빈 칸</td></tr><tr><td>동</td><td>8자</td><td>기본</td><td>불가</td><td>8자 도달 시 다음 빈 칸</td></tr><tr><td>라인</td><td>8자</td><td>기본</td><td>불가</td><td>8자 도달 시 다음 빈 칸</td></tr><tr><td>찾아오는 길</td><td>30자</td><td>기본</td><td>불가</td><td>없음 — 이동 순서에서 빠짐</td></tr></table>
+<table><tr><th>칸</th><th>최대</th><th>키패드</th><th>개행</th><th>다음 빈 칸으로 올기는 계기</th></tr><tr><td>층</td><td>1자</td><td>기본(숫자+문자)</td><td>불가</td><td>채우는 즉시 · <b>리턴</b></td></tr><tr><td>동</td><td>8자</td><td>기본</td><td>불가</td><td>8자 도달 시 · <b>리턴</b></td></tr><tr><td>라인</td><td>8자</td><td>기본</td><td>불가</td><td>8자 도달 시 · <b>리턴</b></td></tr><tr><td>찾아오는 길</td><td>30자</td><td>기본</td><td>불가</td><td>없음 — 이동 순서에서 빠짐(리턴은 키패드만 내림)</td></tr></table>
+<p><b>리턴은 칸이 </b><b>덜</b><b> 찼어도 움직입니다.</b> 최대 글자 수는 자동 이동의 <b>한 가지 계기일 뿐</b>이고, 리턴은 그와 상관없습니다 — 동에 <code>1</code> 한 글자만 치고 리턴해도 그대로 다음 빈 칸으로 갑니다. 둔 칸은 비운 채로 두고 갑니다 — 나중에 돌아와 채울 수 있습니다.</p>
 <p>숫자 전용 키패드를 쓰지 말아주세요. 동·라인에 <code>101-1</code>, <code>가</code>, <code>B</code> 같은 값이 실제로 들어옵니다.</p>
 <h5>글자 수 표시</h5>
 <p><code>0/30</code> 은 <b>그 칸에 포커스가 있을 때만</b> 보입니다. 항상 띄우면 빈 칸에도 숫자가 붙어 시선을 끕니다.</p>
@@ -3505,13 +3506,13 @@ function onPickupEvent(ev) {            // type: CREATED | CHANGED | DELETED
 <ul><li>iOS — <code>.next</code> / <code>.done</code> (<code>textField.returnKeyType</code>)</li><li>Android — <code>imeOptions = actionNext</code> / <code>actionDone</code></li></ul>
 <p>엔터로 곧장 저장되면 승객이 문장을 확인할 새가 없습니다. 저장은 하단 버튼 한 곳에서만 일어납니다.</p>
 <h5>포커스가 저절로 움직이는 경우는 둘뿐</h5>
-<p>최대 글자 수에 닿았을 때, 그리고 엔터를 눌렀을 때입니다. 그 밖엔 승객이 직접 탭한 칸에 머물러야 합니다.</p>
+<p>최대 글자 수에 닿았을 때, 그리고 <b>리턴을</b><b> 눌렀을 때</b>입니다. 둘은 서로 얽혀 있지 않습니다 — <b>리턴은 지금 칸이 몇 글자인지 보지 않습</b><b>니다.</b> 그 밖엔 승객이 직접 탭한 칸에 머물러야 합니다.</p>
 <p>지하/지상 칩은 <b>포커스를 가져가지 않습니다.</b> 동·라인을 치던 중에 눌러도 그 칸과 키패드가 그대로 있어야 합니다.</p>
 <p>‘동 없음’·‘라인 없음’을 고르면 그 칸은 <b>이동 순서에서 빠집니다.</b> 빈 칸이 아니라 고른 답이기 때문입니다.</p>
 <h5>지상을 고르면 층 1 이 들어갑니다</h5>
 <p>지하/지상 칩은 모양만 바꾸는 게 아니라 <b>값을 하나 만듭니다.</b> 시안만 봐서는 보이지 않는 규칙이라 여기 적어 둡니다.</p>
 <table><tr><th>동작</th><th>층 칸</th><th>제안 표식</th></tr><tr><td>지상 선택 · 층이 비어 있음</td><td><code>1</code> 이 들어간다</td><td>켜진다</td></tr><tr><td>지상 선택 · 층에 값이 있음</td><td>그대로 둔다</td><td>안 건드린다</td></tr><tr><td>지하로 되돌림 · 제안이었던 1</td><td>비운다</td><td>꺼진다</td></tr><tr><td>지하로 되돌림 · 직접 친 값</td><td>그대로 둔다</td><td>안 건드린다</td></tr><tr><td>승객이 층을 직접 침</td><td>친 값</td><td>꺼진다</td></tr></table>
-<ul><li>제안된 1 이 들어 있는 층 칸에 포커스가 가면 <b>통째로 선택</b>돼 바로 덮어씁니다. 한 번 선택되면 표식은 꺼져서, 두 번째로 들어갈 땐 커서만 놓입니다.</li><li>이미 층 칸에 포커스가 있는 채로 지상을 눌렀다면 그 자리에서 바로 선택됩니다.</li><li>지하로 돌아올 때 1 을 거두는 이유는, 실제로 제일 많은 게 <b>지하 2층</b>이라 고르지도 않은 ‘지하 1층’이 남아 그대로 저장되면 안 되기 때문입니다.</li><li><b>층은 비교용 값에 조건 없이 넣으세요.</b> ‘지상이면 층을 민다’로 두면 지상에서 층만 고쳠을 때 바뀐 게 없다고 읽혀, CTA 가 ‘확인’에 멈춰 <b>저장할 길이 없어집니다.</b> ✕ 로 나가도 묻지 않고 사라집니다. 웹 프로토타입이 9/21 까지 실제로 이러했습니다.</li><li>‘칩만 눌렀다 돌아오면 CTA 가 안 켜진다’는 <b>되돌릴 때 1 을 거두는 쪽이 책임집니다.</b> 비교에서 빼서가 아닙니다 — 한 가지 일은 한 곳에서 합니다. 제안한 1 은 늘 지하→지상 전환과 함께 생겨 <code>level</code> 이 이미 달라지므로, 층을 넣어도 안전합니다.</li></ul>
+<ul><li>제안된 1 이 들어 있는 층 칸에 포커스가 가면 <b>통째로 선택</b>돼 바로 덮어씁니다. 한 번 선택되면 표식은 꺼져서, 두 번째로 들어갈 땐 커서만 놓입니다.</li><li>이미 층 칸에 포커스가 있는 채로 지상을 눌렀다면 그 자리에서 바로 선택됩니다.</li><li>지하로 돌아올 때 1 을 거두는 이유는, 실제로 제일 많은 게 <b>지하 2층</b>이라 고르지도 않은 ‘지하 1층’이 남아 그대로 저장되면 안 되기 때문입니다.</li><li><b>층은 비교용 값에 조건 없이 넣으세요.</b> ‘지상이면 층을 뺀다’로 두면 지상에서 층만 고쳤을 때 바뀐 게 없다고 읽혀, CTA 가 ‘확인’에 멈춰 <b>저장할 길이 없어집니다.</b> ✕ 로 나가도 묻지 않고 사라집니다. 웹 프로토타입이 9/21 까지 실제로 이러했습니다.</li><li>‘칩만 눌렀다 돌아오면 CTA 가 안 켜진다’는 <b>되돌릴 때 1 을 거두는 쪽이 책임집니다.</b> 비교에서 빼서가 아닙니다 — 한 가지 일은 한 곳에서 합니다. 제안한 1 은 늘 지하→지상 전환과 함께 생겨 <code>level</code> 이 이미 달라지므로, 층을 넣어도 안전합니다.</li></ul>
 <p><b>이 규칙을 빼면 지상에서 CTA 가 영영 안 켜집니다.</b> 완료 판정이 층을 요구하는데(§7) 지상에서는 그 칸을 채울 사람이 없기 때문입니다.</p>
 <div class="cpwrap"><button type="button" class="cp" data-cp="dg-c1">복사</button>
 <pre><code id="dg-c1">func setLevel(_ v: Level) {
@@ -3541,7 +3542,7 @@ function onPickupEvent(ev) {            // type: CREATED | CHANGED | DELETED
 <p>대비도 문제였습니다 — 비활성 버튼은 <code>#C0C8D9</code> on <code>#99A5C0</code> 로 <b>1.47:1</b>, weak 은 <code>#283873</code> on <code>#E6E9EF</code> 로 <b>9:1</b> 입니다. 그 버튼은 이 화면이 주는 유일한 지시문인데 읽히지 않았습니다.</p>
 <h5>저장 체크박스도 ‘변경’입니다</h5>
 <p>체크박스만 건드려도 CTA 가 navy 로 켜집니다. 다만 세 가지를 지켜야 합니다.</p>
-<ol><li><b>누르는 즉시 저장하지 않습니다.</b> 화면 상태만 바뀝니다. 즉시 적용하면 ✕ 로 나가도 남아서, ‘버튼을 눌러야 저장된다’는 화면의 약속과 어긋납니다.</li><li><b>✕ 로 나가면 버려집니다.</b> 확인창을 거칩니다.</li><li><b>체크박스만 바뀜 커밋은 드라이버에게 전송하지 않습니다.</b> 값이 그대로면 전송 스피너·토스트·카드 깜빡임·배너가 모두 일어나지 않고 조용히 닫힙니다. 체크 여부만 클라이언트에 저장됩니다.</li></ol>
+<ol><li><b>누르는 즉시 저장하지 않습니다.</b> 화면 상태만 바뀝니다. 즉시 적용하면 ✕ 로 나가도 남아서, ‘버튼을 눌러야 저장된다’는 화면의 약속과 어긋납니다.</li><li><b>✕ 로 나가면 버려집니다.</b> 확인창을 거칩니다.</li><li><b>체크박스만 바</b><b>뀐</b><b> 커밋은 드라이버에게 전송하지 않습니다.</b> 값이 그대로면 전송 스피너·토스트·카드 깜빡임·배너가 모두 일어나지 않고 조용히 닫힙니다. 체크 여부만 클라이언트에 저장됩니다.</li></ol>
 <p>그래서 <b>변경 판정</b><b>이 하나로는 부족합니다</b> — 확인창을 위한 판정(열었을 때 기준), CTA 를 위한 판정(확정값 기준 · 값 + 체크박스), 전송을 위한 판정(확정값 기준 · 값만) 셋입니다. 합치면 반드시 하나가 틀려집니다(§12).</p>
 <h5>필수 판정</h5>
 <p><b>층 + (동 또는 ‘동 없음’)</b> 이면 완료입니다. 라인은 선택이라 비어 있어도 CTA 가 켜집니다. 찾아오는 길도 선택입니다.</p>
@@ -3595,7 +3596,7 @@ function onPickupEvent(ev) {            // type: CREATED | CHANGED | DELETED
 <h4>12. iOS — SwiftUI</h4>
 <p>먼저 레이아웃, 그다음 상태와 판정입니다. 치수는 §2–§4, 컴포넌트 이름은 §4 머리의 표를 보세요.</p>
 <h5>문장형 레이아웃 — 이 화면에서 제일 품이 듭니다</h5>
-<p>나머지는 평범한 스크롤 화면인데, 문장 줄만 세 가지를 동시에 요구합니다. 세뜜 다 SwiftUI 기본 부품으로는 안 됩니다.</p>
+<p>나머지는 평범한 스크롤 화면인데, 문장 줄만 세 가지를 동시에 요구합니다. 셋 다 SwiftUI 기본 부품으로는 안 됩니다.</p>
 <ol><li><b>칸이 내용 폭에 맞춰 늘어난다</b> — <code>TextField</code> 는 내용에 맞춰 줄지 않습니다.</li><li><b>폭이 모자라면 다음 줄로 흐른다</b> — <code>HStack</code> 은 줄바꿈을 모릅니다.</li><li><b>꼬리만 줄바꿈 금지</b> — ‘에서’와 ‘탈게요.’가 갈라지면 문장이 깨집니다.</li></ol>
 <div class="cpwrap"><button type="button" class="cp" data-cp="dg-c2">복사</button>
 <pre><code id="dg-c2">/// 넘치면 다음 줄로 흐리는 가로 배치. iOS 16+ 의 Layout 프로토콜.
@@ -3645,6 +3646,7 @@ struct ValueField: View {
     let a11y: String               // "몇 동" — §11
     @Binding var text: String
     var focus: FocusState&lt;Field?&gt;.Binding
+    @ObservedObject var model: DetailLocationModel
 
     private var empty: Bool { text.isEmpty }
 
@@ -3652,11 +3654,11 @@ struct ValueField: View {
         HStack(spacing: 4) {
             ZStack(alignment: .leading) {
                 // ① 폭만 잡는 그림자. TextField 가 내용에 맞춰 줄지 않기 때문에
-                //    같은 글꿴로 글자 폭을 재 둔다. 비어 있으면 플레이스홀더 폭이다.
+                //    같은 글꼴로 글자 폭을 재 둔다. 비어 있으면 플레이스홀더 폭이다.
                 Text(empty ? placeholder : text)
                     .font(.heading2Bold).hidden()
                 // ② 플레이스홀더는 Medium · gray-300 이다(§3).
-                //    TextField 기본 placeholder 는 글꿴을 따로 못 주므로 직접 깔다.
+                //    TextField 기본 placeholder 는 글꼴을 따로 못 주므로 직접 깜다.
                 if empty {
                     Text(placeholder)
                         .font(.heading2Medium).foregroundStyle(Color.gray300)
@@ -3669,6 +3671,11 @@ struct ValueField: View {
                     .autocorrectionDisabled()
                     .focused(focus, equals: field)
                     .fixedSize(horizontal: true, vertical: false)
+                    // ④ 리턴 키. 라벨과 동작을 같이 붙인다 — 둘 중 하나만 붙이면
+                    //    글자는 '다음' 인데 줄바꿈이 들어가거나 그 반대가 된다.
+                    //    칸이 덜 찼어도 무조건 다음 빈 칸으로 간다(§6).
+                    .submitLabel(model.returnKey(for: field))
+                    .onSubmit { model.onSubmit(from: field) }
             }
             Text(unit).font(.body1Medium).foregroundStyle(Color.gray900)
         }
@@ -3791,7 +3798,7 @@ extension String {
 }</code></pre></div>
 <p>변경 판정은 <b>세 개이고, 세 개 다 기준이 다릅니다.</b> 하나로 합치면 반드시 하나가 틀려집니다.</p>
 <table><tr><th>쓰는 곳</th><th>무엇과 비교하나</th><th>체크박스를 세나</th></tr><tr><td><code>isDirtySinceOpen</code> — ✕·뒤로가기 확인창</td><td><b>화면을 열 때의 draft</b></td><td>셀다</td></tr><tr><td><code>hasChanges</code> — CTA 라벨</td><td>확정값(<code>original</code>)</td><td>셀다</td></tr><tr><td><code>valueChanged</code> — 전송 여부</td><td>확정값(<code>original</code>)</td><td>안 셀다</td></tr></table>
-<p>첫 번째를 <code>hasChanges</code> 로 대신하지 마세요. <b>첫 입력에서는 </b><b><code>original</code></b><b> 이 nil</b> 이라 기준이 빈 문자열이 되고, 아무것도 안 친 빈 화면에서 ✕ 를 눌러도 ‘변경 사항이 적용되지 않습니다’ 확인창이 뚝니다. 지상으로 진입해 층 1 이 미리 들어간 경우도 같습니다.</p>
+<p>첫 번째를 <code>hasChanges</code> 로 대신하지 마세요. <b>첫 입력에서는 </b><b><code>original</code></b><b> 이 nil</b> 이라 기준이 빈 문자열이 되고, 아무것도 안 친 빈 화면에서 ✕ 를 눌러도 ‘변경 사항이 적용되지 않습니다’ 확인창이 뜹니다. 지상으로 진입해 층 1 이 미리 들어간 경우도 같습니다.</p>
 <h5>리턴 키와 자동 이동</h5>
 <div class="cpwrap"><button type="button" class="cp" data-cp="dg-c7">복사</button>
 <pre><code id="dg-c7">private let order: [Field] = [.floor, .dong, .line]
@@ -3822,7 +3829,7 @@ var showsCount: Bool { focus == .etc }
 var showsClear: Bool { !draft.etc.trimmed.isEmpty &amp;&amp; !isReadOnly }</code></pre></div>
 <p>× 를 눌렀을 땐 <b>포커스를 건드리지 않습니다</b> — <code>draft.etc = ""</code> 만 하고 <code>focus</code> 는 그대로 둡니다.</p>
 <h5>시트를 쓸어내려 닫는 길을 막아 두세요</h5>
-<p>이 화면은 변경이 있으면 <b>반드시 확인창을 거쳐야 닫힙니다</b>(§9). 시트로 올리면 iOS 기본 동작은 아래로 쒸어내리기가 그냥 닫히는 것이라, 그대로 두면 승객이 쓴 것이 묻지도 않고 사라집니다. Android 는 <code>BackHandler</code> 로 막아 두는데 iOS 만 빠지기 쉬운 자리입니다.</p>
+<p>이 화면은 변경이 있으면 <b>반드시 확인창을 거쳐야 닫힙니다</b>(§9). 시트로 올리면 iOS 기본 동작은 아래로 쓸어내리기가 그냥 닫히는 것이라, 그대로 두면 승객이 쓴 것이 묻지도 않고 사라집니다. Android 는 <code>BackHandler</code> 로 막아 두는데 iOS 만 빠지기 쉬운 자리입니다.</p>
 <div class="cpwrap"><button type="button" class="cp" data-cp="dg-c9">복사</button>
 <pre><code id="dg-c9">.interactiveDismissDisabled(model.isDirtySinceOpen &amp;&amp; !model.isReadOnly)</code></pre></div>
 <p>막아 둔 뒤에는 <b>나가는 길이 보여야</b> 합니다 — 앱바 ✕ 와 하단 버튼 둘 다 살아 있어야 하고, 그래서 재편집 CTA 가 비활성이 아닌 ‘확인’입니다(§7). 넣기 전에 반드시 실제 기기에서 쓸어내려 보세요 — 시뮬레이터에서는 이 제스처가 잘 재현되지 않습니다.</p>
@@ -4011,7 +4018,7 @@ fun imeAction(field: Field): ImeAction =
     if (text.length == max) focus = nextEmpty(field)   // 채우면 다음 빈 칸
 }</code></pre></div>
 <p><code>take(max)</code> 로 <b>자르고</b> 지나가세요. <code>if (new.length &lt;= max)</code> 처럼 입력 자체를 무르면 일부 키보드에서 마지막 글자가 사라지거나 조성이 끝나지 않은 채 멈추는 일이 생깁니다.</p>
-<p>뒤로가기는 <code>BackHandler(enabled = isDirtySinceOpen &amp;&amp; !isReadOnly) { showDiscardDialog = true }</code> 로 잡으세요. ✕ 와 같은 길이고, <b><code>hasChanges</code></b><b> 가 아니라 </b><b><code>isDirtySinceOpen</code></b> 입니다 — 첫 입력에서 빈 화면으로 뒤로가기를 눌렀는데 확인창이 뚜다면 그걸 바꿈 것입니다.</p>
+<p>뒤로가기는 <code>BackHandler(enabled = isDirtySinceOpen &amp;&amp; !isReadOnly) { showDiscardDialog = true }</code> 로 잡으세요. ✕ 와 같은 길이고, <b><code>hasChanges</code></b><b> 가 아니라 </b><b><code>isDirtySinceOpen</code></b> 입니다 — 첫 입력에서 빈 화면으로 뒤로가기를 눌렀는데 확인창이 뜬다면 그걸 바꿀 것입니다.</p>
 <p>예측 뒤로가기(predictive back)를 켜 둔 앱이면, 확인창을 띄우는 동안 미리보기 애니메이션이 먼저 돌아가 보이지 않도록 <code>BackHandler</code> 로 먼저 가로채는 것이 맞습니다.</p>
 <h4>14. 체크리스트</h4>
 <p>구현하면서 제일 놓치기 쉬운 것들입니다. 전부 이 문서 안에 근거가 있습니다.</p>
@@ -4020,7 +4027,7 @@ fun imeAction(field: Field): ImeAction =
 <table><tr><th>항목</th><th>상태</th></tr><tr><td>비활성 CTA 대비 1.47:1</td><td>DS 토큰 문제. 이 기능에서 고치지 않음</td></tr><tr><td>전송 중 앱 종료 · 드라이버 미수신</td><td>서버 동작. 디자인이 정할 수 없음</td></tr><tr><td>미리보기 안내문 색 3.14:1</td><td>값 확정 전</td></tr></table>
 <h5>❓ 구현 전에 답이 필요한 것 다섯</h5>
 <p>아래는 <b>네이티브라서 생기는</b> 물음입니다. 웹 프로토타입과 Figma 에는 드러나지 않아 지금까지 안 물었습니다. 정해지기 전에는 <b>iOS 와 Android 가 각자 다르게 구현하게 됩니다.</b></p>
-<table><tr><th>❓</th><th>무엇이 갈리나</th><th>누가 정하나</th></tr><tr><td><b>글꿴 크기 키우기 (Dynamic Type)</b></td><td>높이 48 · 54 · 52 가 고정인데 문장형입니다. 접근성 글자 크기를 키우면 칸이 같이 늘어나나요, 글자가 잘리나요, 아니면 이 화면만 고정인가요?</td><td>기획 · 디자인</td></tr><tr><td><b>다크 모드</b></td><td>§3 토큰이 라이트 한 벌뿐입니다. 앱이 다크를 받는다면 짝이 필요합니다.</td><td>DS</td></tr><tr><td><b>키패드가 올라올 때 푸터</b></td><td>‘바닥 고정 오버레이’가 <b>키패드 위</b>인가요, 아래로 가려지나요? iOS 가 <code>safeAreaInset</code> 이냐 <code>ignoresSafeArea(.keyboard)</code> 냐가 여기서 갈립니다.</td><td>기획 · 디자인</td></tr><tr><td><b>전송 payload 스키마</b></td><td>§10 은 ‘사건 종류가 들어가야 한다’까지만 말합니다. 필드 이름 · 타입 · 널 허용, 그리고 <b>삭제를 빈 값으로 보내나 별도 사건으로 보내나</b>가 없습니다.</td><td>서버</td></tr><tr><td><b>층 1글자 제한</b></td><td>지하 10층과 ‘B2’ 는 어떻게 되나요? Figma 주석에 1자로 적혀 있는데 <b>제약인지 결정인지</b> 근거가 없습니다.</td><td>기획</td></tr></table>
+<table><tr><th>❓</th><th>무엇이 갈리나</th><th>누가 정하나</th></tr><tr><td><b>글</b><b>꼴</b><b> 크기 키우기 (Dynamic Type)</b></td><td>높이 48 · 54 · 52 가 고정인데 문장형입니다. 접근성 글자 크기를 키우면 칸이 같이 늘어나나요, 글자가 잘리나요, 아니면 이 화면만 고정인가요?</td><td>기획 · 디자인</td></tr><tr><td><b>다크 모드</b></td><td>§3 토큰이 라이트 한 벌뿐입니다. 앱이 다크를 받는다면 짝이 필요합니다.</td><td>DS</td></tr><tr><td><b>키패드가 올라올 때 푸터</b></td><td>‘바닥 고정 오버레이’가 <b>키패드 위</b>인가요, 아래로 가려지나요? iOS 가 <code>safeAreaInset</code> 이냐 <code>ignoresSafeArea(.keyboard)</code> 냐가 여기서 갈립니다.</td><td>기획 · 디자인</td></tr><tr><td><b>전송 payload 스키마</b></td><td>§10 은 ‘사건 종류가 들어가야 한다’까지만 말합니다. 필드 이름 · 타입 · 널 허용, 그리고 <b>삭제를 빈 값으로 보내나 별도 사건으로 보내나</b>가 없습니다.</td><td>서버</td></tr><tr><td><b>층 1글자 제한</b></td><td>지하 10층과 ‘B2’ 는 어떻게 되나요? Figma 주석에 1자로 적혀 있는데 <b>제약인지 결정인지</b> 근거가 없습니다.</td><td>기획</td></tr></table>
 <p>마지막 물음이 생각보다 큽니다. 지하 주차장은 B1–B5 가 흔하고 일부 단지는 두 자리수입니다. 1자로 두면 <b>그런 단지는 이 기능을 못 씁니다.</b> 지금 프로토타입은 글자도 받아서 <code>L</code> 은 되지만 <code>10</code> 은 안 됩니다.</p>
 <h5>어긋나면 무엇을 믿나</h5>
 <p><b>DS 컴포넌트 › 상태 정리 문서 › 핸드오프 보드 › 프로토타입</b> 순입니다. 이 문서는 그걸 네이티브 관점으로 옮긴 것이고, 치수·색이 어긋나면 <b>Figma DS 가 기준</b>입니다.</p>
