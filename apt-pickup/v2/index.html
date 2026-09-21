@@ -1168,14 +1168,17 @@
   .mk.warn{background:var(--warn);}
   .mk.ok{background:var(--good);}   /* 9/20: 닫힌 항목 — 초록 */
 
-  /* ══ 개발 콘솔 (PC 전용) — 드라이버 T맵 하단 배너 구현 가이드 ══════════════════
+  /* ══ 개발 콘솔 (PC 전용) — 구현 가이드 ════════════════════════════════════
+     탭마다 주제가 다르다. 라벨에 주제를 붙여 둔다 — '가이드' 만으로는 무엇의 것인지 안 보인다.
      1180px 이상에서만 오른쪽에 고정으로 붙는다. 그보다 좁으면 본문 아래로 내려간다(폰 2대 배치가 먼저다). */
   .devcon{max-width:1000px;margin:26px auto 60px;padding:0 20px;}
   .devcon-in{background:#fff;border:1px solid var(--line);border-radius:11px;overflow:hidden;}
-  .devcon-hd{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);}
+  /* 9/21 탭이 셋이 되면서 한 줄에 안 들어간다(가로 고정 열에서 헤더 안쪽이 361px 뿐이다).
+     탭 하나만 아래로 떨어지면 탭 묶음이 갈라져 보이므로, 탭 줄을 아예 따로 둔다. */
+  .devcon-hd{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line);}
   .devcon-hd b{font-size:12.5px;font-weight:700;color:var(--ink);}
   .devcon-hd em{font-style:normal;font-size:11px;color:var(--ink-3);}
-  .devcon-tabs{margin-left:auto;display:flex;gap:4px;}
+  .devcon-tabs{flex:1 0 100%;margin-top:2px;display:flex;gap:4px;flex-wrap:wrap;}
   .devcon-tabs button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 10px;
     font:inherit;font-size:11.5px;color:var(--ink-2);cursor:pointer;}
   .devcon-tabs button.on{background:var(--ink);border-color:var(--ink);color:#fff;}
@@ -3148,8 +3151,8 @@
 
 <section class="devcon" id="devcon">
   <div class="devcon-in">
-    <div class="devcon-hd"><b>개발 콘솔</b><em>드라이버 배너 · 픽업 장소 버블</em>
-      <span class="devcon-tabs"><button type="button" class="on" data-pane="dc-guide">가이드</button><button type="button" data-pane="dc-code">예시 코드</button></span>
+    <div class="devcon-hd"><b>개발 콘솔</b><em>드라이버 배너 · 버블 · 상세 위치 입력</em>
+      <span class="devcon-tabs"><button type="button" class="on" data-pane="dc-guide">드라이버 가이드</button><button type="button" data-pane="dc-code">드라이버 코드</button></span>
     </div>
     <div class="devcon-bd">
       <div class="pane" id="dc-guide">
