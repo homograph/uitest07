@@ -1121,11 +1121,11 @@
   .tmapmap.ov-left #tovb-loc,.tmapmap.ov-left #tovr{right:auto;left:0;}
   /* 소리를 꺼둘 수 있어 '또 바뀌었다' 는 깜빡임이 맡는다 */
   @keyframes chgBlink{0%,100%{opacity:1}25%,75%{opacity:.2}50%{opacity:1}}
-  .tp-chg.blink,.plr-chg.blink,.tbn-st.blink{animation:chgBlink .6s ease-in-out 3;}   /* 9/18: 작성·변경·삭제 모두 3회로 통일 */
+  /* 9/21: 배너 라벨(tbn-st)은 깜빡이지 않는다 — 배너는 아래에서 올라와 흐르는 것 자체가
+     알림이라, 같은 화면에서 같은 사건을 두 번 알릴 이유가 없다(스펙 3-1 의 깜빡임 = 카드 상태 줄). */
+  .tp-chg.blink,.plr-chg.blink{animation:chgBlink .6s ease-in-out 3;}   /* 작성·변경·삭제 모두 3회 */
   /* 9/16 Figma 주석: 픽업 장소 버블을 누르고 앱으로 돌아오면 카드 상태 줄이 3회 깜빡인다 */
-  .plr-chg.blink3{animation:chgBlink .6s ease-in-out 3;}
-  .plr-chg.blink1{animation:chgBlink .6s ease-in-out 3;}   /* 9/18: 삭제도 3회 (작성·변경과 같은 세기) */
-  @media (prefers-reduced-motion:reduce){ .tp-chg.blink,.plr-chg.blink,.tbn-st.blink{animation:none;} }
+  @media (prefers-reduced-motion:reduce){ .tp-chg.blink,.plr-chg.blink{animation:none;} }
   /* 실제 T맵은 턴 배너 아래 왼쪽에 차선 안내칩이 붙는다 — 알약이 피해야 하는 자리라 목업에 둔다 */
   .tlane{position:absolute;top:0;left:0;z-index:5;display:flex;align-items:baseline;gap:6px;
     padding:8px 12px 8px 10px;background:rgba(11,110,78,.92);color:#fff;border-bottom-right-radius:8px;
@@ -1651,7 +1651,7 @@
     value:null, origin:null, edited:false, fromSaved:false, always:false, confirmed:false,
     drover:false, droverEdit:false, hilite:false, before:null, ro:false,
     drKind:null, ack:true, drTmr:null, tts:false, dtTmr:null, msg:'', msgUnread:false, matchTmr:null, locOpen:false, locTmr:null, locEvent:null,
-    sending:false, sent:false, tmr:null, opened:null, dstage:'go', chgFlag:false, near:false, chgBlink:0, chgSeen:0, tmapDark:false,
+    sending:false, sent:false, tmr:null, opened:null, dstage:'go', chgFlag:false, near:false, chgBlink:0, chgSeen:0, cardEv:null, cardSeen:null, tmapDark:false,
 
     saved:null, current:null,
     d:{lvl:'under',floor:null,floorAuto:false,dong:'',line:'',etc:'',noLine:false,noDong:false}, focus:null,
@@ -2444,16 +2444,25 @@
       el('plr-lb').textContent = '픽업 장소';
       el('plr-st').textContent = S.chgFlag ? '고객이 수정함' : '고객이 입력함';
       el('plr-chg').classList.toggle('chg', !!S.chgFlag);
-      el('plr-chg').classList.remove('blink1');   /* 삭제 알림 잔상 제거 */
       el('tp-go').hidden = !!S.chgFlag;
-      if(S.pickBlink !== S.pickSeen){
-        S.pickSeen = S.pickBlink;
-        const c=el('plr-chg'); c.classList.remove('blink3'); void c.offsetWidth; c.classList.add('blink3');
+      /* 9/21 카드 깜빡임도 배너와 같은 사건 모델을 쓴다. Figma 스펙 3-1 의 '깜빡임' 은
+         카드 상태 줄을 말한다 — 두 자리가 같은 사건을 각자의 화면에서 한 번씩 알린다.
+         · 최초 입력이 내비·경로 선택에서 도착했다면 배너가 이미 알렸다. 카드는 조용히 값만 채운다.
+         · 수정은 놓치면 이미 세운 진입 계획대로 틀린 곳으로 가므로, 드라이버가 타다 앱에
+           들어올 때까지 큐에 남긴다.
+         전에는 카드가 그려질 때마다(= 드라이버가 T맵에 있어도) 소비해서, 보고 있는지를
+         전혀 따지지 않았다. 그리고 최초 입력은 chgBlink 를 올리지 않아 아예 깜빡이지 않았다. */
+      const cardEv = (S.chgFlag ? S.chgBlink : 0) + '|' + loc(S.current);
+      if(cardEv !== S.cardEv){
+        S.cardEv = cardEv;
+        if(!S.chgFlag && S.dview !== 'app') S.cardSeen = cardEv;   /* 배너가 알린 몫 */
       }
-      if(S.chgBlink !== S.chgSeen){
-        S.chgSeen = S.chgBlink;
-        ['tp-chg','plr-chg','tbn-st'].forEach(id=>{ const c=el(id); c.classList.remove('blink'); void c.offsetWidth; c.classList.add('blink'); });
+      if(S.dview === 'app' && S.cardSeen !== cardEv){
+        S.cardSeen = cardEv;
+        blinkOnce(el('plr-chg')); blinkOnce(el('tp-chg'));
       }
+      /* 드라이버가 버블을 눌러 스스로 건너온 경우 — 사건이 아니라 '여기다' 라는 응답이다 */
+      if(S.pickBlink !== S.pickSeen){ S.pickSeen = S.pickBlink; blinkOnce(el('plr-chg')); }
     } else if(del){
       /* 문구는 Figma 드라이버 카드(12860:20307) 그대로 두되, 상태 줄은 '작성함/변경함' 과
          같은 형식으로 맞춘다 — 세 사건이 같은 자리에서 같은 말투로 읽혀야 한다. */
@@ -2464,10 +2473,7 @@
       const c=el('plr-chg');
       el('plr-lb').textContent='픽업 장소'; el('plr-st').textContent='고객이 삭제함';
       c.classList.add('chg'); c.hidden=false;
-      if(S.delBlink !== S.delSeen){
-        S.delSeen = S.delBlink;
-        c.classList.remove('blink1'); void c.offsetWidth; c.classList.add('blink1');
-      }
+      if(S.delBlink !== S.delSeen){ S.delSeen = S.delBlink; blinkOnce(c); }
     }
     /* 9/16 Figma 최종본: 상세 위치가 있으면 T맵 스택에 '픽업 장소' 버블이 선다 */
     el('tovb-pick').hidden = el('tconn-pick').hidden = !show;
@@ -2656,6 +2662,14 @@
      아직 한 번도 못 보여준 사건은 소비하지 않는다 — 입력이 타다 앱에 있을 때
      도착했다면 T맵에 처음 들어갈 때 알린다.
      9/20: 300m 진입으로 배너를 되살리던 조건은 걷어냈다(음성 안내·300m 폐기). */
+  /* 깜빡임은 한 종류다(0.6s × 3). 끝나면 클래스를 떼어 다음 사건 때 다시 돌 수 있게 한다.
+     전에는 blink · blink3 · blink1 셋이 같은 애니메이션을 이름만 바꿔 쓰면서 지워지지도
+     않아, 한 요소에 둘이 겹쳐 붙어 있었다. */
+  function blinkOnce(c){
+    if(!c) return;
+    c.classList.remove('blink'); void c.offsetWidth; c.classList.add('blink');
+    c.addEventListener('animationend', ()=>c.classList.remove('blink'), {once:true});
+  }
   function paintBanner(ctx){
     const b=el('tbn'); const was=!b.hidden;
     const chgN = S.chgFlag ? S.chgBlink : 0;
@@ -2715,7 +2729,7 @@
     S.mode=m; S.screen='start'; S.pmPlayed=false;
     clearTimeout(S.tmr); S.tmr=null;
     S.sending=false; S.sent=false; S.edited=false; S.opened=null; S.skipped={}; S.dstage='go'; S.chgFlag=false; S.near=false; S.chgBlink=0; S.chgSeen=0; S.delFlag=false; S.delBlink=0; S.delSeen=0;
-    S.drover=false; S.hilite=false; S.before=null; apprEnd(true); S.bnEv=null; S.bnSeen=null; S.pickBlink=0; S.pickSeen=0;
+    S.drover=false; S.hilite=false; S.before=null; apprEnd(true); S.bnEv=null; S.bnSeen=null; S.cardEv=null; S.cardSeen=null; S.pickBlink=0; S.pickSeen=0;
     S.drKind=null; S.ack=true; S.rphase='match'; S.dview='app'; S.dstage='go'; S.driving=false; S.locEvent=null; S.locOpen=false; clearTimeout(S.drTmr); clearTimeout(S.locTmr);
     if(m==='repeat'){
       S.saved=Object.assign({},SAVED_FOR_ADDRESS); S.current=Object.assign({},SAVED_FOR_ADDRESS);
@@ -2965,11 +2979,12 @@
   });
   function closeSheet(){
     $('#phscr').classList.remove('on');
-    /* 읽기 전용으로 열었던 거라면, 닫히고 나서 왜 못 고쳤는지와 그럼 어떻게 하는지를 말한다.
-       Figma 의 토스트는 지도 위에 그려져 있다 — 시트(z40)가 토스트(z30)를 덮으므로
-       열려 있는 동안 띄우면 아무도 못 본다. */
-    /* 9/19: 화면 안내문과 같은 문장을 쓴다 — 같은 사실을 두 가지 말로 하면 다른 얘기로 읽힌다 */
-    if(S.ro){ S.ro=false; toast('차량이 도착해 지금은 고칠 수 없어요. 위치를 바꾸려면 드라이버에게 전화해 주세요.'); }
+    /* 9/21 읽기 전용 안내는 화면 안 .rowarn 이 맡는다. 닫을 때 토스트를 띄우지 않는다 —
+       화면에서 같은 문장을 읽고 [확인] 을 누른 직후에 같은 말을 또 하는 꼴이었다.
+       Figma DS 의 '편집 불가' 두 변형도 그 문장을 화면 안에 들고 있고 토스트는 없다.
+       토스트는 쓰던 중 차량이 도착해 화면을 빼앗긴 경우(AC-2-05) 전용이고, 그 길은
+       el('dgo') 의 kicked 분기에 따로 있다 — 그때는 화면이 닫혀 안내문을 읽을 새가 없다. */
+    S.ro=false;
   }
   /* 입력 내용이 바뀐 채로 닫으면 묻는다(Figma 뒤로가기_1·2). 안 바꿨으면 바로 닫는다. 읽기 전용은 묻지 않는다. */
   function tryClose(){
