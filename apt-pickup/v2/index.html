@@ -1210,6 +1210,28 @@
   /* 9/21 상세 위치 탭만: 표 칸이 좁아 '편집 가/능' 처럼 어절 중간에서 끊겼다.
      한글은 어절 단위로 끊는다. 드라이버 탭 표는 칸이 넓어 손대지 않는다. */
   #dc-detail td,#dc-detail th,#dc-detail li{word-break:keep-all;}
+  /* 9/21 섹션 이동 바. 탭이 '무엇에 대한 글인가' 를 고르면, 이 줄이 '그 글 어디로' 를 고른다.
+     가이드 전문이 들어오면서 한 탭이 14 섹션이 됐다 — 목록을 칩으로 펴면 다섯 줄을 먹으므로
+     한 줄짜리 select 로 두고, 스크롤을 따라 지금 보는 섹션이 스스로 뜨게 한다. */
+  .devcon-nav{display:flex;align-items:center;gap:8px;padding:8px 14px;
+    border-bottom:1px solid var(--line);background:#fbfcfd;}
+  .devcon-nav label{font-size:11px;color:var(--ink-3);flex:0 0 auto;}
+  .devcon-nav select{flex:1 1 auto;min-width:0;border:1px solid var(--line);background:#fff;
+    border-radius:7px;padding:5px 8px;font:inherit;font-size:11.5px;color:var(--ink);cursor:pointer;}
+  .devcon-nav[hidden]{display:none;}
+  .devcon h5{margin:14px 0 5px;font-size:11.5px;font-weight:700;color:var(--ink-2);}
+  .devcon h4{scroll-margin-top:10px;}
+  .devcon ol{margin:0 0 10px;padding-left:18px;}
+  .devcon ol li{font-size:12px;line-height:19px;color:var(--ink-2);margin-bottom:3px;}
+  .devcon blockquote{margin:0 0 10px;padding:8px 11px;border-left:2px solid var(--line);
+    background:#f8f9fb;font-size:11.5px;line-height:18px;color:var(--ink-2);}
+  .devcon a{color:var(--blue-600,#0074d7);}
+  /* 체크리스트는 사각형 글머리로 — 눌러서 체크하는 것이 아니라 읽고 확인하는 목록이다 */
+  .devcon ul.ck{list-style:none;padding-left:0;}
+  .devcon ul.ck li{position:relative;padding-left:17px;}
+  .devcon ul.ck li::before{content:'';position:absolute;left:0;top:5px;width:9px;height:9px;
+    border:1px solid #aeb4c2;border-radius:2px;}
+  .devcon pre.mer{white-space:pre;color:var(--ink-2);}
   @media (min-width:1180px){
     body{padding-right:390px;}
     .devcon{position:fixed;top:0;right:0;bottom:0;width:390px;max-width:none;margin:0;padding:0;z-index:60;}
@@ -3167,6 +3189,8 @@
     <div class="devcon-hd"><b>개발 콘솔</b><em>드라이버 배너 · 버블 · 상세 위치 입력</em>
       <span class="devcon-tabs"><button type="button" class="on" data-pane="dc-guide">드라이버 가이드</button><button type="button" data-pane="dc-code">드라이버 코드</button><button type="button" data-pane="dc-detail">상세 위치</button></span>
     </div>
+    <div class="devcon-nav"><label for="dcjump">섹션</label>
+      <select id="dcjump"></select></div>
     <div class="devcon-bd">
       <div class="pane" id="dc-guide">
         <h4>시뮬레이션</h4>
@@ -3386,277 +3410,421 @@ function onPickupEvent(ev) {            // type: CREATED | CHANGED | DELETED
 // 아직 한 번도 못 보여준 사건은 소비하지 않는다. 다시 보는 길은 &#x27;픽업 장소&#x27; 버블뿐이다.</code></pre></div>
       </div>
       <div class="pane" id="dc-detail" hidden>
-        <h4>무엇인가</h4>
-        <p>승객이 <b>어디서 차를 탈지</b>를 드라이버에게 알려 주는 화면입니다. 기존에 없던 새 화면이라,
-           아래는 이 프로토타입이 실제로 구현하고 있는 규칙을 네이티브 관점으로 옮긴 것입니다.</p>
-        <p class="dcnote">레이아웃 치수 · 접근성 · 문구까지 든 전체 가이드는
-           <a href="https://claude.ai/code/artifact/2d0174cf-abb4-4c8e-a33a-ce1153db1d54" target="_blank" rel="noopener">상세 위치 입력 화면 — 네이티브 개발 가이드</a>.
-           치수 · 색이 어긋나면 <b>Figma DS 가 기준</b>입니다.</p>
-
-        <h4>상태는 다섯 축</h4>
-        <p>Figma 변형 14개는 조합을 미리 찍어 둔 것입니다. <b>독립적인 축은 다섯</b>이고 나머지는 계산하세요.</p>
-        <table>
-          <tr><th>축</th><th>값</th><th>무엇을 정하나</th></tr>
-          <tr><td>편집 가능</td><td>가능 / 불가(차량 도착)</td><td>칸 색·면, 지우기, ×, CTA</td></tr>
-          <tr><td>진입 맥락</td><td>첫 입력 / 재편집</td><td>지우기 유무, CTA 라벨</td></tr>
-          <tr><td>변경 여부</td><td>없음 / 있음</td><td>CTA 라벨·색, 확인창</td></tr>
-          <tr><td>포커스</td><td>없음 / 층 / 동 / 라인 / 찾아오는 길</td><td>테두리, 글자 수, 도움말, 힌트 칩</td></tr>
-          <tr><td>값 채움</td><td>칸별</td><td>CTA 활성, × 버튼, 카운터</td></tr>
-        </table>
-
-        <h4>변경 판정은 셋이다</h4>
-        <p>제일 틀리기 쉬운 자리입니다. <b>셋 다 기준이 다릅니다.</b> 하나로 합치면 반드시 하나가 틀려집니다.</p>
-        <table>
-          <tr><th>쓰는 곳</th><th>무엇과 비교</th><th>체크박스</th></tr>
-          <tr><td>✕ · 뒤로 · 쓸어내리기 확인창</td><td><b>화면을 열었을 때의 값</b></td><td>센다</td></tr>
-          <tr><td>CTA 라벨</td><td>확정값 (재편집에서만)</td><td>센다</td></tr>
-          <tr><td>전송 여부</td><td>확정값</td><td>안 센다</td></tr>
-        </table>
-        <p><b>확인창을 확정값 기준으로 두지 마세요.</b> 첫 입력에는 확정값이 없어서, 아무것도 안 친 빈 화면에서
-           ✕ 를 눌러도 &lsquo;변경 사항이 적용되지 않습니다&rsquo; 가 뜹니다. 지상으로 들어와 층 1 이 미리 찬 경우도 같습니다.</p>
-        <p class="dcnote">저장 체크박스만 바꾼 커밋은 <b>드라이버에게 전송하지 않습니다</b> — 스피너·토스트·카드 깜빡임·배너가
-           모두 일어나지 않고 조용히 닫힙니다. 체크 여부만 클라이언트에 남습니다.</p>
-
-        <h4>하단 버튼</h4>
-        <table>
-          <tr><th>상황</th><th>라벨</th><th>모양</th></tr>
-          <tr><td>첫 입력 · 필수 미완</td><td>입력 완료</td><td>navy 비활성</td></tr>
-          <tr><td>첫 입력 · 필수 완료</td><td>입력 완료</td><td>navy 활성</td></tr>
-          <tr><td>재편집 · 바꾼 게 없음</td><td>확인</td><td>weak</td></tr>
-          <tr><td>재편집 · 바꾼 게 있음</td><td>입력 완료</td><td>navy 활성</td></tr>
-          <tr><td>재편집 · 바꿨는데 필수가 비었음</td><td>입력 완료</td><td>navy 비활성</td></tr>
-          <tr><td>읽기 전용</td><td>확인</td><td>weak</td></tr>
-        </table>
-        <p>되돌리면 다시 &lsquo;확인&rsquo;으로 돌아갑니다 — 한 번 더러워졌다고 계속 켜 두지 마세요.
-           필수는 <b>층 + (동 또는 &lsquo;동 없음&rsquo;)</b>. 라인과 찾아오는 길은 선택입니다.</p>
-
-        <h4>지상을 고르면 층 1 이 들어간다</h4>
-        <p><b>이 규칙을 빼면 지상에서 CTA 가 영영 안 켜집니다.</b> 완료 판정이 층을 요구하는데,
-           지상에는 그 칸을 채울 사람이 없기 때문입니다. 시안만 봐서는 보이지 않는 규칙입니다.</p>
-        <ul>
-          <li>지상 선택 · 층이 비어 있으면 <code>1</code> 이 들어가고 <b>제안 표식</b>이 켜집니다.</li>
-          <li>지하로 되돌리면 <b>제안이었던 1 만</b> 거둡니다. 직접 친 값은 그대로 둡니다.</li>
-          <li>제안된 1 은 층 칸에 포커스가 가면 <b>통째로 선택</b>돼 바로 덮어써집니다. 한 번 선택되면 표식은 꺼집니다.</li>
-          <li><b>층은 비교값에 조건 없이 넣으세요.</b> &lsquo;지상이면 층을 뺀다&rsquo;로 두면 지상에서 층만 고쳤을 때
-              바뀐 게 없다고 읽혀 저장할 길이 없어집니다 — 이 프로토타입이 9/21 까지 실제로 그랬습니다.</li>
-          <li>&lsquo;칩만 눌렀다 돌아오면 CTA 가 안 켜진다&rsquo;는 <b>되돌릴 때 1 을 거두는 쪽이 책임집니다.</b>
-              비교에서 빼서가 아닙니다 — 한 가지 일은 한 곳에서 합니다.</li>
-          <li>지하로 돌아올 때 거두는 이유: 실제로 제일 많은 건 <b>지하 2층</b>이라, 고르지도 않은 &lsquo;지하 1층&rsquo;이 저장되면 안 됩니다.</li>
-        </ul>
-
-        <h4>입력 규칙</h4>
-        <table>
-          <tr><th>칸</th><th>최대</th><th>자동 이동</th></tr>
-          <tr><td>층</td><td>1자</td><td>채우는 즉시 다음 빈 칸</td></tr>
-          <tr><td>동</td><td>8자</td><td>8자 도달 시</td></tr>
-          <tr><td>라인</td><td>8자</td><td>8자 도달 시</td></tr>
-          <tr><td>찾아오는 길</td><td>30자</td><td>없음 — 순서에서 빠짐</td></tr>
-        </table>
-        <ul>
-          <li><b>숫자 전용 키패드를 쓰지 마세요.</b> 동·라인에 <code>101-1</code>, <code>가</code>, <code>B</code> 가 실제로 들어옵니다.</li>
-          <li>리턴 키는 <b>저장이 아니라 &lsquo;다음 빈 칸으로&rsquo;</b>입니다. 뒤쪽 먼저, 없으면 앞쪽으로 돌아봅니다.
-              빈 칸이 없으면 키패드만 내립니다(라벨 &lsquo;완료&rsquo;).</li>
-          <li>포커스가 저절로 움직이는 경우는 <b>둘뿐</b> — 최대 글자 수에 닿았을 때, 엔터를 눌렀을 때.</li>
-          <li>지하/지상 칩과 찾아오는 길 × 는 <b>포커스를 가져가지 않습니다.</b> 키패드가 내려가 있었으면 내려간 채로 둡니다.</li>
-          <li>&lsquo;동 없음&rsquo;·&lsquo;라인 없음&rsquo;은 빈 칸이 아니라 <b>고른 답</b>이라, 이동 순서에서 빠집니다.</li>
-          <li>도움말은 <b>포커스 + 빈 칸</b>일 때만. 글자 수는 <b>포커스</b>일 때만. × 는 <b>값이 있을 때만</b>.</li>
-        </ul>
-
-        <h4>자주 틀리는 토큰</h4>
-        <p>비활성 CTA 의 <code>#99A5C0</code>·<code>#C0C8D9</code> 는 <b>navy 계열</b>입니다.
-           진짜 gray-300 은 <code>#9DA0AE</code>(문장 칸 플레이스홀더)입니다. 이 프로토타입도 9/20 까지 둘을 gray 로 잘못 달고 있었습니다.</p>
-        <table>
-          <tr><th>자리</th><th>값</th></tr>
-          <tr><td>CTA 활성 면 / weak 글자</td><td>navy-800 <code>#19254D</code> / navy-700 <code>#283873</code></td></tr>
-          <tr><td>CTA 비활성 면 / 글자</td><td>navy-200 <code>#99A5C0</code> / navy-100 <code>#C0C8D9</code></td></tr>
-          <tr><td>weak CTA 면</td><td>gray-e6 <code>#E6E9EF</code></td></tr>
-          <tr><td>문장 칸 면 / 값</td><td>gray-30 <code>#F5F6F7</code> / gray-950 <code>#171A24</code></td></tr>
-          <tr><td>문장 칸 플레이스홀더</td><td>gray-300 <code>#9DA0AE</code></td></tr>
-          <tr><td>찾아오는 길 플레이스홀더 · 글자 수</td><td>gray-500 <code>#73788B</code></td></tr>
-          <tr><td>읽기 전용 면 / 글자</td><td>off-white <code>#F9F9F9</code> / gray-500 <code>#73788B</code></td></tr>
-          <tr><td>힌트 칩 면 / 글자</td><td>blue-100 <code>#E2F2FE</code> / gray-800 <code>#383D4F</code></td></tr>
-        </table>
-        <p class="dcnote">읽기 전용에서는 <b>꼬리 &lsquo;에서 탈게요.&rsquo;까지</b> 같이 gray-500 로 물러나야 합니다.
-           이 프로토타입이 실제로 여기를 틀려서, 값은 4.17:1 로 물러났는데 꼬리만 14.3:1 로 제일 진하게 남아 있었습니다.</p>
-
-        <h4>iOS — SwiftUI</h4>
-        <div class="cpwrap"><button type="button" class="cp" data-cp="dc-det-1">복사</button>
-        <pre><code id="dc-det-1">// ── 값 한 벌 ──────────────────────────────────────────────
-struct DetailLocation: Equatable {
-    var level: Level = .under            // .under / .ground
-    var floor = "", dong = "", line = "", etc = ""
-    var noDong = false, noLine = false
-    var floorIsSuggested = false         // 지상이 넣어 준 1 인가
-
-    // 지상에도 층은 필수다 — 대신 지상을 고르면 1 이 들어간다
-    var isComplete: Bool { !floor.isEmpty &amp;&amp; (noDong || !dong.isEmpty) }
-
-    // 비교용. 층은 조건 없이 넣는다 — 지상에서 층만 고쳐도 '바뀌었다' 가 돼야 한다
-    var flattened: String {
-        [String(describing: level),
-         floor,
-         noDong ? "__NO_DONG__" : dong.trimmed,
-         noLine ? "__NO_LINE__" : line.trimmed,
-         etc.trimmed].joined(separator: "|")
-    }
-}
-extension String {           // 표준 API 가 아니다. 직접 둬야 한다
-    var trimmed: String { trimmingCharacters(in: .whitespaces) }
-}
-
-// ── 판정 셋. 합치면 반드시 하나가 틀려진다 ─────────────────
-private let opened   = start.flattened             // 화면을 연 순간
-private let baseline = original?.flattened ?? ""   // 확정값
-
-var isDirtySinceOpen: Bool {          // ① ✕ · 뒤로 · 쓸어내리기
-    draft.flattened != opened || saveAlways != openedSaveAlways
-}
-var hasChanges: Bool {                // ② CTA 라벨
-    draft.flattened != baseline || saveAlways != originalSaveAlways
-}
-var valueChanged: Bool {              // ③ 전송 여부 (체크박스는 안 센다)
-    draft.flattened != baseline
-}
-
-var cta: Cta {
-    if isReadOnly { return .confirm }
-    if isReedit &amp;&amp; !hasChanges { return .confirm }
-    return draft.isComplete ? .primary : .disabled
-}
-
-// ── 지상 칩은 값을 하나 만든다 ─────────────────────────────
-func setLevel(_ v: Level) {
+        <p class="dcnote">아래는 <b>상세 위치 입력 화면 — 네이티브 개발 가이드</b> 전문입니다.
+           위 <b>섹션</b> 칸으로 바로 건너뛸 수 있습니다. 치수 · 색이 어긋나면 <b>Figma DS 가 기준</b>이고,
+           같은 내용이 <a href="https://claude.ai/code/artifact/2d0174cf-abb4-4c8e-a33a-ce1153db1d54" target="_blank" rel="noopener">문서</a>에도 있습니다.</p>
+<h4>1. 이 화면은 무엇인가</h4>
+<p>승객이 <b>어디서 차를 탈지</b>를 드라이버에게 알려 주는 화면입니다. 아파트 지하 주차장처럼 지도 핀만으로는 못 찾는 곳에서, 승객이 층·동·라인을 적으면 드라이버 앱의 카드와 T맵 배너에 그대로 실립니다. 기존에 없던 새 화면입니다.</p>
+<p>진입점은 두 곳이고, 둘 다 같은 화면을 엽니다. 다른 것은 값이 언제 전달되느냐뿐입니다.</p>
+<table><tr><th>진입점</th><th>시점</th><th>전달</th></tr><tr><td>출발지 설정 화면</td><td>호출 전</td><td>배차와 동시에 드라이버에게</td></tr><tr><td>운행 화면</td><td>배차 후</td><td>입력 즉시, 이동 중인 드라이버에게</td></tr></table>
+<h5>왜 문장형인가</h5>
+<p>라벨과 입력칸을 위아래로 쌓지 않고, <b>한 문장 안의 빈칸</b><b>으</b><b>로</b> 만들었습니다.</p>
+<blockquote>지하 │ <b>1</b> │ 층   │ <b>1902</b> │ 동   │ <b>3-4</b> │ 라인   에서 탈게요.</blockquote>
+<p>이유가 세 개 있고, 세 개 다 구현에 영향을 줍니다.</p>
+<ol><li>이 값은 <b>그 자체로 드라이버가 받을 문장</b>입니다. 한 문장으로 읽혀야 승객이 보내기 전에 스스로 검토합니다.</li><li><b>꼬리 ‘에서 탈게요.’가</b> 이 칸들이 사는 곳이 아니라 <b>차를 타는 곳</b>임을 말합니다. ‘지상 7층에서 탈게요’로 읽히면 스스로 이상해져서, 사는 층을 적는 흔한 실수를 막습니다.</li><li>라벨 줄이 없어 세로가 짧습니다. 키패드가 올라와도 문장 전체가 보입니다.</li></ol>
+<p>그래서 <b>꼬리는 라인 칸 오른쪽에 바로 붙어야 하고</b>, 별도 줄로 내리면 한 문장이 두 문장처럼 읽힙니다. 꼬리 자체는 줄바꿈되지 않습니다(<code>nowrap</code>) — ‘에서’와 ‘탈게요.’가 갈라지면 문장이 깨집니다.</p>
+<h5>용어 — 코드·로그·문서에서 고정</h5>
+<table><tr><th>자리</th><th>쓰는 말</th></tr><tr><td>라이더 앱의 이 화면</td><td>상세 위치</td></tr><tr><td>드라이버 앱의 카드·배너·버블</td><td>픽업 장소</td></tr><tr><td>지도 핀</td><td>탑승 위치</td></tr></table>
+<p>사건 이름은 <b>입력 / 수정 / 삭제</b> 셋입니다. ‘픽업 위치’는 쓰지 않습니다 — 라이더 앱의 다른 기능(메시지 보내기)이 그 말을 이미 핀·경로 뜻으로 쓰고 있어 충돌합니다. ‘작성함·변경함·철회’도 쓰지 않습니다.</p>
+<h4>2. 화면 구조와 레이아웃</h4>
+<p>세 덩어리입니다 — <b>앱바 / 스크롤 영역 / 푸터</b>. 기준 크기는 360 × 760입니다.</p>
+<table><tr><th>계층</th><th>높이</th><th>속성</th><th>내용</th></tr><tr><td><code>Appbar</code></td><td>92</td><td>고정</td><td>✕ · ‘상세 위치’ · [지우기]</td></tr><tr><td><code>scroll</code></td><td>남은 공간 전부</td><td>pad 24 · gap 20</td><td>아래 네 블록</td></tr><tr><td>  <code>sentence</code></td><td>hug</td><td>gap 14</td><td>문장 입력칸</td></tr><tr><td>  <code>hint-slot</code></td><td>38</td><td>안 쓰면 숨김</td><td>‘동 없음’·‘라인 없음’ 칩</td></tr><tr><td>  <code>etc</code></td><td>hug</td><td>앞여백 20 · gap 8</td><td>찾아오는 길</td></tr><tr><td>  <code>etc-help</code></td><td>18</td><td>포커스 + 빈칸일 때만</td><td>예시 도움말</td></tr><tr><td><code>foot</code></td><td>hug</td><td>바닥 고정</td><td>저장 체크박스 + CTA</td></tr></table>
+<h5>꼭 지켜야 하는 것 네 가지</h5>
+<p><b>스크롤 영역이 남은 공간을 전부 가집니다.</b> 앱바와 푸터 사이가 통째로 스크롤 영역이고, 키패드가 올라올 때 줄어드는 것도 여기입니다. 블록 둘을 나란히 두고 둘 다 <code>hug</code> 으로 두면, 남는 공간의 주인이 없어져 스크롤 경계가 사라집니다.</p>
+<p><b>푸터는 오버레이입니다.</b> 내용이 짧아도 바닥에 붙어 있어야 합니다. 스크롤 흐름 안에 두면 내용을 따라 올라옵니다.</p>
+<p><b>문장과 찾아오는 길 사이는 40입니다.</b> 다만 그 40은 한 값이 아니라 <b>블록 간격 20 + </b><b><code>etc</code></b><b> 가 스스로 갖는 앞여백 20</b> 입니다. 헤더 패딩이 아닙니다 — <code>etc-header</code> 자체 패딩은 0입니다.</p>
+<p><b>힌트 칩이 뜨면 그 아래가 58 밀립니다</b>(칩 38 + 간격 20). 찾아오는 길은 사라지지 않고 자리만 내려갑니다. 칩이 사라지면 제자리로 돌아옵니다.</p>
+<h5>문장 줄바꿈</h5>
+<p>문장은 두 줄로 나눕니다 — 1줄 <code>[지하/지상 칩] [층]</code>, 2줄 <code>[동] [라인] [에서 탈게요.]</code>. 칸 사이 8, 줄 사이 14입니다.</p>
+<p>폭이 모자랄 때만 wrap 으로 다음 줄에 떨어집니다(동·라인 각 8자가 최대입니다). 꼬리는 줄바꿈되지 않습니다.</p>
+<h4>3. 디자인 토큰</h4>
+<p>Figma 변수에 묶인 값들입니다. <b>하드코딩하지 말고 앞의 이름을 그대로 쓰세요.</b></p>
+<table><tr><th>이름</th><th>값</th><th>쓰는 곳</th></tr><tr><td>navy-800</td><td>#19254D</td><td>CTA 활성 면</td></tr><tr><td>navy-700</td><td>#283873</td><td>weak CTA 글자(‘확인’)</td></tr><tr><td>navy-200</td><td>#99A5C0</td><td>CTA 비활성 면</td></tr><tr><td>navy-100</td><td>#C0C8D9</td><td>CTA 비활성 글자</td></tr><tr><td>gray-e6</td><td>#E6E9EF</td><td>weak CTA 면</td></tr><tr><td>gray-950</td><td>#171A24</td><td>문장의 채워진 값</td></tr><tr><td>gray-900</td><td>#262A38</td><td>단위(층·동·라인) · 꼬리 · 찾아오는 길 제목</td></tr><tr><td>gray-800</td><td>#383D4F</td><td>힌트 칩 글자</td></tr><tr><td>gray-500</td><td>#73788B</td><td>읽기 전용 값·라벨 · ‘없음’ 답 · (선택) · 찾아오는 길 플레이스홀더·글자 수</td></tr><tr><td>gray-300</td><td>#9DA0AE</td><td>문장 칸 플레이스홀더</td></tr><tr><td>gray-80</td><td>#E3E4E8</td><td>찾아오는 길 테두리(기본)</td></tr><tr><td>gray-30</td><td>#F5F6F7</td><td>문장 칸 면</td></tr><tr><td>off-white</td><td>#F9F9F9</td><td>읽기 전용 칸 면</td></tr><tr><td>blue-100</td><td>#E2F2FE</td><td>힌트 칩 면</td></tr><tr><td>blue-150</td><td>#B9DDFD</td><td>힌트 칩 눌림</td></tr><tr><td>blue-600</td><td>#0074D7</td><td>읽기 전용 안내문</td></tr><tr><td>black</td><td>#000000</td><td>포커스 테두리 · 찾아오는 길 값</td></tr></table>
+<p>플레이스홀더 색이 두 가지입니다. <b>문장 칸은 gray-300, 찾아오는 길은 gray-500</b> 입니다 — 한 값으로 통일하지 마세요. 문장 칸은 회색 면(gray-30) 위고 찾아오는 길은 흰 면 위라, 같은 색을 쓰면 두 자리의 대비가 어긋납니다.</p>
+<h5>주의 — gray 와 navy 를 헷갈리지 마세요</h5>
+<p>비활성 CTA 의 <code>#99A5C0</code> · <code>#C0C8D9</code> 는 <b>navy 계열</b>입니다. 이름에 gray 가 들어가면 진짜 gray-300(#9DA0AE, 플레이스홀더)과 섞입니다. 웹 프로토타입은 실제로 이 둘을 gray 로 잘못 달고 있었고, 9/20에 바로잡았습니다.</p>
+<h5>타이포</h5>
+<table><tr><th>자리</th><th>크기 / 줄높이</th><th>굵기</th></tr><tr><td>앱바 제목 ‘상세 위치’</td><td>18 / 26</td><td>Regular</td></tr><tr><td>앱바 [지우기]</td><td>16 / 24</td><td>Regular</td></tr><tr><td>문장의 값</td><td>22 / 30</td><td><b>Bold</b></td></tr><tr><td>문장의 단위·꼬리</td><td>16 / 24</td><td>Medium</td></tr><tr><td>‘동 없음’·‘라인 없음’ 답</td><td>16 / 24</td><td><b>Regular</b></td></tr><tr><td>힌트 칩</td><td>13 / 18</td><td>Regular</td></tr><tr><td>찾아오는 길 제목</td><td>14 / 20</td><td><b>Bold</b></td></tr><tr><td>    (선택)</td><td>14 / 20</td><td>Regular</td></tr><tr><td>찾아오는 길 값·플레이스홀더</td><td>15 / 22</td><td>Regular</td></tr><tr><td>저장 체크박스 문구</td><td>14 / 20</td><td>Regular</td></tr><tr><td>CTA</td><td>16 / 24</td><td><b>Bold</b></td></tr></table>
+<h4>4. 컴포넌트 스펙</h4>
+<h5>4-1. 문장 입력칸 (<code>입력 필드 / 값</code>)</h5>
+<p>칸 하나가 <b>값 + 단위</b> 한 쌍입니다. <code>1</code> + <code>층</code>, <code>1902</code> + <code>동</code> 처럼요.</p>
+<table><tr><th>항목</th><th>값</th></tr><tr><td>높이</td><td><b>48</b> (고정)</td></tr><tr><td>안쪽 여백</td><td>8 / 14</td></tr><tr><td>값↔단위 간격</td><td>4</td></tr><tr><td>모서리</td><td>6</td></tr><tr><td>면</td><td><code>gray-30</code></td></tr><tr><td>칸 사이</td><td>8 · 줄 사이 14</td></tr></table>
+<p>지하/지상 칩만 안쪽 여백이 <b>8 / 12 / 8 / 14</b> 입니다(오른쪽에 화살표 14가 붙어 간격은 6).</p>
+<p><b>‘동 없음’·‘라인 없음’을 고르면</b> 그 칸이 답으로 바뀝니다. 22px 값이 빠지고 16px 한 줄만 남아서, 위아래 여백을 6 → <b>12</b>로 늘려 높이 48을 지킵니다(<code>pad 12/14</code>). 이 칸은 버튼이 아니라 <b>고른 답</b>입니다 — 다시 누르면 빈 칸으로 돌아옵니다.</p>
+<p><b>칸 폭은 값의 글자 폭을 따라갑니다</b>(비어 있을 땐 플레이스홀더 폭). 고정 폭을 주면 ‘101’과 ‘1902’가 같은 칸에 앞뒤로 놓일 때 문장이 들쭉날쭉해집니다.</p>
+<h5>4-2. 힌트 칩 (<code>hint-slot</code>)</h5>
+<p>동을 치는 중에만 ‘동 없음’, 라인을 치는 중에만 ‘라인 없음’이 보입니다. 높이 38 · 안쪽 여백 10/14 · <b>모서리 완전히 둥글게(pill — 반지름 9999)</b> · 면 blue-100 · 눌리면 blue-150 · 글자 13/18 Regular gray-800.</p>
+<p>모서리를 19 같은 반값으로 주지 마세요. 칩은 문장 칸(반지름 6)과 다른 종류라서, 알약 모양이 ‘이건 누르는 답이다’라고 말합니다.</p>
+<h5>4-3. 찾아오는 길 (<code>etc</code>)</h5>
+<p>제목 줄 <b>‘찾아오는 길’(Bold) + ‘(선택)’(Regular, </b><b><code>gray-500</code></b><b>)</b>, 그 아래 gap 8로 입력칸입니다.</p>
+<table><tr><th>항목</th><th>값</th></tr><tr><td>입력칸</td><td>312 × 54 · 안쪽 여백 16(네 면 같음) · 모서리 6</td></tr><tr><td>기본</td><td>배경 없음 · 테두리 1px gray-80</td></tr><tr><td>포커스</td><td>테두리 1px black</td></tr><tr><td>비활성</td><td>면 off-white · 테두리 없음 · 글자 gray-500</td></tr><tr><td>값 · 플레이스홀더</td><td>15/22 Regular · 값은 black · 플레이스홀더는 gray-500</td></tr><tr><td>글자 수</td><td>오른쪽 끝 정렬 · 12/16 · 숫자만 Bold, <code>/30</code> 은 Regular · 둘 다 gray-500</td></tr></table>
+<p>글자 수는 <b>칸 안에 절대배치</b>로 얹힙니다 — 글자 흐름에 끼우면 사라질 때 값이 움직입니다. × 가 서면 글자 수가 그만큼 왼쪽으로 물러나고, 값의 오른쪽 여백도 둘을 피할 만큼 늘어나야 합니다.</p>
+<p>플레이스홀더는 <b>‘입구가 헷갈리면 적어 주세요’ 한 줄로 고정</b>입니다. 상황마다 바꾸지 않습니다.</p>
+<p>이 블록은 <b>진입 순간부터 늘 보입니다.</b> 나타나는 조건이 없습니다.</p>
+<h5>4-4. 예시 도움말 (<code>etc-help</code>)</h5>
+<p>칸 아래에 붙는 회색 한 줄입니다 — <b>지하: ‘예) 게이트2로 들어와서 좌회전’ / 지상: ‘예) 경비실 지나서 바로 좌회전’</b>.</p>
+<p><b>포커스가 있고 칸이 비어 있을 때만</b> 보입니다. 쓰기 시작하면 거둡니다. 플레이스홀더 자리에 예시를 넣지 마세요 — 둘은 다른 것입니다.</p>
+<h5>4-5. 푸터</h5>
+<p>위에 <b>저장 체크박스</b>(‘다음에도 이 주소에서 이렇게 보내기’, 패딩 20/20/10/20), 아래에 <b>CTA</b>(높이 52 · 모서리 4 · 안쪽 여백 14/18 · 그룹 패딩 10)입니다.</p>
+<p>저장 체크박스는 <b>필수(층·동)가 채워지기 전엔 보이지 않습니다.</b></p>
+<h4>5. 상태 모델</h4>
+<p>Figma 에는 변형이 14개 있지만, <b>그건 조합을 미리 찍어둔 것</b>입니다. 실제로 독립적인 축은 다섯 개이고, 구현은 이 다섯을 상태로 두고 나머지는 계산하세요.</p>
+<table><tr><th>축</th><th>값</th><th>무엇을 정하나</th></tr><tr><td>편집 가능</td><td>가능 / 불가(차량 도착)</td><td>칸 색·면, 지우기, ×, CTA 라벨</td></tr><tr><td>진입 맥락</td><td>첫 입력 / 재편집</td><td>지우기 유무, CTA 라벨</td></tr><tr><td>변경 여부</td><td>없음 / 있음</td><td>CTA 라벨·색, × 확인창</td></tr><tr><td>포커스</td><td>없음 / 층 / 동 / 라인 / 찾아오는 길</td><td>테두리, 글자 수, 도움말, 힌트 칩</td></tr><tr><td>값 채움</td><td>층 / 동 / 라인 / 찾아오는 길 각각</td><td>CTA 활성, × 버튼, 카운터</td></tr></table>
+<h5>직접 만들지 말고 계산할 것</h5>
+<pre class="mer"><code>flowchart TD
+  A[편집 불가?] --&gt;|예| RO[읽기 전용&lt;br/&gt;CTA = 확인]
+  A --&gt;|아니오| B[재편집 진입?]
+  B --&gt;|아니오| C[첫 입력&lt;br/&gt;CTA = 입력 완료]
+  B --&gt;|예| D[바뀐 게 있나?]
+  D --&gt;|없음| E[CTA = 확인 weak]
+  D --&gt;|있음| F[CTA = 입력 완료 navy]</code></pre>
+<h5>Figma 변형과의 대응</h5>
+<p>변형 이름은 시안을 찾기 위한 북마크입니다. 그대로 분기 이름으로 쓰지 마세요.</p>
+<table><tr><th>변형</th><th>실제로는</th></tr><tr><td>빈 상태 / 층 입력 중 / 동 입력 중 / 라인 입력 중</td><td>첫 입력 × 포커스 위치 차이</td></tr><tr><td>동 없음 / 라인 없음</td><td>‘없음’ 답이 선택된 칸 상태</td></tr><tr><td>필수 완료</td><td>층·동 채움 · 포커스 없음</td></tr><tr><td>길 안내 펼침 / 입력됨</td><td>찾아오는 길의 포커스·값 조합</td></tr><tr><td>재편집 / 재편집 변경됨</td><td>재편집 × 변경 여부</td></tr><tr><td>지상</td><td>지하/지상 칩의 반대쪽</td></tr><tr><td>편집 불가 (길 없음 / 길 있음)</td><td>읽기 전용 × 찾아오는 길 값 유무</td></tr></table>
+<h4>6. 입력 규칙</h4>
+<table><tr><th>칸</th><th>최대</th><th>키패드</th><th>개행</th><th>자동 이동</th></tr><tr><td>층</td><td>1자</td><td>기본(숫자+문자)</td><td>불가</td><td>채우는 즉시 다음 빈 칸</td></tr><tr><td>동</td><td>8자</td><td>기본</td><td>불가</td><td>8자 도달 시 다음 빈 칸</td></tr><tr><td>라인</td><td>8자</td><td>기본</td><td>불가</td><td>8자 도달 시 다음 빈 칸</td></tr><tr><td>찾아오는 길</td><td>30자</td><td>기본</td><td>불가</td><td>없음 — 이동 순서에서 빠짐</td></tr></table>
+<p>숫자 전용 키패드를 쓰지 말아주세요. 동·라인에 <code>101-1</code>, <code>가</code>, <code>B</code> 같은 값이 실제로 들어옵니다.</p>
+<h5>글자 수 표시</h5>
+<p><code>0/30</code> 은 <b>그 칸에 포커스가 있을 때만</b> 보입니다. 항상 띄우면 빈 칸에도 숫자가 붙어 시선을 끕니다.</p>
+<h5>리턴 키 — 제출이 아니라 ‘다음 빈 칸으로’</h5>
+<p>이 칸들은 개행이 안 됩니다. 그래서 리턴 키에 <b>기본값(줄바꿈)을 그대로 두면 안 됩니다</b> — 글자와 동작이 어긋납니다.</p>
+<table><tr><th>상황</th><th>동작</th><th>라벨</th></tr><tr><td>뒤쪽에 빈 칸이 있다</td><td>그 칸으로 이동</td><td><b>다음</b></td></tr><tr><td>뒤엔 없고 앞쪽에 빈 칸이 있다</td><td>앞의 빈 칸으로 이동</td><td><b>다음</b></td></tr><tr><td>빈 칸이 없다</td><td>키패드만 내림 — <b>저장 아님</b></td><td><b>완료</b></td></tr><tr><td>찾아오는 길에서</td><td>키패드만 내림</td><td><b>완료</b></td></tr></table>
+<p>플랫폼 설정은 이렇게 붙입니다.</p>
+<ul><li>iOS — <code>.next</code> / <code>.done</code> (<code>textField.returnKeyType</code>)</li><li>Android — <code>imeOptions = actionNext</code> / <code>actionDone</code></li></ul>
+<p>엔터로 곧장 저장되면 승객이 문장을 확인할 새가 없습니다. 저장은 하단 버튼 한 곳에서만 일어납니다.</p>
+<h5>포커스가 저절로 움직이는 경우는 둘뿐</h5>
+<p>최대 글자 수에 닿았을 때, 그리고 엔터를 눌렀을 때입니다. 그 밖엔 승객이 직접 탭한 칸에 머물러야 합니다.</p>
+<p>지하/지상 칩은 <b>포커스를 가져가지 않습니다.</b> 동·라인을 치던 중에 눌러도 그 칸과 키패드가 그대로 있어야 합니다.</p>
+<p>‘동 없음’·‘라인 없음’을 고르면 그 칸은 <b>이동 순서에서 빠집니다.</b> 빈 칸이 아니라 고른 답이기 때문입니다.</p>
+<h5>지상을 고르면 층 1 이 들어갑니다</h5>
+<p>지하/지상 칩은 모양만 바꾸는 게 아니라 <b>값을 하나 만듭니다.</b> 시안만 봐서는 보이지 않는 규칙이라 여기 적어 둡니다.</p>
+<table><tr><th>동작</th><th>층 칸</th><th>제안 표식</th></tr><tr><td>지상 선택 · 층이 비어 있음</td><td><code>1</code> 이 들어간다</td><td>켜진다</td></tr><tr><td>지상 선택 · 층에 값이 있음</td><td>그대로 둔다</td><td>안 건드린다</td></tr><tr><td>지하로 되돌림 · 제안이었던 1</td><td>비운다</td><td>꺼진다</td></tr><tr><td>지하로 되돌림 · 직접 친 값</td><td>그대로 둔다</td><td>안 건드린다</td></tr><tr><td>승객이 층을 직접 침</td><td>친 값</td><td>꺼진다</td></tr></table>
+<ul><li>제안된 1 이 들어 있는 층 칸에 포커스가 가면 <b>통째로 선택</b>돼 바로 덮어씁니다. 한 번 선택되면 표식은 꺼져서, 두 번째로 들어갈 땐 커서만 놓입니다.</li><li>이미 층 칸에 포커스가 있는 채로 지상을 눌렀다면 그 자리에서 바로 선택됩니다.</li><li>지하로 돌아올 때 1 을 거두는 이유는, 실제로 제일 많은 게 <b>지하 2층</b>이라 고르지도 않은 ‘지하 1층’이 남아 그대로 저장되면 안 되기 때문입니다.</li><li><b>층은 비교용 값에 조건 없이 넣으세요.</b> ‘지상이면 층을 민다’로 두면 지상에서 층만 고쳠을 때 바뀐 게 없다고 읽혀, CTA 가 ‘확인’에 멈춰 <b>저장할 길이 없어집니다.</b> ✕ 로 나가도 묻지 않고 사라집니다. 웹 프로토타입이 9/21 까지 실제로 이러했습니다.</li><li>‘칩만 눌렀다 돌아오면 CTA 가 안 켜진다’는 <b>되돌릴 때 1 을 거두는 쪽이 책임집니다.</b> 비교에서 빼서가 아닙니다 — 한 가지 일은 한 곳에서 합니다. 제안한 1 은 늘 지하→지상 전환과 함께 생겨 <code>level</code> 이 이미 달라지므로, 층을 넣어도 안전합니다.</li></ul>
+<p><b>이 규칙을 빼면 지상에서 CTA 가 영영 안 켜집니다.</b> 완료 판정이 층을 요구하는데(§7) 지상에서는 그 칸을 채울 사람이 없기 때문입니다.</p>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c1">복사</button>
+<pre><code id="dg-c1">func setLevel(_ v: Level) {
     guard draft.level != v else { return }
     let wasSuggested = draft.floorIsSuggested
     draft.level = v
     if v == .ground {
         if draft.floor.isEmpty {
-            draft.floor = "1"; draft.floorIsSuggested = true
+            draft.floor = "1"
+            draft.floorIsSuggested = true
         }
-    } else if wasSuggested {          // 제안이었던 1 만 거둔다
-        draft.floor = ""; draft.floorIsSuggested = false
+    } else if wasSuggested {
+        draft.floor = ""
+        draft.floorIsSuggested = false
     }
-    // 칩은 포커스를 가져가지도, 옮기지도 않는다.
-    // 제안된 1 은 층 칸에 포커스가 가면 통째로 선택된다.
+    // 칩은 포커스를 가져가지도, 옆 칸으로 옮기지도 않는다.
+    // 누르기 전에 키패드가 내려가 있었다면 내려간 채로 둔다.
+}</code></pre></div>
+<p>예시 도움말 문구도 이 칩을 따라갑니다 — 지하면 ‘예) 게이트2로 들어와서 좌회전’, 지상이면 ‘예) 경비실 지나서 바로 좌회전’(§4-4).</p>
+<h4>7. 하단 버튼</h4>
+<p>이 화면에서 제일 까다로운 부분입니다. 규칙은 한 줄입니다 — <b>확정할 게 없으면 ‘확인’, 생기면 ‘입력 완료’.</b></p>
+<table><tr><th>상황</th><th>라벨</th><th>모양</th><th>누르면</th></tr><tr><td>첫 입력 · 필수 미완</td><td>입력 완료</td><td>navy 비활성</td><td>—</td></tr><tr><td>첫 입력 · 필수 완료</td><td>입력 완료</td><td>navy 활성</td><td>저장 + 전송</td></tr><tr><td>재편집 · 바꿀 거 없음</td><td>확인</td><td>weak(gray-e6 면 · navy-700 글자)</td><td>그냥 닫기</td></tr><tr><td>재편집 · 바꿀 게 있음</td><td>입력 완료</td><td>navy 활성</td><td>저장 + 전송</td></tr><tr><td>재편집 · 바꿨는데 필수가 비었음</td><td>입력 완료</td><td>navy 비활성</td><td>—</td></tr><tr><td>읽기 전용</td><td>확인</td><td>weak</td><td>그냥 닫기</td></tr></table>
+<p>마지막에서 둘째 줄을 빠뜨리지 마세요. 재편집에서 동을 지워 버리면 ‘확인’이 아니라 <b>비활성 ‘입력 완료’</b><b>입니다</b> — 바꾼 게 있으니 확인만 하고 나갈 수는 없고, 필수가 비었으니 보낼 수도 없습니다.</p>
+<p>되돌리면 다시 ‘확인’으로 돌아갑니다. 값을 비교해 판정하세요(한 번 더러워졌다고 계속 활성화하지 마세요). ‘확인’이 정직한 말이 되려면 그래야 합니다.</p>
+<h5>왜 비활성이 아니라 ‘확인’인가</h5>
+<p>재편집으로 들어오는 사람 중 다수는 <b>값을 확인하러</b> 옵니다. 아무것도 안 바꿉니다. 그 사람에게 하단 버튼이 죽어 있으면, <b>엄지가 먼저 닿는 자리가 막다른 길</b>이 되고 나갈 길은 좌상단 ✕ 하나뿐입니다.</p>
+<p>대비도 문제였습니다 — 비활성 버튼은 <code>#C0C8D9</code> on <code>#99A5C0</code> 로 <b>1.47:1</b>, weak 은 <code>#283873</code> on <code>#E6E9EF</code> 로 <b>9:1</b> 입니다. 그 버튼은 이 화면이 주는 유일한 지시문인데 읽히지 않았습니다.</p>
+<h5>저장 체크박스도 ‘변경’입니다</h5>
+<p>체크박스만 건드려도 CTA 가 navy 로 켜집니다. 다만 세 가지를 지켜야 합니다.</p>
+<ol><li><b>누르는 즉시 저장하지 않습니다.</b> 화면 상태만 바뀝니다. 즉시 적용하면 ✕ 로 나가도 남아서, ‘버튼을 눌러야 저장된다’는 화면의 약속과 어긋납니다.</li><li><b>✕ 로 나가면 버려집니다.</b> 확인창을 거칩니다.</li><li><b>체크박스만 바뀜 커밋은 드라이버에게 전송하지 않습니다.</b> 값이 그대로면 전송 스피너·토스트·카드 깜빡임·배너가 모두 일어나지 않고 조용히 닫힙니다. 체크 여부만 클라이언트에 저장됩니다.</li></ol>
+<p>그래서 <b>변경 판정</b><b>이 하나로는 부족합니다</b> — 확인창을 위한 판정(열었을 때 기준), CTA 를 위한 판정(확정값 기준 · 값 + 체크박스), 전송을 위한 판정(확정값 기준 · 값만) 셋입니다. 합치면 반드시 하나가 틀려집니다(§12).</p>
+<h5>필수 판정</h5>
+<p><b>층 + (동 또는 ‘동 없음’)</b> 이면 완료입니다. 라인은 선택이라 비어 있어도 CTA 가 켜집니다. 찾아오는 길도 선택입니다.</p>
+<h4>8. 읽기 전용 — 차량이 도착한 뒤</h4>
+<p>차가 도착하면 고칠 수 없습니다. 다만 <b>화면은 열립니다</b> — 못 여는 것과 열리되 못 고치는 것은 다릅니다. 승객은 차 앞에 서서 자기가 보낸 값을 확인하고 싶어합니다.</p>
+<table><tr><th>자리</th><th>읽기 전용일 때</th></tr><tr><td>문장 칸</td><td>면 <code>off-white</code> · 글자 <code>gray-500</code> · 화살표 없음</td></tr><tr><td>꼬리 ‘에서 탈게요.’</td><td><code>gray-500</code> — <b>같이 물러나야 합니다</b></td></tr><tr><td>찾아오는 길</td><td>값 있으면 <code>off-white</code> 무테 · 값 없으면 <b>제목까지 블록째 숨김</b></td></tr><tr><td>× (값 지우기)</td><td>없음</td></tr><tr><td>앱바 [지우기]</td><td>없음</td></tr><tr><td>저장 체크박스</td><td>비활성</td></tr><tr><td>CTA</td><td><b>확인</b> (weak)</td></tr></table>
+<p>화면 안 <code>save</code> 자리에 안내문을 둡니다 — <b>‘차량이 도착해 지금은 고칠 수 없어요. / 위치를 바꾸려면 드라이버에게 전화해 주세요.’</b> (14/20 Regular <code>blue-600</code>).</p>
+<h5>꼬리를 빼먹지 마세요</h5>
+<p>웹 프로토타입이 실제로 이걸 틀렸습니다. 읽기 전용 색 규칙이 꼬리를 빠뜨려서, 값이 4.17:1로 물러난 화면에서 <b>꼬리만 14.3:1로 제일 진한 글자</b>로 남아 있었습니다. 문장 전체가 같은 정도로 물러나야 합니다.</p>
+<h5>닫을 때 토스트를 띄우지 않습니다</h5>
+<p>직접 열어본 경우엔 화면 안 안내문을 이미 읽었습니다. 거기서 [확인]을 누른 직후에 같은 문장을 토스트로 또 띄우면 같은 말을 두 번 하는 꼴입니다.</p>
+<p>토스트는 <b>한 경우에만 </b><b>띄웁</b><b>니다</b> — 승객이 화면을 열어둔 채 머물러 있는 도중 차량이 도착해 <b>화면이 강제로 닫힐 때</b>. 그때는 안내문을 읽을 새가 없으니 토스트가 유일한 수단입니다.</p>
+<p>두 경우의 코드 경로를 <b>반드시 나누세요.</b> 합치면 직접 열어본 사람에게도 토스트가 뜨게 됩니다.</p>
+<h4>9. 닫기·지우기</h4>
+<h5>✕ 로 나가기</h5>
+<p>바꾼 게 없으면 바로 닫힙니다. 있으면 묻습니다 — <b>‘변경 사항이 적용되지 않습니다. / 계속하시겠습니까?’</b> [아니오] [예].</p>
+<p>여기서의 ‘변경’에는 <b>저장 체크박스도 들어갑니다</b>(§7). 기준은 확정값이 아니라 <b>화면을 열었을 때의 값</b>입니다 — 첫 입력에서 빈 화면인 채 나가는데 확인창이 뜨면 틀린 것입니다(§12).</p>
+<p>나가는 길은 <b>세 개고 셋 다 같은 확인창을 거쳐야</b> 합니다 — 앱바 ✕, 안드로이드 뒤로가기, 그리고 <b>iOS 에서 시트를 </b><b>쓸</b><b>어내리는 제스처</b>. 세 번째를 빼면 iOS 에서만 묻지 않고 사라집니다(§12). 읽기 전용은 셋 다 묻지 않습니다.</p>
+<h5>앱바 [지우기]</h5>
+<p><b>값이 있고 편집 가능할 때만</b> 보입니다. 첫 입력·읽기 전용엔 없습니다. 전체를 지우는 길은 이것 하나입니다.</p>
+<blockquote><b>상세 위치를 지울까요?</b> 드라이버에게 전달된 내용도 함께 사라집니다.</blockquote>
+<p>배차 뒤에도 지울 수 있습니다. 지우면 드라이버 쪽 버블·배너가 거두어집니다(§10).</p>
+<p>문구가 ‘삭제합니다’가 아니라 ‘지울까요?’인 이유는, 앞에 것이 <b>이미 지운 것처럼 읽히고</b> 무엇이 함께 사라지는지를 말해 주지 않기 때문입니다.</p>
+<h5>찾아오는 길만 지우기</h5>
+<p>칸 안 <b>×</b> 는 <b>값이 있을 때만</b> 나옵니다. 누르면 그 칸만 비우고 <b>포커스는 건드리지 않습니다</b> — 포커스가 없던 칸의 × 를 눌렀다고 키패드가 올라오면 안 됩니다.</p>
+<p>접기(−) 같은 건 없습니다. 펼침이 기본이 된 뒤로 ‘접으면 지워진다’는 규칙은 실수만 부릅니다.</p>
+<h4>10. 전송·실패·드라이버 쪽</h4>
+<h5>라이더 토스트</h5>
+<table><tr><th>언제</th><th>문구</th></tr><tr><td>값이 기사에게 닿은 순간</td><td>드라이버에게 전달했어요. 이동 중이라 확인이 늦을 수 있어요.</td></tr><tr><td>전송 실패</td><td>드라이버에게 전달하지 못했어요. 잠시 뒤 다시 시도해 주세요.</td></tr><tr><td>머무는 중 차량 도착</td><td>차량이 도착해 지금은 고칠 수 없어요. 위치를 바꾸려면 드라이버에게 전화해 주세요.</td></tr></table>
+<p><b>보내는 중에 띄우지 마세요.</b> 아직 안 간 걸 갔다고 말하는 셈입니다.</p>
+<p>실패하면 <b>값은 화면에 그대로 두고</b> 카드만 ‘입력됨’으로 되돌립니다. 쓴 것을 지우면 다시 쓰게 됩니다. 다시 누르면 그 값 그대로 재전송합니다. 기사 쪽으로는 아무것도 내보내지 않습니다.</p>
+<h5>드라이버 앱에서 일어나는 일</h5>
+<p>라이더 개발 범위는 아니지만, <b>무엇을 보내야 하는지</b>를 정하므로 적어 둡니다.</p>
+<table><tr><th>사건</th><th>타다 앱 카드</th><th>T맵 위</th></tr><tr><td>입력</td><td>‘픽업 장소 · 고객이 입력함’ (파랑)</td><td>버블 생성 + 배너 1회 흐름</td></tr><tr><td>수정</td><td>‘… 고객이 수정함’ (주황)</td><td>배너가 다시 생겨 한 번 더</td></tr><tr><td>삭제</td><td>제목 ‘내비에 표시된 출발지에서 탑승’</td><td>버블·배너 모두 거둠</td></tr></table>
+<p>알림 규칙은 한 문장입니다 — <b>사건은 드라이버가 그때 보고 있는 화면에서 한 번 알린다. 수정만은 볼 때까지 기다린다.</b></p>
+<p>그래서 <b>전송 payload 에 사건 종류(입력/수정/삭제)가 들어가야 합니다.</b> 값만 보내면 드라이버 앱이 처음인지 고친 건지 못 가립니다.</p>
+<h4>11. 접근성</h4>
+<h5>읽어 주는 이름이 보이는 글자와 같아야 합니다</h5>
+<p>칸마다 라벨을 붙이세요 — <code>몇 층</code>, <code>몇 동</code>, <code>라인</code>, <code>찾아오는 길</code>. 문장형이라 화면에는 라벨 줄이 없고, 그러면 스크린리더 사용자에겐 빈 칸만 연속으로 읽힙니다.</p>
+<p>포커스가 자동으로 옮겨가면 <b>옮겨간 칸의 라벨을 먼저 읽어</b> 주세요. 지금 어디에 있는지 모르면 숫자만 치게 됩니다.</p>
+<p>‘동 없음’·‘라인 없음’은 <b>버튼이 아니라 고른 답</b>입니다. 선택 상태를 알려 주고, 다시 누르면 칸으로 돌아온다는 것까지 들리게 해 주세요.</p>
+<ul><li>iOS — <code>.accessibilityAddTraits(.isSelected)</code></li><li>Android — <code>Modifier.semantics { selected = true }</code></li></ul>
+<p>둘 다 역할은 버튼으로 두되 <b>선택 상태를 </b><b>얹</b><b>어</b> 주면 됩니다. 단순히 ‘동 없음, 버튼’ 으로만 읽히면 이미 고른 답인지 아직 고를 수 있는 것인지 가리지 못합니다.</p>
+<h5>대비</h5>
+<table><tr><th>자리</th><th>대비</th><th>상태</th></tr><tr><td>값 <code>gray-950</code> on <code>gray-30</code></td><td>14.9:1</td><td>좋음</td></tr><tr><td>플레이스홀더 <code>gray-300</code> on <code>gray-30</code></td><td>2.4:1</td><td>플레이스홀더라 허용</td></tr><tr><td>읽기 전용 안내문 <code>blue-600</code></td><td>4.69:1</td><td>AA</td></tr><tr><td>weak CTA <code>navy-700</code> on <code>gray-e6</code></td><td>9:1</td><td>좋음</td></tr><tr><td><b>비활성 CTA</b> <code>navy-100</code> on <code>navy-200</code></td><td><b>1.47:1</b></td><td>⚠ 아래 참고</td></tr></table>
+<p>비활성 버튼 대비는 <b>DS 토큰 문제라 이 기능에서 고치지 않습니다.</b> 비활성 컨트롤은 WCAG 1.4.3 예외이기도 합니다. 다만 재편집에서는 그 버튼이 화면이 주는 유일한 지시문이라 weak ‘확인’으로 바꿨습니다(§7).</p>
+<h5>동작 줄이기</h5>
+<p>시스템 설정이 켜져 있으면 깜빡임을 끕니다. 다만 <b>알림까지 끄지는 마세요</b> — 동작을 줄이라는 뜻이지 알리지 말라는 뜻이 아닙니다. 깜빡임 대신 <b>색으로 구분</b>해 주세요.</p>
+<h5>터치 영역</h5>
+<p>칸은 높이 48이라 그대로 충분합니다. <b>찾아오는 길의 × (20×20)만 작으니 터치 영역을 44×44로 넓혀 주세요.</b></p>
+<h4>12. iOS — SwiftUI</h4>
+<p>상태와 판정 로직입니다. 레이아웃은 §2–§4 치수를 그대로 옮기면 됩니다.</p>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c2">복사</button>
+<pre><code id="dg-c2">enum Level { case under, ground }
+enum Field: Hashable { case floor, dong, line, etc }
+
+struct DetailLocation: Equatable {
+    var level: Level = .under
+    var floor = ""
+    var dong  = ""
+    var line  = ""
+    var etc   = ""
+    var noDong = false
+    var noLine = false
+    /// 지상을 고르면서 앱이 넣어 준 1 인가. 값이 아니라 제안이라는 표식이다(§6).
+    var floorIsSuggested = false
+
+    /// 층 + (동 또는 '동 없음'). 라인·찾아오는 길은 선택.
+    /// 지상에도 층은 필수다 — 대신 지상을 고르는 순간 1 이 들어간다.
+    var isComplete: Bool {
+        !floor.isEmpty &amp;&amp; (noDong || !dong.isEmpty)
+    }
+
+    /// 비교용 납작한 형태. 층은 조건 없이 넣는다 —
+    /// 지상에서 층만 고쳐도 '바뀐 게 있다'가 돼야 한다(§6).
+    /// '없음'은 8자 제한 때문에 사용자가 칠 수 없는 문자열로 표시한다.
+    var flattened: String {
+        [String(describing: level),
+         floor,
+         noDong ? Self.noDongMark : dong.trimmed,
+         noLine ? Self.noLineMark : line.trimmed,
+         etc.trimmed].joined(separator: "|")
+    }
+
+    static let noDongMark = "__NO_DONG__"
+    static let noLineMark = "__NO_LINE__"
 }
 
-// ── 리턴 키는 저장이 아니라 '다음 빈 칸으로' ────────────────
+extension String {
+    /// 아래 샘플이 전부 쓰는 헬퍼. 표준 API 가 아니라 직접 둬야 한다.
+    var trimmed: String { trimmingCharacters(in: .whitespaces) }
+}</code></pre></div>
+<h5>변경 판정 — 두 가지를 분리하세요</h5>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c3">복사</button>
+<pre><code id="dg-c3">@MainActor final class DetailLocationModel: ObservableObject {
+    @Published var draft: DetailLocation
+    @Published var saveAlways: Bool
+    @Published var focus: Field?
+
+    let original: DetailLocation?      // 재편집 진입 값. 첫 입력이면 nil
+    let originalSaveAlways: Bool
+    let isReadOnly: Bool               // 차량 도착
+
+    // 화면을 연 순간의 스냅샷. 확인창은 확정값이 아니라 이걸 기준으로 본다.
+    private let opened: String
+    private let openedSaveAlways: Bool
+
+    init(original: DetailLocation?, saveAlways: Bool, isReadOnly: Bool) {
+        let start = original ?? DetailLocation()
+        self.original = original
+        self.originalSaveAlways = saveAlways
+        self.isReadOnly = isReadOnly
+        self.draft = start
+        self.saveAlways = saveAlways
+        self.opened = start.flattened
+        self.openedSaveAlways = saveAlways
+    }
+
+    var isReedit: Bool { original != nil }
+
+    /// ① ✕·스와이프·뒤로가기 확인창용 — '열었을 때와 달라졌나'
+    var isDirtySinceOpen: Bool {
+        draft.flattened != opened || saveAlways != openedSaveAlways
+    }
+
+    /// ② CTA 라벨용 — '확정값과 달라졌나'. 재편집에서만 본다.
+    var hasChanges: Bool {
+        draft.flattened != (original?.flattened ?? "")
+            || saveAlways != originalSaveAlways
+    }
+
+    /// ③ 전송 여부용 — 값만 본다
+    var valueChanged: Bool {
+        draft.flattened != (original?.flattened ?? "")
+    }
+
+    enum Cta { case disabled, primary, confirm }
+    var cta: Cta {
+        if isReadOnly { return .confirm }
+        if isReedit &amp;&amp; !hasChanges { return .confirm }
+        return draft.isComplete ? .primary : .disabled
+    }
+}</code></pre></div>
+<p>변경 판정은 <b>세 개이고, 세 개 다 기준이 다릅니다.</b> 하나로 합치면 반드시 하나가 틀려집니다.</p>
+<table><tr><th>쓰는 곳</th><th>무엇과 비교하나</th><th>체크박스를 세나</th></tr><tr><td><code>isDirtySinceOpen</code> — ✕·뒤로가기 확인창</td><td><b>화면을 열 때의 draft</b></td><td>셀다</td></tr><tr><td><code>hasChanges</code> — CTA 라벨</td><td>확정값(<code>original</code>)</td><td>셀다</td></tr><tr><td><code>valueChanged</code> — 전송 여부</td><td>확정값(<code>original</code>)</td><td>안 셀다</td></tr></table>
+<p>첫 번째를 <code>hasChanges</code> 로 대신하지 마세요. <b>첫 입력에서는 </b><b><code>original</code></b><b> 이 nil</b> 이라 기준이 빈 문자열이 되고, 아무것도 안 친 빈 화면에서 ✕ 를 눌러도 ‘변경 사항이 적용되지 않습니다’ 확인창이 뚝니다. 지상으로 진입해 층 1 이 미리 들어간 경우도 같습니다.</p>
+<h5>리턴 키와 자동 이동</h5>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c4">복사</button>
+<pre><code id="dg-c4">private let order: [Field] = [.floor, .dong, .line]
+
 func nextEmpty(after current: Field) -&gt; Field? {
-    let skip: Set&lt;Field&gt; = (draft.noDong ? [.dong] : [])
-        .union(draft.noLine ? [.line] : [])
-    let live = [Field.floor, .dong, .line].filter { !skip.contains($0) }
+    let skip: Set&lt;Field&gt; = (draft.noDong ? [.dong] : []).union(draft.noLine ? [.line] : [])
+    let live = order.filter { !skip.contains($0) }
     guard let i = live.firstIndex(of: current) else { return nil }
     // 뒤쪽 먼저, 없으면 앞쪽으로 돌아본다
     return (live[(i+1)...] + live[..&lt;i]).first { value(of: $0).isEmpty }
 }
-func returnKey(for f: Field) -&gt; SubmitLabel {
-    f != .etc &amp;&amp; nextEmpty(after: f) != nil ? .next : .done
+
+// 리턴 키는 제출이 아니다
+func onSubmit(from field: Field) {
+    if field == .etc { focus = nil; return }
+    focus = nextEmpty(after: field)        // nil 이면 키패드만 내려간다
 }
 
-// ── 노출 조건 ─────────────────────────────────────────────
-var showsHelp:  Bool { focus == .etc &amp;&amp; draft.etc.trimmed.isEmpty }
+func returnKey(for field: Field) -&gt; SubmitLabel {
+    field != .etc &amp;&amp; nextEmpty(after: field) != nil ? .next : .done
+}</code></pre></div>
+<p>키패드는 <code>.keyboardType(.default)</code> 를 쓰세요. <code>동</code>·<code>라인</code>에 <code>101-1</code>, <code>가</code>, <code>B</code> 가 들어옵니다.</p>
+<h5>도움말·글자 수 노출 조건</h5>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c5">복사</button>
+<pre><code id="dg-c5">var showsHelp:  Bool { focus == .etc &amp;&amp; draft.etc.trimmed.isEmpty }
 var showsCount: Bool { focus == .etc }
-var showsClear: Bool { !draft.etc.trimmed.isEmpty &amp;&amp; !isReadOnly }
+// 공백만 친 칸은 '값이 있다'가 아니다 — 지울 게 없으면 × 도 없다.
+var showsClear: Bool { !draft.etc.trimmed.isEmpty &amp;&amp; !isReadOnly }</code></pre></div>
+<p>× 를 눌렀을 땐 <b>포커스를 건드리지 않습니다</b> — <code>draft.etc = ""</code> 만 하고 <code>focus</code> 는 그대로 둡니다.</p>
+<h5>시트를 쓸어내려 닫는 길을 막아 두세요</h5>
+<p>이 화면은 변경이 있으면 <b>반드시 확인창을 거쳐야 닫힙니다</b>(§9). 시트로 올리면 iOS 기본 동작은 아래로 쒸어내리기가 그냥 닫히는 것이라, 그대로 두면 승객이 쓴 것이 묻지도 않고 사라집니다. Android 는 <code>BackHandler</code> 로 막아 두는데 iOS 만 빠지기 쉬운 자리입니다.</p>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c6">복사</button>
+<pre><code id="dg-c6">.interactiveDismissDisabled(model.isDirtySinceOpen &amp;&amp; !model.isReadOnly)</code></pre></div>
+<p>막아 둔 뒤에는 <b>나가는 길이 보여야</b> 합니다 — 앱바 ✕ 와 하단 버튼 둘 다 살아 있어야 하고, 그래서 재편집 CTA 가 비활성이 아닌 ‘확인’입니다(§7). 넣기 전에 반드시 실제 기기에서 쓸어내려 보세요 — 시뮬레이터에서는 이 제스처가 잘 재현되지 않습니다.</p>
+<h4>13. Android — Jetpack Compose</h4>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c7">복사</button>
+<pre><code id="dg-c7">enum class Level { UNDER, GROUND }
+enum class Field { FLOOR, DONG, LINE, ETC }
 
-// ── 시트를 쓸어내려 닫는 길을 막는다 (Android BackHandler 와 짝) ──
-.interactiveDismissDisabled(model.isDirtySinceOpen &amp;&amp; !model.isReadOnly)</code></pre></div>
-
-        <h4>Android — Jetpack Compose</h4>
-        <div class="cpwrap"><button type="button" class="cp" data-cp="dc-det-2">복사</button>
-        <pre><code id="dc-det-2">// ── 값 한 벌 ──────────────────────────────────────────────
 data class DetailLocation(
     val level: Level = Level.UNDER,
-    val floor: String = "", val dong: String = "",
-    val line:  String = "", val etc:  String = "",
-    val noDong: Boolean = false, val noLine: Boolean = false,
-    val floorIsSuggested: Boolean = false,   // 지상이 넣어 준 1 인가
+    val floor: String = "",
+    val dong: String = "",
+    val line: String = "",
+    val etc: String = "",
+    val noDong: Boolean = false,
+    val noLine: Boolean = false,
+    // 지상을 고르면서 앱이 넣어 준 1 인가. 값이 아니라 제안이라는 표식(§6)
+    val floorIsSuggested: Boolean = false,
 ) {
-    // 지상에도 층은 필수다 — 대신 지상을 고르면 1 이 들어간다
+    // 층 + (동 또는 '동 없음'). 라인·찾아오는 길은 선택
+    // 지상에도 층은 필수다 — 대신 지상을 고르는 순간 1 이 들어간다
     val isComplete get() = floor.isNotEmpty() &amp;&amp; (noDong || dong.isNotEmpty())
 
-    // 비교용. 층은 조건 없이 넣는다 — 지상에서 층만 고쳐도 '바뀌었다' 가 돼야 한다.
-    // '없음' 은 8자 제한 때문에 사용자가 칠 수 없는 문자열로 표시한다.
+    // 비교용 납작한 형태.
+    // 층은 조건 없이 넣는다 — 지상에서 층만 고쳐도
+    // '바뀐 게 있다'가 돼야 한다(§6).
+    // '없음'은 8자 제한 때문에 사용자가 칠 수 없는 문자열로 표시한다.
     val flattened get() = listOf(
         level.name,
         floor,
-        if (noDong) "__NO_DONG__" else dong.trim(),
-        if (noLine) "__NO_LINE__" else line.trim(),
+        if (noDong) NO_DONG else dong.trim(),
+        if (noLine) NO_LINE else line.trim(),
         etc.trim(),
     ).joinToString("|")
-}
 
-// ── 판정 셋. 합치면 반드시 하나가 틀려진다 ─────────────────
-private val opened   = draft.flattened             // 화면을 연 순간
-private val baseline = original?.flattened ?: ""   // 확정값
-
-val isDirtySinceOpen get() =          // ① ✕ · 뒤로가기
-    draft.flattened != opened || saveAlways != openedSaveAlways
-val hasChanges get() =                // ② CTA 라벨
-    draft.flattened != baseline || saveAlways != originalSaveAlways
-val valueChanged get() =              // ③ 전송 여부 (체크박스는 안 센다)
-    draft.flattened != baseline
-
-val cta get() = when {
-    isReadOnly -&gt; Cta.CONFIRM
-    isReedit &amp;&amp; !hasChanges -&gt; Cta.CONFIRM
-    draft.isComplete -&gt; Cta.PRIMARY
-    else -&gt; Cta.DISABLED
-}
-
-// ── 지상 칩은 값을 하나 만든다 ─────────────────────────────
-fun setLevel(v: Level) {
-    if (draft.level == v) return
-    val wasSuggested = draft.floorIsSuggested
-    draft = draft.copy(level = v)
-    draft = when {
-        v == Level.GROUND &amp;&amp; draft.floor.isEmpty() -&gt;
-            draft.copy(floor = "1", floorIsSuggested = true)
-        v == Level.UNDER &amp;&amp; wasSuggested -&gt;          // 제안이었던 1 만 거둔다
-            draft.copy(floor = "", floorIsSuggested = false)
-        else -&gt; draft
+    companion object {
+        const val NO_DONG = "__NO_DONG__"
+        const val NO_LINE = "__NO_LINE__"
     }
-    // 칩은 포커스를 가져가지도, 옮기지도 않는다
+}</code></pre></div>
+<h5>상태 홀더</h5>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c8">복사</button>
+<pre><code id="dg-c8">class DetailLocationViewModel(
+    private val original: DetailLocation?,      // 첫 입력이면 null
+    private val originalSaveAlways: Boolean,
+    val isReadOnly: Boolean,
+) : ViewModel() {
+
+    var draft by mutableStateOf(original ?: DetailLocation())
+    var saveAlways by mutableStateOf(originalSaveAlways)
+    var focus by mutableStateOf&lt;Field?&gt;(null)
+
+    private val isReedit = original != null
+    private val baseline = original?.flattened ?: ""
+
+    // 화면을 연 순간의 스냅샷. 확인창은 확정값이 아니라 이걸 기준으로 본다
+    private val opened = draft.flattened
+    private val openedSaveAlways = originalSaveAlways
+
+    // ① ✕·뒤로가기 확인창용 — '열었을 때와 달라졌나'
+    val isDirtySinceOpen get() =
+        draft.flattened != opened || saveAlways != openedSaveAlways
+
+    // ② CTA 라벨용 — 확정값 기준. 재편집에서만 본다
+    val hasChanges get() =
+        draft.flattened != baseline || saveAlways != originalSaveAlways
+
+    // ③ 전송 여부용 — 값만
+    val valueChanged get() = draft.flattened != baseline
+
+    enum class Cta { DISABLED, PRIMARY, CONFIRM }
+    val cta get() = when {
+        isReadOnly -&gt; Cta.CONFIRM
+        isReedit &amp;&amp; !hasChanges -&gt; Cta.CONFIRM
+        draft.isComplete -&gt; Cta.PRIMARY
+        else -&gt; Cta.DISABLED
+    }
+}</code></pre></div>
+<h5>리턴 키와 자동 이동</h5>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c9">복사</button>
+<pre><code id="dg-c9">private val order = listOf(Field.FLOOR, Field.DONG, Field.LINE)
+
+fun nextEmpty(after: Field): Field? {
+    val skip = buildSet {
+        if (draft.noDong) add(Field.DONG)
+        if (draft.noLine) add(Field.LINE)
+    }
+    val live = order.filterNot { it in skip }
+    val i = live.indexOf(after).takeIf { it &gt;= 0 } ?: return null
+    // 뒤쪽 먼저, 없으면 앞쪽으로 돌아본다
+    return (live.drop(i + 1) + live.take(i)).firstOrNull { valueOf(it).isEmpty() }
 }
 
-// ── 입력: String 이 아니라 TextFieldValue ──────────────────
-// String 으로 길이를 재서 되돌리면 한글 조합이 깨지고,
-// 지상이 제안한 1 을 통째로 선택해 둘 수가 없다.
-onValueChange = { new -&gt;
+fun imeAction(field: Field): ImeAction =
+    if (field != Field.ETC &amp;&amp; nextEmpty(field) != null) ImeAction.Next else ImeAction.Done</code></pre></div>
+<p><code>KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = imeAction(field))</code> 로 붙이고, <code>KeyboardActions(onNext = { focus = nextEmpty(field) }, onDone = { focusManager.clearFocus() })</code> 로 받습니다. <b><code>onDone</code></b><b> 은 저장하지 않습니다.</b></p>
+<h5>입력 길이 제한과 자동 이동</h5>
+<p>칸 상태는 <code>String</code> 이 아니라 <b><code>TextFieldValue</code></b> 로 들고 있어야 합니다. 이유가 둘입니다 — 동·라인에 한글(<code>관리동</code>)이 들어오는데 <code>String</code> 으로 길이를 재서 되돌리면 <b>조</b><b>합</b><b> 중인 글자가 깨지고</b>, 지상이 제안한 층 1 을 <b>통</b><b>째</b><b>로 선택해 둘 수가 없습니다</b>(§6).</p>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c10">복사</button>
+<pre><code id="dg-c10">onValueChange = { new -&gt;
     val max = when (field) { Field.FLOOR -&gt; 1; Field.ETC -&gt; 30; else -&gt; 8 }
-    val text = new.text.take(max)                  // 무르지 말고 자른다
+    val text = new.text.take(max)
     val sel  = minOf(new.selection.start, text.length)
     update(field, new.copy(text = text, selection = TextRange(sel)))
+    // 직접 친 값이므로 제안 표식은 거둔다
     if (field == Field.FLOOR) draft = draft.copy(floorIsSuggested = false)
     if (text.length == max) focus = nextEmpty(field)   // 채우면 다음 빈 칸
-}
-
-// 숫자 전용 키패드를 쓰지 않는다 — 101-1, 가, B 가 들어온다
-KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = imeAction(field))
-KeyboardActions(
-    onNext = { focus = nextEmpty(field) },
-    onDone = { focusManager.clearFocus() },   // onDone 은 저장하지 않는다
-)
-
-// ── 뒤로가기 (iOS 의 interactiveDismissDisabled 와 짝) ─────
-BackHandler(enabled = isDirtySinceOpen &amp;&amp; !isReadOnly) {
-    showDiscardDialog = true
 }</code></pre></div>
-
-        <h4>체크리스트</h4>
-        <ul>
-          <li>지상을 고르면 층 1 이 들어가고, 지하로 돌아오면 거둬진다</li>
-          <li>확인창 기준이 확정값이 <b>아니라</b> &lsquo;화면을 열었을 때의 값&rsquo;이다</li>
-          <li>✕ · 안드로이드 뒤로가기 · <b>iOS 시트 쓸어내리기</b> 셋 다 같은 확인창을 거친다</li>
-          <li>체크박스는 변경에 들어가지만 전송은 안 되고, 누르는 즉시 저장되지도 않는다</li>
-          <li>리턴 키가 &lsquo;다음&rsquo;/&lsquo;완료&rsquo;로 바뀌고, 저장하지 않는다</li>
-          <li>Android 는 <code>TextFieldValue</code> 로 들고 <code>take(max)</code> 로 자른다 (한글 조합 보호)</li>
-          <li>꼬리가 라인 칸 오른쪽에 바로 붙고, 줄바꿈되지 않는다</li>
-          <li>찾아오는 길은 진입 순간부터 보인다 — 나타나는 조건이 없다</li>
-          <li>&lsquo;없음&rsquo; 칸도 높이 48을 지킨다 (pad 12/14)</li>
-          <li>읽기 전용을 직접 열었을 때는 토스트가 없다 — 머무는 중 도착해 닫힐 때만 뜬다</li>
-          <li>전송 payload 에 사건 종류(입력/수정/삭제)가 들어간다</li>
-          <li>동작 줄이기에서도 색으로는 알린다</li>
-        </ul>
+<p><code>take(max)</code> 로 <b>자르고</b> 지나가세요. <code>if (new.length &lt;= max)</code> 처럼 입력 자체를 무르면 일부 키보드에서 마지막 글자가 사라지거나 조성이 끝나지 않은 채 멈추는 일이 생깁니다.</p>
+<p>뒤로가기는 <code>BackHandler(enabled = isDirtySinceOpen &amp;&amp; !isReadOnly) { showDiscardDialog = true }</code> 로 잡으세요. ✕ 와 같은 길이고, <b><code>hasChanges</code></b><b> 가 아니라 </b><b><code>isDirtySinceOpen</code></b> 입니다 — 첫 입력에서 빈 화면으로 뒤로가기를 눌렀는데 확인창이 뚜다면 그걸 바꿈 것입니다.</p>
+<p>예측 뒤로가기(predictive back)를 켜 둔 앱이면, 확인창을 띄우는 동안 미리보기 애니메이션이 먼저 돌아가 보이지 않도록 <code>BackHandler</code> 로 먼저 가로채는 것이 맞습니다.</p>
+<h4>14. 체크리스트</h4>
+<p>구현하면서 제일 놓치기 쉬운 것들입니다. 전부 이 문서 안에 근거가 있습니다.</p>
+<ul class="ck"><li>꼬리 ‘에서 탈게요.’가 라인 칸 <b>오른쪽에 바로</b> 붙는다 (별도 줄 ✘)</li><li>꼬리가 줄바꿈되지 않는다</li><li>읽기 전용에서 <b>꼬리도</b> 함께 <code>gray-500</code> 로 물러난다</li><li>찾아오는 길이 진입 순간부터 보인다 (나타나는 조건 ✘)</li><li>플레이스홀더는 한 줄 고정, <b>예시는 도움말이 맡는다</b></li><li>도움말은 포커스 + 빈 칸일 때만, 쓰기 시작하면 거둔다</li><li>글자 수는 포커스일 때만 보인다</li><li>× 는 값이 있을 때만, 누르면 <b>포커스를 뺏지 않는다</b></li><li><b>지상을 고르면 층 1 이 들어가고, 지하로 돌아오면 거둬진다</b></li><li>제안된 층 1 은 포커스가 가면 <b>통째로 선택</b>된다</li><li>층을 <b>비교용 값에서 빼지 않는다</b> — 지상에서 층만 고쳐도 저장할 수 있어야 한다</li><li>재편집 진입 CTA 가 <b>‘확인’(weak)</b>, 변경 생기면 ‘입력 완료’(navy)</li><li>되돌리면 다시 ‘확인’으로 돌아간다</li><li>재편집에서 필수를 지워 버리면 ‘확인’이 아니라 <b>비활성 ‘입력 완료’</b></li><li>저장 체크박스가 <b>변경에 들어가지만 전송은 안 된다</b></li><li>체크박스가 누르는 즉시 저장되지 않는다 (CTA 에서만 확정)</li><li>변경 판정이 <b>셋</b>이다 — 확인창(열었을 때 기준) · CTA(확정값 + 체크박스) · 전송(확정값 · 값만)</li><li>확인창 기준이 확정값이 <b>아니라</b> ‘화면을 열었을 때의 값’이다</li><li>✕ · 안드로이드 뒤로가기 · <b>iOS 시트 쓸어내리기</b> 셋 다 같은 확인창을 거친다</li><li>리턴 키가 ‘다음’/‘완료’로 바뀌고, <b>저장하지 않는다</b></li><li>숫자 전용 키패드를 쓰지 않는다</li><li>Android 는 <code>TextFieldValue</code> 로 들고 <code>take(max)</code> 로 자른다 (한글 조합 보호)</li><li>지하/지상 칩이 포커스를 가져가지 않는다</li><li>‘없음’ 칸도 높이 48을 지킨다 (<code>pad 12/14</code>)</li><li>읽기 전용을 <b>직접 열었을 때는 토스트가 없다</b></li><li>머무는 중 도착해서 닫힐 때만 토스트가 뜬다</li><li>전송 payload 에 <b>사건 종류(입력/수정/삭제)</b> 가 들어간다</li><li>동작 줄이기에서도 색으로는 알린다</li></ul>
+<h5>아직 안 정한 것</h5>
+<table><tr><th>항목</th><th>상태</th></tr><tr><td>비활성 CTA 대비 1.47:1</td><td>DS 토큰 문제. 이 기능에서 고치지 않음</td></tr><tr><td>전송 중 앱 종료 · 드라이버 미수신</td><td>서버 동작. 디자인이 정할 수 없음</td></tr><tr><td>미리보기 안내문 색 3.14:1</td><td>값 확정 전</td></tr></table>
+<h5>어긋나면 무엇을 믿나</h5>
+<p><b>DS 컴포넌트 › 상태 정리 문서 › 핸드오프 보드 › 프로토타입</b> 순입니다. 이 문서는 그걸 네이티브 관점으로 옮긴 것이고, 치수·색이 어긋나면 <b>Figma DS 가 기준</b>입니다.</p>
       </div>
     </div>
   </div>
@@ -3669,7 +3837,50 @@ BackHandler(enabled = isDirtySinceOpen &amp;&amp; !isReadOnly) {
     tabs.forEach(function(x){ x.classList.toggle('on', x===b); });
     /* 9/21 패널 목록을 박아 두지 않는다 — 탭을 더해도 여기를 같이 고칠 일이 없게 */
     document.querySelectorAll('.devcon .pane').forEach(function(p){ p.hidden = (p.id!==b.dataset.pane); });
+    buildJump();
   });});
+  /* ── 섹션 이동 바 ──────────────────────────────────────────
+     보이는 패널의 h4 로 목록을 다시 짓는다. 패널마다 섹션이 다르므로 탭을 바꿀 때마다 부른다. */
+  var bd=document.querySelector('.devcon-bd'), sel=document.getElementById('dcjump');
+  var navwrap=document.querySelector('.devcon-nav'), heads=[];
+  function buildJump(){
+    var pane=document.querySelector('.devcon .pane:not([hidden])');
+    heads = pane ? [].slice.call(pane.querySelectorAll('h4')) : [];
+    /* 섹션이 하나뿐이면 고를 게 없다 — 줄을 통째로 숨긴다 */
+    navwrap.hidden = heads.length < 2;
+    sel.innerHTML='';
+    heads.forEach(function(h,i){
+      var o=document.createElement('option'); o.value=String(i); o.textContent=h.textContent;
+      sel.appendChild(o);
+    });
+    bd.scrollTop=0; sel.selectedIndex=0;
+  }
+  /* 스크롤 주체가 폭에 따라 바뀐다 — 1180 이상이면 콘솔 본문이, 아래면 창이 스크롤한다.
+     offsetTop 으로 재면 좁은 쪽에서 통째로 어긋나므로, 둘 다 화면 기준 거리로 잰다. */
+  function inBox(){ return bd.scrollHeight > bd.clientHeight + 4; }
+  function refTop(){ return inBox() ? bd.getBoundingClientRect().top : 0; }
+  sel.addEventListener('change',function(){
+    var h=heads[+sel.value]; if(!h) return;
+    var d = h.getBoundingClientRect().top - refTop() - 8;
+    if(inBox()) bd.scrollTop += d; else window.scrollTo(0, window.scrollY + d);
+  });
+  /* 스크롤을 따라 지금 보는 섹션을 고른다. 고르는 칸이 곧 '내가 어디쯤인가' 도 말한다.
+     묶는 건 rAF 가 아니라 타이머다 — 탭이 뒤에 있으면 rAF 가 안 돌아 잠금이 영영 안 풀리고,
+     그 뒤로는 스크롤해도 칸이 안 따라온다(프로토타입은 띄워 둔 채 딴 탭을 보는 일이 잦다). */
+  var tmr=null;
+  function spy(){
+    if(tmr || !heads.length) return;
+    tmr=setTimeout(function(){
+      tmr=null;
+      var y=refTop()+12, at=0;
+      for(var i=0;i<heads.length;i++){ if(heads[i].getBoundingClientRect().top<=y) at=i; else break; }
+      if(sel.selectedIndex!==at) sel.selectedIndex=at;
+    },60);
+  }
+  bd.addEventListener('scroll',spy);
+  window.addEventListener('scroll',spy,{passive:true});
+  buildJump();
+
   document.querySelectorAll('.devcon .cp').forEach(function(btn){
     btn.addEventListener('click',function(){
       var t=document.getElementById(btn.dataset.cp).textContent;
