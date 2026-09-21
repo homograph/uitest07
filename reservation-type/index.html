@@ -88,45 +88,40 @@
   .rt-appbar-title{
     font-size:18px;font-weight:700;color:var(--ink);
   }
-  /* Task: 예약 유형 오선택 교정. 세그먼트 pill 2개를 가로 2열 카드로 교체.
-     .rt-seg는 flex row(기본 align-items:stretch)라 두 카드가 자동으로 같은 높이를 갖는다.
-     선택 표시는 이 예약 흐름의 차종 선택 화면(파란 테두리 + 우상단 체크 배지)을 그대로 따른다. */
+  /* Task: 예약 유형 오선택 교정 → Figma 확정판: 세그먼트가 가로 2열 카드(제목+설명)에서
+     "칩 2개 + 헤드라인" 세로 구성으로 바뀌었다. 위(컨트롤)=칩 행, 아래(결과)=선택된 유형의
+     설명 한 줄. 선택 표시는 칩의 채움 대비(진한 배경 + 흰 글자)만으로 하고, 기존 체크
+     배지는 뺐다. 컨트롤이 곧 상태를 보여주므로 별도 배지가 불필요해졌다. */
   .rt-seg{
     flex:0 0 auto;
-    display:flex;gap:8px;
-    padding:8px 16px 16px;
+    display:flex;flex-direction:column;gap:12px;
+    padding:16px;
     box-sizing:border-box;
+  }
+  .rt-seg-chips{
+    display:flex;gap:8px;
   }
   .rt-seg-btn{
     appearance:none;cursor:pointer;
-    flex:1 1 0;
-    min-width:0;
-    position:relative;
-    display:flex;flex-direction:column;
-    align-items:flex-start;
-    text-align:left;
-    border-radius:12px;
-    padding:14px;
+    flex:0 0 auto;
+    height:44px;
+    display:flex;align-items:center;justify-content:center;
+    padding:0 16px;
     box-sizing:border-box;
+    border-radius:999px;
+    border:none;
     background:#ffffff;
-    border:1px solid #E3E4E8;
+    color:var(--ink);
   }
   .rt-seg-btn.is-active{
-    background:#F1F9FE;
-    border:1.5px solid #0094F9;
+    background:#31487D;
+    color:#ffffff;
   }
   .rt-type-title{
-    font-size:15px;font-weight:700;color:var(--ink);
+    font-size:13px;font-weight:700;
   }
-  .rt-type-desc{
-    font-size:12px;font-weight:400;color:var(--ink-sub);
-    margin-top:4px;
-  }
-  .rt-type-check{
-    position:absolute;top:8px;right:8px;
-    width:20px;height:20px;
-    display:block;
-    line-height:0;
+  #type-headline{
+    font-size:20px;font-weight:700;color:#171A24;
   }
   .rt-scroll{
     flex:1 1 auto;
@@ -201,18 +196,22 @@
   }
   .rt-card.rt-enter{animation: rt-card-enter .3s ease-out;}
 
-  /* Task 9913: 하단 고정 영역(.rt-footer) 안의 슬림한 한 줄 넛지 배너. 미리보기 화면
-     하단(nudge_banner + Container 패턴)의 선례를 따른다. 배경/강조색은 그 선례와 동일하고,
-     radius는 두지 않는다(모서리를 둥글리면 "하단 고정 띠" 느낌이 깨진다). 상하 10 좌우 24. */
+  /* Task 9913 → Figma 확정판: 하단 고정 영역(.rt-footer) 안의 넛지가 한 줄 배너로는
+     "왜 바꿔야 하는지"가 안 들어가 2줄(제목+본문) 구성으로 커졌다. 하단 고정이라는 성격은
+     그대로 유지한다(radius 없음, .rt-footer 안 #cta 바로 위 위치는 손대지 않는다).
+     아이콘 자리: assets_reservation_type/icons/ 에 이 자리에 맞는 아이콘이 없어 자리를
+     비우고(가짜 아이콘을 그리지 않고) 텍스트만 둔다. */
   #nudge{
     display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
+    align-items:flex-start;
+    gap:10px;
     background:var(--nudge-bg);
-    padding:10px 24px;
+    padding:20px 20px 10px 20px;
     box-sizing:border-box;
   }
+  /* 위의 display:flex 가 hidden 속성의 기본 display:none 을 덮어쓴다. 그대로 두면
+     조건이 거짓일 때 글자만 비고 파란 띠가 남는다. 속성을 다시 이기게 한다. */
+  #nudge[hidden]{display:none;}
   /* rt-card-enter(translateY 20px)를 그대로 쓰면, 이제 nudge가 CTA 바로 위(같은 footer
      안)에 있어 등장 애니메이션이 CTA 쪽으로 밀고 들어가 순간적으로 겹친다. footer 안에서는
      밀림 없이 페이드만 쓴다. */
@@ -221,16 +220,23 @@
     to{opacity:1;}
   }
   #nudge.rt-enter{animation: rt-nudge-enter .3s ease-out;}
-  #nudge-line{
+  #nudge-text{
     flex:1 1 auto;
     min-width:0;
-    font-size:14px;font-weight:400;color:var(--ink);
-    white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+    display:flex;flex-direction:column;gap:2px;
+  }
+  #nudge-title{
+    font-size:14px;font-weight:700;color:var(--ink);
+  }
+  #nudge-body{
+    font-size:13px;font-weight:400;color:var(--ink-sub);
   }
   #nudge-cta{
     flex:0 0 auto;
     appearance:none;border:none;background:transparent;cursor:pointer;
-    color:var(--nudge-accent);font-weight:700;font-size:14px;
+    width:44px;height:44px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--navy);font-weight:700;font-size:14px;
     padding:0;margin:0;white-space:nowrap;
   }
 
@@ -569,8 +575,11 @@
       </div>
 
       <div class="rt-seg" role="tablist">
-        <button type="button" id="seg-normal" class="rt-seg-btn" role="tab" aria-selected="true"></button>
-        <button type="button" id="seg-charter" class="rt-seg-btn" role="tab" aria-selected="false"></button>
+        <div class="rt-seg-chips">
+          <button type="button" id="seg-normal" class="rt-seg-btn" role="tab" aria-selected="true"></button>
+          <button type="button" id="seg-charter" class="rt-seg-btn" role="tab" aria-selected="false"></button>
+        </div>
+        <div id="type-headline"></div>
       </div>
 
       <div class="rt-scroll">
@@ -581,7 +590,10 @@
 
       <div class="rt-footer">
         <div id="nudge" hidden>
-          <span id="nudge-line"></span>
+          <div id="nudge-text">
+            <span id="nudge-title"></span>
+            <span id="nudge-body"></span>
+          </div>
           <button type="button" id="nudge-cta"></button>
         </div>
         <button type="button" id="cta" class="rt-cta"></button>
@@ -745,23 +757,19 @@ function judgeNudge(s){
 }
 
 const COPY = {
-  // title/body/cta는 바텀시트(openSheet)가 계속 쓴다. banner는 #nudge 배너 전용 한 줄 문구.
+  // title/body/cta는 바텀시트(openSheet)와 하단 고정 넛지(#nudge, 2줄: title+body) 모두가 쓴다.
   'short-trip':    { title:s=>`${s.etaMin}분이면 도착하는 경로예요`,
                      body: s=>`${s.charterHours}시간을 빌리지 않아도 일반예약으로 갈 수 있어요`,
-                     cta:'일반예약으로 바꾸기',
-                     banner:s=>`${s.etaMin}분 경로에 ${s.charterHours}시간을 빌리고 있어요` },
+                     cta:'일반예약으로 바꾸기' },
   'golf':          { title:()=>'라운딩 끝나고 돌아올 차가 없을 수 있어요',
                      body: ()=>'시간대절은 기사가 기다렸다가 함께 돌아와요',
-                     cta:'시간대절로 바꾸기',
-                     banner:()=>'골프장은 돌아올 차가 없을 수 있어요' },
+                     cta:'시간대절로 바꾸기' },
   'no-return':     { title:()=>'이 지역은 돌아오는 타다를 부르기 어려워요',
                      body: ()=>'시간대절로 돌아올 차편까지 미리 확보해 두세요',
-                     cta:'시간대절로 바꾸기',
-                     banner:()=>'이 지역은 돌아오는 타다를 부르기 어려워요' },
+                     cta:'시간대절로 바꾸기' },
   'long-distance': { title:()=>'왕복이라면 시간대절이 더 편해요',
                      body: ()=>'돌아올 차편까지 한 번에 확보할 수 있어요',
-                     cta:'시간대절로 바꾸기',
-                     banner:()=>'왕복이라면 시간대절이 더 편해요' },
+                     cta:'시간대절로 바꾸기' },
 };
 
 /* ---- 3. ACTIONS ---- */
@@ -1163,29 +1171,26 @@ function charterCardHtml(s, isOpen){
     </div>`;
 }
 
-// Figma 원본 ic_checkbox_on_blue.svg (72x72 viewBox, 원 색 #32A2FA) 그대로 인라인.
-// 손으로 배지를 그리지 않고 원본 벡터를 20x20으로 스케일만 한다.
-const TYPE_CHECK_SVG = '<svg width="20" height="20" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">'
-  + '<path d="M36 72C16.1177 72 0 55.8822 0 36C0 16.1177 16.1177 0 36 0C55.8822 0 72 16.1177 72 36C72 55.8822 55.8822 72 36 72Z" fill="#32A2FA"/>'
-  + '<path d="M31.5003 41.197L51.3486 21.3486L56.6519 26.6519L31.5003 51.8036L15.3486 35.6519L20.6519 30.3486L31.5003 41.197Z" fill="white"/>'
-  + '</svg>';
-
-// 유형 카드(세그먼트) 하나를 채운다. 선택 상태 표현은 이 예약 흐름의 차종 선택 화면 패턴
-// (파란 테두리 + 우상단 파란 체크 배지)을 그대로 따른다. 새 표현을 발명하지 않는다.
-function renderTypeCard(btn, title, desc, isActive){
+// Figma 확정판: 칩은 이름만 보여준다(설명은 #type-headline이 맡는다). 선택 표시는
+// 체크 배지 대신 칩 자체의 채움 대비(진한 배경 + 흰 글자)로만 한다.
+function renderTypeChip(btn, title, isActive){
   btn.classList.toggle('is-active', isActive);
   btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-  btn.innerHTML =
-    `<span class="rt-type-title">${escapeHtml(title)}</span>` +
-    `<span class="rt-type-desc">${escapeHtml(desc)}</span>` +
-    (isActive ? `<span class="rt-type-check" data-role="type-check">${TYPE_CHECK_SVG}</span>` : '');
+  btn.innerHTML = `<span class="rt-type-title">${escapeHtml(title)}</span>`;
 }
+
+// 선택된 유형의 설명. 칩을 누르면 이 헤드라인이 바뀐다(컨트롤은 칩, 결과는 헤드라인).
+const TYPE_HEADLINE = {
+  normal:  '목적지까지 한 번에',
+  charter: '기다리거나 왕복할 때',
+};
 
 function renderInput(){
   const openName = S.openCard || 'route';
 
-  renderTypeCard(document.getElementById('seg-normal'), '일반예약', '목적지까지 한 번에', S.type === 'normal');
-  renderTypeCard(document.getElementById('seg-charter'), '시간대절', '기다리거나 왕복할 때', S.type === 'charter');
+  renderTypeChip(document.getElementById('seg-normal'), '일반예약', S.type === 'normal');
+  renderTypeChip(document.getElementById('seg-charter'), '시간대절', S.type === 'charter');
+  document.getElementById('type-headline').textContent = TYPE_HEADLINE[S.type];
 
   const routeEl = document.getElementById('card-route');
   const isRouteOpen = openName === 'route';
@@ -1225,7 +1230,8 @@ function renderNudge(){
   const n = judgeNudge(S);
   if (!n){ el.hidden = true; return; }
   const c = COPY[n.reason];
-  document.getElementById('nudge-line').textContent = c.banner(S);
+  document.getElementById('nudge-title').textContent = c.title(S);
+  document.getElementById('nudge-body').textContent = c.body(S);
   const cta = document.getElementById('nudge-cta');
   cta.textContent = '변경';
   cta.onclick = ()=> convert(n.dir === 'to-normal' ? 'normal' : 'charter');
@@ -1593,31 +1599,38 @@ function runInputTests(){
     S.screen = 'input'; render();
   });
   test('세그먼트 라벨이 일반예약 / 시간대절', ()=>{
-    // 카드 안에 설명이 함께 들어가므로 textContent 전체가 아니라 제목 요소만 읽는다.
+    // 칩 안 제목 요소만 읽는다(설명은 이제 칩이 아니라 #type-headline이 보여준다).
     eq(document.getElementById('seg-normal').querySelector('.rt-type-title').textContent.trim(), '일반예약');
     eq(document.getElementById('seg-charter').querySelector('.rt-type-title').textContent.trim(), '시간대절');
   });
-  test('유형 카드 두 개가 설명을 함께 보여 준다', ()=>{
-    S = fresh('normal','normal'); render();
-    const n = document.getElementById('seg-normal').innerText;
-    const c = document.getElementById('seg-charter').innerText;
-    if (!n.includes('목적지까지 한 번에')) throw new Error('normal desc missing: ' + n);
-    if (!c.includes('기다리거나 왕복할 때')) throw new Error('charter desc missing: ' + c);
-  });
-  test('선택된 유형 카드에만 체크 배지가 있다', ()=>{
-    S = fresh('normal','normal'); render();
-    const badge = sel => document.getElementById(sel).querySelector('[data-role="type-check"]');
-    if (!badge('seg-normal')) throw new Error('selected card has no badge');
-    if (badge('seg-charter')) throw new Error('unselected card has a badge');
-    setType('charter');
-    if (badge('seg-normal')) throw new Error('badge left on deselected card');
-    if (!badge('seg-charter')) throw new Error('badge not moved');
-  });
+  // '유형 카드 두 개가 설명을 함께 보여 준다'와 '선택된 유형 카드에만 체크 배지가 있다'는
+  // 카드 2열 구성 전용 테스트였다. Figma 확정판에서 칩은 이름만 보여주고(설명은
+  // #type-headline 하나로 이동) 체크 배지 자체가 없어져 더는 성립하지 않는다. 아래
+  // '헤드라인이 선택된 유형의 설명을 보여 준다' 테스트로 대체한다.
   test('유형 카드 두 개는 높이가 같다', ()=>{
     S = fresh('normal','normal'); render();
     const a = document.getElementById('seg-normal').getBoundingClientRect().height;
     const b = document.getElementById('seg-charter').getBoundingClientRect().height;
     if (Math.abs(a-b) > 1) throw new Error(`heights differ: ${a} vs ${b}`);
+  });
+  test('헤드라인이 선택된 유형의 설명을 보여 준다', ()=>{
+    S = fresh('normal','normal'); render();
+    eq(document.getElementById('type-headline').textContent.trim(), '목적지까지 한 번에');
+    setType('charter');
+    eq(document.getElementById('type-headline').textContent.trim(), '기다리거나 왕복할 때');
+  });
+  test('칩이 헤드라인보다 위에 있다', ()=>{
+    S = fresh('normal','normal'); render();
+    const chip = document.getElementById('seg-normal').getBoundingClientRect();
+    const head = document.getElementById('type-headline').getBoundingClientRect();
+    if (!(chip.bottom <= head.top)) throw new Error(`chip bottom ${chip.bottom} > headline top ${head.top}`);
+  });
+  test('칩 터치 타깃이 44 이상이다', ()=>{
+    S = fresh('normal','normal'); render();
+    for (const id of ['seg-normal','seg-charter']) {
+      const h = document.getElementById(id).getBoundingClientRect().height;
+      if (h < 44) throw new Error(id + ' height ' + h);
+    }
   });
   test('aria-selected 가 선택 상태를 따라간다', ()=>{
     S = fresh('normal','normal'); render();
@@ -1712,13 +1725,29 @@ function runConvertTests(){
   });
   test('9913 넛지가 대절 시간 입력 전에는 안 보임', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = null; render();
-    eq(document.getElementById('nudge').hidden, true);
+    const n = document.getElementById('nudge');
+    eq(n.hidden, true);
+    // hidden 속성만 보면 CSS 의 display 가 그걸 덮어써도 통과한다. 실제로 안 그려지는지 본다.
+    eq(getComputedStyle(n).display, 'none');
+    if (n.getBoundingClientRect().height !== 0) throw new Error('hidden nudge still occupies space');
   });
   test('9913 넛지 카피가 화면에 그려짐', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
     eq(document.getElementById('nudge').hidden, false);
-    eq(document.getElementById('nudge-line').textContent, '48분 경로에 3시간을 빌리고 있어요');
+    eq(document.getElementById('nudge-title').textContent, '48분이면 도착하는 경로예요');
+    eq(document.getElementById('nudge-body').textContent, '3시간을 빌리지 않아도 일반예약으로 갈 수 있어요');
     eq(document.getElementById('nudge-cta').textContent, '변경');
+  });
+  test('넛지가 제목과 본문 두 줄을 보여 준다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    eq(document.getElementById('nudge-title').textContent, '라운딩 끝나고 돌아올 차가 없을 수 있어요');
+    eq(document.getElementById('nudge-body').textContent, '시간대절은 기사가 기다렸다가 함께 돌아와요');
+    eq(document.getElementById('nudge-cta').textContent, '변경');
+  });
+  test('변경 버튼 터치 타깃이 44 이상이다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    const r = document.getElementById('nudge-cta').getBoundingClientRect();
+    if (r.height < 44 || r.width < 44) throw new Error(`${r.width}x${r.height}`);
   });
   // 수정 8: 원래 테스트는 코드에 존재하지도 않는 [data-role="close"] 속성을 찾아, 진짜
   // 닫기 버튼을 추가해도 영원히 통과하는 tautology였다. #nudge 안 버튼 개수(CTA 하나여야
@@ -1980,14 +2009,17 @@ function runLayoutTests(){
   // 수정 8: 원래 테스트는 backgroundColor만 봤다. 실제 비-navy 강조(넛지 CTA, 휠 선택밴드
   // 글자)는 전부 color(글자색)로 들어가 있어 배경만 보는 검사로는 절대 안 걸렸다. 게다가
   // 예외 셀렉터가 '.wheel'인데 실제 클래스는 '.rt-wheel-col'이라 이중으로 죽어 있었다.
-  // 이제 color·backgroundColor 둘 다 보고, 이 프로젝트가 문서화한 세 강조색만 각자의 자리
-  // (navy는 전역, 넛지 강조는 #nudge 안, 휠 밴드는 휠 컬럼 안)에서만 허용한다. 그 밖에
-  // 채도가 높은(무채색이 아닌) rgb 색이 나오면 잡는다.
+  // 이제 color·backgroundColor 둘 다 보고, 이 프로젝트가 문서화한 강조색만 각자의 자리에서만
+  // 허용한다. 그 밖에 채도가 높은(무채색이 아닌) rgb 색이 나오면 잡는다.
+  // Figma 확정판(칩+헤드라인)에서 선택된 칩 배경 #31487D가 새 강조색으로 추가됐다.
+  // 넛지 CTA는 이번에 navy(#19254d, AA 대비 확보)로 바뀌어 --nudge-accent(#0086EA)는 더 이상
+  // 실제로 쓰이지 않지만, 과거 스냅샷과의 호환을 위해 예외 목록에는 남겨둔다.
   test('강조색은 navy 하나뿐 (폰 프레임 안)', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'pickup'; render();
     const NAVY = 'rgb(25, 37, 77)';          // --navy #19254d, 유일한 전역 강조색
-    const NUDGE_ACCENT = 'rgb(0, 134, 234)'; // --nudge-accent #0086EA, #nudge 안에서만 허용
+    const NUDGE_ACCENT = 'rgb(0, 134, 234)'; // --nudge-accent #0086EA, #nudge 안에서만 허용(현재 미사용)
     const WHEEL_INK = 'rgb(0, 148, 249)';    // --wheel-band-ink #0094F9, 휠 컬럼 안에서만 허용
+    const CHIP_ACCENT = 'rgb(49, 72, 125)';  // 선택된 유형 칩 배경 #31487D, .rt-seg 안에서만 허용
     const rgbRe = /^rgb\((\d+), (\d+), (\d+)\)$/;
     const els = document.querySelectorAll('#phone *');
     for (const el of els){
@@ -2002,6 +2034,10 @@ function runLayoutTests(){
         if (v === WHEEL_INK){
           if (el.closest('.rt-wheel-col')) continue;
           throw new Error(`unexpected accent ${prop}=${v} outside wheel column`);
+        }
+        if (v === CHIP_ACCENT){
+          if (el.closest('.rt-seg')) continue;
+          throw new Error(`unexpected accent ${prop}=${v} outside .rt-seg`);
         }
         const m = v.match(rgbRe);
         if (!m) continue;   // transparent, rgba(...) 등은 강조색 검사 대상이 아니다
@@ -2031,12 +2067,14 @@ function runLayoutTests(){
     if (n.bottom > phone.bottom + 1 || n.top < phone.top) throw new Error('nudge outside phone after scroll');
     if (document.getElementById('nudge').hidden) throw new Error('nudge hidden after scroll');
   });
+  // COPY[key].banner가 없어져(2줄 넛지는 title+body를 쓴다) title+body 조합이
+  // reason 별로 다른지로 검사를 바꾼다. 이름은 그대로 둔다.
   test('배너 문구가 reason 별로 다르다', ()=>{
     const seen = {};
     for (const key of ['short-trip','golf','no-return','long-distance']) {
       const s = fresh('normal','normal'); s.etaMin = 48; s.charterHours = 3;
-      const line = COPY[key].banner(s);
-      if (seen[line]) throw new Error('duplicate banner copy: ' + line);
+      const line = COPY[key].title(s) + '|' + COPY[key].body(s);
+      if (seen[line]) throw new Error('duplicate copy: ' + line);
       seen[line] = 1;
     }
   });
