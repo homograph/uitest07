@@ -49,38 +49,59 @@ body{font-variant-numeric:tabular-nums}
 .sheet{position:absolute;left:0;bottom:0;width:360px;background:#fff;border-radius:12px 12px 0 0;overflow:hidden;display:flex;flex-direction:column}
 .handle{height:24px;padding:10px;display:flex;justify-content:center;flex:none}
 .handle i{display:block;width:56px;height:4px;border-radius:2px;background:#99A5C0}
+.handle.grab{height:30px;padding:8px 10px;flex-direction:column;align-items:center;gap:3px;cursor:grab;background:none;border:0;font-family:inherit;width:100%}
+.handle.grab u{text-decoration:none;font-size:10px;line-height:13px;color:#9DA0AE}
 
 /* 확인 화면 */
 .chdr{height:44px;display:flex;align-items:center;justify-content:center;position:relative;flex:none}
 .chdr b{font-size:16px;line-height:24px;font-weight:700}
 .chdr .other{position:absolute;left:12px;display:flex;align-items:center;gap:2px;height:32px;padding:0 8px;border:0;border-radius:6px;background:none;font:inherit;font-size:12px;color:#4B5064;cursor:pointer;font-family:inherit}
 .chdr .other:hover{background:#F1F3F7}
+.hdrsel{display:flex;align-items:center;gap:6px;height:36px;padding:0 12px;border:1px solid #C0C8D9;border-radius:1000px;background:#fff;font:inherit;font-family:inherit;font-size:15px;line-height:22px;font-weight:700;color:#000;cursor:pointer}
+.hdrsel:hover{background:#F6F8FB}
+.hdrsel s{text-decoration:none;font-size:9px;color:#4B5064}
+
+/* 라인업 스트립 (상주형) */
+.strip{display:flex;gap:4px;padding:2px 12px 10px;flex:none}
+.schip{position:relative;width:64px;flex:none;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 0 5px;border:1px solid #E6E9EF;border-radius:9px;background:#fff;font-family:inherit;cursor:pointer;color:#000}
+.schip:hover{background:#FAFBFD}
+.schip[aria-pressed="true"]{border:2px solid #19254D;background:#F1F9FE;padding:5px 0 4px}
+.schip img{width:52px;height:35px}
+.schip em{font-style:normal;font-size:10px;line-height:13px;font-weight:700;white-space:nowrap}
+.schip u{text-decoration:none;font-size:9px;line-height:12px;color:#4B5064;white-space:nowrap}
+.schip u.dc{color:#19254D;font-weight:700}
+.schip s{position:absolute;right:-2px;top:-7px;text-decoration:none;display:block;height:13px;padding:0 4px;border-radius:2px;background:#19254D;color:#fff;font-size:9px;line-height:13px;font-weight:700}
+
 .pill{margin:2px 20px 0;display:flex;align-items:center;gap:6px;min-height:30px;padding:6px 10px;border-radius:6px;background:#F1F3F7;font-size:12px;line-height:18px;font-weight:700;color:#262A38}
 .pill svg{flex:none}
 .pill.nudge{background:#19254D;color:#fff;border:0;width:calc(100% - 40px);text-align:left;font-family:inherit;cursor:pointer;justify-content:space-between}
 .pill.nudge span.k{display:flex;align-items:center;gap:6px}
 .pill.nudge em{font-style:normal;text-decoration:underline}
-.hero{display:flex;justify-content:center;padding:10px 0 2px;flex:none}
-.hero img{width:190px;height:129px}
-.cmain{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:0 20px 14px;flex:none}
+.hero{display:flex;justify-content:center;padding:6px 0 2px;flex:none}
+.hero img{width:130px;height:88px}
+.cmain{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:0 20px 12px;flex:none}
 .cmain .nm{display:flex;align-items:center;gap:4px;font-size:16px;line-height:24px;font-weight:700;white-space:nowrap}
 .cmain .sub{font-size:12px;line-height:18px;color:#9DA0AE;white-space:nowrap}
 .cmain .pr{display:flex;flex-direction:column;align-items:flex-end;white-space:nowrap}
 .cmain .pr .now{font-size:20px;line-height:28px;font-weight:700}
 .cmain .pr .was{font-size:13px;line-height:18px;color:#9DA0AE;text-decoration:line-through}
 .cmain .pr .cut{font-size:11px;line-height:16px;font-weight:700;color:#19254D}
-.orow{height:44px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex:none}
+.orow{height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex:none}
 .orow .g{display:flex;align-items:center;gap:8px;font-size:13px;line-height:18px;color:#4B5064;white-space:nowrap}
 .orow .g.on{color:#32A2FA}
 .orow .g b{font-weight:700}
 .hr{height:1px;background:#F5F6F7;flex:none}
 .hr.inset{margin:0 20px}
-.cta{padding:12px 10px 10px;flex:none}
+.cta{padding:10px 10px 8px;flex:none}
+.spacer{flex:1 1 auto;min-height:0}
 .cta button{width:340px;height:54px;border:0;border-radius:4px;background:#19254D;color:#fff;font:inherit;font-size:16px;line-height:24px;font-weight:700;font-family:var(--sans);cursor:pointer}
+.secbtn{width:340px;height:44px;margin:0 10px 8px;border:1px solid #C0C8D9;border-radius:4px;background:#fff;font:inherit;font-size:14px;line-height:20px;font-weight:700;font-family:var(--sans);color:#283873;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;flex:none}
+.secbtn:hover{background:#F6F8FB}
 .chev{width:6px;height:10px;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat;flex:none}
 .cbk{width:6px;height:10px;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat;transform:rotate(180deg);flex:none}
+.cdn{width:6px;height:10px;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat;transform:rotate(90deg);flex:none}
 
-/* 리스트 화면 */
+/* 리스트 화면 / 오버레이 */
 .bar{height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:#19254D;flex:none}
 .bar span{font-size:12px;line-height:18px;font-weight:700;color:#fff}
 .lhdr{height:44px;display:flex;align-items:center;justify-content:center;position:relative;flex:none}
@@ -104,6 +125,9 @@ body{font-variant-numeric:tabular-nums}
 .pr2 .now{font-size:12px;line-height:18px;font-weight:700;color:#19254D}
 .pr2 .now.plain{font-weight:400;color:#4B5064}
 .pr2 .was{font-size:10px;line-height:14px;color:#9DA0AE;text-decoration:line-through}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.4);border:0;padding:0;cursor:pointer}
+.ovl{position:absolute;left:0;bottom:0;width:360px;background:#fff;border-radius:12px 12px 0 0;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 -8px 30px rgba(0,0,0,.2)}
+.peek{position:absolute;left:0;width:360px;background:#fff;border-radius:12px 12px 0 0;overflow:hidden;display:flex;flex-direction:column}
 
 /* 비교표·노트 */
 .side{display:flex;flex-direction:column;gap:16px}
@@ -113,6 +137,7 @@ body{font-variant-numeric:tabular-nums}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th,td{padding:7px 8px;border-top:1px solid var(--line);text-align:left;vertical-align:top}
 th{color:var(--ink3);font-weight:600;border-top:0}
+tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
 .num{font-family:var(--mono)}
 .mark{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:6px;vertical-align:1px}
 .mark.good{background:var(--good)}.mark.warn{background:var(--warn)}.mark.crit{background:var(--crit)}
@@ -121,15 +146,23 @@ th{color:var(--ink3);font-weight:600;border-top:0}
 .box code{font-family:var(--mono);font-size:11.5px;background:var(--paper);padding:1px 4px;border-radius:4px}
 .trail{display:flex;flex-wrap:wrap;gap:6px;font-size:12px;color:var(--ink2);align-items:center}
 .trail b{font-family:var(--mono);font-weight:700;color:var(--ink)}
+.probe{position:absolute;left:-10000px;top:0;width:360px}
 </style>
 </head>
 <body>
 <div class="top">
-  <h1>R안 · 호출 확인 단계 분리 <small>가격 할인 인지시키기 · TADA-9914</small></h1>
+  <h1>R안 · 호출 확인 단계 분리 <small>리스트 ↔ 확인 되돌아가기 5안 · TADA-9914</small></h1>
   <button class="gear" id="gear" aria-expanded="false" aria-controls="panel">⚙ 설정</button>
 </div>
 
 <div class="panel" id="panel" role="region" aria-label="설정">
+  <div class="row"><div class="lab">되돌아가기</div><div class="chips" data-key="nav">
+    <button class="chip" data-v="strip">A 라인업 스트립 상주</button>
+    <button class="chip" data-v="dropdown">B 헤더 드롭다운</button>
+    <button class="chip" data-v="peek">C 할인 바 엿보기</button>
+    <button class="chip" data-v="bottom">D 하단 보조 버튼</button>
+    <button class="chip" data-v="text">E 상단 텍스트 (현재)</button>
+  </div></div>
   <div class="row"><div class="lab">할인</div><div class="chips" data-key="discount">
     <button class="chip" data-v="none">없음</button>
     <button class="chip" data-v="ok">10% 정상</button>
@@ -140,11 +173,11 @@ th{color:var(--ink3);font-weight:600;border-top:0}
     <button class="chip" data-v="1">5,000원 적용</button>
   </div></div>
   <div class="row"><div class="lab">크로스셀</div><div class="chips" data-key="nudge">
-    <button class="chip" data-v="1">더 싼 라인업 넛지 노출</button>
+    <button class="chip" data-v="1">넛지 노출</button>
     <button class="chip" data-v="0">없음</button>
   </div></div>
   <div class="row"><div class="lab">선택</div><div class="chips" data-key="lineup"></div></div>
-  <div class="foot"><span>즉시 반영 · 폰 안을 직접 눌러도 됩니다</span><button id="reset">처음으로</button></div>
+  <div class="foot"><span>즉시 반영 · 폰 안을 직접 눌러 왔다갔다 해보세요</span><button id="reset">처음으로</button></div>
 </div>
 
 <main class="page">
@@ -155,24 +188,26 @@ th{color:var(--ink3);font-weight:600;border-top:0}
       <p class="trail" id="trail"></p>
     </div>
     <div class="side">
+      <div class="box" id="cmpNav"></div>
       <div class="box" id="cmp"></div>
       <div class="box">
-        <h3>as-is에서 바꾼 것</h3>
+        <h3>다섯 방식이 무엇을 바꾸나</h3>
         <ul>
-          <li><b>확인 화면이 기본.</b> 진입하면 선택된 라인업 하나만 보이고, 리스트는 <code>다른 라인업</code>으로 연다. 우버 <code>Confirm details</code> 구조.</li>
-          <li><b>취소선은 할인가 아래.</b> 우버·볼트 둘 다 현재가를 위에, 원가를 취소선으로 아래에 둔다. 타다 as-is는 위에 둔다.</li>
-          <li><b>명분은 시트 최상단 전체폭.</b> 확인 화면은 회색 pill(우버), 리스트 화면은 navy 바(볼트 <code>15% promo applied</code>).</li>
-          <li><b>서지 할인은 navy, 쿠폰은 <code>#32A2FA</code>.</b> 두 할인이 같은 색으로 겹치지 않게 색을 나눴다.</li>
-          <li><b>%가 안 맞으면 %를 쓰지 않는다.</b> 서지 어긋남 상태로 바꿔 보면 `10%` 대신 실제 할인액만 말한다.</li>
+          <li><b>A 라인업 스트립 상주.</b> 확인 화면 상단에 라인업 5개를 가로로 남긴다. 탭하면 화면이 바뀌지 않고 그 자리에서 라인업만 갈린다 — <b>돌아갈 필요 자체가 없어진다.</b> 할인 라인업에 navy <code>10%</code> 태그가 상주하므로 진입 직후 할인 인지도 여기서 해결된다.</li>
+          <li><b>B 헤더 드롭다운.</b> 제목을 <code>넓고 쾌적한 넥스트 ⌄</code> 알약 버튼으로 바꿔 탭하면 리스트가 오버레이로 올라온다. 지도가 계속 보여 맥락이 끊기지 않고, 스크림을 탭해도 닫힌다.</li>
+          <li><b>C 리스트 엿보기.</b> 확인 시트를 리스트 위에 얹되 리스트 첫 행이 살짝 보이게 남긴다. 핸들에 <code>아래로 당겨 라인업 보기</code> 힌트를 붙이고, 드러난 리스트를 탭해도 돌아간다.</li>
+          <li><b>D 하단 보조 버튼.</b> CTA 바로 위에 전체폭 <code>‹ 다른 라인업 보기</code>. 엄지가 이미 있는 자리라 발견성이 높고, 구현이 가장 싸다. 시트 높이를 44px 먹는다.</li>
+          <li><b>E 상단 텍스트 (현재).</b> 좌상단 <code>‹ 다른 라인업</code>. 가장 싸지만 타깃이 작고 시선 밖이다 — 지금 지적하신 이탈 위험이 이 상태다.</li>
         </ul>
       </div>
       <div class="box">
-        <h3>이 프로토로 확인할 것</h3>
+        <h3>as-is에서 바꾼 것 (구조)</h3>
         <ul>
-          <li><b>탭 수.</b> 기본 라인업 호출은 as-is와 같은 1탭. 다른 라인업은 3탭으로 늘어난다. 크로스셀 넛지를 켜면 할인 라인업까지 2탭.</li>
-          <li><b>진입 직후 할인 인지.</b> 넛지를 끄면 프라임 확인 화면에 할인 신호가 없다. 1차 판정 지표가 콜뷰 전환율이라 이게 핵심 변수다.</li>
-          <li><b>쿠폰 동시 적용.</b> 쿠폰을 켜면 확인 화면에 <code>쿠폰 적용됨</code>이 파랗게, 가격은 서지 할인가에서 한 번 더 내려간다.</li>
-          <li><b>정가가 두 번 안 보이는지.</b> 쿠폰이 켜지면 취소선 기준이 서지 할인가로 바뀐다. 원래 정가는 화면에서 사라진다 — PRD "원래 금액"과 어긋나는 지점.</li>
+          <li><b>확인 화면이 기본.</b> 우버 <code>Confirm details</code> 구조. 선택된 라인업 하나만 크게 보인다.</li>
+          <li><b>취소선은 할인가 아래.</b> 우버·볼트 둘 다 현재가를 위에, 원가를 취소선으로 아래에 둔다. 타다 as-is는 위에 둔다.</li>
+          <li><b>명분은 시트 최상단 전체폭.</b> 확인 화면은 회색 pill(우버), 리스트 화면은 navy 바(볼트 <code>15% promo applied</code>).</li>
+          <li><b>서지 할인은 navy, 쿠폰은 <code>#32A2FA</code>.</b> 두 할인이 같은 색으로 겹치지 않게 색을 나눴다.</li>
+          <li><b>%가 안 맞으면 %를 쓰지 않는다.</b> 서지 어긋남 상태에서는 <code>10%</code> 대신 실제 할인액만 말한다.</li>
         </ul>
       </div>
       <div class="box">
@@ -180,13 +215,15 @@ th{color:var(--ink3);font-weight:600;border-top:0}
         <ul>
           <li>지도·경로·요금은 보내주신 실제 화면 캡처 값(청량리역 → 서린동, 프라임 31,500 / 넥스트 25,600 / 카시트 30,600 / 반려동물·모든타다 25,600).</li>
           <li>그 위치에 <b>플러스가 없었으므로</b> 리스트에서 빠졌다. 플러스도 할인 대상이라 상단 바 문구에는 남겨 뒀다.</li>
-          <li>탑승자·카드는 <code>김타다님</code> / <code>하나 **1234</code> 자리표시자로 바꿨다.</li>
-          <li>도착 시각 <code>5:04</code>는 지도의 <code>35분 후 도착</code>에서 계산.</li>
+          <li>탑승자·카드는 <code>김타다님</code> / <code>하나 **1234</code> 자리표시자. 도착 <code>5:04</code>는 지도의 <code>35분 후 도착</code>에서 계산.</li>
+          <li>C 엿보기의 드래그는 프로토에서 탭으로 대체했다(실기기에서는 시트 드래그). C에서는 명분 pill 대신 위에 드러난 navy 할인 바가 그 역할을 한다.</li>
         </ul>
       </div>
     </div>
   </div>
 </main>
+
+<div class="probe" id="probe" aria-hidden="true"></div>
 
 <script>
 (function(){
@@ -203,51 +240,80 @@ const R=[
 ];
 const BY=Object.fromEntries(R.map(r=>[r.id,r]));
 const COUPON=5000, REASON='금요일 밤';
-const DEF={screen:'confirm', lineup:'prime', discount:'ok', coupon:'0', nudge:'1'};
+const NAVS=[['strip','A 라인업 스트립 상주'],['dropdown','B 헤더 드롭다운'],['peek','C 할인 바 엿보기'],['bottom','D 하단 보조 버튼'],['text','E 상단 텍스트 (현재)']];
+const DEF={screen:'confirm', lineup:'prime', discount:'ok', coupon:'0', nudge:'1', nav:'strip'};
 let S=Object.assign({},DEF);
-try{const s=localStorage.getItem('pd-r');if(s)S=Object.assign({},DEF,JSON.parse(s));}catch(e){}
-const save=()=>{try{localStorage.setItem('pd-r',JSON.stringify(S))}catch(e){}};
+try{const s=localStorage.getItem('pd-r2');if(s)S=Object.assign({},DEF,JSON.parse(s));}catch(e){}
+const save=()=>{try{localStorage.setItem('pd-r2',JSON.stringify(S))}catch(e){}};
 const won=n=>n.toLocaleString('ko-KR')+'원';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-// 요금 계산 — fare = 서지 할인 반영, pay = 쿠폰까지 반영
-function calc(id){
-  const r=BY[id], base=r.base;
+function calc(id,st){
+  st=st||S; const r=BY[id], base=r.base;
   let fare=base, pct=null;
-  if(r.surge && S.discount!=='none'){
-    if(S.discount==='ok'){ pct=10; fare=Math.round(base*0.9/100)*100; }
-    else { fare=24150; pct=null; }            // 서지 %조정 결과가 깔끔히 안 떨어지는 케이스
+  if(r.surge && st.discount!=='none'){
+    if(st.discount==='ok'){ pct=10; fare=Math.round(base*0.9/100)*100; }
+    else { fare=24150; pct=null; }
   }
-  const couponOn=S.coupon==='1';
+  const couponOn=st.coupon==='1';
   const pay=fare-(couponOn?COUPON:0);
   return {base, fare, pay, pct, discounted:fare<base, couponOn};
 }
 const paxH=n=>n?`<span class="pax">${IC_PAX}<i>${n}</i></span>`:'';
 
-function confirmScreen(){
-  const r=BY[S.lineup], c=calc(S.lineup);
-  // 상단 띠: 내 라인업이 할인이면 명분 pill, 아니면 (옵션) 더 싼 라인업 넛지
+function stripHTML(st){
+  return `<div class="strip" data-probe="strip">`+R.map(r=>{
+    const c=calc(r.id,st), sel=r.id===st.lineup;
+    return `<button class="schip" data-pick="${r.id}" aria-pressed="${sel}">
+      ${c.discounted?`<s>${c.pct?c.pct+'%':'할인'}</s>`:''}
+      <img src="${TH[r.id]}" alt=""><em>${esc(r.short)}</em>
+      <u class="${c.discounted?'dc':''}">${won(c.discounted?c.fare:c.base).replace('원','')}</u></button>`;
+  }).join('')+`</div>`;
+}
+
+function confirmScreen(st){
+  st=st||S;
+  const r=BY[st.lineup], c=calc(st.lineup,st), nav=st.nav;
   let head='';
-  if(c.discounted){
+  if(c.discounted && nav!=='peek'){
     const txt=c.pct?`${REASON}이라 ${c.pct}% 할인이 적용됐어요`:`${REASON} 할인으로 ${won(c.base-c.fare)} 낮아졌어요`;
     head=`<div class="pill">${IC_COUPON}<span>${esc(txt)}</span></div>`;
-  }else if(S.nudge==='1' && S.discount!=='none'){
-    const n=calc('next');
+  }else if(st.nudge==='1' && st.discount!=='none' && nav!=='strip' && nav!=='peek'){
+    const n=calc('next',st);
     head=`<button class="pill nudge" data-go="next"><span class="k">${IC_COUPON}<span>넥스트는 ${esc(REASON)} 할인 ${won(n.fare)}</span></span><em>바꾸기</em></button>`;
   }
-  // 취소선 기준: 쿠폰이 없으면 정가, 쿠폰이 있으면 쿠폰 직전 금액(= 서지 할인가)
-  const was=c.couponOn ? (c.discounted?c.fare:c.base) : c.base;
-  const pr=c.discounted||c.couponOn
+  const was = c.couponOn ? (c.discounted ? c.fare : c.base) : c.base;
+  const pr = c.discounted||c.couponOn
     ? `<span class="now">${won(c.pay)}</span><span class="was">${won(was)}</span>`+
       (c.discounted&&!c.couponOn?`<span class="cut">${won(c.base-c.fare)} 할인</span>`:'')
     : `<span class="now">${won(c.pay)}</span>`;
-  const coupon=c.couponOn
-    ? `<span class="g on">${IC_COUPON_ON}쿠폰 적용됨</span>`
-    : `<span class="g">${IC_COUPON}쿠폰 적용하기</span>`;
-  return `<div class="map"></div>
-  <div class="sheet" style="top:${310-3}px;height:${800-307}px">
-    <div class="handle"><i></i></div>
-    <div class="chdr"><button class="other" data-go="list"><span class="cbk"></span>다른 라인업</button><b>호출 정보 확인</b></div>
+  const coupon=c.couponOn?`<span class="g on">${IC_COUPON_ON}쿠폰 적용됨</span>`:`<span class="g">${IC_COUPON}쿠폰 적용하기</span>`;
+
+  const handle = nav==='peek'
+    ? `<button class="handle grab" data-go="list" data-probe="back"><i></i><u>아래로 당겨 라인업 보기</u></button>`
+    : `<div class="handle"><i></i></div>`;
+  const hdr = nav==='dropdown'
+    ? `<div class="chdr"><button class="hdrsel" data-go="list" data-probe="back">${esc(r.short)}<s class="cdn"></s></button></div>`
+    : nav==='text'
+      ? `<div class="chdr"><button class="other" data-go="list" data-probe="back"><span class="cbk"></span>다른 라인업</button><b>호출 정보 확인</b></div>`
+      : nav==='strip' ? '' : `<div class="chdr"><b>호출 정보 확인</b></div>`;   // 스트립은 제목 줄을 쓰지 않는다
+  const strip = nav==='strip' ? stripHTML(st) : '';
+  const sec = nav==='bottom'
+    ? `<button class="secbtn" data-go="list" data-probe="back"><span class="cbk"></span>다른 라인업 보기</button>` : '';
+
+  // peek: 확인 시트를 아래로 내려 리스트 첫 행이 보이게
+  const sheetTop = nav==='peek' ? 307+60 : 307;
+  const behind = nav==='peek' ? `<div class="peek" style="top:307px;height:${800-307}px">
+      <div class="handle"><i></i></div>
+      <button class="bar" data-go="list" data-probe="back" style="width:100%;border:0;cursor:pointer;font-family:inherit"><span>${st.discount!=='none'?esc(REASON)+'이라 넥스트·플러스 할인 중':'라인업 5개 보기'}</span><span class="chev" style="filter:invert(1) brightness(2)"></span></button>
+      <div class="list">${listRows(st)}</div>
+    </div>` : '';
+
+  return `<div class="map"></div>${behind}
+  <div class="sheet" style="top:${sheetTop}px;height:${800-sheetTop}px">
+    ${handle}
+    ${hdr}
+    ${strip}
     ${head}
     <div class="hero"><img src="${TH[r.id]}" alt=""></div>
     <div class="cmain">
@@ -263,14 +329,15 @@ function confirmScreen(){
     <div class="orow">${coupon}<span class="chev"></span></div>
     <div class="hr inset"></div>
     <div class="orow"><span class="g">${IC_CARD}<b>개인 계정</b>하나 **1234 개인</span><span class="chev"></span></div>
+    <div class="spacer"></div>
+    ${sec}
     <div class="cta"><button type="button">${esc(r.short)} 호출</button></div>
   </div>`;
 }
 
-function listScreen(){
-  const anyDisc=S.discount!=='none';
-  const rows=R.map(r=>{
-    const c=calc(r.id), sel=r.id===S.lineup;
+function listRows(st){
+  return R.map(r=>{
+    const c=calc(r.id,st), sel=r.id===st.lineup;
     const pr=c.discounted
       ? `<span class="now">${won(c.fare)}</span><span class="was">${won(c.base)}</span>`
       : `<span class="now plain">${won(c.base)}</span>`;
@@ -280,31 +347,40 @@ function listScreen(){
         <span class="d">${esc(r.desc)}${paxH(r.pax)}</span></span></span>
       <span class="pr2">${pr}</span></button>`;
   }).join('');
-  const bar=anyDisc?`<div class="bar"><span>${esc(REASON)}이라 넥스트·플러스 할인 중</span><span class="chev" style="filter:invert(1) brightness(2)"></span></div>`:'';
+}
+function listScreen(st){
+  st=st||S;
+  const bar=st.discount!=='none'?`<div class="bar"><span>${esc(REASON)}이라 넥스트·플러스 할인 중</span><span class="chev" style="filter:invert(1) brightness(2)"></span></div>`:'';
+  if(st.nav==='dropdown'){
+    const h=24+44+(st.discount!=='none'?36:0)+5*66;
+    return confirmScreen(st)+`<button class="scrim" data-go="confirm" aria-label="닫기"></button>
+      <div class="ovl" style="height:${Math.min(h,800-120)}px">
+        <div class="handle"><i></i></div>
+        <div class="lhdr"><b>라인업 선택</b><button class="back" data-go="confirm"><span class="cbk"></span>닫기</button></div>
+        ${bar}<div class="list">${listRows(st)}</div>
+      </div>`;
+  }
   return `<div class="map"></div>
-  <div class="sheet" style="top:${310-3}px;height:${800-307}px">
+  <div class="sheet" style="top:307px;height:${800-307}px">
     <div class="handle"><i></i></div>
     <div class="lhdr"><button class="back" data-go="confirm"><span class="cbk"></span>돌아가기</button><b>라인업 선택</b></div>
     ${bar}
-    <div class="list">${rows}</div>
+    <div class="list">${listRows(st)}</div>
   </div>`;
 }
 
 function render(){
-  const ph=document.getElementById('phone');
-  ph.innerHTML = S.screen==='confirm' ? confirmScreen() : listScreen();
+  document.getElementById('phone').innerHTML = S.screen==='confirm' ? confirmScreen() : listScreen();
   document.getElementById('scrTitle').firstChild.nodeValue = S.screen==='confirm' ? '호출 확인 ' : '라인업 선택 ';
-  document.getElementById('scrSub').textContent = S.screen==='confirm' ? '기본 화면 · 리스트는 다른 라인업으로' : '다른 라인업을 고르는 화면';
-  // 라인업 칩
+  document.getElementById('scrSub').textContent = NAVS.find(n=>n[0]===S.nav)[1];
   const g=document.querySelector('[data-key="lineup"]');
   g.innerHTML=R.map(r=>`<button class="chip" data-v="${r.id}">${r.short}${r.surge?' (할인)':''}</button>`).join('');
   document.querySelectorAll('[data-key]').forEach(grp=>{const k=grp.dataset.key;grp.querySelectorAll('.chip').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v===S[k])))});
-  trail(); compare();
+  trail(); compareNav(); compare();
 }
 
 function trail(){
-  const r=BY[S.lineup], c=calc(S.lineup);
-  const parts=[];
+  const r=BY[S.lineup], c=calc(S.lineup), parts=[];
   parts.push(`<span>정가 <b>${won(c.base)}</b></span>`);
   if(c.discounted) parts.push(`<span>→ 서지 할인 <b>${won(c.fare)}</b></span>`);
   if(c.couponOn) parts.push(`<span>→ 쿠폰 −${won(COUPON)} <b>${won(c.pay)}</b></span>`);
@@ -312,34 +388,71 @@ function trail(){
   document.getElementById('trail').innerHTML=`${esc(r.short)} · `+parts.join(' ');
 }
 
-function compare(){
-  const anyDisc=S.discount!=='none', nudgeOn=S.nudge==='1';
-  const primeSeesDiscount = anyDisc && (nudgeOn || BY[S.lineup].surge);
-  const rows=[
-    ['as-is (리스트 1화면)','1탭','2탭','<span class="mark good"></span>리스트에 취소선','1곳 (행)'],
-    ['R · 넛지 없음','1탭','3탭', anyDisc?'<span class="mark crit"></span>확인 화면에 없음':'<span class="mark warn"></span>할인 없음','1곳 (확인 화면)'],
-    ['R · 넛지 있음','1탭','2탭', anyDisc?'<span class="mark good"></span>넛지 한 줄':'<span class="mark warn"></span>할인 없음','1곳 (확인 화면)'],
-  ];
-  document.getElementById('cmp').innerHTML=`<h3>구조 비교</h3>
-  <p class="note">현재 설정: 할인 ${ {none:'없음',ok:'10% 정상',odd:'서지 어긋남'}[S.discount] } · 쿠폰 ${S.coupon==='1'?'적용':'없음'} · 선택 ${esc(BY[S.lineup].short)}${BY[S.lineup].surge?'':' (할인 비대상)'}</p>
-  <div style="overflow-x:auto"><table>
-  <thead><tr><th>구조</th><th>기본 라인업 호출</th><th>다른 라인업 호출</th><th>진입 직후 할인 인지</th><th>가격이 보이는 곳</th></tr></thead>
-  <tbody>${rows.map(r=>`<tr><td>${r[0]}</td><td class="num">${r[1]}</td><td class="num">${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td></tr>`).join('')}</tbody>
-  </table></div>
-  <p class="note" style="margin:10px 0 0">지금 상태에서 진입 직후 할인을 ${primeSeesDiscount?'<b style="color:var(--good)">인지함</b>':'<b style="color:var(--crit)">인지하지 못함</b>'}.</p>`;
+// 화면 밖 프로브에서 되돌아가기 타깃 실측 (프레임에는 scale이 걸릴 수 있어 여기서 잰다)
+function measure(){
+  const probe=document.getElementById('probe'), out={};
+  for(const [nav] of NAVS){
+    const st=Object.assign({},S,{nav,screen:'confirm',lineup:'prime'});
+    probe.innerHTML=`<div class="phone">${confirmScreen(st)}</div>`;
+    const tgts=[...probe.querySelectorAll('[data-probe="back"],[data-probe="back2"],[data-probe="strip"]')];
+    let area=0, w=0, h=0, n=0;
+    for(const t of tgts){
+      const r=t.getBoundingClientRect();
+      if(t.dataset.probe==='strip'){
+        const chips=[...t.querySelectorAll('.schip')];
+        for(const ch of chips){const cr=ch.getBoundingClientRect();area+=cr.width*cr.height;}
+        w=Math.round(r.width); h=Math.round(r.height); n=chips.length;
+      }else{ area+=r.width*r.height; w=Math.round(r.width); h=Math.round(r.height); n++; }
+    }
+    out[nav]={area:Math.round(area), w, h, n, tgt:tgts.length};
+  }
+  probe.innerHTML='';
+  return out;
 }
 
-// 폰 안 인터랙션
+function compareNav(){
+  const m=measure();
+  // 탭 수: 진입(프라임 확인) → 넥스트 호출까지
+  const taps={strip:2, dropdown:3, peek:3, bottom:3, text:3};
+  const always={strip:true, dropdown:false, peek:false, bottom:false, text:false};
+  const rows=NAVS.map(([k,label])=>{
+    const t=m[k];
+    return `<tr data-on="${k===S.nav?1:0}">
+      <td>${label}</td>
+      <td class="num">${taps[k]}탭</td>
+      <td class="num">${t.area.toLocaleString()}px²<br><span style="color:var(--ink3)">${t.n>1?`${t.n}개 · ${t.w}×${t.h}`:`${t.w}×${t.h}`}</span></td>
+      <td>${always[k]?'<span class="mark good"></span>항상':'<span class="mark warn"></span>넛지 의존'}</td>
+      <td>${k==='strip'?'<span class="mark good"></span>전환 없음':k==='dropdown'?'<span class="mark good"></span>지도 유지':k==='peek'?'<span class="mark warn"></span>시트 이동':'<span class="mark crit"></span>화면 교체'}</td>
+      <td>${k==='strip'?'라인업 5개 상주':k==='dropdown'?'제목이 셀렉터':k==='peek'?'할인 바가 손잡이':k==='bottom'?'엄지 자리':'시선 밖'}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('cmpNav').innerHTML=`<h3>되돌아가기 5안 비교</h3>
+  <p class="note">타깃 면적은 화면 밖 프로브에서 실측(360px 기준, 프레임 배율 영향 없음). 탭 수는 진입(프라임 확인) → 넥스트 호출까지.</p>
+  <div style="overflow-x:auto"><table>
+  <thead><tr><th>방식</th><th>넥스트 호출</th><th>되돌아가기 타깃</th><th>진입 직후 할인 인지</th><th>맥락 유지</th><th>발견성</th></tr></thead>
+  <tbody>${rows}</tbody></table></div>
+  <p class="note" style="margin:10px 0 0">as-is(리스트 1화면)는 넥스트 호출 <b class="num">2탭</b> · 되돌아가기 개념 없음. <b>A만 as-is의 탭 수를 회복하고, 진입 직후 할인 인지를 넛지 없이 해결한다.</b> D·E는 같은 3탭이지만 타깃 크기가 <b class="num">7배</b> 이상 차이난다.</p>`;
+}
+
+function compare(){
+  const anyDisc=S.discount!=='none';
+  const seen = anyDisc && (S.nav==='strip' || S.nudge==='1' || BY[S.lineup].surge);
+  document.getElementById('cmp').innerHTML=`<h3>현재 상태</h3>
+  <p class="note">되돌아가기 ${esc(NAVS.find(n=>n[0]===S.nav)[1])} · 할인 ${ {none:'없음',ok:'10% 정상',odd:'서지 어긋남'}[S.discount] } · 쿠폰 ${S.coupon==='1'?'적용':'없음'} · 선택 ${esc(BY[S.lineup].short)}${BY[S.lineup].surge?'':' (할인 비대상)'}</p>
+  <p class="note" style="margin:0">진입 직후 할인을 ${seen?'<b style="color:var(--good)">인지함</b>':'<b style="color:var(--crit)">인지하지 못함</b>'}. ${S.nav==='strip'?'스트립의 <code>10%</code> 태그가 항상 보이므로 넛지 없이도 인지된다.':'스트립이 아니면 크로스셀 넛지에 의존한다.'}</p>`;
+}
+
 document.getElementById('phone').addEventListener('click',e=>{
-  const go=e.target.closest('[data-go]'); if(go){ if(go.dataset.go==='next'){S.lineup='next';S.screen='confirm';} else S.screen=go.dataset.go; save(); render(); return; }
-  const pick=e.target.closest('[data-pick]'); if(pick){ S.lineup=pick.dataset.pick; S.screen='confirm'; save(); render(); }
+  const go=e.target.closest('[data-go]');
+  if(go){ if(go.dataset.go==='next'){S.lineup='next';S.screen='confirm';} else S.screen=go.dataset.go; save(); render(); return; }
+  const pick=e.target.closest('[data-pick]');
+  if(pick){ S.lineup=pick.dataset.pick; S.screen='confirm'; save(); render(); }
 });
-// 설정
 const gear=document.getElementById('gear'),panel=document.getElementById('panel');
 const open=o=>{panel.dataset.open=o?'1':'0';gear.setAttribute('aria-expanded',String(o))};
 gear.addEventListener('click',()=>open(panel.dataset.open!=='1'));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')open(false)});
-panel.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;S[b.closest('[data-key]').dataset.key]=b.dataset.v;save();render();});
+panel.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;const k=b.closest('[data-key]').dataset.key;S[k]=b.dataset.v;if(k==='nav')S.screen='confirm';save();render();});
 document.getElementById('reset').addEventListener('click',()=>{S=Object.assign({},DEF);save();render();});
 render();
 })();
