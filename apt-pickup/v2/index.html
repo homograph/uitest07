@@ -2898,14 +2898,23 @@
     const reflow = () => { if(!bub.offsetParent) return; bub.style.top = clampBub(bub.offsetTop)+'px'; };
     function drag(node, clamp, after){
       let id=null, x0=0, y0=0, t0=0, moved=false;
+      /* 9/21 pointerdown 에서 바로 setPointerCapture 하면 안 된다.
+         이 drag() 는 버블 스택(#tovr) 통째에도 걸리는데, 캡처가 걸린 순간부터 포인터
+         이벤트가 전부 #tovr 로 재지정되어 click 의 타깃도 #tovr 이 된다. 그러면 스택 안의
+         버튼(타다 · 경로 변경 · 픽업 장소)에 붙은 click 이 영영 안 불린다 — 실제 마우스·
+         손가락으로는 눌러도 아무 일이 없었다(코드에서 .click() 을 부르면 되니까 못 봤다).
+         3px 을 넘겨 '탭이 아니라 드래그' 가 확정된 뒤에 캡처한다. 배너 쓸어내리기도 같은 방식이다. */
       node.addEventListener('pointerdown', e=>{
         id=e.pointerId; x0=e.clientX; y0=e.clientY; t0=node.offsetTop; moved=false;
-        node.setPointerCapture(id); node.classList.add('dragging');
+        node.classList.add('dragging');
       });
       node.addEventListener('pointermove', e=>{
         if(id===null) return;
         const dx=e.clientX-x0, dy=e.clientY-y0;
-        if(Math.abs(dy)>3 || Math.abs(dx)>3) moved=true;
+        if(!moved){
+          if(Math.abs(dy)<=3 && Math.abs(dx)<=3) return;   /* 아직 탭일 수 있다 */
+          moved=true; try{ node.setPointerCapture(id); }catch(_){}
+        }
         node.style.top = clamp(t0+dy)+'px';
         node.style.translate = dx+'px 0';
         if(after) after();
