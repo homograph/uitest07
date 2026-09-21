@@ -3435,7 +3435,10 @@ function onPickupEvent(ev) {            // type: CREATED | CHANGED | DELETED
 <p><b>문장과 찾아오는 길 사이는 40입니다.</b> 다만 그 40은 한 값이 아니라 <b>블록 간격 20 + </b><b><code>etc</code></b><b> 가 스스로 갖는 앞여백 20</b> 입니다. 헤더 패딩이 아닙니다 — <code>etc-header</code> 자체 패딩은 0입니다.</p>
 <p><b>힌트 칩이 뜨면 그 아래가 58 밀립니다</b>(칩 38 + 간격 20). 찾아오는 길은 사라지지 않고 자리만 내려갑니다. 칩이 사라지면 제자리로 돌아옵니다.</p>
 <h5>문장 줄바꿈</h5>
-<p>문장은 두 줄로 나눕니다 — 1줄 <code>[지하/지상 칩] [층]</code>, 2줄 <code>[동] [라인] [에서 탈게요.]</code>. 칸 사이 8, 줄 사이 14입니다.</p>
+<p>문장은 두 줄로 나눕니다 — 1줄 <code>[지하/지상 칩] [층]</code>, 2줄 <code>[동] [라인] [에서 탈게요.]</code>. Figma 에서도 <code>row1</code> · <code>row2</code> 두 프레임입니다.</p>
+<p><b>간격이 세 종류고 값이 다릅니다.</b> 하나로 알고 지나가기 쉬운 자리입니다.</p>
+<table><tr><th>어디</th><th>값</th><th>Figma</th></tr><tr><td>칸 사이 (가로)</td><td>8</td><td><code>row</code> 의 gap</td></tr><tr><td><b>1줄 ↔ 2줄</b></td><td><b>14</b></td><td><code>sentence</code> 가 col gap14</td></tr><tr><td><b>한 줄이 넘쳐서 생긴 줄 사이</b></td><td><b>8</b></td><td><code>row</code> 의 wrap 줄간격</td></tr></table>
+<p>즉 <code>row2</code> 가 넘쳐서 꼬리가 아래로 내려가면 그 간격은 14 가 아니라 <b>8</b> 입니다.</p>
 <p>폭이 모자랄 때만 wrap 으로 다음 줄에 떨어집니다(동·라인 각 8자가 최대입니다). 꼬리는 줄바꿈되지 않습니다.</p>
 <h4>3. 디자인 토큰</h4>
 <p>Figma 변수에 묶인 값들입니다. <b>하드코딩하지 말고 앞의 이름을 그대로 쓰세요.</b></p>
@@ -3444,13 +3447,22 @@ function onPickupEvent(ev) {            // type: CREATED | CHANGED | DELETED
 <h5>주의 — gray 와 navy 를 헷갈리지 마세요</h5>
 <p>비활성 CTA 의 <code>#99A5C0</code> · <code>#C0C8D9</code> 는 <b>navy 계열</b>입니다. 이름에 gray 가 들어가면 진짜 gray-300(#9DA0AE, 플레이스홀더)과 섞입니다. 웹 프로토타입은 실제로 이 둘을 gray 로 잘못 달고 있었고, 9/20에 바로잡았습니다.</p>
 <h5>타이포</h5>
-<table><tr><th>자리</th><th>크기 / 줄높이</th><th>굵기</th></tr><tr><td>앱바 제목 ‘상세 위치’</td><td>18 / 26</td><td>Regular</td></tr><tr><td>앱바 [지우기]</td><td>16 / 24</td><td>Regular</td></tr><tr><td>문장의 값</td><td>22 / 30</td><td><b>Bold</b></td></tr><tr><td>문장의 단위·꼬리</td><td>16 / 24</td><td>Medium</td></tr><tr><td>‘동 없음’·‘라인 없음’ 답</td><td>16 / 24</td><td><b>Regular</b></td></tr><tr><td>힌트 칩</td><td>13 / 18</td><td>Regular</td></tr><tr><td>찾아오는 길 제목</td><td>14 / 20</td><td><b>Bold</b></td></tr><tr><td>    (선택)</td><td>14 / 20</td><td>Regular</td></tr><tr><td>찾아오는 길 값·플레이스홀더</td><td>15 / 22</td><td>Regular</td></tr><tr><td>저장 체크박스 문구</td><td>14 / 20</td><td>Regular</td></tr><tr><td>CTA</td><td>16 / 24</td><td><b>Bold</b></td></tr></table>
+<table><tr><th>자리</th><th>Figma 텍스트 스타일</th><th>값 · 색</th></tr><tr><td>앱바 제목 ‘상세 위치’</td><td><code>Semantic/title_2_regular</code></td><td>18/26 w400 · #000000</td></tr><tr><td>문장의 <b>채워진 값</b> · 지하/지상 칩 글자</td><td><code>Semantic26/Heading_2_Bold</code></td><td>22/30 <b>w700</b> · gray-950</td></tr><tr><td>문장의 <b>플레이스홀더</b></td><td><code>Semantic26/Heading_2_Medium</code></td><td>22/30 <b>w500</b> · gray-300</td></tr><tr><td>단위(층·동·라인) · 꼬리</td><td><code>Semantic26/Body_1_Medium</code></td><td>16/24 w500 · gray-900</td></tr><tr><td>‘동 없음’·‘라인 없음’ 답</td><td><code>Semantic26/Body_1_Regular</code></td><td>16/24 w400 · gray-500</td></tr><tr><td>CTA</td><td><code>Semantic26/Body_1_Bold</code></td><td>16/24 w700 · 활성 #FFFFFF / 비활성 navy-100</td></tr><tr><td>찾아오는 길 제목</td><td><code>Semantic26/Body_3_Bold</code></td><td>14/20 w700 · gray-900</td></tr><tr><td>(선택)</td><td><code>Semantic26/Body_3_Regular</code></td><td>14/20 w400 · gray-500</td></tr><tr><td>저장 체크박스 문구</td><td><code>Semantic26/Body_3_Regular</code></td><td>14/20 w400 · gray-900</td></tr><tr><td>힌트 칩</td><td><code>Semantic26/Caption_1_Regular</code></td><td>13/18 w400 · gray-800</td></tr><tr><td>글자 수 숫자 / <code>/30</code></td><td><code>Caption_2_Bold</code> / <code>Caption_2_Regular</code></td><td>12/16 · gray-500</td></tr><tr><td>찾아오는 길 값·플레이스홀더</td><td><b>스타일 없음</b></td><td>15/22 w400 · 값 black / 플레이스홀더 gray-500</td></tr></table>
+<p><b>크기를 베끼지 말고 스타일 이름을 쓰세요.</b> 앱에 타이포 토큰이 있으면 그 이름으로 붙여야 줄높이 처리가 한 곳에서 됩니다 — 14/20 같은 줄높이는 iOS <code>Text</code> · Android <code>TextView</code> 가 그대로 받지 않아 손으로 메꾸면 자리마다 어긋납니다.</p>
+<p>마지막 줄은 <b>DS 에 스타일이 안 붙어 있는 자리</b>입니다. 그대로 써도 되지만, 다른 화면과 같은 문제를 겪고 있으면 DS 에 한 번 물어볼 가치가 있습니다.</p>
 <h4>4. 컴포넌트 스펙</h4>
+<h5>먼저 — 이 화면은 새로 그린 게 거의 없습니다</h5>
+<p>Figma 는 전부 <b>DS 인스턴스</b>로 짜여 있습니다. 앱에 이미 같은 컴포넌트가 있으면 <b>그걸 쓰고, 아래 스펙은 ‘다른 점’을 확인하는 데만</b> 쓰세요. 치수를 보고 다시 만들면 같은 버튼이 앱에 두 벌이 됩니다.</p>
+<table><tr><th>Figma 컴포넌트</th><th>쓰는 자리</th><th>몸통</th></tr><tr><td><code>Bars/Appbar</code></td><td>앱바 (<code>Statusbar</code> 포함)</td><td>row gap20 · pad 6/8 · <code>ic_exit</code></td></tr><tr><td><code>입력 필드 / 위치</code></td><td>지하·지상 칩</td><td>row gap6 · pad[8,12,8,14] · r6 · gray-30 · <code>ic_arrow_up</code></td></tr><tr><td><code>입력 필드 / 값</code></td><td>값+단위 한 쌍</td><td>row gap4 · pad[8,14,8,14] · <b>r6</b> · gray-30</td></tr><tr><td><code>입력 필드 / 값</code> (‘없음’ 답)</td><td>동 없음 · 라인 없음</td><td>pad[12,14,12,14] · <b>r8</b> · 단위 없음</td></tr><tr><td><code>chip_button / Brand Weak Solid / M</code></td><td>힌트 칩</td><td>pad[10,14,10,14] · r9999 · blue-100</td></tr><tr><td><code>text box / monoline</code></td><td>찾아오는 길</td><td>row gap10 · pad16 · r6 · stroke 1</td></tr><tr><td><code>Neutral Solid Button / Large</code></td><td>CTA</td><td>pad[14,18,14,18] · r4 · gap4 · grow1</td></tr><tr><td><code>ic_checkbox_off</code> / <code>_on</code></td><td>저장 체크박스</td><td>꺼진 상태 바탕 #D5D7DC</td></tr></table>
+<p>아이콘은 <code>ic_exit</code> · <code>ic_arrow_up</code> · <code>ic_checkbox_off/on</code> 셋입니다. 화살표는 <b>gray-500</b> 이고, 지하일 때 위를(지상으로) 지상일 때 아래를 가리킵니다 — 고정 아이콘이 아니라 누르면 어디로 가는지를 말합니다.</p>
+<p><code>foot</code> 은 위쪽에 <b>1px gray-30 선</b>을 가집니다(<code>stroke [1,0,0,0]</code>). 스크롤 영역과 나누는 선이라 빼면 푸터가 떠 있지 않은 것처럼 보입니다.</p>
 <h5>4-1. 문장 입력칸 (<code>입력 필드 / 값</code>)</h5>
 <p>칸 하나가 <b>값 + 단위</b> 한 쌍입니다. <code>1</code> + <code>층</code>, <code>1902</code> + <code>동</code> 처럼요.</p>
 <table><tr><th>항목</th><th>값</th></tr><tr><td>높이</td><td><b>48</b> (고정)</td></tr><tr><td>안쪽 여백</td><td>8 / 14</td></tr><tr><td>값↔단위 간격</td><td>4</td></tr><tr><td>모서리</td><td>6</td></tr><tr><td>면</td><td><code>gray-30</code></td></tr><tr><td>칸 사이</td><td>8 · 줄 사이 14</td></tr></table>
 <p>지하/지상 칩만 안쪽 여백이 <b>8 / 12 / 8 / 14</b> 입니다(오른쪽에 화살표 14가 붙어 간격은 6).</p>
-<p><b>‘동 없음’·‘라인 없음’을 고르면</b> 그 칸이 답으로 바뀝니다. 22px 값이 빠지고 16px 한 줄만 남아서, 위아래 여백을 6 → <b>12</b>로 늘려 높이 48을 지킵니다(<code>pad 12/14</code>). 이 칸은 버튼이 아니라 <b>고른 답</b>입니다 — 다시 누르면 빈 칸으로 돌아옵니다.</p>
+<p><b>‘동 없음’·‘라인 없음’을 고르면</b> 그 칸이 답으로 바뀝니다. 22px 값과 단위가 빠지고 16px 한 줄만 남아서, 위아래 여백을 8 → <b>12</b>로 늘려 높이 48을 지킵니다(<code>pad 12/14</code>). 글자는 <code>Body_1_Regular</code> gray-500 입니다.</p>
+<p><b>모서리도 같이 바뀝니다 — r6 → r8.</b> 다른 칸과 같은 r6 으로 두면 Figma 와 어긋납니다. 입력칸이 아니라 고른 답이라는 걸 모양이 거듬니다.</p>
+<p>이 칸은 버튼이 아니라 <b>고른 답</b>입니다 — 다시 누르면 빈 칸으로 돌아옵니다.</p>
 <p><b>칸 폭은 값의 글자 폭을 따라갑니다</b>(비어 있을 땐 플레이스홀더 폭). 고정 폭을 주면 ‘101’과 ‘1902’가 같은 칸에 앞뒤로 놓일 때 문장이 들쭉날쭉해집니다.</p>
 <h5>4-2. 힌트 칩 (<code>hint-slot</code>)</h5>
 <p>동을 치는 중에만 ‘동 없음’, 라인을 치는 중에만 ‘라인 없음’이 보입니다. 높이 38 · 안쪽 여백 10/14 · <b>모서리 완전히 둥글게(pill — 반지름 9999)</b> · 면 blue-100 · 눌리면 blue-150 · 글자 13/18 Regular gray-800.</p>
@@ -3581,9 +3593,113 @@ function onPickupEvent(ev) {            // type: CREATED | CHANGED | DELETED
 <h5>터치 영역</h5>
 <p>칸은 높이 48이라 그대로 충분합니다. <b>찾아오는 길의 × (20×20)만 작으니 터치 영역을 44×44로 넓혀 주세요.</b></p>
 <h4>12. iOS — SwiftUI</h4>
-<p>상태와 판정 로직입니다. 레이아웃은 §2–§4 치수를 그대로 옮기면 됩니다.</p>
+<p>먼저 레이아웃, 그다음 상태와 판정입니다. 치수는 §2–§4, 컴포넌트 이름은 §4 머리의 표를 보세요.</p>
+<h5>문장형 레이아웃 — 이 화면에서 제일 품이 듭니다</h5>
+<p>나머지는 평범한 스크롤 화면인데, 문장 줄만 세 가지를 동시에 요구합니다. 세뜜 다 SwiftUI 기본 부품으로는 안 됩니다.</p>
+<ol><li><b>칸이 내용 폭에 맞춰 늘어난다</b> — <code>TextField</code> 는 내용에 맞춰 줄지 않습니다.</li><li><b>폭이 모자라면 다음 줄로 흐른다</b> — <code>HStack</code> 은 줄바꿈을 모릅니다.</li><li><b>꼬리만 줄바꿈 금지</b> — ‘에서’와 ‘탈게요.’가 갈라지면 문장이 깨집니다.</li></ol>
 <div class="cpwrap"><button type="button" class="cp" data-cp="dg-c2">복사</button>
-<pre><code id="dg-c2">enum Level { case under, ground }
+<pre><code id="dg-c2">/// 넘치면 다음 줄로 흐리는 가로 배치. iOS 16+ 의 Layout 프로토콜.
+/// row1 · row2 에 각각 쓴다 — 넘쳐서 생긴 줄 사이는 8,
+/// row1 과 row2 사이 14 는 바깥 VStack 이 갖는다(§2).
+struct FlowRow: Layout {
+    var spacing: CGFloat = 8       // 칸 사이
+    var lineSpacing: CGFloat = 8   // 넘쳐서 생긴 줄 사이
+
+    private func solve(_ subviews: Subviews, width: CGFloat) -&gt; (CGSize, [CGPoint]) {
+        var pts: [CGPoint] = []
+        var x: CGFloat = 0, y: CGFloat = 0, lineH: CGFloat = 0, maxX: CGFloat = 0
+        for v in subviews {
+            let s = v.sizeThatFits(.unspecified)
+            if x &gt; 0, x + spacing + s.width &gt; width {
+                x = 0; y += lineH + lineSpacing; lineH = 0   // 다음 줄로
+            } else if x &gt; 0 {
+                x += spacing
+            }
+            pts.append(CGPoint(x: x, y: y))
+            x += s.width
+            lineH = max(lineH, s.height)
+            maxX  = max(maxX, x)
+        }
+        return (CGSize(width: maxX, height: y + lineH), pts)
+    }
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -&gt; CGSize {
+        solve(subviews, width: proposal.width ?? .infinity).0
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize,
+                       subviews: Subviews, cache: inout ()) {
+        let (_, pts) = solve(subviews, width: bounds.width)
+        for (v, p) in zip(subviews, pts) {
+            v.place(at: CGPoint(x: bounds.minX + p.x, y: bounds.minY + p.y),
+                    proposal: ProposedViewSize(v.sizeThatFits(.unspecified)))
+        }
+    }
+}</code></pre></div>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c3">복사</button>
+<pre><code id="dg-c3">/// 칸 하나 = 값 + 단위. Figma 의 `입력 필드 / 값` 입니다.
+struct ValueField: View {
+    let field: Field
+    let placeholder: String        // "101"
+    let unit: String               // "동"
+    let a11y: String               // "몇 동" — §11
+    @Binding var text: String
+    var focus: FocusState&lt;Field?&gt;.Binding
+
+    private var empty: Bool { text.isEmpty }
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ZStack(alignment: .leading) {
+                // ① 폭만 잡는 그림자. TextField 가 내용에 맞춰 줄지 않기 때문에
+                //    같은 글꿴로 글자 폭을 재 둔다. 비어 있으면 플레이스홀더 폭이다.
+                Text(empty ? placeholder : text)
+                    .font(.heading2Bold).hidden()
+                // ② 플레이스홀더는 Medium · gray-300 이다(§3).
+                //    TextField 기본 placeholder 는 글꿴을 따로 못 주므로 직접 깔다.
+                if empty {
+                    Text(placeholder)
+                        .font(.heading2Medium).foregroundStyle(Color.gray300)
+                        .allowsHitTesting(false)
+                }
+                // ③ 맨 위에 두어야 터치를 받는다
+                TextField("", text: $text)
+                    .font(.heading2Bold).foregroundStyle(Color.gray950)
+                    .keyboardType(.default)          // 숫자 전용 금지(§6)
+                    .autocorrectionDisabled()
+                    .focused(focus, equals: field)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+            Text(unit).font(.body1Medium).foregroundStyle(Color.gray900)
+        }
+        .padding(.vertical, 8).padding(.horizontal, 14)
+        .frame(height: 48)
+        .background(Color.gray30, in: RoundedRectangle(cornerRadius: 6))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(a11y)
+    }
+}</code></pre></div>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c4">복사</button>
+<pre><code id="dg-c4">// 쓰는 모양 — 간격 세 종류가 여기서 갈립니다(§2)
+VStack(alignment: .leading, spacing: 14) {        // 1줄 ↔ 2줄
+    FlowRow {
+        LevelChip()                                // `입력 필드 / 위치`
+        if model.draft.level == .under || model.draft.floorIsSuggested {
+            ValueField(field: .floor, placeholder: "1", unit: "층", a11y: "몇 층", …)
+        }
+    }
+    FlowRow {
+        ValueField(field: .dong, placeholder: "101", unit: "동", a11y: "몇 동", …)
+        ValueField(field: .line, placeholder: "2-5", unit: "라인", a11y: "라인", …)
+        Text("에서 탈게요.")
+            .font(.body1Medium).foregroundStyle(Color.gray900)
+            .fixedSize()                           // 꼬리는 줄바꿈하지 않는다
+    }
+}</code></pre></div>
+<p><b>iOS 15 를 받아야 하면</b> <code>Layout</code> 이 없습니다. <code>GeometryReader</code> 로 폭을 받아 직접 줄을 나누는 구현이 필요하고, 그 판은 높이를 스스로 못 알려 주므로 <code>PreferenceKey</code> 로 되돌려야 합니다. <b>지원 범위를 먼저 확인하세요</b> — 여기서 공수가 갈립니다.</p>
+<h5>상태와 판정</h5>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c5">복사</button>
+<pre><code id="dg-c5">enum Level { case under, ground }
 enum Field: Hashable { case floor, dong, line, etc }
 
 struct DetailLocation: Equatable {
@@ -3623,8 +3739,8 @@ extension String {
     var trimmed: String { trimmingCharacters(in: .whitespaces) }
 }</code></pre></div>
 <h5>변경 판정 — 두 가지를 분리하세요</h5>
-<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c3">복사</button>
-<pre><code id="dg-c3">@MainActor final class DetailLocationModel: ObservableObject {
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c6">복사</button>
+<pre><code id="dg-c6">@MainActor final class DetailLocationModel: ObservableObject {
     @Published var draft: DetailLocation
     @Published var saveAlways: Bool
     @Published var focus: Field?
@@ -3677,8 +3793,8 @@ extension String {
 <table><tr><th>쓰는 곳</th><th>무엇과 비교하나</th><th>체크박스를 세나</th></tr><tr><td><code>isDirtySinceOpen</code> — ✕·뒤로가기 확인창</td><td><b>화면을 열 때의 draft</b></td><td>셀다</td></tr><tr><td><code>hasChanges</code> — CTA 라벨</td><td>확정값(<code>original</code>)</td><td>셀다</td></tr><tr><td><code>valueChanged</code> — 전송 여부</td><td>확정값(<code>original</code>)</td><td>안 셀다</td></tr></table>
 <p>첫 번째를 <code>hasChanges</code> 로 대신하지 마세요. <b>첫 입력에서는 </b><b><code>original</code></b><b> 이 nil</b> 이라 기준이 빈 문자열이 되고, 아무것도 안 친 빈 화면에서 ✕ 를 눌러도 ‘변경 사항이 적용되지 않습니다’ 확인창이 뚝니다. 지상으로 진입해 층 1 이 미리 들어간 경우도 같습니다.</p>
 <h5>리턴 키와 자동 이동</h5>
-<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c4">복사</button>
-<pre><code id="dg-c4">private let order: [Field] = [.floor, .dong, .line]
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c7">복사</button>
+<pre><code id="dg-c7">private let order: [Field] = [.floor, .dong, .line]
 
 func nextEmpty(after current: Field) -&gt; Field? {
     let skip: Set&lt;Field&gt; = (draft.noDong ? [.dong] : []).union(draft.noLine ? [.line] : [])
@@ -3699,20 +3815,99 @@ func returnKey(for field: Field) -&gt; SubmitLabel {
 }</code></pre></div>
 <p>키패드는 <code>.keyboardType(.default)</code> 를 쓰세요. <code>동</code>·<code>라인</code>에 <code>101-1</code>, <code>가</code>, <code>B</code> 가 들어옵니다.</p>
 <h5>도움말·글자 수 노출 조건</h5>
-<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c5">복사</button>
-<pre><code id="dg-c5">var showsHelp:  Bool { focus == .etc &amp;&amp; draft.etc.trimmed.isEmpty }
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c8">복사</button>
+<pre><code id="dg-c8">var showsHelp:  Bool { focus == .etc &amp;&amp; draft.etc.trimmed.isEmpty }
 var showsCount: Bool { focus == .etc }
 // 공백만 친 칸은 '값이 있다'가 아니다 — 지울 게 없으면 × 도 없다.
 var showsClear: Bool { !draft.etc.trimmed.isEmpty &amp;&amp; !isReadOnly }</code></pre></div>
 <p>× 를 눌렀을 땐 <b>포커스를 건드리지 않습니다</b> — <code>draft.etc = ""</code> 만 하고 <code>focus</code> 는 그대로 둡니다.</p>
 <h5>시트를 쓸어내려 닫는 길을 막아 두세요</h5>
 <p>이 화면은 변경이 있으면 <b>반드시 확인창을 거쳐야 닫힙니다</b>(§9). 시트로 올리면 iOS 기본 동작은 아래로 쒸어내리기가 그냥 닫히는 것이라, 그대로 두면 승객이 쓴 것이 묻지도 않고 사라집니다. Android 는 <code>BackHandler</code> 로 막아 두는데 iOS 만 빠지기 쉬운 자리입니다.</p>
-<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c6">복사</button>
-<pre><code id="dg-c6">.interactiveDismissDisabled(model.isDirtySinceOpen &amp;&amp; !model.isReadOnly)</code></pre></div>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c9">복사</button>
+<pre><code id="dg-c9">.interactiveDismissDisabled(model.isDirtySinceOpen &amp;&amp; !model.isReadOnly)</code></pre></div>
 <p>막아 둔 뒤에는 <b>나가는 길이 보여야</b> 합니다 — 앱바 ✕ 와 하단 버튼 둘 다 살아 있어야 하고, 그래서 재편집 CTA 가 비활성이 아닌 ‘확인’입니다(§7). 넣기 전에 반드시 실제 기기에서 쓸어내려 보세요 — 시뮬레이터에서는 이 제스처가 잘 재현되지 않습니다.</p>
 <h4>13. Android — Jetpack Compose</h4>
-<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c7">복사</button>
-<pre><code id="dg-c7">enum class Level { UNDER, GROUND }
+<h5>문장형 레이아웃</h5>
+<p>iOS 쪽 §12 와 같은 세 가지를 맞춰야 합니다. Compose 는 <code>FlowRow</code> 가 있어 줄바꿈은 쉽지만, <b>칸이 내용 폭에 맞춰 늘어나는 것은 직접 만들어야</b> 합니다.</p>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c10">복사</button>
+<pre><code id="dg-c10">// FlowRow 는 compose-foundation 1.7 부터 정식이다.
+// 그 전 버전이면 @OptIn(ExperimentalLayoutApi::class),
+// 더 전이면 Accompanist FlowRow 를 써야 한다. 버전을 먼저 확인할 것.
+@Composable
+fun Sentence(vm: DetailLocationViewModel) {
+    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {   // 1줄 ↔ 2줄
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),   // 칸 사이
+            verticalArrangement   = Arrangement.spacedBy(8.dp),   // 넘쳐서 생긴 줄
+        ) {
+            LevelChip(vm)                                          // `입력 필드 / 위치`
+            ValueField(vm, Field.FLOOR, placeholder = "1", unit = "층", a11y = "몇 층")
+        }
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement   = Arrangement.spacedBy(8.dp),
+        ) {
+            ValueField(vm, Field.DONG, "101", "동",  "몇 동")
+            ValueField(vm, Field.LINE, "2-5", "라인", "라인")
+            Text(
+                "에서 탈게요.", style = Body1Medium, color = Gray900,
+                softWrap = false, maxLines = 1,                    // 꼬리는 줄바꿈 금지
+            )
+        }
+    }
+}</code></pre></div>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c11">복사</button>
+<pre><code id="dg-c11">@Composable
+fun ValueField(
+    vm: DetailLocationViewModel,
+    field: Field, placeholder: String, unit: String, a11y: String,
+) {
+    val v = vm.valueOf(field)          // TextFieldValue (아래 '입력 길이' 참고)
+    val empty = v.text.isEmpty()
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        modifier = Modifier
+            .height(48.dp)
+            .background(Gray30, RoundedCornerShape(6.dp))
+            .padding(horizontal = 14.dp, vertical = 8.dp)
+            .semantics(mergeDescendants = true) { contentDescription = a11y },
+    ) {
+        Box(contentAlignment = Alignment.CenterStart) {
+            // 폭만 잡는 그림자 — BasicTextField 는 내용에 맞춰 줄지 않는다.
+            // alpha(0f) 는 자리를 그대로 차지한다(visibility 와 다르다).
+            Text(
+                if (empty) placeholder else v.text,
+                style = Heading2Bold, maxLines = 1, softWrap = false,
+                modifier = Modifier.alpha(0f),
+            )
+            BasicTextField(
+                value = v,
+                onValueChange = { vm.onValueChange(field, it) },
+                singleLine = true,
+                // 플레이스홀더는 Medium · gray-300, 값은 Bold · gray-950 이다(§3)
+                textStyle = if (empty) Heading2Medium.copy(color = Gray300)
+                            else       Heading2Bold.copy(color = Gray950),
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,    // 숫자 전용 금지(§6)
+                    imeAction = vm.imeAction(field),
+                ),
+                decorationBox = { inner -&gt;
+                    if (empty) Text(
+                        placeholder, style = Heading2Medium, color = Gray300,
+                        maxLines = 1, softWrap = false,
+                    )
+                    inner()
+                },
+            )
+        }
+        Text(unit, style = Body1Medium, color = Gray900)
+    }
+}</code></pre></div>
+<p>‘동 없음’·‘라인 없음’ 칸은 같은 <code>입력 필드 / 값</code> 이지만 <b>pad 12/14 · r8 · 단위 없음 · </b><b><code>Body_1_Regular</code></b><b> gray-500</b> 입니다(§4-1). 높이 48은 그대로입니다.</p>
+<h5>값 한 벌</h5>
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c12">복사</button>
+<pre><code id="dg-c12">enum class Level { UNDER, GROUND }
 enum class Field { FLOOR, DONG, LINE, ETC }
 
 data class DetailLocation(
@@ -3748,8 +3943,8 @@ data class DetailLocation(
     }
 }</code></pre></div>
 <h5>상태 홀더</h5>
-<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c8">복사</button>
-<pre><code id="dg-c8">class DetailLocationViewModel(
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c13">복사</button>
+<pre><code id="dg-c13">class DetailLocationViewModel(
     private val original: DetailLocation?,      // 첫 입력이면 null
     private val originalSaveAlways: Boolean,
     val isReadOnly: Boolean,
@@ -3786,8 +3981,8 @@ data class DetailLocation(
     }
 }</code></pre></div>
 <h5>리턴 키와 자동 이동</h5>
-<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c9">복사</button>
-<pre><code id="dg-c9">private val order = listOf(Field.FLOOR, Field.DONG, Field.LINE)
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c14">복사</button>
+<pre><code id="dg-c14">private val order = listOf(Field.FLOOR, Field.DONG, Field.LINE)
 
 fun nextEmpty(after: Field): Field? {
     val skip = buildSet {
@@ -3805,8 +4000,8 @@ fun imeAction(field: Field): ImeAction =
 <p><code>KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = imeAction(field))</code> 로 붙이고, <code>KeyboardActions(onNext = { focus = nextEmpty(field) }, onDone = { focusManager.clearFocus() })</code> 로 받습니다. <b><code>onDone</code></b><b> 은 저장하지 않습니다.</b></p>
 <h5>입력 길이 제한과 자동 이동</h5>
 <p>칸 상태는 <code>String</code> 이 아니라 <b><code>TextFieldValue</code></b> 로 들고 있어야 합니다. 이유가 둘입니다 — 동·라인에 한글(<code>관리동</code>)이 들어오는데 <code>String</code> 으로 길이를 재서 되돌리면 <b>조</b><b>합</b><b> 중인 글자가 깨지고</b>, 지상이 제안한 층 1 을 <b>통</b><b>째</b><b>로 선택해 둘 수가 없습니다</b>(§6).</p>
-<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c10">복사</button>
-<pre><code id="dg-c10">onValueChange = { new -&gt;
+<div class="cpwrap"><button type="button" class="cp" data-cp="dg-c15">복사</button>
+<pre><code id="dg-c15">onValueChange = { new -&gt;
     val max = when (field) { Field.FLOOR -&gt; 1; Field.ETC -&gt; 30; else -&gt; 8 }
     val text = new.text.take(max)
     val sel  = minOf(new.selection.start, text.length)
@@ -3823,6 +4018,10 @@ fun imeAction(field: Field): ImeAction =
 <ul class="ck"><li>꼬리 ‘에서 탈게요.’가 라인 칸 <b>오른쪽에 바로</b> 붙는다 (별도 줄 ✘)</li><li>꼬리가 줄바꿈되지 않는다</li><li>읽기 전용에서 <b>꼬리도</b> 함께 <code>gray-500</code> 로 물러난다</li><li>찾아오는 길이 진입 순간부터 보인다 (나타나는 조건 ✘)</li><li>플레이스홀더는 한 줄 고정, <b>예시는 도움말이 맡는다</b></li><li>도움말은 포커스 + 빈 칸일 때만, 쓰기 시작하면 거둔다</li><li>글자 수는 포커스일 때만 보인다</li><li>× 는 값이 있을 때만, 누르면 <b>포커스를 뺏지 않는다</b></li><li><b>지상을 고르면 층 1 이 들어가고, 지하로 돌아오면 거둬진다</b></li><li>제안된 층 1 은 포커스가 가면 <b>통째로 선택</b>된다</li><li>층을 <b>비교용 값에서 빼지 않는다</b> — 지상에서 층만 고쳐도 저장할 수 있어야 한다</li><li>재편집 진입 CTA 가 <b>‘확인’(weak)</b>, 변경 생기면 ‘입력 완료’(navy)</li><li>되돌리면 다시 ‘확인’으로 돌아간다</li><li>재편집에서 필수를 지워 버리면 ‘확인’이 아니라 <b>비활성 ‘입력 완료’</b></li><li>저장 체크박스가 <b>변경에 들어가지만 전송은 안 된다</b></li><li>체크박스가 누르는 즉시 저장되지 않는다 (CTA 에서만 확정)</li><li>변경 판정이 <b>셋</b>이다 — 확인창(열었을 때 기준) · CTA(확정값 + 체크박스) · 전송(확정값 · 값만)</li><li>확인창 기준이 확정값이 <b>아니라</b> ‘화면을 열었을 때의 값’이다</li><li>✕ · 안드로이드 뒤로가기 · <b>iOS 시트 쓸어내리기</b> 셋 다 같은 확인창을 거친다</li><li>리턴 키가 ‘다음’/‘완료’로 바뀌고, <b>저장하지 않는다</b></li><li>숫자 전용 키패드를 쓰지 않는다</li><li>Android 는 <code>TextFieldValue</code> 로 들고 <code>take(max)</code> 로 자른다 (한글 조합 보호)</li><li>지하/지상 칩이 포커스를 가져가지 않는다</li><li>‘없음’ 칸도 높이 48을 지킨다 (<code>pad 12/14</code>)</li><li>읽기 전용을 <b>직접 열었을 때는 토스트가 없다</b></li><li>머무는 중 도착해서 닫힐 때만 토스트가 뜬다</li><li>전송 payload 에 <b>사건 종류(입력/수정/삭제)</b> 가 들어간다</li><li>동작 줄이기에서도 색으로는 알린다</li></ul>
 <h5>아직 안 정한 것</h5>
 <table><tr><th>항목</th><th>상태</th></tr><tr><td>비활성 CTA 대비 1.47:1</td><td>DS 토큰 문제. 이 기능에서 고치지 않음</td></tr><tr><td>전송 중 앱 종료 · 드라이버 미수신</td><td>서버 동작. 디자인이 정할 수 없음</td></tr><tr><td>미리보기 안내문 색 3.14:1</td><td>값 확정 전</td></tr></table>
+<h5>❓ 구현 전에 답이 필요한 것 다섯</h5>
+<p>아래는 <b>네이티브라서 생기는</b> 물음입니다. 웹 프로토타입과 Figma 에는 드러나지 않아 지금까지 안 물었습니다. 정해지기 전에는 <b>iOS 와 Android 가 각자 다르게 구현하게 됩니다.</b></p>
+<table><tr><th>❓</th><th>무엇이 갈리나</th><th>누가 정하나</th></tr><tr><td><b>글꿴 크기 키우기 (Dynamic Type)</b></td><td>높이 48 · 54 · 52 가 고정인데 문장형입니다. 접근성 글자 크기를 키우면 칸이 같이 늘어나나요, 글자가 잘리나요, 아니면 이 화면만 고정인가요?</td><td>기획 · 디자인</td></tr><tr><td><b>다크 모드</b></td><td>§3 토큰이 라이트 한 벌뿐입니다. 앱이 다크를 받는다면 짝이 필요합니다.</td><td>DS</td></tr><tr><td><b>키패드가 올라올 때 푸터</b></td><td>‘바닥 고정 오버레이’가 <b>키패드 위</b>인가요, 아래로 가려지나요? iOS 가 <code>safeAreaInset</code> 이냐 <code>ignoresSafeArea(.keyboard)</code> 냐가 여기서 갈립니다.</td><td>기획 · 디자인</td></tr><tr><td><b>전송 payload 스키마</b></td><td>§10 은 ‘사건 종류가 들어가야 한다’까지만 말합니다. 필드 이름 · 타입 · 널 허용, 그리고 <b>삭제를 빈 값으로 보내나 별도 사건으로 보내나</b>가 없습니다.</td><td>서버</td></tr><tr><td><b>층 1글자 제한</b></td><td>지하 10층과 ‘B2’ 는 어떻게 되나요? Figma 주석에 1자로 적혀 있는데 <b>제약인지 결정인지</b> 근거가 없습니다.</td><td>기획</td></tr></table>
+<p>마지막 물음이 생각보다 큽니다. 지하 주차장은 B1–B5 가 흔하고 일부 단지는 두 자리수입니다. 1자로 두면 <b>그런 단지는 이 기능을 못 씁니다.</b> 지금 프로토타입은 글자도 받아서 <code>L</code> 은 되지만 <code>10</code> 은 안 됩니다.</p>
 <h5>어긋나면 무엇을 믿나</h5>
 <p><b>DS 컴포넌트 › 상태 정리 문서 › 핸드오프 보드 › 프로토타입</b> 순입니다. 이 문서는 그걸 네이티브 관점으로 옮긴 것이고, 치수·색이 어긋나면 <b>Figma DS 가 기준</b>입니다.</p>
       </div>
