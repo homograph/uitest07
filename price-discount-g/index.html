@@ -85,9 +85,10 @@ body{font-variant-numeric:tabular-nums}
 /* 선택 행 — 그랩식 테두리 박스 */
 .sel{border:1.5px solid #19254D;border-radius:12px;background:#fff;margin:3px 0;overflow:hidden}
 .selhead{width:100%;height:66px;display:flex;align-items:center;gap:10px;padding:0 8px;background:none;border:0;font:inherit;font-family:inherit;text-align:left;cursor:pointer;color:#000}
-.selhead img{width:84px;height:57px;flex:none}
+.selhead img{width:76px;height:51px;flex:none}
 .stx{flex:1 1 auto;display:flex;flex-direction:column;min-width:0;overflow:hidden}
 .stx .n{display:flex;align-items:center;gap:4px;font-size:13px;line-height:19px;font-weight:700;white-space:nowrap;overflow:hidden}
+.stx .n .t,.rtx .n .t,.stx .d .t,.rtx .d .t{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .stx .d{display:flex;align-items:center;gap:4px;font-size:11px;line-height:16px;color:#9DA0AE;white-space:nowrap}
 .spr{flex:none;display:flex;flex-direction:row;align-items:center;gap:6px;white-space:nowrap;padding-right:2px}
 .spr .pstack{display:flex;flex-direction:column;align-items:flex-end}
@@ -96,7 +97,7 @@ body{font-variant-numeric:tabular-nums}
 .spr .was{font-size:11px;line-height:15px;color:#9DA0AE;text-decoration:line-through}
 .cdn{width:6px;height:10px;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat;transform:rotate(90deg);flex:none}
 .cup{width:6px;height:10px;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat;transform:rotate(-90deg);flex:none}
-.tag{display:inline-block;height:15px;padding:0 5px;border-radius:3px;background:#EEF1F8;color:#19254D;font-size:10px;line-height:15px;font-weight:700;white-space:nowrap}
+.tag{flex:none;display:inline-block;height:15px;padding:0 5px;border-radius:3px;background:#EEF1F8;color:#19254D;font-size:10px;line-height:15px;font-weight:700;white-space:nowrap}
 .reasonchip{width:calc(100% - 16px);display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 8px 8px;padding:8px 10px;border:0;border-radius:8px;background:#F2F4F8;color:#19254D;font:inherit;font-family:inherit;font-size:11px;line-height:16px;font-weight:700;text-align:left;cursor:pointer}
 .reasonchip:hover{background:#E9EDF5}
 .reasonchip .r{display:flex;align-items:center;gap:6px}
@@ -197,9 +198,9 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
   <p class="hint"><b>여기는 표기 방식 스위치입니다.</b> 고르면 바로 반영돼요. <b>쿠폰·크레딧은 폰 안 <code>할인 적용하기</code> 를 눌러</b> 실제 시트에서 고르세요.</p>
   <div class="prev" id="prev"></div>
   <div class="row"><div class="lab">중첩 표기</div><div class="chips" data-key="stack">
-    <button class="chip" data-v="surge">서지 할인만 (현재)</button>
+    <button class="chip" data-v="both">둘 다 이름으로 (채택)</button>
+    <button class="chip" data-v="surge">서지 할인만</button>
     <button class="chip" data-v="sum">합산해서</button>
-    <button class="chip" data-v="both">둘 다 이름으로</button>
   </div></div>
   <div class="row"><div class="lab">취소선</div><div class="chips" data-key="strike">
     <button class="chip" data-v="thr">10% 이상만 (Airbnb 규칙)</button>
@@ -319,7 +320,7 @@ const COUPONS=[
 const CP=id=>COUPONS.find(c=>c.id===id)||COUPONS[0];
 const CREDIT_TOTAL=90000, CREDIT_TADA=10000;
 const BASE_WIN=['prime','next','carseat'];   // 접힌 창의 기본 구성
-const DEF={open:'0', expand:'0', lineup:'prime', discount:'ok', coupon:'none', credit:'0', stack:'surge', pin:'1', strike:'thr', win:BASE_WIN.join(','), sheet:'0', dd:'0', pc:'none', pcr:'0'};
+const DEF={open:'0', expand:'0', lineup:'prime', discount:'ok', coupon:'none', credit:'0', stack:'both', pin:'1', strike:'thr', win:BASE_WIN.join(','), sheet:'0', dd:'0', pc:'none', pcr:'0'};
 let S=Object.assign({},DEF);
 try{const s=localStorage.getItem('pd-g');if(s)S=Object.assign({},DEF,JSON.parse(s));}catch(e){}
 const save=()=>{try{localStorage.setItem('pd-g',JSON.stringify(S))}catch(e){}};
@@ -385,7 +386,7 @@ function priceRow(c, sel){
   const show = ((c.discounted&&useStrike)||c.couponOn) ? `<span class="was">${won(was)}</span>`
              : (c.discounted ? `<span class="was" style="text-decoration:none;color:#19254D;font-weight:700">−${won(c.base-c.fare)}</span>` : '');
   return sel
-    ? `<span class="pstack"><span class="now${cls}">${won(c.pay)}</span>${show}</span><span class="${S.expand==='1'?'cup':'cdn'}"></span>`
+    ? `<span class="pstack"><span class="now${cls}">${won(c.pay)}</span>${show}</span>${(c.discounted||c.couponOn)&&S.expand!=='1'&&S.open!=='1'?'':`<span class="${S.expand==='1'?'cup':'cdn'}"></span>`}`
     : `<span class="now${cls}">${won(c.pay)}</span>${show}`;
 }
 
@@ -413,21 +414,23 @@ function rowHTML(id){
   if(sel) return `<div class="sel">
     <button class="selhead" data-exp="1">
       <img src="${TH[id]}" alt="">
-      <span class="stx"><span class="n">${esc(r.name)}${r.info?IC_INFO:''}${c.discounted?'<span class="tag">'+(c.pct?c.pct+'%':'할인')+'</span>':''}</span>
-      <span class="d">${esc(r.desc)}${paxH(r.pax)}</span></span>
+      <span class="stx"><span class="n"><span class="t">${esc(r.name)}</span>${r.info?IC_INFO:''}</span>
+      <span class="d"><span class="t">${esc(r.desc)}</span>${paxH(r.pax)}${c.discounted&&S.expand!=='1'?'<span class="tag">'+(c.pct?c.pct+'%':'할인')+'</span>':''}</span></span>
       <span class="spr">${priceRow(c,true)}</span></button>
     ${(c.discounted||c.couponOn)&&S.expand!=='1'&&S.open!=='1'?`<button class="reasonchip" data-exp="1"><span>${chipLabel(c)}</span><span class="r"><b>${won(chipCut(c))} 낮아졌어요</b><span class="caret"></span></span></button>`:''}
     ${S.expand==='1'?expandBody(id):''}</div>`;
   return `<button class="row" data-pick="${id}">
     <img src="${TH[id]}" alt="">
-    <span class="rtx"><span class="n">${esc(r.name)}${c.discounted?'<span class="tag">'+(c.pct?c.pct+'%':'할인')+'</span>':''}</span>
-    <span class="d">${esc(r.desc)}${paxH(r.pax)}</span></span>
+    <span class="rtx"><span class="n"><span class="t">${esc(r.name)}</span></span>
+    <span class="d"><span class="t">${esc(r.desc)}</span>${paxH(r.pax)}${c.discounted?'<span class="tag">'+(c.pct?c.pct+'%':'할인')+'</span>':''}</span></span>
     <span class="rpr">${priceRow(c,false)}</span></button>`;
 }
 
 function phoneHTML(){
   const anyDisc=S.discount!=='none';
-  const ids = S.open==='1' ? R.map(r=>r.id) : S.win.split(',');
+  let ids = S.open==='1' ? R.map(r=>r.id) : S.win.split(',');
+  // 저장된 상태가 어긋나 고른 라인업이 창 밖에 있으면 선택 행이 통째로 사라진다. 가운데에 끼워 넣는다.
+  if(S.open!=='1' && !ids.includes(S.lineup)){ ids=[ids[0], S.lineup, ...ids.slice(1)].slice(0,3); }
   const list = ids.map(rowHTML).join('');
   // 볼트식 전체폭 바 — 지금 고른 라인업이 할인 대상이 아닐 때만 띄운다(대상일 땐 카드 안 칩이 말한다)
   const selDisc = calc(S.lineup).discounted;
