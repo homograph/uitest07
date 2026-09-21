@@ -350,19 +350,6 @@
     color:var(--wheel-band-ink);
     font-weight:700;
   }
-  .rt-wheel-confirm{
-    appearance:none;border:none;cursor:pointer;
-    width:100%;
-    margin-top:4px;
-    background:var(--navy);
-    color:#ffffff;
-    border-radius:4px;
-    padding:14px 18px;
-    font-size:16px;font-weight:700;
-    box-sizing:border-box;
-    font-variant-numeric:tabular-nums;
-  }
-
   /* ---- 차종 선택 브리지 (Task 6): Figma 2x 렌더 이미지 + 투명 히트 영역 ---- */
   .rt-vehicle-screen{background:#ffffff;}
   .rt-vehicle-scroll{
@@ -812,7 +799,16 @@ function onCtaClick(){
 // CTA 버튼의 유일한 이벤트 핸들러(bindEvents 참고). onCtaClick()을 감싸
 // '입력 미완료 → 카드 포커스'와 '설정 완료 → 화면 전환(+9915 바텀시트 확인)'을
 // 한 경로로 합친다.
+// 마스터 Figma에는 카드 안에 확정 버튼이 없다: 휠이 열린 화면에서도 버튼은 이 CTA
+// 하나뿐이고, 그 CTA가 열린 휠의 값을 확정한다. 그래서 라벨 상태(ctaLabel)와 무관하게
+// 열린 카드가 휠 카드(pickup/charter)면 그 확정 경로를 최우선으로 태운다. 확정되면
+// confirmPickupWheel()/confirmCharterWheel()이 S.openCard를 null로 접으므로, 이후 같은
+// CTA를 다시 누르면 자연히 ctaLabel 기반 분기(카드 포커스 이동 또는 설정 완료)로 넘어간다.
+// 9915 바텀시트는 '설정 완료' 상태에서만 걸려야 하므로 휠 확정 경로는 그 아래 검사를
+// 절대 거치지 않고 바로 return한다.
 function onCtaPress(){
+  if (S.openCard === 'pickup'){ confirmPickupWheelFromCard(); return; }
+  if (S.openCard === 'charter'){ confirmCharterWheelFromCard(); return; }
   if (ctaLabel(S) !== '설정 완료'){ onCtaClick(); return; }
   const n = judgeNudge(S);
   const blocks = n && n.dir === 'to-charter' && !S.sheetDismissed;
@@ -885,8 +881,8 @@ function setPickupAt(d){
 // 휠이 스스로 render()를 부르지 않는다. 반드시 기존 setCharterHours()/setPickupAt() 경로를
 // 거치게 해, 넛지 재판정(renderNudge())이 그 경로 하나로만 일어나게 한다.
 function confirmPickupWheel(d){
-  S.openCard = null;   // 확정되면 카드를 접는다(아코디언 규칙). 안 그러면 카드 안 버튼과
-  setPickupAt(d);       // 하단 전역 CTA가 둘 다 "설정 완료"로 동시에 떠 있게 된다.
+  S.openCard = null;   // 확정되면 카드를 접는다(아코디언 규칙).
+  setPickupAt(d);
 }
 function confirmCharterWheel(h){
   S.openCard = null;   // 위와 동일한 이유
@@ -1042,8 +1038,7 @@ function pickupWheelHtml(){
       ${wheelColumnHtml('wheel-pickup-date', dates.map(fmtDate), dateIdx, 'is-wide')}
       ${wheelColumnHtml('wheel-pickup-hour', hours.map(hourWheelLabel), hourIdx)}
       ${wheelColumnHtml('wheel-pickup-minute', minutes.map(m => m===0 ? '정각' : m+'분'), minuteIdx)}
-    </div>
-    <button type="button" class="rt-wheel-confirm" id="pickup-wheel-confirm">설정 완료</button>`;
+    </div>`;
 }
 
 const CHARTER_MAX_HOURS = 12;
@@ -1058,8 +1053,7 @@ function charterWheelHtml(){
   return `<div class="rt-card-head"><div class="rt-card-title">대절 시간</div></div>
     <div class="rt-wheel">
       ${wheelColumnHtml('wheel-charter-hour', hours.map(h=>h+'시간'), idx)}
-    </div>
-    <button type="button" class="rt-wheel-confirm" id="charter-wheel-confirm">설정 완료</button>`;
+    </div>`;
 }
 
 // 선택된 인덱스는 colEl.dataset.index 라는 명시적 상태로만 산다. 확정 버튼은 이 값을
@@ -1125,32 +1119,34 @@ function bindPickupWheelEvents(){
     const el = document.getElementById(id);
     if (el) bindWheelColumn(el);
   });
-  const btn = document.getElementById('pickup-wheel-confirm');
-  if (btn) btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const dateEl = document.getElementById('wheel-pickup-date');
-    const hourEl = document.getElementById('wheel-pickup-hour');
-    const minEl  = document.getElementById('wheel-pickup-minute');
-    const dates = pickupWheelDates();
-    const hours = pickupWheelHours();
-    const minutes = pickupWheelMinutes();
-    const d = new Date(dates[Number(dateEl.dataset.index)]);
-    d.setHours(hours[Number(hourEl.dataset.index)]);
-    d.setMinutes(minutes[Number(minEl.dataset.index)]);
-    d.setSeconds(0,0);
-    confirmPickupWheel(d);
-  });
 }
 function bindCharterWheelEvents(){
   const el = document.getElementById('wheel-charter-hour');
   if (el) bindWheelColumn(el);
-  const btn = document.getElementById('charter-wheel-confirm');
-  if (btn) btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const hourEl = document.getElementById('wheel-charter-hour');
-    const hours = charterWheelHours();
-    confirmCharterWheel(hours[Number(hourEl.dataset.index)]);
-  });
+}
+
+// 마스터 Figma에는 카드 안 확정 버튼이 없다. 휠이 열린 채로 눌리는 버튼은 하단 전역
+// CTA 하나뿐이라, 그 값 읽기·확정 호출을 카드 안 버튼 핸들러에서 여기로 옮겼다.
+// confirmPickupWheel()/confirmCharterWheel() 자체는 그대로 두고 호출부만 onCtaPress()로 옮긴다.
+function confirmPickupWheelFromCard(){
+  const dateEl = document.getElementById('wheel-pickup-date');
+  const hourEl = document.getElementById('wheel-pickup-hour');
+  const minEl  = document.getElementById('wheel-pickup-minute');
+  if (!dateEl || !hourEl || !minEl) return;   // 카드가 열려 있지 않으면 아무것도 안 함
+  const dates = pickupWheelDates();
+  const hours = pickupWheelHours();
+  const minutes = pickupWheelMinutes();
+  const d = new Date(dates[Number(dateEl.dataset.index)]);
+  d.setHours(hours[Number(hourEl.dataset.index)]);
+  d.setMinutes(minutes[Number(minEl.dataset.index)]);
+  d.setSeconds(0,0);
+  confirmPickupWheel(d);
+}
+function confirmCharterWheelFromCard(){
+  const hourEl = document.getElementById('wheel-charter-hour');
+  if (!hourEl) return;
+  const hours = charterWheelHours();
+  confirmCharterWheel(hours[Number(hourEl.dataset.index)]);
 }
 
 function pickupCardHtml(s, isOpen){
@@ -1820,6 +1816,8 @@ function runLifecycleTests(){
   });
   // 헤드리스에서는 실제 스와이프 타이밍 경쟁을 재현할 수 없으므로, 대신 선택 상태가
   // 스크롤 위치와 독립인지(=확정값이 scrollTop 변화에 오염되지 않는지)를 검사한다.
+  // 수정 9: 카드 안 확정 버튼(#pickup-wheel-confirm)이 마스터 Figma에 없어 제거됐다.
+  // 확정은 이제 하단 전역 CTA(#cta)가 맡으므로 그걸 누르는 걸로 바꾼다.
   test('휠 확정값은 스크롤 위치에 오염되지 않는다', ()=>{
     S = fresh('normal','normal'); S.openCard = 'pickup'; render();
     const hourEl = document.getElementById('wheel-pickup-hour');
@@ -1831,7 +1829,7 @@ function runLifecycleTests(){
     // 방금 고른 값(5)과 무관한 중간 위치로 강제로 바꾸고 scroll 이벤트를 디스패치한다.
     hourEl.scrollTop = 2 * WHEEL_ROW_H;
     hourEl.dispatchEvent(new Event('scroll'));
-    document.getElementById('pickup-wheel-confirm').click();
+    document.getElementById('cta').click();
     eq(S.pickupAt.getHours(), pickupWheelHours()[pickIdx], '휠 확정값');
   });
   // 수정 3: 차종 선택 화면에서 뒤로가기로 진입할 길이 없었다(히트 영역이 vehicle-hit 하나뿐).
@@ -1844,6 +1842,32 @@ function runLifecycleTests(){
     eq(S.screen, 'input');
     eq(S.openCard, 'route');
     eq(document.getElementById('card-route').classList.contains('is-open'), true);
+    eq(ctaLabel(S), '설정 완료');
+  });
+  // 수정 9: 예약 3.0 보드 '시간&경로 입력 화면' 15개 화면 전수 조사 결과, '설정 완료'는
+  // 항상 하단 CTA 하나뿐이고 time card 안에는 chip_button만 있을 뿐 Solid 버튼이 없다.
+  // 카드 안 확정 버튼을 없애고 하단 CTA가 열린 휠을 확정하도록 바꾼 게 이 세 테스트다.
+  test('휠 카드 안에는 확정 버튼이 없다', ()=>{
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.openCard = 'charter'; render();
+    for (const id of ['card-pickup','card-charter']) {
+      const card = document.getElementById(id);
+      if (!card) continue;
+      const solid = [...card.querySelectorAll('button')].filter(b => (b.textContent||'').indexOf('설정 완료') >= 0);
+      if (solid.length) throw new Error(id + ' 안에 설정 완료 버튼이 ' + solid.length + '개 있다');
+    }
+  });
+  test('화면에 설정 완료 버튼은 하나뿐이다', ()=>{
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; S.openCard = 'charter'; render();
+    const all = [...document.querySelectorAll('#screen-input button')]
+      .filter(b => (b.textContent||'').trim() === '설정 완료');
+    eq(all.length, 1);
+  });
+  test('열린 휠은 하단 CTA 로 확정된다', ()=>{
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = null; S.openCard = 'charter'; render();
+    eq(ctaLabel(S), '대절 시간 입력하기');
+    document.getElementById('cta').click();
+    if (S.charterHours == null) throw new Error('CTA 로 대절 시간이 확정되지 않았다');
+    eq(S.openCard, null);
     eq(ctaLabel(S), '설정 완료');
   });
 }
