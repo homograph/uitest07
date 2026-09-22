@@ -335,28 +335,39 @@ function calc(id){
     else { fare=24150; pct=null; }
   }
   const cpAmt=CP(S.coupon).amount, couponOn=cpAmt>0;
+  const crOn=S.credit==='1';
+  const crAmt=crOn?Math.min(CREDIT_TADA, fare-cpAmt):0;   // 잔여 요금을 넘지 않는다
   const discounted=fare<base;
   const rate=discounted?(base-fare)/base*100:0;
   // Airbnb 규칙: 10% 이상일 때만 취소선. 미만이면 할인액만 말한다.
   const strikeOK = S.strike==='always' || rate>=10;
-  return {base, fare, pay:fare-cpAmt, pct, discounted, rate, strikeOK, couponOn, cpAmt};
+  return {base, fare, pay:fare-cpAmt-crAmt, pct, discounted, rate, strikeOK, couponOn, cpAmt, crOn, crAmt};
 }
 const paxH=n=>n?`<span class="pax">${IC_PAX}<i>${n}</i></span>`:'';
 
 // 서지 할인 + 쿠폰이 겹쳤을 때 칩이 뭐라고 말하나 — 세 방식
 // 칩이 말하는 금액은 칩이 이름 붙인 할인과 일치해야 한다
+// 활성 할인 — Figma 내역 순서(서지 → 할인 쿠폰 → 크레딧 사용)
+function parts(c){
+  const p=[];
+  if(c.discounted) p.push({k:'surge',  name:`${REASON} ${c.pct?c.pct+'%':'할인'}`, cut:c.base-c.fare});
+  if(c.couponOn)   p.push({k:'coupon', name:'쿠폰',   cut:c.cpAmt});
+  if(c.crOn)       p.push({k:'credit', name:'크레딧', cut:c.crAmt});
+  return p;
+}
+function one(c,p){ return p.k==='surge' ? `${REASON}이라 ${c.pct?c.pct+'% 할인':'할인 적용 중'}` : `${p.name} 적용 중`; }
 function chipCut(c){
-  if(!c.couponOn) return c.base-c.fare;
-  if(!c.discounted) return c.cpAmt;
-  return S.stack==='surge' ? c.base-c.fare : c.base-c.pay;   // 서지만 말하면 서지분만
+  const p=parts(c);
+  if(S.stack==='surge' && c.discounted && p.length>1) return c.base-c.fare;   // 서지만 말하면 서지분만
+  return p.reduce((a,b)=>a+b.cut,0);
 }
 function chipLabel(c){
-  const surge = c.discounted ? `${REASON}이라 ${c.pct?c.pct+'% 할인':'할인 적용 중'}` : '';
-  if(!c.couponOn) return surge;
-  if(!c.discounted) return '쿠폰 적용 중';
-  if(S.stack==='sum')  return '할인 2개 적용 중';
-  if(S.stack==='both') return `${REASON} ${c.pct?c.pct+'%':'할인'} + 쿠폰`;
-  return surge;                       // 'surge' — 쿠폰은 아래 결제 행이 말한다
+  const p=parts(c);
+  if(!p.length) return '';
+  if(p.length===1) return one(c,p[0]);
+  if(S.stack==='sum')  return `할인 ${p.length}개 적용 중`;
+  if(S.stack==='both') return p.map(x=>x.name).join(' + ');
+  return c.discounted ? one(c,p[0]) : one(c,p[0]);
 }
 
 // 고정 대상 = 할인 라인업 중 "가장 싼 하나". 여럿이 대상이어도 3칸 중 1칸만 쓴다.
@@ -379,34 +390,36 @@ function pick(id){
 }
 
 function priceRow(c, sel){
-  const cls = c.discounted||c.couponOn ? ' dc' : '';
-  // 취소선 기준: '서지만' 말할 땐 쿠폰 직전 금액, 총액을 말할 땐 정가
-  const was = c.couponOn ? ((S.stack==='surge' && c.discounted) ? c.fare : c.base) : c.base;
-  const useStrike = c.couponOn ? true : c.strikeOK;      // 쿠폰은 유저가 고른 것이라 늘 취소선
-  const show = ((c.discounted&&useStrike)||c.couponOn) ? `<span class="was">${won(was)}</span>`
+  const picked = c.couponOn||c.crOn;                    // 유저가 직접 고른 할인
+  const cls = c.discounted||picked ? ' dc' : '';
+  // 취소선 기준: '서지만' 말할 땐 서지 직후 금액, 총액을 말할 땐 정가
+  const was = picked ? ((S.stack==='surge' && c.discounted) ? c.fare : c.base) : c.base;
+  const useStrike = picked ? true : c.strikeOK;
+  const show = ((c.discounted&&useStrike)||picked) ? `<span class="was">${won(was)}</span>`
              : (c.discounted ? `<span class="was" style="text-decoration:none;color:#19254D;font-weight:700">−${won(c.base-c.fare)}</span>` : '');
   return sel
-    ? `<span class="pstack"><span class="now${cls}">${won(c.pay)}</span>${show}</span>${(c.discounted||c.couponOn)&&S.expand!=='1'&&S.open!=='1'?'':`<span class="${S.expand==='1'?'cup':'cdn'}"></span>`}`
+    ? `<span class="pstack"><span class="now${cls}">${won(c.pay)}</span>${show}</span>${(c.discounted||c.couponOn||c.crOn)&&S.expand!=='1'&&S.open!=='1'?'':`<span class="${S.expand==='1'?'cup':'cdn'}"></span>`}`
     : `<span class="now${cls}">${won(c.pay)}</span>${show}`;
 }
 
 function expandBody(id){
   const r=BY[id], c=calc(id);
-  if(!c.discounted && !c.couponOn){
+  if(!c.discounted && !c.couponOn && !c.crOn){
     return `<div class="exp"><dl><dt>기본 요금</dt><dd>${won(c.base)}</dd></dl>
       <p class="note">이용료·탄력요금이 반영된 금액이에요. 실제 이동거리에 따라 달라질 수 있어요.</p></div>`;
   }
   let rows=`<dt>정가</dt><dd>${won(c.base)}</dd>`;
   if(c.discounted) rows+=`<dt class="dc">${esc(REASON)} 할인${c.pct?' '+c.pct+'%':''}</dt><dd class="dc">−${won(c.base-c.fare)}</dd>`;
-  if(c.couponOn) rows+=`<dt>쿠폰</dt><dd>−${won(c.cpAmt)}</dd>`;
+  if(c.couponOn) rows+=`<dt>할인 쿠폰</dt><dd>−${won(c.cpAmt)}</dd>`;
+  if(c.crOn) rows+=`<dt>크레딧 사용</dt><dd>−${won(c.crAmt)}</dd>`;
   const note=c.discounted
     ? (c.strikeOK?'신고된 탄력요금 범위 안에서 조정된 금액이에요.':`할인율이 ${c.rate.toFixed(1)}%라 정가 취소선 대신 할인액으로 알려드려요.`)
     : '이용료·탄력요금이 반영된 금액이에요.';
-  const creditRow = S.credit==='1' ? `<div class="tot" style="border-top:0;margin-top:2px;padding-top:0;font-weight:400;font-size:12px;line-height:18px;color:#4B5064"><span>크레딧 ${won(CREDIT_TOTAL)} 보유</span><span>하차 시 적용</span></div>` : '';
+  const creditRow = '';
   return `<div class="exp"><dl>${rows}</dl>
     <div class="tot"><span>예상 요금</span><span>${won(c.pay)}</span></div>
     ${creditRow}
-    <p class="note">${note}${S.credit==='1'?' 크레딧은 하차 시 남은 금액이 적용돼 예상 요금에는 빠져 있지 않아요.':''}</p></div>`;
+    <p class="note">${note}${c.crOn?' 하차 시점에 남아있는 크레딧에 따라 최종 결제 금액이 달라질 수 있어요.':''}</p></div>`;
 }
 
 function rowHTML(id){
@@ -417,7 +430,7 @@ function rowHTML(id){
       <span class="stx"><span class="n"><span class="t">${esc(r.name)}</span>${r.info?IC_INFO:''}</span>
       <span class="d"><span class="t">${esc(r.desc)}</span>${paxH(r.pax)}${c.discounted&&S.expand!=='1'?'<span class="tag">'+(c.pct?c.pct+'%':'할인')+'</span>':''}</span></span>
       <span class="spr">${priceRow(c,true)}</span></button>
-    ${(c.discounted||c.couponOn)&&S.expand!=='1'&&S.open!=='1'?`<button class="reasonchip" data-exp="1"><span>${chipLabel(c)}</span><span class="r"><b>${won(chipCut(c))} 낮아졌어요</b><span class="caret"></span></span></button>`:''}
+    ${(c.discounted||c.couponOn||c.crOn)&&S.expand!=='1'&&S.open!=='1'?`<button class="reasonchip" data-exp="1"><span>${chipLabel(c)}</span><span class="r"><b>${won(chipCut(c))} 낮아졌어요</b><span class="caret"></span></span></button>`:''}
     ${S.expand==='1'?expandBody(id):''}</div>`;
   return `<button class="row" data-pick="${id}">
     <img src="${TH[id]}" alt="">
@@ -496,11 +509,12 @@ function render(){
 function preview(){
   const el=document.getElementById('prev'); if(!el) return;
   const r=BY[S.lineup], c=calc(S.lineup);
-  const useStrike = c.couponOn ? true : c.strikeOK;
-  const was = c.couponOn ? ((S.stack==='surge' && c.discounted) ? c.fare : c.base) : c.base;
-  const wasH = ((c.discounted&&useStrike)||c.couponOn) ? `<span class="was">${won(was)}</span>`
+  const picked = c.couponOn||c.crOn;
+  const useStrike = picked ? true : c.strikeOK;
+  const was = picked ? ((S.stack==='surge' && c.discounted) ? c.fare : c.base) : c.base;
+  const wasH = ((c.discounted&&useStrike)||picked) ? `<span class="was">${won(was)}</span>`
              : (c.discounted ? `<span class="was" style="text-decoration:none;color:var(--accent);font-weight:700">−${won(c.base-c.fare)}</span>` : '');
-  const chip = (c.discounted||c.couponOn) ? `<div class="chip2">${esc(chipLabel(c))} · ${won(chipCut(c))} 낮아졌어요</div>` : '';
+  const chip = (c.discounted||c.couponOn||c.crOn) ? `<div class="chip2">${esc(chipLabel(c))} · ${won(chipCut(c))} 낮아졌어요</div>` : '';
   el.innerHTML=`<div class="l1"><span class="nm">${esc(r.short)}</span><span class="pay">${won(c.pay)}</span>${wasH}</div>
     ${chip}
     <div class="win2">접힌 창 ${S.win.split(',').map(i=>esc(BY[i].short)).join(' · ')}${S.expand==='1'?' · 내역 펼침':''}</div>`;
@@ -509,8 +523,9 @@ function preview(){
 function trail(){
   const c=calc(S.lineup), parts=[`<span>정가 <b>${won(c.base)}</b></span>`];
   if(c.discounted) parts.push(`<span>→ 서지 할인 <b>${won(c.fare)}</b></span>`);
-  if(c.couponOn) parts.push(`<span>→ 쿠폰 −${won(COUPON)} <b>${won(c.pay)}</b></span>`);
-  if(!c.discounted&&!c.couponOn) parts.push('<span style="color:var(--ink3)">할인 없음</span>');
+  if(c.couponOn) parts.push(`<span>→ 쿠폰 −${won(c.cpAmt)} <b>${won(c.fare-c.cpAmt)}</b></span>`);
+  if(c.crOn) parts.push(`<span>→ 크레딧 −${won(c.crAmt)} <b>${won(c.pay)}</b></span>`);
+  if(!c.discounted&&!c.couponOn&&!c.crOn) parts.push('<span style="color:var(--ink3)">할인 없음</span>');
   document.getElementById('trail').innerHTML=`${esc(BY[S.lineup].short)} · `+parts.join(' ');
   document.getElementById('win').textContent='접힌 창: '+S.win.split(',').map(i=>BY[i].short).join(' · ');
 }
