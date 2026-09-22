@@ -116,6 +116,19 @@
     background:#FFFFFF;
     color:#383D4F;
     font-weight:500;   /* Medium, Figma 실측 */
+    position:relative;   /* v10(항목 8): 아래 ::after(터치 영역 44)의 기준 */
+  }
+  /* v10(항목 8): 시각 높이 38(Figma 실측, 바꾸지 않는다)은 iOS HIG 44 / Material 48에 못
+     미친다. 보이는 알약은 그대로 두고, 투명 ::after로 세로로만 44까지 넓힌다(가로는 칩
+     자신의 폭 그대로라 gap:8인 옆 칩과 겹치지 않는다). position:absolute라 flex 레이아웃
+     (hug 폭)에는 영향이 없다. */
+  .rt-seg-tab::after{
+    content:'';
+    position:absolute;
+    left:0;right:0;
+    top:50%;
+    height:44px;
+    transform:translateY(-50%);
   }
   .rt-seg-tab[aria-selected="true"]{
     border-color:transparent;
@@ -183,6 +196,19 @@
   /* 픽업/대절 시간 헤더 제목은 경로 헤더와 색이 다르다(Figma 실측: #262A38). 새 클래스. */
   .rt-card-title--ink2{color:#262A38;}
   .rt-card-head-value{font-size:14px;font-weight:400;line-height:20px;color:#262A38;}
+  /* v10(항목 3): 대절 시간 카드 전용. Figma에 없는 요소라 기존 보조 텍스트 톤(예:
+     #screen-input .rt-route-tag과 같은 13px/줄높이 20/#60667A)을 그대로 쓴다. 좌우 padding은
+     카드 머리(.rt-card-head, 20 20 16 20)와 맞추고, 아래 여백은 작게 둬(.rt-wheel 자신의
+     padding-top:40이 이미 큰 간격을 주므로 여기서 또 크게 벌리면 두 배로 벌어진다) 겹치지
+     않게 조정했다. 카드 전체 높이가 늘어나는 건 의도된 트레이드오프다(설명 참고).
+     픽업 시간 카드에는 붙지 않는다(charterWheelHtml에서만 렌더). */
+  .rt-card-hint{
+    display:flex;flex-direction:column;gap:2px;
+    padding:0 20px 8px 20px;
+    box-sizing:border-box;
+    font-size:13px;font-weight:400;line-height:20px;color:#60667A;
+    word-break:keep-all;
+  }
   .rt-via-btn{
     appearance:none;cursor:pointer;background:transparent;
     border:none;border-radius:6px;
@@ -239,8 +265,21 @@
     flex:1 1 auto;
     font-size:15px;font-weight:500;line-height:22px;color:#262A38;
     text-align:right;
-    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
     font-variant-numeric: tabular-nums;
+  }
+  /* v10(항목 7): 접힌 카드 값의 공통 오버플로 안전장치. 값 영역이 약 232px, 15px 한글로 15자
+     남짓이다. 실제 주소(예: "인천광역시 중구 공항로 272 제2여객터미널")는 반드시 넘친다.
+     우측 정렬 + 그냥 오버플로면 목적지가 잘린다(중요한 쪽이 사라진다). 그래서 경로 카드는
+     넘칠 때 JS(fitRouteSummaryValue)가 도착지만 남기고, 그래도 넘치면 끝(건물명 등 식별
+     정보가 대개 여기 있다)이 아니라 앞을 잘라 "…"을 붙인다. 여기 있는 CSS
+     text-overflow:ellipsis는 그 JS가 못 미더울 때(예: 폰트 로드 전 측정)를 위한 안전장치일
+     뿐이라 끝을 자른다(정상 경로에서는 JS가 이미 안 넘치게 만들어 두므로 걸리지 않는다).
+     픽업/대절 카드
+     (.rt-line-value)는 값이 짧아 실제로는 안 걸리지만 같은 안전장치를 걸어 둔다.
+     min-width:0이 없으면 flex item이 텍스트의 min-content 폭(줄바꿈 없이 전체 폭)만큼
+     늘어나 ellipsis가 무력화된다. */
+  .rt-card-value{
+    overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0;
   }
   .rt-line-card{
     display:flex;align-items:center;
@@ -265,15 +304,15 @@
      비우고(가짜 아이콘을 그리지 않고) 텍스트만 둔다. .rt-nudge-row는 Figma의 "가로 묶음"
      (아이콘 자리+텍스트 열, gap 16) 구조를 남겨 둬 나중에 아이콘 에셋이 생기면 그 자리에
      끼워 넣을 수 있게 한다. */
-  /* ---- AI 어시스트 라인 (Figma §10, 13275:20012). 카드 컨테이너 맨 끝, 넛지 바로 위(간격 0)에
-     붙는다. Figma가 Frame 2085668387로 #assist와 #nudge를 묶고 itemSpacing이 없어 그 구조를
-     #nudge-wrap으로 그대로 옮긴다. 애니메이션(별 반짝임, 텍스트 타이핑)은 Figma에 없어
-     여기서(v8) 새로 정의한다. */
-  #nudge-wrap{
-    display:flex;
-    flex-direction:column;
-    gap:0;
-  }
+  /* ---- AI 어시스트 라인 (Figma §10, 13275:20012). Figma는 Frame 2085668387로 #assist와
+     #nudge를 묶어 카드 컨테이너 맨 끝, 넛지 바로 위(간격 0)에 둔다(#nudge-wrap이 한때 그
+     구조를 그대로 옮겼었다). v10(디자인 비평 항목 1): 픽업 카드가 펼쳐지면 그 자리(y=540~)가
+     실기기에서 화면 밖이라 "AI가 보고 있다"는 연출이 스크롤 전엔 안 보였다. 그래서 Figma의
+     붙어있음 자체(래퍼)는 포기하고 #assist를 카드 컨테이너 맨 위로 올렸다(마크업 참고).
+     시각적 연결은 대신 상호작용으로 만든다: 판정 결과가 있을 때 #assist를 누르면
+     flashNudge()가 스크롤해 데려가 강조한다(renderAssist의 role/tabindex 토글, bindEvents의
+     onAssistPress 참고). 애니메이션(별 반짝임, 텍스트 타이핑)은 Figma에 없어 여기서(v8) 새로
+     정의한다. */
   #assist{
     padding:10px 4px;
     display:flex;
@@ -283,6 +322,10 @@
     min-height:40px;   /* 10(패딩)*2 + 20(줄높이) = 타이핑 중에도 줄 높이가 흔들리지 않게 고정 */
   }
   #assist[hidden]{display:none;}   /* display:flex가 hidden의 기본 display:none을 덮어쓰므로 필수 */
+  /* v10(항목 1): 판정 결과가 있을 때만(renderAssist가 role="button"을 붙일 때만) 클릭 가능해
+     보이게 한다. role이 없는 checking/결과없음 상태에서는 커서가 그대로(기본)다. */
+  #assist[role="button"]{cursor:pointer;}
+  #assist[role="button"]:focus-visible{outline:2px solid var(--navy);outline-offset:2px;border-radius:4px;}
   #assist-star{
     width:16px;height:16px;flex:0 0 auto;display:block;
   }
@@ -292,7 +335,10 @@
     flex:1 1 auto;
     word-break:keep-all;overflow-wrap:break-word;
   }
-  #assist.is-checking #assist-star{color:#868B9C;}
+  /* v10(항목 6): #868B9C는 배경 #E6E9EF 위에서 2.79:1로 비텍스트 대비 기준(3:1) 미달이었다.
+     #6E7385로 올려 3.88:1을 확보한다. is-done의 #32A2FA(아이콘+옆 글자가 정보를 전달)는
+     그대로 둔다. */
+  #assist.is-checking #assist-star{color:#6E7385;}
   #assist.is-checking #assist-text{color:#60667A;}
   #assist.is-done #assist-star{color:#32A2FA;}
   #assist.is-done #assist-text{color:#31487D;}
@@ -762,24 +808,28 @@
 
       <div id="type-lead"></div>
       <div class="rt-scroll">
+        <!-- v10(디자인 비평 항목 1): 어시스트를 카드 컨테이너 맨 위(경로 카드보다 위)로 옮겼다.
+             #nudge-wrap이 넛지와 묶어 두던 시절엔 픽업 카드가 펼쳐지면 y=540에서 시작해 실기기
+             (안전영역 제외 700 전후)에서 화면 밖이었다. "AI가 내 예약을 보고 있다"는 연출은
+             스크롤 없이 보여야 의미가 있어, 래퍼를 없애고 맨 앞으로 옮겼다. 판정 결과가 있을 때는
+             누를 수 있게(role/tabindex, renderAssist 참고) 만들어 넛지로 가는 점프로 쓴다
+             (flashNudge, onAssistPress 참고). -->
+        <div id="assist" hidden>
+          <span id="assist-star"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M24 0L31.1276 16.8724L48 24L31.1276 31.1276L24 48L16.8724 31.1276L0 24L16.8724 16.8724L24 0Z" fill="currentColor"/></svg></span>
+          <span id="assist-text"></span>
+        </div>
         <div class="rt-card" id="card-route"></div>
         <div class="rt-card" id="card-pickup"></div>
         <div class="rt-card" id="card-charter" hidden></div>
-        <div id="nudge-wrap">
-          <div id="assist" hidden>
-            <span id="assist-star"><svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M24 0L31.1276 16.8724L48 24L31.1276 31.1276L24 48L16.8724 31.1276L0 24L16.8724 16.8724L24 0Z" fill="currentColor"/></svg></span>
-            <span id="assist-text"></span>
-          </div>
-          <div id="nudge" hidden>
-            <div class="rt-nudge-row">
-              <img id="nudge-illust" class="rt-nudge-illust" alt="">
-              <div id="nudge-text">
-                <span id="nudge-title"></span>
-                <span id="nudge-body"></span>
-              </div>
+        <div id="nudge" hidden>
+          <div class="rt-nudge-row">
+            <img id="nudge-illust" class="rt-nudge-illust" alt="">
+            <div id="nudge-text">
+              <span id="nudge-title"></span>
+              <span id="nudge-body"></span>
             </div>
-            <button type="button" id="nudge-cta"></button>
           </div>
+          <button type="button" id="nudge-cta"></button>
         </div>
       </div>
 
@@ -944,6 +994,18 @@ function judgeNudge(s){
   return null;
 }
 
+// v10(항목 4): judgeNudge()가 실제로 읽는 값만의 서명. 어시스트 상태기계(renderAssist)가
+// "checking"으로 돌아갈지 말지 이 서명으로만 판단한다(assistSignature를 대체). pickupAt은
+// 일부러 뺐다. judgeNudge()가 안 보는 값이라, 픽업 시간만 고쳐도 매번 별이 다시 돌고 똑같은
+// 문구가 나오면 "그냥 연출이구나" 하고 신뢰를 잃는다. 아래 필드 목록은 judgeNudge() 본문을
+// 그대로 따라간 것이다. judgeNudge()가 바뀌면(새 조건이나 새 필드 추가 등) 이 서명도 반드시
+// 같이 고쳐야 한다. 전역에 둔다: 셀프테스트가 직접 호출해 검사한다.
+function judgeSignature(s){
+  return [s.type, s.route.to, s.route.vias.length, s.charterHours,
+          s.flags.golf, s.flags.noReturnCall, s.flags.longDistance, s.flags.airport,
+          s.etaMin, s.convertedTo].join('|');
+}
+
 const COPY = {
   // title/body/cta는 바텀시트(openSheet)와 하단 고정 넛지(#nudge, 2줄: title+body) 모두가 쓴다.
   'short-trip':    { title:s=>`${s.etaMin}분이면 도착하는 경로예요`,
@@ -1011,17 +1073,25 @@ function onCtaPress(){
   if (S.openCard === 'pickup'){ confirmPickupWheelFromCard(); return; }
   if (S.openCard === 'charter'){ confirmCharterWheelFromCard(); return; }
   if (ctaLabel(S) !== '설정 완료'){ onCtaClick(); return; }
-  if (judgeNudge(S) && !S.nudgeAcked){ S.nudgeAcked = true; flashNudge(); return; }
+  // v10(항목 2): 9915(to-charter: 골프/복귀불가/장거리)는 돌아갈 차가 없는 "위험"이고,
+  // 9913(to-normal: 짧은 경로)은 "요금" 문제다. 심각도가 다른데 예전엔 둘 다 첫 클릭을
+  // 막았다. 요금 문제를 위험과 같은 강도로 다루면 9915의 차단까지 가벼워 보인다. 게다가
+  // 3시간을 일부러 빌린 사용자를 매번 막는 건 과하다. 그래서 to-charter 방향만 막는다.
+  // to-normal(9913)은 배너만 뜨고 CTA는 바로 통과한다.
+  const n = judgeNudge(S);
+  if (n && n.dir === 'to-charter' && !S.nudgeAcked){ S.nudgeAcked = true; flashNudge(); return; }
   S.screen = 'vehicle';
   render();
 }
 
 // v6: 넛지가 스크롤 안으로 내려가면서(v5) 유저가 스크롤을 안 하면 안 보일 수 있게 됐다.
-// 조건이 참인데('judgeNudge'가 참) 유저가 그냥 '설정 완료'를 누르면, 화면을 넘기는 대신
-// 배너로 스크롤해 데려와 한 번 강조한다. 방향(9913/9915) 구분 없이 둘 다 막는다. 딱 한
+// 조건이 참인데('judgeNudge'가 참, 그리고 v10부터는 방향이 to-charter일 때만) 유저가 그냥
+// '설정 완료'를 누르면, 화면을 넘기는 대신 배너로 스크롤해 데려와 한 번 강조한다. 딱 한
 // 번만 막는다: S.nudgeAcked가 그 표식이다(이 예약 세션 동안 다시 막지 않는다는 뜻은
 // 예전 시트 확인 플래그와 동일해 이름만 바꿔 그대로 재사용한다). judgeNudge() 자체는
 // nudgeAcked를 보지 않으므로 강조 뒤에도 배너(인라인 카드)는 조건이 참인 한 계속 떠 있다.
+// v10부터는 #assist를 눌러도(판정 결과가 있을 때만, onAssistPress 참고) 같은 강조를 탄다.
+// 어시스트가 카드 위로 올라가며 끊긴 넛지와의 시각적 연결을 상호작용으로 대신한다.
 function flashNudge(){
   const el = document.getElementById('nudge');
   if (!el || el.hidden) return;
@@ -1196,9 +1266,11 @@ function fmtPickup(d){
 function routeCardHtml(s, isOpen){
   if (!isOpen){
     // Figma 실측(§6 folded): 아이콘 없이 라벨+요약값 두 요소뿐이다(높이 20+22+20=62).
+    // rt-card-value(항목 7): 실제 렌더 후 fitRouteSummaryValue()가 폭을 재서 넘치면 도착지만
+    // 남긴다. 여기서는 우선 "출발, 도착" 전체를 채워 둔다(측정 전 기본값).
     return `<div class="rt-route-summary">
       <span class="rt-route-summary-label">경로</span>
-      <span class="rt-route-summary-text">${escapeHtml(routeSummaryText(s))}</span>
+      <span class="rt-route-summary-text rt-card-value">${escapeHtml(routeSummaryText(s))}</span>
     </div>`;
   }
   return `<div class="rt-card-head">
@@ -1297,16 +1369,27 @@ const CHARTER_MAX_HOURS = 12;
 function charterWheelHours(){
   const arr = []; for (let h=MIN_CHARTER_HOURS; h<=CHARTER_MAX_HOURS; h++) arr.push(h); return arr;
 }
+// v10(항목 3): 대절 시간을 고르기 전에 판단 근거를 준다. 오선택을 사후에 교정하는 넛지(9913)는
+// 이미 있지만, 정작 "몇 시간을 빌려야 하나"에는 아무 힌트가 없어 예방보다 교정에 기댔다.
+// 사용자가 3시간을 고른 뒤에야 "3시간 안 빌려도 된다"고 말하면 sunk cost가 걸린다. 판정
+// (judgeNudge)에는 영향이 없는, 순수한 표시용 문구라 여기 따로 둔다.
+function charterCardHintHtml(s){
+  const lines = [`이 경로는 편도 ${s.etaMin}분이에요`];
+  if (s.flags.golf) lines.push('골프장은 보통 5~6시간 빌려요');
+  return `<div class="rt-card-hint">${lines.map(t => `<div>${escapeHtml(t)}</div>`).join('')}</div>`;
+}
 function charterWheelHtml(){
   const hours = charterWheelHours();
   const draft = S.charterHours != null ? S.charterHours : S.charterHoursPreset;
   let idx = hours.indexOf(draft);
   if (idx < 0) idx = 0;
-  // 픽업 시간 카드와 같은 머리 구조(제목 + 현재 드래프트 값)로 맞춘다.
+  // 픽업 시간 카드와 같은 머리 구조(제목 + 현재 드래프트 값)로 맞춘다. 힌트(rt-card-hint)는
+  // 대절 시간 카드에만 붙는다(픽업 시간 카드는 pickupWheelHtml, 별도 함수라 여기 안 걸린다).
   return `<div class="rt-card-head rt-card-head--col">
       <div class="rt-card-title rt-card-title--ink2">대절 시간</div>
       <div class="rt-card-head-value">${hours[idx]}시간</div>
     </div>
+    ${charterCardHintHtml(S)}
     <div class="rt-wheel">
       <div class="rt-wheel-band"></div>
       ${wheelColumnHtml('wheel-charter-hour', hours.map(h=>h+'시간'), idx)}
@@ -1409,18 +1492,20 @@ function confirmCharterWheelFromCard(){
 function pickupCardHtml(s, isOpen){
   if (isOpen) return pickupWheelHtml();
   const hasValue = !!s.pickupAt;
+  // rt-card-value(항목 7): 값이 짧아 실제로는 안 걸리는 안전장치다.
   return `<div class="rt-line-card">
       <span class="rt-line-label">픽업 시간</span>
-      <span class="rt-line-value${hasValue ? '' : ' is-placeholder'}">${hasValue ? escapeHtml(fmtPickup(s.pickupAt)) : '언제 출발하세요?'}</span>
+      <span class="rt-line-value rt-card-value${hasValue ? '' : ' is-placeholder'}">${hasValue ? escapeHtml(fmtPickup(s.pickupAt)) : '언제 출발하세요?'}</span>
     </div>`;
 }
 
 function charterCardHtml(s, isOpen){
   if (isOpen) return charterWheelHtml();
   const hasValue = s.charterHours != null;
+  // rt-card-value(항목 7): 값이 짧아 실제로는 안 걸리는 안전장치다.
   return `<div class="rt-line-card">
       <span class="rt-line-label">대절 시간</span>
-      <span class="rt-line-value${hasValue ? '' : ' is-placeholder'}">${hasValue ? escapeHtml(s.charterHours + '시간') : '얼마나 이용하세요?'}</span>
+      <span class="rt-line-value rt-card-value${hasValue ? '' : ' is-placeholder'}">${hasValue ? escapeHtml(s.charterHours + '시간') : '얼마나 이용하세요?'}</span>
     </div>`;
 }
 
@@ -1437,6 +1522,32 @@ const TYPE_LEAD = {
   charter: '이동해서 기다리거나 왕복할 때',
 };
 
+// v10(항목 7): 접힌 경로 카드는 Figma의 한 줄 우측 정렬 레이아웃을 유지하되, 값이 실제로
+// 넘치면 도착지만 남긴다(우측 정렬 + 그냥 잘리면 도착지가 사라지는데, 정작 중요한 쪽이
+// 사라지는 셈이라 최악이다). scrollWidth/clientWidth는 실제 레이아웃이 잡힌 뒤에만 믿을 수
+// 있어 routeCardHtml(문자열 생성)이 아니라 여기서, DOM에 붙인 뒤 잰다.
+// 도착지만으로도 넘치면(실제 주소는 반드시 넘친다) 문자열 자체를 줄인다. CSS
+// text-overflow:ellipsis(.rt-card-value에 안전장치로 남아 있다)에 맡기지 않는 이유는 두
+// 가지다. (1) 그 규칙은 끝을 자르는데, 한국 주소는 건물명 같은 식별 정보가 대개 맨 끝에
+// 있어(예: "...공항로 272 제2여객터미널") 끝을 자르면 정작 중요한 조각이 사라진다. 그래서
+// 여기서는 앞을 잘라 "…"을 붙인다. (2) overflow:hidden 상태에서도 scrollWidth 자체는 줄지
+// 않는다(시각적으로 가려질 뿐 "잘린" 게 아니다). 그래서 실제로 문자열 길이를 줄여야
+// scrollWidth가 clientWidth 밑으로 내려간다.
+function fitRouteSummaryValue(el, s){
+  if (!el) return;
+  const full = routeSummaryText(s);
+  el.textContent = full;
+  if (el.scrollWidth <= el.clientWidth + 1) return;          // "출발, 도착"이 들어간다
+  const dest = s.route.to || '';
+  el.textContent = dest;
+  if (el.scrollWidth <= el.clientWidth + 1) return;          // 도착지만으로 들어간다
+  let cut = dest;
+  while (cut.length > 1 && el.scrollWidth > el.clientWidth + 1){
+    cut = cut.slice(1);           // 앞에서부터 잘라 뒤(건물명 등)를 살린다
+    el.textContent = '…' + cut;
+  }
+}
+
 function renderInput(){
   const openName = S.openCard || 'route';
 
@@ -1448,6 +1559,7 @@ function renderInput(){
   const isRouteOpen = openName === 'route';
   routeEl.classList.toggle('is-open', isRouteOpen);
   routeEl.innerHTML = routeCardHtml(S, isRouteOpen);
+  if (!isRouteOpen) fitRouteSummaryValue(routeEl.querySelector('.rt-card-value'), S);
 
   const pickupEl = document.getElementById('card-pickup');
   const isPickupOpen = openName === 'pickup';
@@ -1492,23 +1604,40 @@ function assistSkipAnim(){
   return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 }
 
-// 판정의 "전제"가 바뀌었는지 보려고 쓰는 서명. judgeNudge()가 실제로 보는 값(경로, 유형, 대절
-// 시간)뿐 아니라 픽업 시간도 포함한다. judgeNudge 자체는 픽업 시간을 안 보지만, Figma
-// 1단계(경로만 입력, 픽업 시간 미입력)에서도 "확인 중"이 이미 떠 있어야 하고, 픽업 시간이
-// 바뀌면 스펙이 재판정을 요구하므로(§B "상태 전이") 서명에 넣어 둔다.
-function assistSignature(s){
-  return JSON.stringify({
-    from: s.route.from, to: s.route.to, vias: s.route.vias,
-    pickupAt: s.pickupAt ? s.pickupAt.getTime() : null,
-    type: s.type, charterHours: s.charterHours,
-  });
-}
+// v10(항목 4): "판정 전제가 바뀌었는가"는 이제 judgeSignature()(JUDGE 섹션)로 본다. 예전
+// assistSignature()는 pickupAt도 포함해, 픽업 시간만 고쳐도 매번 "확인 중"이 다시 900ms
+// 돌고 똑같은 결론이 나왔다. 두세 번 겪으면 "그냥 연출이구나" 하고 신뢰를 잃는다.
+// judgeSignature()는 judgeNudge()가 실제로 읽는 값만 담아, 판정에 안 쓰는 입력으로는
+// 다시 돌지 않는다. assist는 route.to만 있으면(pickupAt 없이도) 바로 뜬다는 동작은
+// 그대로다. 그건 아래 renderAssist()의 `!S.route.to` 가드가 이미 담당하지, 서명이
+// 담당하는 몫이 아니다.
 
 let assistGen = 0;              // 세대 토큰: 이 값이 바뀌면 이전 타이머/타이핑은 전부 무효
-let assistSig = null;           // 마지막으로 처리한 assistSignature()
+let assistSig = null;           // 마지막으로 처리한 judgeSignature()
 let assistTimer = null;         // "확인 중" -> "완료" 900ms 타이머
 let assistTypeTimer = null;     // 타이핑 tick 타이머
 let assistRevealReady = true;   // true면 넛지가 지금 바로 등장 애니메이션을 타도 된다(타이핑 완료/스킵)
+
+// v10(항목 1): 판정 결과가 있고("판정 완료" 상태) 그 결과를 보여주는 동안에만 어시스트를
+// 누를 수 있게 한다. 체크 중이거나 결과가 없으면(라인이 숨음) role/tabindex를 지운다.
+// 클릭 가능해 "보이지" 않아야 스크린리더도 헷갈리지 않는다.
+function setAssistClickable(el, clickable){
+  if (clickable){
+    el.setAttribute('role', 'button');
+    el.setAttribute('tabindex', '0');
+  } else {
+    el.removeAttribute('role');
+    el.removeAttribute('tabindex');
+  }
+}
+// 어시스트를 눌렀을 때: 넛지로 스크롤해 강조한다(flashNudge, onCtaPress와 같은 강조).
+// role="button"이 없으면(=클릭 불가 상태) 아무 것도 하지 않는다(hidden 요소가 다른
+// 이벤트로 클릭될 일은 없지만, 방어적으로 상태를 한 번 더 확인한다).
+function onAssistPress(){
+  const el = document.getElementById('assist');
+  if (el.getAttribute('role') !== 'button') return;
+  flashNudge();
+}
 
 function clearAssistTypeTimer(){
   if (assistTypeTimer){ clearTimeout(assistTypeTimer); assistTypeTimer = null; }
@@ -1556,7 +1685,19 @@ function assistApplyChecking(el){
   el.classList.remove('is-done');
   el.classList.add('is-checking');
   document.getElementById('assist-text').textContent = '예약 내용 확인 중';
+  setAssistClickable(el, false);   // 항목 1: 체크 중에는 누를 수 없다
 }
+
+// v10(항목 5): 어시스트 문구는 결론(예: "시간대절이 필요해보여요")이 아니라 발견을 말한다.
+// 결론은 넛지 제목이 이미 말하므로, 어시스트가 결론을 먼저 던지면 읽는 사람이 "왜?"를
+// 찾아 아래로 내려가야 한다. 발견 → 문제(넛지 제목) → 해결(넛지 본문) → 행동(넛지 버튼)
+// 순서로 만들려고 dir이 아니라 reason으로 고른다.
+const ASSIST_DISCOVERY = {
+  'golf':          '목적지가 골프장이에요',
+  'no-return':     '복귀 차량이 드문 지역이에요',
+  'long-distance': '장거리 경로예요',
+  'short-trip':    '대절 시간이 경로보다 길어요',
+};
 
 function finishAssistCycle(el, myGen, skipAnim){
   assistTimer = null;
@@ -1565,12 +1706,14 @@ function finishAssistCycle(el, myGen, skipAnim){
     // 판정 결과가 없으면(§B) 라인을 통째로 숨긴다.
     el.hidden = true;
     el.classList.remove('is-checking', 'is-done');
+    setAssistClickable(el, false);   // 항목 1: 결과가 없으면 누를 수 없다
     assistRevealReady = true;
     return;
   }
   el.classList.remove('is-checking');
   el.classList.add('is-done');
-  const text = n.dir === 'to-charter' ? '시간대절이 필요해보여요' : '일반예약으로도 충분해보여요';
+  setAssistClickable(el, true);   // 항목 1: 판정이 끝나고 결과가 있으면 넛지로 가는 점프가 된다
+  const text = ASSIST_DISCOVERY[n.reason];
   typeAssistText(text, myGen, skipAnim, function(){
     if (myGen !== assistGen) return;
     assistRevealReady = true;
@@ -1612,9 +1755,12 @@ function renderAssist(){
     assistRevealReady = true;
     el.hidden = true;
     el.classList.remove('is-checking', 'is-done');
+    setAssistClickable(el, false);
     return;
   }
-  const sig = assistSignature(S);
+  // v10(항목 4): judgeNudge()가 실제로 보는 값만의 서명(judgeSignature, JUDGE 섹션)이 바뀔
+  // 때만 "확인 중"으로 되돌린다. pickupAt처럼 판정에 안 쓰는 입력이 바뀌어도 다시 돌지 않는다.
+  const sig = judgeSignature(S);
   if (sig !== assistSig){
     assistSig = sig;
     startAssistCycle(el);
@@ -1622,18 +1768,13 @@ function renderAssist(){
 }
 
 function renderNudge(){
-  const wrap = document.getElementById('nudge-wrap');
   const el = document.getElementById('nudge');
   const n = judgeNudge(S);
   if (!n){ el.hidden = true; el.classList.remove('rt-nudge-pending'); return; }
   // v5(Figma 최종판): 방향에 따라 자리를 옮기던 분기를 없앴다. 9913(to-normal)·9915(to-charter)
-  // 모두 카드 흐름 안, 스크롤 영역(.rt-scroll) 맨 뒤에 둔다. v8: #nudge는 이제 항상 #nudge-wrap
-  // 안에 살고, 옮겨야 할 단위도 wrap이다(래퍼 기준). 이미 맞는 자리에 있으면 건드리지 않는다
-  // (매 렌더마다 불필요한 DOM 변경을 피한다).
-  const scroll = document.querySelector('#screen-input .rt-scroll');
-  if (wrap.parentElement !== scroll || scroll.lastElementChild !== wrap){
-    scroll.appendChild(wrap);
-  }
+  // 모두 카드 흐름 안, 스크롤 영역(.rt-scroll) 맨 뒤에 둔다. v10: #nudge-wrap이 없어지면서
+  // #nudge는 이제 마크업에 고정된 .rt-scroll의 마지막 자식이라(항목 1) 더 이상 DOM을 옮길
+  // 필요가 없다. card-route 등 다른 카드처럼 자리를 그대로 두고 내용/hidden만 갱신한다.
   const c = COPY[n.reason];
   document.getElementById('nudge-illust').src = NUDGE_ILLUST[n.reason];
   document.getElementById('nudge-title').textContent = c.title(S);
@@ -1764,6 +1905,17 @@ function bindEvents(){
   document.getElementById('card-route').addEventListener('click', () => focusCard('route'));
   document.getElementById('card-pickup').addEventListener('click', () => focusCard('pickup'));
   document.getElementById('card-charter').addEventListener('click', () => focusCard('charter'));
+  // v10(항목 1): 판정 결과가 있을 때만(role="button", setAssistClickable 참고) 어시스트를
+  // 눌러 넛지로 점프한다. 그 외 상태에서는 onAssistPress()가 role을 다시 확인해 아무 것도
+  // 안 한다. 마우스뿐 아니라 키보드(Enter/Space, role="button" + tabindex="0")도 받는다.
+  const assistEl = document.getElementById('assist');
+  assistEl.addEventListener('click', onAssistPress);
+  assistEl.addEventListener('keydown', function(e){
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
+      e.preventDefault();
+      onAssistPress();
+    }
+  });
   document.getElementById('preview-back').addEventListener('click', () => { S.screen = 'vehicle'; render(); });
   // 프로토타입 흐름은 미리보기에서 끝난다. 새 화면을 만드는 대신, 눌러도 반응이
   // 없어 보이지 않도록 버튼에 최소한의 피드백만 주고 원래 상태로 되돌린다.
@@ -1941,6 +2093,7 @@ function resetForTest(){
   const assistEl = document.getElementById('assist');
   assistEl.hidden = true;
   assistEl.classList.remove('is-checking', 'is-done');
+  setAssistClickable(assistEl, false);   // v10: role/tabindex도 테스트 간에 새지 않게 한다.
   // 휠의 "프로그램 스크롤 진행 중" 표식(열마다 colEl._wheelProgramTarget)도 초기화한다.
   // 남아 있으면 앞 테스트가 만든 표식이 뒤 테스트의 스크롤 판정에 새어 들어갈 수 있다.
   document.querySelectorAll('.rt-wheel-col').forEach(el => { el._wheelProgramTarget = null; });
@@ -2117,12 +2270,16 @@ function runSheetTests(){
     eq(document.getElementById('sheet-convert').textContent, '시간대절로 바꾸기');
     eq(document.getElementById('sheet-go').textContent, '그대로 진행');
   });
-  test('9913 방향도 이제 9915와 동일하게 첫 CTA를 막는다(시트는 계속 거치지 않는다)', ()=>{
+  // v10(항목 2): 이 테스트는 원래 "9913도 9915처럼 첫 CTA를 막는다"였다. 디자인 비평에
+  // 따라 9913(요금 문제)은 더 이상 막지 않기로 했다(9915는 돌아갈 차가 없는 "위험"이라
+  // 여전히 막는다). 그래서 이름과 단언을 함께 뒤집는다. 시트를 거치지 않는다는 원래
+  // 전제는 그대로 참이다.
+  test('9913 방향은 9915와 달리 첫 CTA를 막지 않는다(요금 문제라 통과, 위험만 막는다)', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
     onCtaPress();
     eq(document.getElementById('sheet').hidden, true);
-    eq(S.screen, 'input');
-    eq(S.nudgeAcked, true);
+    eq(S.screen, 'vehicle');       // 더 이상 막지 않고 바로 넘어간다
+    eq(S.nudgeAcked, false);
   });
   test('한 번 강조하면 그 세션에서 다시 안 막는다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
@@ -2160,18 +2317,26 @@ function runSheetTests(){
     const s = stateFromQuery(new URLSearchParams('scenario=nope'));
     eq(s.scenario, 'normal');
   });
-  test('조건이 참이면 첫 설정 완료는 화면을 넘기지 않고 배너를 강조한다', ()=>{
-    for (const [sc, tp, hrs] of [['golf','normal',null], ['short','charter',3]]) {
-      S = fresh(sc, tp); S.pickupAt = new Date(); if (hrs) S.charterHours = hrs;
-      S.openCard = 'none'; render();
-      eq(ctaLabel(S), '설정 완료');
-      onCtaPress();
-      eq(S.screen, 'input');                 // 안 넘어감
-      eq(S.nudgeAcked, true);
-      const el = document.getElementById('nudge');
-      eq(el.hidden, false);                  // 배너는 그대로 있음
-      if (!el.classList.contains('rt-flash')) throw new Error(sc + ': no flash class');
-    }
+  // v10(항목 2): 원래 이 테스트는 golf(9915)·short/charter(9913) 둘 다 막히는지 같은 방식으로
+  // 봤다. 이제 to-charter(9915) 방향만 막고 to-normal(9913)은 막지 않으므로, 루프를 "막힘"과
+  // "안 막힘" 두 대조로 나눴다.
+  test('조건이 참이면 첫 설정 완료는 화면을 넘기지 않고 배너를 강조한다(단, to-charter 방향만)', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
+    eq(ctaLabel(S), '설정 완료');
+    eq(judgeNudge(S).dir, 'to-charter');
+    onCtaPress();
+    eq(S.screen, 'input');                 // 안 넘어감
+    eq(S.nudgeAcked, true);
+    const el = document.getElementById('nudge');
+    eq(el.hidden, false);                  // 배너는 그대로 있음
+    if (!el.classList.contains('rt-flash')) throw new Error('golf: no flash class');
+
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; S.openCard = 'none'; render();
+    eq(ctaLabel(S), '설정 완료');
+    eq(judgeNudge(S).dir, 'to-normal');
+    onCtaPress();
+    eq(S.screen, 'vehicle');               // to-normal(9913)은 막지 않고 바로 넘어간다
+    eq(S.nudgeAcked, false);
   });
   test('두 번째 설정 완료는 그대로 진행한다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
@@ -2598,18 +2763,15 @@ function runLayoutTests(){
   });
   // v5(Figma 최종판): 넛지 자리가 방향에 따라 갈리던 구분이 없어졌다. 9913(to-normal)·
   // 9915(to-charter) 모두 항상 .rt-scroll 맨 뒤다.
-  // v8: #nudge가 #nudge-wrap 안으로 들어가면서(AI 어시스트 라인과 묶임) .rt-scroll의
-  // lastElementChild는 더 이상 #nudge가 아니라 #nudge-wrap이다. "스크롤 맨 뒤"라는 불변식
-  // 자체는 그대로 참이므로, 검사를 래퍼 기준(scroll의 마지막 자식 = wrap, wrap의 마지막
-  // 자식 = nudge)으로 고쳐 같은 것을 확인한다.
+  // v10: #nudge-wrap이 없어졌다(항목 1, 어시스트를 카드 위로 옮기며 래퍼를 걷어냈다). #nudge는
+  // 이제 다시 .rt-scroll의 직접 lastElementChild다. 검사를 wrap 경유 없이 그 원래 형태로
+  // 되돌린다.
   test('넛지가 스크롤 영역 안 카드들 뒤에 있다', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
     const n = document.getElementById('nudge');
     if (!n.closest('.rt-scroll')) throw new Error('nudge is not inside the scroll area');
     const scroll = n.closest('.rt-scroll');
-    const wrap = document.getElementById('nudge-wrap');
-    eq(scroll.lastElementChild, wrap);
-    eq(wrap.lastElementChild, n);
+    eq(scroll.lastElementChild, n);
   });
   test('9913 넛지는 스크롤 영역 맨 뒤에 있다', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
@@ -2617,9 +2779,7 @@ function runLayoutTests(){
     eq(n.hidden, false);
     const sc = document.querySelector('#screen-input .rt-scroll');
     if (!sc.contains(n)) throw new Error('9913 nudge is not in the scroll area');
-    const wrap = document.getElementById('nudge-wrap');
-    eq(sc.lastElementChild, wrap);
-    eq(wrap.lastElementChild, n);
+    eq(sc.lastElementChild, n);
   });
   // 원래 이름은 '9915 넛지는 하단 고정 영역 CTA 위에 있다'였다. v5에서 9915도 더 이상 .rt-footer로
   // 옮겨가지 않으므로(고정 영역엔 CTA만 남는다) 그 전제가 사라졌다. 같은 번호(9915)·같은 시나리오
@@ -2630,22 +2790,20 @@ function runLayoutTests(){
     eq(n.hidden, false);
     const sc = document.querySelector('#screen-input .rt-scroll');
     if (!sc.contains(n)) throw new Error('9915 nudge is not in the scroll area');
-    const wrap = document.getElementById('nudge-wrap');
-    eq(sc.lastElementChild, wrap);
-    eq(wrap.lastElementChild, n);
+    eq(sc.lastElementChild, n);
     const ft = document.querySelector('#screen-input .rt-footer');
     if (ft.contains(n)) throw new Error('9915 nudge should no longer live in the footer');
   });
   // 원래 이름은 '방향이 바뀌면 넛지 자리도 옮겨간다'였다(footer/scroll 분기 시절의 참). v5는
   // 정확히 반대가 참이라 이름과 단언을 함께 뒤집는다: 방향이 바뀌어도 자리는 그대로다.
-  // v8: 비교 대상을 #nudge-wrap으로 바꿨다(위 설명 참고).
+  // v10: #nudge-wrap이 없어져 다시 #nudge 자신을 직접 비교한다.
   test('방향이 바뀌어도 넛지 자리는 그대로다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
     const scroll = document.querySelector('#screen-input .rt-scroll');
-    const wrap = document.getElementById('nudge-wrap');
-    eq(scroll.lastElementChild, wrap);
+    const n = document.getElementById('nudge');
+    eq(scroll.lastElementChild, n);
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
-    eq(scroll.lastElementChild, wrap);
+    eq(scroll.lastElementChild, n);
   });
   // COPY[key].banner가 없어져(2줄 넛지는 title+body를 쓴다) title+body 조합이
   // reason 별로 다른지로 검사를 바꾼다. 이름은 그대로 둔다.
@@ -2658,9 +2816,7 @@ function runLayoutTests(){
       seen[line] = 1;
     }
   });
-  // v8: #nudge-wrap이 생기면서 이 테스트가 원래 보던 `scroll.lastElementChild === nudge`가
-  // 깨진다(이제 스크롤 맨 뒤는 wrap이고, 그 안에서 넛지가 맨 뒤다). "래퍼가 스크롤 맨 뒤이고,
-  // 넛지가 래퍼 맨 뒤"로 검사를 고쳐 같은 불변식(넛지는 항상 카드들 다음, 맨 끝)을 확인한다.
+  // v10: #nudge-wrap이 없어져(항목 1) `scroll.lastElementChild === nudge`를 다시 직접 본다.
   test('넛지는 방향과 무관하게 스크롤 맨 뒤에 있다', ()=>{
     for (const [sc, tp, hrs] of [['golf','normal',null], ['short','charter',3]]) {
       S = fresh(sc, tp); S.pickupAt = new Date(); if (hrs) S.charterHours = hrs; render();
@@ -2668,9 +2824,7 @@ function runLayoutTests(){
       eq(n.hidden, false);
       const s = document.querySelector('#screen-input .rt-scroll');
       if (!s.contains(n)) throw new Error(sc + ': nudge not in scroll');
-      const wrap = document.getElementById('nudge-wrap');
-      eq(s.lastElementChild, wrap);
-      eq(wrap.lastElementChild, n);
+      eq(s.lastElementChild, n);
     }
   });
   test('배너 버튼 라벨이 방향을 말한다', ()=>{
@@ -2726,10 +2880,14 @@ function runLayoutTests(){
 // ?selftest=1에서는 assistSkipAnim()이 true라 render() 한 번으로 최종 상태(판정 완료, 글자
 // 전체, 넛지 등장)까지 동기적으로 끝난다. 타이머를 기다리지 않는다.
 function runAssistTests(){
+  // v10(항목 5): 문구가 결론(dir 기반: "시간대절이 필요해보여요"/"일반예약으로도 충분해보여요")
+  // 에서 발견(reason 기반: ASSIST_DISCOVERY)으로 바뀌었다. 여기서는 "판정 결과가 있으면 라인이
+  // 보인다"는 원래 의도만 남기고, 정확한 문구 검사는 아래 '어시스트 문구는 결론이 아니라
+  // 발견을 말한다'(runV10Tests)로 옮겼다.
   test('판정 결과가 있으면 어시스트 라인이 결과 문구를 보여준다', ()=>{
     for (const [sc, tp, hrs, want] of [
-      ['golf','normal',null,'시간대절이 필요해보여요'],
-      ['short','charter',3,'일반예약으로도 충분해보여요']]) {
+      ['golf','normal',null,'목적지가 골프장이에요'],
+      ['short','charter',3,'대절 시간이 경로보다 길어요']]) {
       S = fresh(sc, tp); S.pickupAt = new Date(); if (hrs) S.charterHours = hrs; render();
       const a = document.getElementById('assist');
       eq(a.hidden, false);
@@ -2744,17 +2902,18 @@ function runAssistTests(){
     eq(a.hidden, true);
     eq(getComputedStyle(a).display, 'none');
   });
-  test('어시스트 라인은 넛지 바로 위에 붙는다', ()=>{
+  // v10(항목 1): 원래 이름은 '어시스트 라인은 넛지 바로 위에 붙는다'였다(#nudge-wrap이 둘을
+  // 간격 0으로 묶어 두던 시절). 픽업 카드가 펼쳐지면 그 자리가 실기기 화면 밖이라 어시스트를
+  // 카드 컨테이너 맨 위로 옮기며 그 인접성을 포기했다(전용 테스트는 아래 '어시스트는 카드
+  // 위, 넛지는 스크롤 맨 뒤' 참고). 대신 시각적 연결을 상호작용으로 옮겼으므로, 여기서는
+  // "둘 사이가 붙어 있다"가 아니라 "어시스트를 누르면 넛지로 스크롤해 강조한다"를 검사한다.
+  test('어시스트를 누르면 넛지가 강조된다(끊긴 인접성을 상호작용으로 대신한다)', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
-    const wrap = document.getElementById('nudge-wrap');
     const a = document.getElementById('assist'), n = document.getElementById('nudge');
-    const s = document.querySelector('#screen-input .rt-scroll');
-    eq(s.lastElementChild, wrap);
-    eq(wrap.firstElementChild, a);
-    eq(wrap.lastElementChild, n);
-    eq(getComputedStyle(wrap).rowGap, '0px');
-    const ar = a.getBoundingClientRect(), nr = n.getBoundingClientRect();
-    if (Math.abs(nr.top - ar.bottom) > 1) throw new Error('assist not adjacent to nudge');
+    eq(a.getAttribute('role'), 'button');
+    n.classList.remove('rt-flash');
+    a.click();
+    if (!n.classList.contains('rt-flash')) throw new Error('assist click did not flash the nudge');
   });
   test('별 아이콘은 16x16 이고 Figma 원본 path 를 쓴다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
@@ -2785,6 +2944,109 @@ function runAssistTests(){
     }
   });
 }
+
+// ---- v10: 디자인 비평 개선 8건 ----
+function runV10Tests(){
+  test('어시스트는 카드 위, 넛지는 스크롤 맨 뒤', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    const s = document.querySelector('#screen-input .rt-scroll');
+    const a = document.getElementById('assist'), n = document.getElementById('nudge');
+    eq(s.firstElementChild, a);
+    eq(s.lastElementChild, n);
+    if (document.getElementById('nudge-wrap')) throw new Error('nudge-wrap should be gone');
+    const ar = a.getBoundingClientRect(), rr = document.getElementById('card-route').getBoundingClientRect();
+    if (ar.bottom > rr.top) throw new Error('assist must sit above the route card');
+  });
+  test('판정 결과가 있으면 어시스트를 눌러 넛지로 갈 수 있다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    const a = document.getElementById('assist');
+    eq(a.getAttribute('role'), 'button');
+    eq(a.getAttribute('tabindex'), '0');
+    S = fresh('normal','normal'); S.pickupAt = new Date(); render();
+    eq(document.getElementById('assist').getAttribute('role'), null);
+  });
+  test('9913 은 설정 완료를 가로막지 않는다', ()=>{
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; S.openCard = 'none'; render();
+    eq(judgeNudge(S).dir, 'to-normal');
+    eq(ctaLabel(S), '설정 완료');
+    onCtaPress();
+    eq(S.screen, 'vehicle');            // 바로 넘어간다
+    eq(S.nudgeAcked, false);
+  });
+  test('9915 는 첫 설정 완료를 한 번 가로막는다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
+    onCtaPress();
+    eq(S.screen, 'input');
+    onCtaPress();
+    eq(S.screen, 'vehicle');
+  });
+  test('대절 시간 카드가 판단 근거를 보여 준다', ()=>{
+    S = fresh('golf','charter'); S.pickupAt = new Date(); S.openCard = 'charter'; render();
+    const hint = document.querySelector('#card-charter .rt-card-hint');
+    if (!hint) throw new Error('no charter hint');
+    if (hint.textContent.indexOf('편도') < 0) throw new Error('hint must state the one-way time');
+    if (hint.textContent.indexOf('골프장') < 0) throw new Error('golf destination should get a duration hint');
+  });
+  test('픽업 시간만 바뀌면 어시스트가 다시 판정하지 않는다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    const sig1 = judgeSignature(S);
+    S.pickupAt = new Date(Date.now() + 3600000); render();
+    eq(judgeSignature(S), sig1);
+    S.route.to = null; render();
+    if (judgeSignature(S) === sig1) throw new Error('route change must change the signature');
+  });
+  // 원안의 want 키는 'noreturn'/'long'이었으나 이 코드베이스의 SCENARIOS 키는 'noReturn'/
+  // 'longDistance'다(다른 값은 fresh()가 sc.route를 읽다 던진다). 실제 키에 맞게 조정했다.
+  test('어시스트 문구는 결론이 아니라 발견을 말한다', ()=>{
+    const want = { golf:'목적지가 골프장이에요', noReturn:'복귀 차량이 드문 지역이에요',
+                   longDistance:'장거리 경로예요' };
+    for (const sc in want){
+      S = fresh(sc,'normal'); S.pickupAt = new Date(); render();
+      eq(document.getElementById('assist-text').textContent, want[sc]);
+    }
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; render();
+    eq(document.getElementById('assist-text').textContent, '대절 시간이 경로보다 길어요');
+  });
+  // 원안은 render() 직후 최종(is-done) 상태의 별 색이 옛 #868B9C가 아닌지만 봤다. 하지만
+  // ?selftest=1은 assistSkipAnim()이 항상 참이라 "확인 중" -> "완료"가 같은 틱에 끝나, 렌더
+  // 직후엔 이미 is-done(파란 #32A2FA)이라 그 단언은 애초에 우리가 뭘 하든 항상 참이었다
+  // (뮤테이션을 못 잡는 죽은 테스트). is-checking 클래스를 직접 걸어 CSS 규칙 자체를
+  // 검사하도록 조정했다. 상태기계 타이밍과 무관하게 회귀를 잡는다.
+  test('판정 중 별 색이 비텍스트 대비 3:1 을 넘는다', ()=>{
+    // #6E7385 on #E6E9EF = 3.88:1
+    const assistEl = document.getElementById('assist');
+    assistEl.hidden = false;
+    assistEl.classList.remove('is-done');
+    assistEl.classList.add('is-checking');
+    const st = document.getElementById('assist-star');
+    const c = getComputedStyle(st).color;
+    if (c === 'rgb(134, 139, 156)') throw new Error('still the old #868B9C (2.79:1)');
+    eq(c, 'rgb(110, 115, 133)');   // #6E7385
+  });
+  test('긴 목적지가 접힌 경로 카드에서 잘리지 않는다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none';
+    S.route.from = '서울특별시 강남구 테헤란로 152 강남파이낸스센터';
+    S.route.to   = '인천광역시 중구 공항로 272 제2여객터미널';
+    render();
+    const v = document.querySelector('#card-route .rt-card-value');
+    if (!v) throw new Error('no collapsed value');
+    if (v.textContent.indexOf('제2여객터미널') < 0)
+      throw new Error('destination must survive: ' + v.textContent);
+    if (v.scrollWidth > v.clientWidth + 1)
+      throw new Error('value overflows: ' + v.scrollWidth + ' > ' + v.clientWidth);
+  });
+  // 원안 셀렉터는 '#screen-input .rt-seg'(칩 두 개를 담은 컨테이너)였다. 그 컨테이너는
+  // padding:16이 있어 높이가 38이 아니라 ~70이라 eq(...,38)이 항상 실패한다. 항목 8의 CSS도
+  // 실제로는 칩 하나하나(.rt-seg-tab)에 ::after를 건다(컨테이너 전체에 걸면 칩 두 개의
+  // 터치 영역이 하나로 뭉친다). 셀렉터를 실제로 38인 개별 칩으로 조정했다.
+  test('칩은 보이기엔 38 이지만 터치 영역은 44 다', ()=>{
+    S = fresh('golf','normal'); render();
+    const chip = document.querySelector('#screen-input .rt-seg .rt-seg-tab');
+    eq(Math.round(chip.getBoundingClientRect().height), 38);
+    eq(getComputedStyle(chip, '::after').height, '44px');
+  });
+}
+
 function selftest(){
   T.length = 0;
   runJudgeTests();          // Task 1
@@ -2796,6 +3058,7 @@ function selftest(){
   runPanelTests();          // Task 7
   runLayoutTests();         // Task 8
   runAssistTests();         // Task 9 (v8)
+  runV10Tests();            // v10: 디자인 비평 개선 8건
   const out = document.getElementById('selftest-out');
   const fail = T.filter(l=>l.startsWith('FAIL'));
   out.hidden = false;
