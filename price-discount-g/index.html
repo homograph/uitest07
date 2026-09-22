@@ -60,7 +60,7 @@ body{font-variant-numeric:tabular-nums}
 .handle{height:24px;padding:10px;display:flex;justify-content:center;flex:none}
 .handle i{display:block;width:56px;height:4px;border-radius:2px;background:#99A5C0}
 
-.bar{height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#EEF1F8;flex:none}
+.bar{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;background:#EEF1F8;flex:none}
 .bar span{display:flex;align-items:center;gap:6px;font-size:12px;line-height:18px;font-weight:700;color:#19254D}
 .bar .ck{flex:none;width:12px;height:12px}
 
@@ -80,7 +80,7 @@ body{font-variant-numeric:tabular-nums}
 .rpr{flex:none;display:flex;flex-direction:column;align-items:flex-end;white-space:nowrap}
 .rpr .now{font-size:13px;line-height:18px;color:#262A38}
 .rpr .now.dc{font-weight:700}
-.rpr .was{font-size:11px;line-height:15px;color:#9DA0AE;text-decoration:line-through}
+.rpr .was{font-size:11px;line-height:15px;color:#60667A;text-decoration:line-through}
 
 /* 선택 행 — 그랩식 테두리 박스 */
 .sel{border:1.5px solid #19254D;border-radius:12px;background:#fff;margin:3px 0;overflow:hidden}
@@ -94,11 +94,11 @@ body{font-variant-numeric:tabular-nums}
 .spr .pstack{display:flex;flex-direction:column;align-items:flex-end}
 .spr .now{font-size:15px;line-height:21px;font-weight:700}
 .spr .now.dc{color:#262A38}
-.spr .was{font-size:11px;line-height:15px;color:#9DA0AE;text-decoration:line-through}
+.spr .was{font-size:11px;line-height:15px;color:#60667A;text-decoration:line-through}
 .cdn{width:6px;height:10px;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat;transform:rotate(90deg);flex:none}
 .cup{width:6px;height:10px;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat;transform:rotate(-90deg);flex:none}
-.tag{flex:none;display:inline-block;height:15px;padding:0 5px;border-radius:3px;background:#EEF1F8;color:#19254D;font-size:10px;line-height:15px;font-weight:700;white-space:nowrap}
-.reasonchip{width:calc(100% - 16px);display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 8px 8px;padding:8px 10px;border:0;border-radius:8px;background:#F2F4F8;color:#19254D;font:inherit;font-family:inherit;font-size:11px;line-height:16px;font-weight:700;text-align:left;cursor:pointer}
+.tag{flex:none;display:inline-block;height:16px;padding:0 5px;border-radius:3px;background:#EEF1F8;color:#19254D;font-size:11px;line-height:16px;font-weight:700;white-space:nowrap}
+.reasonchip{width:calc(100% - 16px);min-height:40px;display:flex;align-items:center;justify-content:space-between;gap:6px;margin:0 8px 8px;padding:8px 10px;border:0;border-radius:8px;background:#F2F4F8;color:#19254D;font:inherit;font-family:inherit;font-size:11px;line-height:16px;font-weight:700;text-align:left;cursor:pointer}
 .reasonchip:hover{background:#E9EDF5}
 .reasonchip .r{display:flex;align-items:center;gap:6px}
 .reasonchip b{font-weight:700}
@@ -332,7 +332,7 @@ function calc(id){
   let fare=base, pct=null;
   if(r.surge && S.discount!=='none'){
     if(S.discount==='ok'){ pct=10; fare=Math.round(base*0.9/100)*100; }
-    else { fare=24150; pct=null; }
+    else { fare=base-Math.round(base*0.0566/10)*10; pct=null; }   // 5.66% — 10% 미만 케이스
   }
   const cpAmt=CP(S.coupon).amount, couponOn=cpAmt>0;
   const crOn=S.credit==='1';
@@ -355,7 +355,7 @@ function parts(c){
   if(c.crOn)       p.push({k:'credit', name:'크레딧', cut:c.crAmt});
   return p;
 }
-function one(c,p){ return p.k==='surge' ? `${REASON}이라 ${c.pct?c.pct+'% 할인':'할인 적용 중'}` : `${p.name} 적용 중`; }
+function one(c,p){ return p.k==='surge' ? `${REASON}이라 ${c.pct?c.pct+'% 할인 중':'할인 적용 중'}` : `${p.name} 적용 중`; }
 function chipCut(c){
   const p=parts(c);
   if(S.stack==='surge' && c.discounted && p.length>1) return c.base-c.fare;   // 서지만 말하면 서지분만
@@ -396,7 +396,7 @@ function priceRow(c, sel){
   const was = picked ? ((S.stack==='surge' && c.discounted) ? c.fare : c.base) : c.base;
   const useStrike = picked ? true : c.strikeOK;
   const show = ((c.discounted&&useStrike)||picked) ? `<span class="was">${won(was)}</span>`
-             : (c.discounted ? `<span class="was" style="text-decoration:none;color:#19254D;font-weight:700">−${won(c.base-c.fare)}</span>` : '');
+             : (c.discounted ? `<span class="was" style="text-decoration:none;color:#19254D;font-weight:700">${won(c.base-c.fare)} 할인</span>` : '');
   return sel
     ? `<span class="pstack"><span class="now${cls}">${won(c.pay)}</span>${show}</span>${(c.discounted||c.couponOn||c.crOn)&&S.expand!=='1'&&S.open!=='1'?'':`<span class="${S.expand==='1'?'cup':'cdn'}"></span>`}`
     : `<span class="now${cls}">${won(c.pay)}</span>${show}`;
@@ -428,14 +428,14 @@ function rowHTML(id){
     <button class="selhead" data-exp="1">
       <img src="${TH[id]}" alt="">
       <span class="stx"><span class="n"><span class="t">${esc(r.name)}</span>${r.info?IC_INFO:''}</span>
-      <span class="d"><span class="t">${esc(r.desc)}</span>${paxH(r.pax)}${c.discounted&&S.expand!=='1'?'<span class="tag">'+(c.pct?c.pct+'%':'할인')+'</span>':''}</span></span>
+      <span class="d"><span class="t">${esc(r.desc)}</span>${paxH(r.pax)}${c.discounted&&c.pct&&S.expand!=='1'?'<span class="tag">'+c.pct+'%</span>':''}</span></span>
       <span class="spr">${priceRow(c,true)}</span></button>
     ${(c.discounted||c.couponOn||c.crOn)&&S.expand!=='1'&&S.open!=='1'?`<button class="reasonchip" data-exp="1"><span>${chipLabel(c)}</span><span class="r"><b>${won(chipCut(c))} 낮아졌어요</b><span class="caret"></span></span></button>`:''}
     ${S.expand==='1'?expandBody(id):''}</div>`;
   return `<button class="row" data-pick="${id}">
     <img src="${TH[id]}" alt="">
     <span class="rtx"><span class="n"><span class="t">${esc(r.name)}</span></span>
-    <span class="d"><span class="t">${esc(r.desc)}</span>${paxH(r.pax)}${c.discounted?'<span class="tag">'+(c.pct?c.pct+'%':'할인')+'</span>':''}</span></span>
+    <span class="d"><span class="t">${esc(r.desc)}</span>${paxH(r.pax)}${c.discounted&&c.pct?'<span class="tag">'+c.pct+'%</span>':''}</span></span>
     <span class="rpr">${priceRow(c,false)}</span></button>`;
 }
 
@@ -448,15 +448,21 @@ function phoneHTML(){
   // 볼트식 전체폭 바 — 지금 고른 라인업이 할인 대상이 아닐 때만 띄운다(대상일 땐 카드 안 칩이 말한다)
   const selDisc = calc(S.lineup).discounted;
   const showBar = anyDisc && S.expand!=='1' && (S.open==='1' || !selDisc);
-  const bar = showBar ? `<button class="bar barbtn" data-open="1"><span><svg class="ck" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6.2 4.7 9 10 3.2" stroke="#19254D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>${esc(REASON)}이라 넥스트·플러스 할인 중</span><span class="caret"></span></button>` : '';
+  const ds = R.filter(r=>r.surge).map(r=>{const k=calc(r.id); return {short:r.short, cut:k.base-k.fare};}).filter(x=>x.cut>0);
+  const barTxt = ds.length
+    ? `${REASON}이라 ${ds.map(x=>x.short).join('·')} ${ds.length>1?'최대 ':''}${won(Math.max(...ds.map(x=>x.cut)))} 할인 중`
+    : '';
+  const bar = showBar && barTxt ? `<button class="bar barbtn" data-open="1"><span><svg class="ck" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M2 6.2 4.7 9 10 3.2" stroke="#19254D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>${esc(barTxt)}</span><span class="caret"></span></button>` : '';
   const more = S.expand==='1' ? '' : (S.open==='1'
     ? `<button class="more" data-open="0">접기<span class="cup"></span></button>`
     : `<button class="more" data-open="1">라인업 ${R.length}개 모두 보기<span class="cdn"></span></button>`);
   const c=calc(S.lineup);
+  const chipOn=(c.discounted||c.couponOn||c.crOn)&&S.expand!=='1'&&S.open!=='1';
+  const up = S.open==='1'||S.expand==='1'||(bar&&chipOn);
   const cOn=c.couponOn||S.credit==='1';
   const coupon=cOn?`<span class="g on">${IC_COUPON_ON}할인 적용됨</span>`:`<span class="g">${IC_COUPON}할인 적용하기</span>`;
   return `<div class="map"></div>${sheetHTML()}
-  <div class="sheet${S.open==='1'?' up':''}">
+  <div class="sheet${up?' up':''}">
     <div class="handle"><i></i></div>
     ${bar}
     <div class="list${S.open==='1'?' all':''}">${list}</div>
@@ -513,7 +519,7 @@ function preview(){
   const useStrike = picked ? true : c.strikeOK;
   const was = picked ? ((S.stack==='surge' && c.discounted) ? c.fare : c.base) : c.base;
   const wasH = ((c.discounted&&useStrike)||picked) ? `<span class="was">${won(was)}</span>`
-             : (c.discounted ? `<span class="was" style="text-decoration:none;color:var(--accent);font-weight:700">−${won(c.base-c.fare)}</span>` : '');
+             : (c.discounted ? `<span class="was" style="text-decoration:none;color:var(--accent);font-weight:700">${won(c.base-c.fare)} 할인</span>` : '');
   const chip = (c.discounted||c.couponOn||c.crOn) ? `<div class="chip2">${esc(chipLabel(c))} · ${won(chipCut(c))} 낮아졌어요</div>` : '';
   el.innerHTML=`<div class="l1"><span class="nm">${esc(r.short)}</span><span class="pay">${won(c.pay)}</span>${wasH}</div>
     ${chip}
