@@ -365,7 +365,7 @@
     box-sizing:border-box;
   }
   /* display:flex가 hidden 속성의 기본 display:none을 덮어쓴다. 이걸 빼먹으면 브리지가 안 뜰
-     때도(judgeNudge가 null이거나 이미 bridgeAcked인 경우) 빈 흰 판이 남는 회귀가 난다
+     때도(judgeNudge가 null인 경우) 빈 흰 판이 남는 회귀가 난다
      (전에 겪은 버그, v11 지시사항에도 명시). */
   #bridge[hidden]{display:none;}
   .rt-bridge-body{
@@ -961,7 +961,9 @@ const SCENARIOS = {
                    route:{ from:'강남역 2번 출구', to:'광화문광장' } },
   short:         { label:'짧은 경로',        etaMin:48, charterHours:3, flags:{airport:false,golf:false,longDistance:false},
                    route:{ from:'강남역 2번 출구', to:'광화문광장' } },
-  golf:          { label:'골프장',           etaMin:65, charterHours:3, flags:{airport:false,golf:true, longDistance:false},
+  golf:          { label:'골프장 (수도권 밖)', etaMin:95, charterHours:3, flags:{airport:false,golf:true, longDistance:true },
+                   route:{ from:'강남역 2번 출구', to:'제주 블랙스톤' } },
+  golfMetro:     { label:'골프장 (수도권 안)', etaMin:65, charterHours:3, flags:{airport:false,golf:true, longDistance:false},
                    route:{ from:'강남역 2번 출구', to:'남서울컨트리클럽' } },
   roundTrip:     { label:'왕복 경로',        etaMin:65, charterHours:3, flags:{airport:false,golf:false,longDistance:false},
                    route:{ from:'강남역 2번 출구', to:'강남역 2번 출구', vias:['남서울컨트리클럽'] } },
@@ -987,7 +989,6 @@ function fresh(scenarioKey, type){
     etaMin: sc.etaMin,
     flags: { ...sc.flags },
     convertedTo: null,               // 'normal' | 'charter' | null  (왕복 방지)
-    bridgeAcked: false,
     screen: 'input',                 // 'input' | 'vehicle' | 'preview'
     openCard: null,                  // null | 'none' | 'route' | 'pickup' | 'charter'  (아코디언: 하나만 열림)
                                       // null=아직 안 고름(기본값, renderInput에서 'route'로 취급),
@@ -1034,10 +1035,13 @@ function judgeNudge(s){
     if (s.etaMin < s.charterHours * 60 * 0.5) return { dir:'to-normal', reason:'short-trip' };
     return null;
   }
-  // v13(§v13-1): 골프장, 왕복, 장거리가 사유 하나(round-trip)로 통합됐다. 복귀 불가 지역
-  // (구 no-return)은 트리거에서 완전히 빠졌다(사용자 확정, Figma에서도 노드가 삭제됨).
-  // noReturnCall 플래그를 여기서 더 이상 읽지 않는다(SCENARIOS/fresh에서 키 자체도 지웠다).
-  if (s.flags.golf || s.flags.longDistance || isRoundTrip(s))
+  // v15(2026-09-22 PRD): 9915 트리거는 왕복과 시외 둘뿐이다. PRD 에서 골프장, 목적지가
+  // 타다가 잡히지 않는 지역, 경유지 2개 이상은 모두 취소선 처리됐고 "수도권 밖 시나리오로
+  // 흡수"한다는 코멘트가 달렸다. 그래서 flags.golf 는 판정에서 읽지 않는다.
+  // 수도권 밖 골프장은 longDistance 로 걸리고(golf 시나리오), 수도권 안 골프장은
+  // 걸리지 않는다(golfMetro 시나리오). 후자가 의도인지는 PRD 확인 필요 항목이다.
+  // flags.golf 는 대절 시간 카드의 권장 시간 힌트에만 남아 있다(판정과 무관).
+  if (s.flags.longDistance || isRoundTrip(s))
     return { dir:'to-charter', reason:'round-trip' };
   return null;
 }
@@ -1072,7 +1076,6 @@ function setType(next){
   if (S.type === next) return;
   S.type = next;
   if (next === 'normal') S.charterHours = null;
-  S.bridgeAcked = false;
   // 수정 5: 스펙 §6의 왕복 방지는 "전환으로 진입한 유형"만 억제 대상이다. 유저가 세그먼트를
   // 직접 눌러 고른 유형은 대상이 아니므로 convertedTo를 비운다. 안 비우면 예전 전환 표식이
   // 세그먼트를 몇 번 오가도 계속 남아, 유저가 직접 고른 유형에서도 넛지가 영구히 억제된다.
@@ -1123,8 +1126,11 @@ function onCtaPress(){
   // '설정 완료'에서 전체 화면으로 한 번 확인시킨다. 강도 차이는 더 이상 "막는다/안 막는다"가
   // 아니라 브리지 버튼 위계(주버튼=navy)의 라벨·동작으로만 낸다(openBridge 참고. 9913에서는
   // navy 버튼이 오히려 "이대로 계속하기"다). v10의 "9913은 아예 안 막는다"는 이걸로 대체됐다.
+  // v15: "한 예약에 한 번만"이 아니라 "조건이 맞으면 계속 뜬다"로 바뀌었다. 그래서
+  // 한 번 봤는지를 기억하지 않는다. 브리지의 두 버튼이 각각 다음 화면으로 보내므로
+  // 무한 루프가 되지는 않는다(설정 완료를 다시 누르면 다시 뜨는 것이 의도다).
   const n = judgeNudge(S);
-  if (n && !S.bridgeAcked){ S.bridgeAcked = true; openBridge(n); return; }
+  if (n){ openBridge(n); return; }
   S.screen = 'vehicle';
   render();
 }
@@ -1152,7 +1158,6 @@ function closeSheet(){
 }
 // '그대로 진행': 이 예약 세션 동안 다시 가로막지 않는다.
 function dismissSheet(){
-  S.bridgeAcked = true;
   closeSheet();
   S.screen = 'vehicle';
   render();
@@ -1163,7 +1168,6 @@ function convert(to){
   S.type = to;
   if (to === 'normal') S.charterHours = null;
   S.convertedTo = to;          // 왕복 방지 표식
-  S.bridgeAcked = false;
   if (to === 'charter') S.openCard = 'charter';   // 대절 시간 카드 열린 상태로 착지
   // 수정 4: 스펙 §5.4는 시간대절 → 일반예약 착지 상태를 "카드 모두 접힘"으로 요구한다.
   // null을 넣으면 renderInput()의 `S.openCard || 'route'` 폴백에 흡수돼 경로 카드가 열려
@@ -1179,7 +1183,6 @@ function convert(to){
 // 있는 변수를 만들지 않는다.
 function setRoute(patch){
   Object.assign(S.route, patch);
-  S.bridgeAcked = false;     // 경로가 바뀌면 판단의 전제가 바뀐다
   render();
 }
 function setCharterHours(h){
@@ -2125,7 +2128,6 @@ function runSheetTests(){
     onCtaPress();
     eq(document.getElementById('sheet').hidden, true);   // 시트는 더 이상 안 뜬다
     eq(S.screen, 'input');                                // 아직 다음 화면으로 못 감
-    eq(S.bridgeAcked, true);
     eq(document.getElementById('bridge').hidden, false);
   });
   // v13: noReturn 시나리오가 지워져 roundTrip으로 바꾸고, 기대 카피도 통합된 COPY['round-trip']
@@ -2144,17 +2146,19 @@ function runSheetTests(){
   // 확인시킨다("판정이 없으면 브리지 없이 바로 넘어간다"만 예외). 그래서 이 테스트의 전제
   // 자체가 뒤집혔다. 지우고 새 필수 테스트 '설정 완료를 누르면 브리지가 뜬다'(9913/9915
   // 둘 다 루프로 검사)와 '9913에서 navy 버튼은 그대로 진행이다'로 대체한다.
-  test('한 번 뜨면 그 세션에서 다시 뜨지 않는다', ()=>{
-    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
-    onCtaPress();                       // 1번째: 막고 브리지를 띄움
-    eq(S.screen, 'input');
-    onCtaPress();                       // 2번째: 그대로 진행(브리지를 다시 열지 않는다)
-    eq(S.screen, 'vehicle');
-    S.screen = 'input'; render();
-    onCtaPress();                       // 이미 bridgeAcked라 다시 막지 않는다
-    eq(S.screen, 'vehicle');
+  // v15: "한 예약에 한 번만"에서 "조건이 맞으면 계속 뜬다"로 바뀌었다(PRD 확정).
+  test('조건이 그대로면 설정 완료를 누를 때마다 다시 뜬다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
+    for (let i = 0; i < 3; i++){
+      onCtaPress();
+      eq(document.getElementById('bridge').hidden, false);
+      eq(S.screen, 'input');
+      document.getElementById('bridge-secondary').click();   // 이대로 계속하기
+      eq(S.screen, 'vehicle');
+      S.screen = 'input'; render();
+    }
   });
-  // v11: "강조 후 진행해도 인라인 배너는 남는다"(judgeNudge는 bridgeAcked를 안 보므로 #nudge가
+  // v11: "강조 후 진행해도 인라인 배너는 남는다"(#nudge가
   // 계속 떠 있는지 확인하던 테스트)는 지운다. 브리지는 인라인 카드가 아니라 일시적 오버레이라
   // "닫힌 뒤에도 남아 있다"는 개념 자체가 성립하지 않는다(닫히면 hidden으로 사라지는 게 맞다).
   test('배너 CTA에서 전환하면 대절 시간 카드가 열린 상태로 착지', ()=>{
@@ -2182,12 +2186,15 @@ function runSheetTests(){
   // 방향만)"은 v10의 비대칭 차단(9915만 막는다)을 검사했다. v11은 대칭이라(9913도 막는다)
   // 이 테스트의 단언(to-normal은 바로 vehicle로 넘어간다)이 거짓이 됐다. 지우고 새 필수
   // 테스트 '설정 완료를 누르면 브리지가 뜬다'(golf/short 루프로 대칭 확인)로 대체한다.
-  test('두 번째 설정 완료는 그대로 진행한다', ()=>{
+  // v15: "두 번째 누름에 통과"는 없어졌다. 조건이 맞는 한 설정 완료는 매번 브리지를
+  // 띄우고, 다음 화면으로 가는 길은 브리지의 두 버튼뿐이다.
+  test('설정 완료를 다시 눌러도 통과하지 않고 브리지가 다시 뜬다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
     onCtaPress();
     eq(S.screen, 'input');
     onCtaPress();
-    eq(S.screen, 'vehicle');
+    eq(S.screen, 'input');
+    eq(document.getElementById('bridge').hidden, false);
   });
   test('조건이 거짓이면 첫 설정 완료에 바로 넘어간다', ()=>{
     S = fresh('normal','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
@@ -2198,7 +2205,7 @@ function runSheetTests(){
   test('휠이 열린 상태의 설정 완료는 브리지가 아니라 휠 확정이다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'pickup'; render();
     onCtaPress();
-    eq(S.bridgeAcked, false);                 // 브리지 경로를 안 탐
+    eq(document.getElementById('bridge').hidden, true);   // 브리지 경로를 안 탐
     eq(S.screen, 'input');
   });
 }
@@ -2283,7 +2290,7 @@ function runLifecycleTests(){
   test('경로를 바꾸면 재판정된다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
     if (!judgeNudge(S)) throw new Error('golf destination should trigger a judgement');
-    S.flags.golf = false; setRoute({ to:'강남역' });
+    S.flags.longDistance = false; setRoute({ to:'강남역' });
     eq(judgeNudge(S), null);
   });
   test('대절 시간을 줄이면 9913 판정이 사라진다', ()=>{
@@ -2304,7 +2311,9 @@ function runLifecycleTests(){
   // 세그먼트 탭 → 대절 시간 확정. setType()이 convertedTo를 비우지 않으면 여기서 왕복 방지가
   // 영구히 남아 9913 넛지가 뜨지 않는다.
   test('시트 전환 후 세그먼트를 오가면 왕복 방지가 풀린다', ()=>{
-    S = fresh('golf','normal'); S.pickupAt = new Date(); render();
+    // v15: golf 시나리오가 수도권 밖(etaMin 95)으로 바뀌어 9913 조건(eta < 대절*0.5)을
+    // 못 넘는다. 수도권 안 골프장(golfMetro, etaMin 65)으로 바꾼다.
+    S = fresh('golfMetro','normal'); S.pickupAt = new Date(); render();
     convert('charter');                 // 9915 넛지 CTA로 전환한 것과 동일한 경로(convertedTo='charter')
     eq(S.convertedTo, 'charter');
     setType('normal');                  // 유저가 세그먼트를 직접 탭
@@ -2471,8 +2480,8 @@ function runPanelTests(){
     document.getElementById('phone').click();
     eq(document.getElementById('panel').hidden, false);
   });
-  test('시나리오가 여섯 개, 시작 탭이 두 개', ()=>{
-    eq(document.querySelectorAll('#panel [data-scenario]').length, 6);
+  test('시나리오가 일곱 개, 시작 탭이 두 개', ()=>{
+    eq(document.querySelectorAll('#panel [data-scenario]').length, 7);
     eq(document.querySelectorAll('#panel [data-type]').length, 2);
   });
   test('폰 맨 윗줄을 덮는 것이 없다', ()=>{
@@ -2761,11 +2770,11 @@ function runWheelTests(){
 // 별 색이 비텍스트 대비 3:1을 넘는다'(#assist 전용), '칩은 보이기엔 38이지만 터치 영역은
 // 44다'(::after 터치 확장을 지웠다. 이제 실제 높이가 44라 그 자체가 터치 영역이다).
 function runV10Tests(){
-  test('9915 는 첫 설정 완료를 한 번 가로막는다', ()=>{
+  test('9915 는 조건이 맞는 한 설정 완료를 계속 가로막는다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
     onCtaPress();
     eq(S.screen, 'input');
-    onCtaPress();
+    document.getElementById('bridge-secondary').click();   // 이대로 계속하기
     eq(S.screen, 'vehicle');
   });
   test('대절 시간 카드가 판단 근거를 보여 준다', ()=>{
@@ -2862,15 +2871,13 @@ function runBridgeTests(){
     eq(S.convertedTo, 'charter');
     eq(document.getElementById('bridge').hidden, true);
   });
-  test('브리지는 한 번만 뜬다', ()=>{
+  test('이대로 계속하기를 누르면 그대로 진행한다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard='none'; render();
     onCtaPress();
-    document.getElementById('bridge-secondary').click();   // 이대로 계속하기
+    document.getElementById('bridge-secondary').click();
     eq(S.screen, 'vehicle');
-    S.screen = 'input'; render();
-    onCtaPress();
-    eq(document.getElementById('bridge').hidden, true);    // 다시 뜨지 않는다
-    eq(S.screen, 'vehicle');
+    eq(S.type, 'normal');
+    eq(document.getElementById('bridge').hidden, true);
   });
   test('판정이 없으면 브리지 없이 바로 넘어간다', ()=>{
     S = fresh('normal','normal'); S.pickupAt = new Date(); S.openCard='none'; render();
@@ -2933,6 +2940,18 @@ function runV13Tests(){
       eq(n.dir, 'to-charter');
       eq(n.reason, 'round-trip');
     }
+  });
+  // v15(2026-09-22 PRD): 골프장은 트리거에서 빠지고 시외 시나리오로 흡수됐다.
+  // 그래서 수도권 밖 골프장은 longDistance 로 걸리고, 수도권 안 골프장은 안 걸린다.
+  test('골프장은 그 자체로 트리거가 아니다. 수도권 밖일 때만 걸린다', ()=>{
+    S = fresh('golfMetro','normal'); S.pickupAt = new Date();
+    eq(S.flags.golf, true);
+    eq(S.flags.longDistance, false);
+    eq(judgeNudge(S), null);                       // 수도권 안 골프장 = 트리거 아님
+    S = fresh('golf','normal'); S.pickupAt = new Date();
+    eq(S.flags.golf, true);
+    eq(S.flags.longDistance, true);
+    eq(judgeNudge(S).reason, 'round-trip');        // 수도권 밖 = 시외로 걸린다
   });
   test('복귀 불가 지역은 더 이상 트리거가 아니다', ()=>{
     if (SCENARIOS.noReturn) throw new Error('noReturn 시나리오가 남아 있다');
