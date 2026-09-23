@@ -392,7 +392,7 @@
     font-size:22px;font-weight:700;line-height:30px;color:#19254D;
     text-align:center;
     word-break:keep-all;
-    /* v14(스펙 §D): 개행 위치가 바뀌었다(9915 "왕복이라면 시간대절이 ⏎ 더 편해요", 9913
+    /* v14(스펙 §D): 개행 위치가 바뀌었다(왕복/시외 "왕복이라면 시간대절이 ⏎ 더 편해요", 짧은 경로
        "{h}분이면 도착하는 ⏎ 경로예요"). U+2028/\n은 이 파일 규칙상 금지라 max-width로 그
        지점에서 word-break:keep-all이 접히게 한다(openBridge가 사유별 값을 인라인
        style.maxWidth로 준다, JS RENDER 참고). align-self:center로 줄어든 박스를 가운데에
@@ -406,8 +406,8 @@
     text-align:center;
     word-break:keep-all;
   }
-  /* v14(스펙 §E): 9913 본문에서 "일반예약" 넉 자만 강조(#0086EA, inspect.js range override
-     실측). 9915 본문에는 강조 span이 없다(COPY['round-trip']에 bodyHtml 필드 자체가 없다,
+  /* v14(스펙 §E): 짧은 경로 본문에서 "일반예약" 넉 자만 강조(#0086EA, inspect.js range override
+     실측). 왕복/시외 본문에는 강조 span이 없다(COPY['round-trip']에 bodyHtml 필드 자체가 없다,
      openBridge 참고). */
   #bridge-desc span{color:#0086EA;}
   .rt-bridge-actions{
@@ -426,7 +426,7 @@
     font-variant-numeric: tabular-nums;
   }
   /* 버튼 위계는 스타일이 고정이고(주=navy, 보조=회색) 라벨·동작만 방향마다 뒤집힌다
-     (openBridge 참고). 9913(짧은 경로)에서는 navy 버튼이 "이대로 계속하기"다. 헷갈리기
+     (openBridge 참고). 짧은 경로에서는 navy 버튼이 "이대로 계속하기"다. 헷갈리기
      쉬우니 주의(스펙 §4 "가장 중요"). */
   #bridge-primary{
     background:#19254D;
@@ -487,7 +487,7 @@
   .rt-icon-add{width:16px;height:16px;display:block;}
   .rt-icon-arrow{width:18px;height:18px;flex:0 0 auto;display:block;}
 
-  /* ---- 9915 바텀시트 (Task 4): 일반예약 → 시간대절, "위험" 확인용 ---- */
+  /* ---- 왕복/시외 바텀시트 (Task 4): 일반예약 → 시간대절, "위험" 확인용 ---- */
   .rt-sheet-backdrop{
     position:absolute;
     inset:0;
@@ -1035,7 +1035,7 @@ function judgeNudge(s){
     if (s.etaMin < s.charterHours * 60 * 0.5) return { dir:'to-normal', reason:'short-trip' };
     return null;
   }
-  // v15(2026-09-22 PRD): 9915 트리거는 왕복과 시외 둘뿐이다. PRD 에서 골프장, 목적지가
+  // v15(2026-09-22 PRD): 일반예약 -> 시간대절 트리거는 왕복과 시외 둘뿐이다. PRD 에서 골프장, 목적지가
   // 타다가 잡히지 않는 지역, 경유지 2개 이상은 모두 취소선 처리됐고 "수도권 밖 시나리오로
   // 흡수"한다는 코멘트가 달렸다. 그래서 flags.golf 는 판정에서 읽지 않는다.
   // 수도권 밖 골프장은 longDistance 로 걸리고(golf 시나리오), 수도권 안 골프장은
@@ -1059,8 +1059,8 @@ const COPY = {
                      body: s=>`${s.charterHours}시간을 빌리지 않아도 일반예약으로 갈 수 있어요`,
                      // v14(스펙 §E): 브리지 본문에서 "일반예약" 넉 자만 #0086EA로 강조한다.
                      // body()는 바텀시트(옛 openSheet, 지금은 죽은 경로)와 셀프테스트(§Task1
-                     // '9913 브리지 카피가...')가 순수 텍스트로 그대로 기대하므로 손대지
-                     // 않고, 브리지 전용 HTML만 별도 필드로 둔다(openBridge 참고). 9915에는
+                     // '짧은 경로 브리지 카피가...')가 순수 텍스트로 그대로 기대하므로 손대지
+                     // 않고, 브리지 전용 HTML만 별도 필드로 둔다(openBridge 참고). 왕복/시외에는
                      // 이런 강조가 없어 bodyHtml 필드 자체가 없다.
                      bodyHtml: s=>`${escapeHtml(String(s.charterHours))}시간을 빌리지 않아도 <span>일반예약</span>으로 갈 수 있어요`,
                      cta:'일반예약으로 바꾸기' },
@@ -1108,24 +1108,24 @@ function onCtaClick(){
 }
 
 // CTA 버튼의 유일한 이벤트 핸들러(bindEvents 참고). onCtaClick()을 감싸
-// '입력 미완료 → 카드 포커스'와 '설정 완료 → 화면 전환(+9915 바텀시트 확인)'을
+// '입력 미완료 → 카드 포커스'와 '설정 완료 → 화면 전환(+왕복/시외 바텀시트 확인)'을
 // 한 경로로 합친다.
 // 마스터 Figma에는 카드 안에 확정 버튼이 없다: 휠이 열린 화면에서도 버튼은 이 CTA
 // 하나뿐이고, 그 CTA가 열린 휠의 값을 확정한다. 그래서 라벨 상태(ctaLabel)와 무관하게
 // 열린 카드가 휠 카드(pickup/charter)면 그 확정 경로를 최우선으로 태운다. 확정되면
 // confirmPickupWheel()/confirmCharterWheel()이 S.openCard를 null로 접으므로, 이후 같은
 // CTA를 다시 누르면 자연히 ctaLabel 기반 분기(카드 포커스 이동 또는 설정 완료)로 넘어간다.
-// 9915 바텀시트는 '설정 완료' 상태에서만 걸려야 하므로 휠 확정 경로는 그 아래 검사를
+// 왕복/시외 바텀시트는 '설정 완료' 상태에서만 걸려야 하므로 휠 확정 경로는 그 아래 검사를
 // 절대 거치지 않고 바로 return한다.
 function onCtaPress(){
   if (S.openCard === 'pickup'){ confirmPickupWheelFromCard(); return; }
   if (S.openCard === 'charter'){ confirmCharterWheelFromCard(); return; }
   if (ctaLabel(S) !== '설정 완료'){ onCtaClick(); return; }
-  // v11(스펙 §4 "트리거"): 브리지는 방향을 가리지 않는다. 9915(to-charter: 골프/복귀불가/
-  // 장거리, 돌아갈 차가 없는 "위험")와 9913(to-normal: 짧은 경로, "요금" 문제) 모두 첫
+  // v11(스펙 §4 "트리거"): 브리지는 방향을 가리지 않는다. 왕복/시외(to-charter: 골프/복귀불가/
+  // 장거리, 돌아갈 차가 없는 "위험")와 짧은 경로(to-normal, "요금" 문제) 모두 첫
   // '설정 완료'에서 전체 화면으로 한 번 확인시킨다. 강도 차이는 더 이상 "막는다/안 막는다"가
-  // 아니라 브리지 버튼 위계(주버튼=navy)의 라벨·동작으로만 낸다(openBridge 참고. 9913에서는
-  // navy 버튼이 오히려 "이대로 계속하기"다). v10의 "9913은 아예 안 막는다"는 이걸로 대체됐다.
+  // 아니라 브리지 버튼 위계(주버튼=navy)의 라벨·동작으로만 낸다(openBridge 참고. 짧은 경로에서는
+  // navy 버튼이 오히려 "이대로 계속하기"다). v10의 "짧은 경로는 아예 안 막는다"는 이걸로 대체됐다.
   // v15: "한 예약에 한 번만"이 아니라 "조건이 맞으면 계속 뜬다"로 바뀌었다. 그래서
   // 한 번 봤는지를 기억하지 않는다. 브리지의 두 버튼이 각각 다음 화면으로 보내므로
   // 무한 루프가 되지는 않는다(설정 완료를 다시 누르면 다시 뜨는 것이 의도다).
@@ -1138,7 +1138,7 @@ function onCtaPress(){
 // v5부터 CTA 경로에서는 쓰이지 않는다. 바텀시트가 대체된 뒤(v6) 강조(flashNudge)를 거쳐
 // 이제(v11) 전체 화면 브리지(openBridge)가 대체했다. 되돌리려면 onCtaPress의 브리지 분기를
 // openSheet로 바꾸면 된다.
-// 9915 방향(일반예약 → 시간대절)만 가로막는 확인 바텀시트.
+// 왕복/시외 방향(일반예약 → 시간대절)만 가로막는 확인 바텀시트.
 // 요금이 아니라 '복귀 위험'을 확인시키는 절차라 인라인 카드로 그치지 않는다.
 function openSheet(reason){
   const c = COPY[reason];
@@ -1421,7 +1421,7 @@ const CHARTER_MAX_HOURS = 12;
 function charterWheelHours(){
   const arr = []; for (let h=MIN_CHARTER_HOURS; h<=CHARTER_MAX_HOURS; h++) arr.push(h); return arr;
 }
-// v10(항목 3): 대절 시간을 고르기 전에 판단 근거를 준다. 오선택을 사후에 교정하는 넛지(9913)는
+// v10(항목 3): 대절 시간을 고르기 전에 판단 근거를 준다. 오선택을 사후에 교정하는 넛지(짧은 경로)는
 // 이미 있지만, 정작 "몇 시간을 빌려야 하나"에는 아무 힌트가 없어 예방보다 교정에 기댔다.
 // 사용자가 3시간을 고른 뒤에야 "3시간 안 빌려도 된다"고 말하면 sunk cost가 걸린다. 판정
 // (judgeNudge)에는 영향이 없는, 순수한 표시용 문구라 여기 따로 둔다.
@@ -1675,14 +1675,14 @@ function closeBridge(){
 }
 
 // 버튼 위계는 스타일이 고정(주버튼=navy, 보조버튼=회색)이고 라벨·동작만 방향마다 뒤집힌다
-// (스펙 §4 "핵심"). to-charter(9915, 골프/복귀불가/장거리, 돌아갈 차가 없는 "위험")는 주버튼이
-// 전환을 권하고, to-normal(9913, 짧은 경로, "요금" 문제)은 주버튼이 오히려 "이대로 계속하기"다.
-// v14(스펙 §D): 제목 개행 위치가 바뀌었다(9915 "왕복이라면 시간대절이 ⏎ 더 편해요", 9913
+// (스펙 §4 "핵심"). to-charter(왕복/시외, 골프/복귀불가/장거리, 돌아갈 차가 없는 "위험")는 주버튼이
+// 전환을 권하고, to-normal(짧은 경로, 짧은 경로, "요금" 문제)은 주버튼이 오히려 "이대로 계속하기"다.
+// v14(스펙 §D): 제목 개행 위치가 바뀌었다(왕복/시외 "왕복이라면 시간대절이 ⏎ 더 편해요", 짧은 경로
 // "{h}분이면 도착하는 ⏎ 경로예요"). 이 파일은 U+2028/\n으로 강제 개행을 넣지 않는 규칙이라
 // (title()이 순수 텍스트를 돌려줘야 하는 셀프테스트·바텀시트 쪽 사용도 있다), 대신
 // #bridge-title의 max-width를 사유별로 좁혀 기존 word-break:keep-all이 그 지점에서 접히게
 // 한다. 값은 실제 폰트(22px Bold, 시스템 산세리프)로 각 줄 조각의 캔버스 픽셀 폭을 재서
-// 정했다(v14 보고서 §D 참고). 9913(short-trip)은 etaMin이 1~999분 어느 값이어도 같은
+// 정했다(v14 보고서 §D 참고). 짧은 경로(short-trip)은 etaMin이 1~999분 어느 값이어도 같은
 // 지점("도착하는" 뒤)에서 접히도록 폭에 여유를 뒀다.
 const BRIDGE_TITLE_MAXW = { 'round-trip': 210, 'short-trip': 200 };
 function openBridge(n){
@@ -1691,9 +1691,9 @@ function openBridge(n){
   const titleEl = document.getElementById('bridge-title');
   titleEl.textContent = c.title(S);
   titleEl.style.maxWidth = BRIDGE_TITLE_MAXW[n.reason] + 'px';
-  // v14(스펙 §E): 9913 본문은 "일반예약"만 강조하는 HTML(c.bodyHtml)을 쓴다. c.body()는
+  // v14(스펙 §E): 짧은 경로 본문은 "일반예약"만 강조하는 HTML(c.bodyHtml)을 쓴다. c.body()는
   // 상수 리터럴 문자열이라(스펙 §E 지시대로) escapeHtml 없이 innerHTML에 넣어도 안전하지만,
-  // bodyHtml이 없는 사유(9915)는 값을 담을 수 있으니 습관적으로 escapeHtml을 거친다.
+  // bodyHtml이 없는 사유(왕복/시외)는 값을 담을 수 있으니 습관적으로 escapeHtml을 거친다.
   document.getElementById('bridge-desc').innerHTML = c.bodyHtml ? c.bodyHtml(S) : escapeHtml(c.body(S));
   const primary = document.getElementById('bridge-primary');
   const secondary = document.getElementById('bridge-secondary');
@@ -1773,9 +1773,9 @@ function renderPreview(){
   renderPreviewSwitch();
 }
 
-// 요금 카드 아래 전환 줄. 9913 조건(대절 → 일반)이 아직 살아 있을 때만 보인다.
+// 요금 카드 아래 전환 줄. 짧은 경로 조건(대절 → 일반)이 아직 살아 있을 때만 보인다.
 // 입력 화면에서 이미 인라인 넛지를 지나쳐 온 경우의 마지막 안전망이다.
-// 9915 방향(일반 → 대절)은 입력 화면 바텀시트로 이미 한 번 가로막았으므로 여기 두지 않는다.
+// 왕복/시외 방향(일반 → 대절)은 입력 화면 바텀시트로 이미 한 번 가로막았으므로 여기 두지 않는다.
 function renderPreviewSwitch(){
   const el = document.getElementById('preview-switch');
   const n = judgeNudge(S);
@@ -1859,7 +1859,7 @@ document.addEventListener('DOMContentLoaded', function(){
 // 이 함수는 그 계약을 의도적으로 건너뛴다. 실제 플로우라면 픽업 화면에서 시간을 넣어야
 // 넛지·시트가 뜨지만(판정과 렌더 모두 S.pickupAt를 요구한다), 시나리오 전환만으로 그
 // 상태를 재현하기 위한 지름길이다.
-// 조건은 정상(normal)을 제외한 모든 시나리오다. 9913(short), 9915 계열(golf/noReturn/
+// 조건은 정상(normal)을 제외한 모든 시나리오다. 짧은 경로(short), 왕복/시외 계열(golf/noReturn/
 // longDistance)뿐 아니라 airport도 포함한다. airport는 judgeNudge가 항상 null을 돌려주므로
 // 채워도 넛지가 뜨지는 않지만, 채워 두는 것 자체는 무해하고 "정상만 예외"가 조건을 가장
 // 단순하게 표현하므로 굳이 시나리오별로 갈라 적지 않는다.
@@ -1997,7 +1997,7 @@ function runJudgeTests(){
   });
   // v13: "조건 우선순위는 골프 > 복귀불가 > 장거리"는 세 사유가 하나(round-trip)로 합쳐지며
   // 전제 자체가 없어졌다(더 이상 가릴 우선순위가 없다). 지우고 아래 새 필수 테스트
-  // '9915 사유가 round-trip 하나로 합쳐졌다'· '복귀 불가 지역은 더 이상 트리거가 아니다'로
+  // '왕복/시외 사유가 round-trip 하나로 합쳐졌다'· '복귀 불가 지역은 더 이상 트리거가 아니다'로
   // 대체한다(selftest() 마지막에서 함께 돈다).
   test('시간대절 · 대절 시간 미입력이면 판정 불가', ()=>{
     const s = fresh('short','charter'); eq(judgeNudge(s), null);
@@ -2118,12 +2118,12 @@ function runInputTests(){
   });
 }
 function runSheetTests(){
-  // v11: 9915(to-charter) 방향을 가로막던 바텀시트는 v6에서 강조(flashNudge)로, 이제(v11)는
+  // v11: 왕복/시외(to-charter) 방향을 가로막던 바텀시트는 v6에서 강조(flashNudge)로, 이제(v11)는
   // 전체 화면 브리지(openBridge)로 대체됐다. openSheet()/closeSheet()/dismissSheet() 자체는
   // 지우지 않았으므로(되돌리기용) 그 카피 렌더링은 함수를 직접 불러 계속 검사한다.
   // v11: DOM을 #nudge/rt-flash가 아니라 #bridge로 검사하도록 옮겼다(내용은 새 필수 테스트
   // '설정 완료를 누르면 브리지가 뜬다'와 겹치지만, 여기서는 시트가 절대 안 뜨는지도 같이 본다).
-  test('9915 · 골프장이면 첫 설정 완료는 화면을 막고 시트가 아니라 브리지를 띄운다', ()=>{
+  test('왕복/시외 · 설정 완료는 화면을 막고 시트가 아니라 브리지를 띄운다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
     onCtaPress();
     eq(document.getElementById('sheet').hidden, true);   // 시트는 더 이상 안 뜬다
@@ -2132,7 +2132,7 @@ function runSheetTests(){
   });
   // v13: noReturn 시나리오가 지워져 roundTrip으로 바꾸고, 기대 카피도 통합된 COPY['round-trip']
   // 문구로 갱신한다.
-  test('9915 · 시트 카피는 (되돌리기용으로 남은) openSheet를 직접 불러도 조건에 맞게 들어간다', ()=>{
+  test('왕복/시외 · 시트 카피는 (되돌리기용으로 남은) openSheet를 직접 불러도 조건에 맞게 들어간다', ()=>{
     S = fresh('roundTrip','normal'); S.pickupAt = new Date(); render();
     openSheet(judgeNudge(S).reason);
     eq(document.getElementById('sheet-title').textContent, '돌아올 차편은 준비되셨나요?');
@@ -2141,11 +2141,11 @@ function runSheetTests(){
     eq(document.getElementById('sheet-convert').textContent, '시간대절로 바꾸기');
     eq(document.getElementById('sheet-go').textContent, '그대로 진행');
   });
-  // v11(스펙 §4 트리거): 원래 이름은 "9913 방향은 9915와 달리 첫 CTA를 막지 않는다"(v10에서
+  // v11(스펙 §4 트리거): 원래 이름은 "짧은 경로 방향은 왕복/시외와 달리 첫 CTA를 막지 않는다"(v10에서
   // to-normal은 아예 안 막기로 했던 결정)였다. v11은 방향을 가리지 않고 둘 다 브리지로
   // 확인시킨다("판정이 없으면 브리지 없이 바로 넘어간다"만 예외). 그래서 이 테스트의 전제
-  // 자체가 뒤집혔다. 지우고 새 필수 테스트 '설정 완료를 누르면 브리지가 뜬다'(9913/9915
-  // 둘 다 루프로 검사)와 '9913에서 navy 버튼은 그대로 진행이다'로 대체한다.
+  // 자체가 뒤집혔다. 지우고 새 필수 테스트 '설정 완료를 누르면 브리지가 뜬다'(짧은 경로/왕복/시외
+  // 둘 다 루프로 검사)와 '짧은 경로에서 navy 버튼은 그대로 진행이다'로 대체한다.
   // v15: "한 예약에 한 번만"에서 "조건이 맞으면 계속 뜬다"로 바뀌었다(PRD 확정).
   test('조건이 그대로면 설정 완료를 누를 때마다 다시 뜬다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
@@ -2183,7 +2183,7 @@ function runSheetTests(){
     eq(s.scenario, 'normal');
   });
   // v11: "조건이 참이면 첫 설정 완료는 화면을 넘기지 않고 배너를 강조한다(단, to-charter
-  // 방향만)"은 v10의 비대칭 차단(9915만 막는다)을 검사했다. v11은 대칭이라(9913도 막는다)
+  // 방향만)"은 v10의 비대칭 차단(왕복/시외만 막는다)을 검사했다. v11은 대칭이라(짧은 경로도 막는다)
   // 이 테스트의 단언(to-normal은 바로 vehicle로 넘어간다)이 거짓이 됐다. 지우고 새 필수
   // 테스트 '설정 완료를 누르면 브리지가 뜬다'(golf/short 루프로 대칭 확인)로 대체한다.
   // v15: "두 번째 누름에 통과"는 없어졌다. 조건이 맞는 한 설정 완료는 매번 브리지를
@@ -2236,23 +2236,23 @@ function runConvertTests(){
     eq(document.getElementById('card-charter').classList.contains('is-open'), false);
     eq(ctaLabel(S), '설정 완료');
   });
-  // v11: "9913 넛지가 대절 시간 입력 전에는 안 보임"(#nudge DOM 기준)은 지운다. #nudge가
+  // v11: "짧은 경로 넛지가 대절 시간 입력 전에는 안 보임"(#nudge DOM 기준)은 지운다. #nudge가
   // 없어졌고, 같은 사실(대절 시간 미입력이면 판정 자체가 안 선다)은 이미 runJudgeTests의
   // '시간대절 · 대절 시간 미입력이면 판정 불가'가 judgeNudge(s)===null로 직접 검사한다.
-  // v11: "9913 넛지 카피가 화면에 그려짐"을 브리지 제목·본문 검사로 옮긴다(라벨은 새 필수
+  // v11: "짧은 경로 넛지 카피가 화면에 그려짐"을 브리지 제목·본문 검사로 옮긴다(라벨은 새 필수
   // 테스트 '브리지 버튼 위계가...'가 이미 보므로 여기서는 카피 내용만 본다).
-  test('9913 브리지 카피가 화면에 그려짐', ()=>{
+  test('짧은 경로 브리지 카피가 화면에 그려짐', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; S.openCard = 'none'; render();
     onCtaPress();
     eq(document.getElementById('bridge').hidden, false);
     eq(document.getElementById('bridge-title').textContent, '48분이면 도착하는 경로예요');
     eq(document.getElementById('bridge-desc').textContent, '3시간을 빌리지 않아도 일반예약으로 갈 수 있어요');
   });
-  // v11: "넛지가 제목과 본문 두 줄을 보여 준다"를 골프(9915) 브리지 카피 검사로 옮겼었다.
+  // v11: "넛지가 제목과 본문 두 줄을 보여 준다"를 골프(왕복/시외) 브리지 카피 검사로 옮겼었다.
   // v13(§v13-1): golf/no-return/long-distance 세 사유의 카피가 round-trip 하나로 합쳐지며
   // 이 테스트의 "라운딩 끝나고..." 단언이 더 이상 성립하지 않는다. golf 하나만 보던 걸
   // golf/longDistance/roundTrip 세 시나리오 루프로 넓혀, 통합이 실제로 된 걸 확인한다.
-  test('9915 브리지 카피가 왕복 하나로 통일됐다', ()=>{
+  test('왕복/시외 브리지 카피가 왕복 하나로 통일됐다', ()=>{
     for (const sc of ['golf','longDistance','roundTrip']) {
       S = fresh(sc,'normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
       onCtaPress();
@@ -2264,7 +2264,7 @@ function runConvertTests(){
   });
   // v11: "변경 버튼 터치 타깃이 44 이상이다"는 지운다. 새 필수 테스트 '브리지 치수가 Figma
   // 실측과 맞는다'가 이미 두 버튼 모두 정확히 52px(44보다 엄격한 기준)인지 검사한다.
-  // v11: "9913 넛지에는 닫기 버튼이 없다"를 브리지 기준으로 옮긴다. 브리지는 항상 버튼이
+  // v11: "짧은 경로 넛지에는 닫기 버튼이 없다"를 브리지 기준으로 옮긴다. 브리지는 항상 버튼이
   // 정확히 둘(주/보조)이고, 둘 다 명시적 동작(전환/계속)이지 "닫기"가 아니다(사용자가 반드시
   // 하나를 골라야 하고, 그냥 닫아서 판정을 무시할 길이 없다는 게 이 UI의 의도다).
   test('브리지에는 닫기 버튼이 없다(주/보조 둘 뿐)', ()=>{
@@ -2293,7 +2293,7 @@ function runLifecycleTests(){
     S.flags.longDistance = false; setRoute({ to:'강남역' });
     eq(judgeNudge(S), null);
   });
-  test('대절 시간을 줄이면 9913 판정이 사라진다', ()=>{
+  test('대절 시간을 줄이면 짧은 경로 판정이 사라진다', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); setCharterHours(3);
     eq(judgeNudge(S).reason, 'short-trip');
     setCharterHours(1);
@@ -2306,21 +2306,21 @@ function runLifecycleTests(){
     eq(judgeNudge(S).reason, 'round-trip');   // v13: 사유가 'golf'→'round-trip'
   });
   // 수정 5: 위 테스트는 convertedTo가 이미 null인 상태만 봐서, setType()이 convertedTo를
-  // 안 비우는 버그를 못 잡았다. 실제로 벌어지는 시퀀스를 그대로 재현한다. 9915 시트에서
+  // 안 비우는 버그를 못 잡았다. 실제로 벌어지는 시퀀스를 그대로 재현한다. 왕복/시외 시트에서
   // 시간대절로 전환(convertedTo='charter') → 유저가 일반예약 세그먼트 탭 → 다시 시간대절
   // 세그먼트 탭 → 대절 시간 확정. setType()이 convertedTo를 비우지 않으면 여기서 왕복 방지가
-  // 영구히 남아 9913 넛지가 뜨지 않는다.
+  // 영구히 남아 짧은 경로 넛지가 뜨지 않는다.
   test('시트 전환 후 세그먼트를 오가면 왕복 방지가 풀린다', ()=>{
-    // v15: golf 시나리오가 수도권 밖(etaMin 95)으로 바뀌어 9913 조건(eta < 대절*0.5)을
+    // v15: golf 시나리오가 수도권 밖(etaMin 95)으로 바뀌어 짧은 경로 조건(eta < 대절*0.5)을
     // 못 넘는다. 수도권 안 골프장(golfMetro, etaMin 65)으로 바꾼다.
     S = fresh('golfMetro','normal'); S.pickupAt = new Date(); render();
-    convert('charter');                 // 9915 넛지 CTA로 전환한 것과 동일한 경로(convertedTo='charter')
+    convert('charter');                 // 왕복/시외 넛지 CTA로 전환한 것과 동일한 경로(convertedTo='charter')
     eq(S.convertedTo, 'charter');
     setType('normal');                  // 유저가 세그먼트를 직접 탭
     setType('charter');                 // 다시 세그먼트를 직접 탭
     eq(S.convertedTo, null);
     S.charterHours = 3;                 // 대절 3시간 확정 (golf 시나리오 etaMin=65 < 3*60*0.5=90)
-    eq(judgeNudge(S).reason, 'short-trip');   // 9913 넛지가 정상적으로 뜬다
+    eq(judgeNudge(S).reason, 'short-trip');   // 짧은 경로 넛지가 정상적으로 뜬다
   });
   test('넛지로 전환한 경우에만 반대 넛지가 억제된다', ()=>{
     S = fresh('golf','charter'); S.charterHours = 3; S.pickupAt = new Date();
@@ -2429,13 +2429,13 @@ function runPreviewTests(){
     S = fresh('short','charter'); S.charterHours = 3;
     eq(routeChips(S).join('|'), '3시간 이용|48분 예상');
   });
-  test('미리보기 전환 줄은 9913 조건이 살아 있을 때만', ()=>{
+  test('미리보기 전환 줄은 짧은 경로 조건이 살아 있을 때만', ()=>{
     S = fresh('short','charter'); S.pickupAt = at; S.charterHours = 3; S.screen = 'preview'; render();
     eq(document.getElementById('preview-switch').hidden, false);
     eq(document.getElementById('preview-switch').textContent.trim(),
        '48분 경로에 3시간을 빌리고 있어요 · 예약 유형 바꾸기');
   });
-  test('9915 방향은 미리보기에 전환 줄이 없다', ()=>{
+  test('왕복/시외 방향은 미리보기에 전환 줄이 없다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = at; S.screen = 'preview'; render();
     eq(document.getElementById('preview-switch').hidden, true);
   });
@@ -2581,7 +2581,7 @@ function runLayoutTests(){
   // v13(§v13-2): 비선택 칩 라벨이 #384F85로 바뀌었다(선택 라벨 #19254D는 NAVY와 같은 값이라
   // 이미 통과한다). 채도(133-56=77)가 30을 넘어 그냥 두면 일반 규칙에 걸리므로, 다른
   // 강조색처럼 .rt-seg-tab 안에서만 허용하는 CHIP_LABEL_ACCENT로 등록한다.
-  // v14(스펙 §E): 9913 브리지 본문의 "일반예약" 강조가 ACCENT_0086EA(#0086EA)를 #bridge
+  // v14(스펙 §E): 짧은 경로 브리지 본문의 "일반예약" 강조가 ACCENT_0086EA(#0086EA)를 #bridge
   // 안에서도 쓴다. 원래 .rt-wheel-col 전용이었던 예외를 #bridge까지 넓힌다.
   // v14(스펙 §B): 리드 문구 아이콘 색이 #556895→#7282A6로 바뀌면서(텍스트는 그대로) 이제
   // WHEEL_MUTED(#7282A6)가 #type-lead 안에서도 나온다. 원래 .rt-wheel-col 전용이었던 예외를
@@ -2650,7 +2650,7 @@ function runLayoutTests(){
     eq(document.getElementById('phone').offsetWidth, 360);
   });
   // v11: #nudge가 스크롤 맨 뒤에 있는지 보던 네 개 테스트('넛지가 스크롤 영역 안 카드들
-  // 뒤에 있다', '9913/9915 넛지는 스크롤 영역 맨 뒤에 있다', '방향이 바뀌어도 넛지 자리는
+  // 뒤에 있다', '짧은 경로/왕복/시외 넛지는 스크롤 영역 맨 뒤에 있다', '방향이 바뀌어도 넛지 자리는
   // 그대로다')는 전부 지운다. #nudge 자체가 없어졌고, 그 자리를 이제 #type-lead가 차지했다
   // (당시 스펙 §3: 카드 목록 맨 아래).
   // v14(스펙 §B): Figma가 리드 문구를 카드 목록 맨 아래에서 칩 그룹(.rt-seg) 안, 칩 줄
@@ -2764,13 +2764,13 @@ function runWheelTests(){
 // ---- v10 잔존분(디자인 비평 개선 8건 중 어시스트/넛지와 무관하게 아직 유효한 것) ----
 // 원래 이름은 runV10Tests. 지운 것: '어시스트는 카드 위, 넛지는 스크롤 맨 뒤'·'판정 결과가
 // 있으면 어시스트를 눌러 넛지로 갈 수 있다'(둘 다 #assist/#nudge DOM 자체가 없어짐),
-// '9913은 설정 완료를 가로막지 않는다'(v11에서 전제가 뒤집혔다. 이제 9913도 브리지로
+// '짧은 경로는 설정 완료를 가로막지 않는다'(v11에서 전제가 뒤집혔다. 이제 짧은 경로도 브리지로
 // 막는다, runSheetTests 주석 참고), '픽업 시간만 바뀌면 어시스트가 다시 판정하지 않는다'
 // (judgeSignature() 자체를 지웠다), '어시스트 문구는 결론이 아니라 발견을 말한다'·'판정 중
 // 별 색이 비텍스트 대비 3:1을 넘는다'(#assist 전용), '칩은 보이기엔 38이지만 터치 영역은
 // 44다'(::after 터치 확장을 지웠다. 이제 실제 높이가 44라 그 자체가 터치 영역이다).
 function runV10Tests(){
-  test('9915 는 조건이 맞는 한 설정 완료를 계속 가로막는다', ()=>{
+  test('왕복/시외는 조건이 맞는 한 설정 완료를 계속 가로막는다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
     onCtaPress();
     eq(S.screen, 'input');
@@ -2855,7 +2855,7 @@ function runBridgeTests(){
       eq(getComputedStyle(document.getElementById('bridge-secondary')).backgroundColor, 'rgb(230, 233, 239)');
     }
   });
-  test('9913 에서 navy 버튼은 그대로 진행이다', ()=>{
+  test('짧은 경로에서 navy 버튼은 그대로 진행이다', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; S.openCard='none';
     render(); onCtaPress();
     document.getElementById('bridge-primary').click();
@@ -2863,7 +2863,7 @@ function runBridgeTests(){
     eq(S.type, 'charter');                 // 전환되지 않았다
     eq(document.getElementById('bridge').hidden, true);
   });
-  test('9915 에서 navy 버튼은 시간대절로 전환한다', ()=>{
+  test('왕복/시외에서 navy 버튼은 시간대절로 전환한다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard='none';
     render(); onCtaPress();
     document.getElementById('bridge-primary').click();
@@ -2932,7 +2932,7 @@ function runBridgeTests(){
 
 // ---- v13: 트리거 2종 통합(§v13-1) + 유형 탭 재설계(§v13-2) ----
 function runV13Tests(){
-  test('9915 사유가 round-trip 하나로 합쳐졌다', ()=>{
+  test('왕복/시외 사유가 round-trip 하나로 합쳐졌다', ()=>{
     for (const sc of ['golf','longDistance','roundTrip']) {
       S = fresh(sc,'normal'); S.pickupAt = new Date();
       const n = judgeNudge(S);
@@ -3074,17 +3074,17 @@ function runV14Tests(){
     const d = document.getElementById('bridge-desc');
     eq(getComputedStyle(d).lineHeight, '22px');
   });
-  // §D(9913): "{h}분이면 도착하는" / "경로예요"로 접혀야 한다. etaMin=48인 short 시나리오로
+  // §D(짧은 경로): "{h}분이면 도착하는" / "경로예요"로 접혀야 한다. etaMin=48인 short 시나리오로
   // 확인한다(측정한 max-width는 1~999분 범위에서 같은 지점에 접히도록 잡았다, v14 보고서 참고).
-  test('9913 브리지 제목도 Figma 지점에서 접힌다', ()=>{
+  test('짧은 경로 브리지 제목도 Figma 지점에서 접힌다', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; S.openCard='none';
     render(); onCtaPress();
     const t = document.getElementById('bridge-title');
     eq(Math.round(t.getBoundingClientRect().height), 60);   // 정확히 2줄
   });
-  // §E: 9913 본문에서 "일반예약" 넉 자만 #0086EA로 강조. 9915에는 강조가 없다(bodyHtml
+  // §E: 짧은 경로 본문에서 "일반예약" 넉 자만 #0086EA로 강조. 왕복/시외에는 강조가 없다(bodyHtml
   // 필드 자체가 COPY['round-trip']에 없다).
-  test('9913 본문에서 일반예약만 강조된다', ()=>{
+  test('짧은 경로 본문에서 일반예약만 강조된다', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3;
     S.openCard='none'; render(); onCtaPress();
     const d = document.getElementById('bridge-desc');
@@ -3093,10 +3093,10 @@ function runV14Tests(){
     eq(em.textContent, '일반예약');
     eq(getComputedStyle(em).color, 'rgb(0, 134, 234)');      // #0086EA
     eq(getComputedStyle(d).color, 'rgb(49, 72, 125)');       // #31487D
-    // 9915 에는 강조가 없다
+    // 왕복/시외 에는 강조가 없다
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard='none'; render(); onCtaPress();
     if (document.getElementById('bridge-desc').querySelector('span'))
-      throw new Error('9915 본문에는 강조가 없어야 한다');
+      throw new Error('왕복/시외 본문에는 강조가 없어야 한다');
   });
 }
 
