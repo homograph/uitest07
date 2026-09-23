@@ -96,13 +96,21 @@
      (.rt-seg-tab) 두 개를 넣는다.
      v13(§v13-2, 13339:84831 4배 렌더 실측): 칩 높이가 44→40으로 다시 줄었다(v11의 44는
      오독이었다). 40은 HIG 44 미만이라 v10 방식의 투명 ::after 터치 확장을 되살렸다(아래
-     .rt-seg-tab::after, 위아래 2px씩 = 44). 아이콘도 v11까지는 두 칩 모두에 그렸지만
-     v13은 "아이콘은 선택된 칩에만" 이라 렌더 시점에 <img> 자체를 넣었다 뺐다 한다
-     (renderTypeTab 참고, 마크업엔 <span class="rt-seg-label">만 고정으로 남는다). */
+     .rt-seg-tab::after, 위아래 2px씩 = 44).
+     v14(스펙 §A, B안): v13은 "아이콘은 선택된 칩에만"이라 렌더 시점에 <img> 자체를 넣었다
+     뺐다 했는데, 그러면 탭을 바꿀 때마다 칩 폭이 24px씩 흔들렸다(아이콘 20+gap 6만큼).
+     디자이너가 제안한 B안으로 바꾼다: 아이콘을 양쪽 칩에 항상 두되, 선택 칩은 유형과
+     무관한 공통 체크 배지(CHIP_ICON_CHECK)를, 비선택 칩은 그 칩의 유형 아이콘을 45%
+     불투명도로 보여준다(renderTypeTab 참고). 아이콘이 항상 있으므로 선택/비선택 padding도
+     이제 같아야 폭이 고정된다(아래 .rt-seg-tab 공통 규칙, §A-2). .rt-seg는 이제 칩 줄뿐
+     아니라 리드 문구까지 담는 세로 스택이라(§B, chipselectertab_group) flex-direction:
+     column, gap:12를 추가한다(마크업도 #type-lead를 .rt-scroll에서 이 안으로 옮겼다,
+     HTML/renderInput 참고). */
   .rt-seg{
     flex:0 0 auto;
     padding:20px 16px;
     box-sizing:border-box;
+    display:flex;flex-direction:column;gap:12px;   /* §B: 칩 그룹 padding 20 16, 칩→리드 간격 12 */
   }
   .rt-seg-row{
     display:flex;gap:8px;
@@ -116,7 +124,8 @@
     flex:0 0 auto;
     height:40px;   /* v13(§v13-2): 44→40, 4배 렌더 실측 */
     border-radius:9999px;
-    padding:0 14px;   /* v13: 비선택. 아이콘이 없어 좌우 대칭 */
+    padding:0 14px 0 12px;   /* v14(§A-2, B안): 이제 양쪽 다 아이콘이 있어 선택/비선택 padding이
+                                같다(아이콘 쪽 좌측이 2px 좁음). 다르면 탭 전환 시 폭이 흔들린다 */
     gap:6px;   /* v13: 아이콘-라벨 간격, 4배 렌더 실측(§v13-2) */
     box-sizing:border-box;
     display:flex;align-items:center;justify-content:flex-start;
@@ -136,30 +145,39 @@
   }
   .rt-seg-icon{
     width:20px;height:20px;flex:0 0 auto;display:block;
+    opacity:1;
+  }
+  /* v14(§A-1, B안): 비선택 칩의 유형 아이콘은 45% 불투명도. 선택 칩(체크 배지)은 100%
+     그대로 둔다(아래 aria-selected="true"는 별도 opacity 규칙이 없으므로 기본값 1). */
+  .rt-seg-tab[aria-selected="false"] .rt-seg-icon{
+    opacity:.45;
   }
   .rt-seg-tab[aria-selected="true"]{
-    padding:0 14px 0 12px;   /* v13: 선택. 아이콘 쪽(좌)이 2px 좁다(4배 렌더 실측) */
     background:#D1D4DB;   /* 선택: #E6E9EF + 검정 10% 오버레이의 합성값(스펙 §2) */
     color:#19254D;   /* v13: 선택 라벨. --navy와 같은 값이라 강조색 스캔에 새로 안 걸린다 */
     /* v13: 위에서 안쪽으로 눌린 느낌 + 아래 가장자리 흰 하이라이트(4배 렌더 픽셀 실측) */
     box-shadow:inset 0 2px 8px rgba(23,26,36,.20), inset 0 -1px 0 rgba(255,255,255,.5);
   }
-  /* v11(스펙 §3): 리드 문구가 칩 줄 바로 아래에서 카드 목록 맨 아래로 옮겨졌다. 마크업도
-     .rt-scroll의 마지막 자식으로 옮긴다(HTML, renderInput 참고). 좌측 정렬 + 아이콘으로
-     바뀌고 문구도 "~때 사용해요"로 바뀌었다(구 문구는 "~때"에서 끝났다). */
+  /* v11(스펙 §3): 리드 문구가 칩 줄 바로 아래에서 카드 목록 맨 아래로 옮겨졌다. 문구도
+     "~때 사용해요"로 바뀌었다(구 문구는 "~때"에서 끝났다).
+     v14(스펙 §B): Figma가 리드 문구를 카드 아래에서 다시 칩 그룹 안, 칩 바로 아래로
+     되돌렸다. 마크업도 .rt-scroll의 마지막 자식에서 .rt-seg(칩 그룹)의 마지막 자식으로
+     옮긴다(HTML/renderInput 참고). 칩과의 간격은 이제 #type-lead 자신의 padding이 아니라
+     부모 .rt-seg의 gap:12가 담당하므로 위아래 padding을 지운다(안 지우면 12+10=22가 되어
+     실측과 어긋난다). */
   #type-lead{
     flex:0 0 auto;
     display:flex;align-items:center;gap:4px;
-    padding:10px 0;
     box-sizing:border-box;
     font-size:14px;font-weight:400;line-height:20px;color:#556895;
     text-align:left;
     word-break:keep-all;
   }
   /* Figma 에셋 미확보(btn_info_detail), 임시로 원 안에 i를 그리는 인라인 SVG를 쓴다.
-     currentColor라 #type-lead의 color(#556895)를 그대로 따라간다. */
+     currentColor. v14(스펙 §B): 아이콘 색만 #556895→#7282A6로 옅어졌다(텍스트는 #556895
+     유지라 #type-lead 자체의 color는 안 바꾸고 svg에만 override한다). */
   #type-lead svg{
-    width:16px;height:16px;flex:0 0 auto;display:block;color:#556895;
+    width:16px;height:16px;flex:0 0 auto;display:block;color:#7282A6;
   }
   .rt-scroll{
     flex:1 1 auto;
@@ -374,13 +392,24 @@
     font-size:22px;font-weight:700;line-height:30px;color:#19254D;
     text-align:center;
     word-break:keep-all;
+    /* v14(스펙 §D): 개행 위치가 바뀌었다(9915 "왕복이라면 시간대절이 ⏎ 더 편해요", 9913
+       "{h}분이면 도착하는 ⏎ 경로예요"). U+2028/\n은 이 파일 규칙상 금지라 max-width로 그
+       지점에서 word-break:keep-all이 접히게 한다(openBridge가 사유별 값을 인라인
+       style.maxWidth로 준다, JS RENDER 참고). align-self:center로 줄어든 박스를 가운데에
+       놓는다(부모 .rt-bridge-text는 align-items 기본값이 없어 stretch라 안 하면 312 폭을
+       그대로 채워 접히지 않는다). */
+    align-self:center;
   }
   #bridge-desc{
     margin:0;
-    font-size:15px;font-weight:400;color:#31487D;
+    font-size:15px;font-weight:400;line-height:22px;color:#31487D;
     text-align:center;
     word-break:keep-all;
   }
+  /* v14(스펙 §E): 9913 본문에서 "일반예약" 넉 자만 강조(#0086EA, inspect.js range override
+     실측). 9915 본문에는 강조 span이 없다(COPY['round-trip']에 bodyHtml 필드 자체가 없다,
+     openBridge 참고). */
+  #bridge-desc span{color:#0086EA;}
   .rt-bridge-actions{
     display:flex;flex-direction:column;gap:10px;
     padding:20px 24px;
@@ -414,13 +443,29 @@
     display:flex;
     flex-direction:column;
   }
-  /* Figma 실측(§9 reserv_button_group): padding 10 24 20 24. 버튼은 그 안을 채우므로
+  /* Figma 실측(§9 reserv_button_group, 구판): padding 10 24 20 24. 버튼은 그 안을 채우므로
      폭 360 기준 x 24..336, 즉 312다. 카드(328, 좌우 16)보다 좁다. 좌우를 16으로 두면
-     버튼이 카드와 같은 폭이 돼 Figma와 16px 어긋난다. */
+     버튼이 카드와 같은 폭이 돼 Figma와 16px 어긋난다.
+     v14(스펙 §C): 위 실측은 미리보기 화면(#screen-preview, #preview-cta)에는 그대로
+     맞지만, 입력 화면(reserv_button_group, TADA-9913/9915 개편)은 padding이 10 24 20 24→
+     20(네 방향 모두), CTA 폭이 312→320으로 바뀌었다. .rt-footer/.rt-cta는 두 화면이
+     공유하는 클래스라 여기서 값을 바꾸면 미리보기 화면까지 같이 바뀌므로(건드리지 말 것
+     대상), 기본 규칙은 그대로 두고 #screen-input 스코프 override(아래)만 새로 둔다. */
   .rt-footer > .rt-cta{
     display:block;
     width:calc(100% - 48px);
     margin:10px 24px 20px 24px;
+  }
+  /* v14(스펙 §C, 입력 화면 전용): padding 20(네 방향), CTA 폭 320(x 20..339.5). 카드(328)보다
+     좁다는 관계는 유지된다(320 < 328). 배경은 단색(#E6E9EF)에서 위가 투명·아래가 #E6E9EF인
+     세로 그라데이션으로 바뀌었다(스크롤 콘텐츠가 CTA 뒤로 지나갈 때 페이드시키는 용도). */
+  #screen-input .rt-footer{
+    padding:20px;
+    background:linear-gradient(to bottom, rgba(230,233,239,0), rgba(230,233,239,1));
+  }
+  #screen-input .rt-footer > .rt-cta{
+    width:100%;
+    margin:0;
   }
   .rt-cta{
     width:100%;
@@ -775,9 +820,12 @@
            flex 줄(gap 8, 좌측 정렬, role=tablist)이다. 칩(.rt-seg-tab) 안 아이콘은 유형에
            고정(스펙 §7: Figma는 선택 상태를 따라 스왑하지만 그러면 탭할 때마다 아이콘이
            자리를 바꿔 유형을 식별할 수 없다. renderTypeTab이 버튼별로 고정 아이콘을 준다).
-           v13(§v13-2): 아이콘은 이제 선택된 칩에만 존재한다(비선택엔 <img> 자체가 없어야
-           한다). <img>를 마크업에 고정해 두지 않고 renderTypeTab이 매 렌더마다 넣고 뺀다.
-           여기 남는 건 항상 있는 라벨(span)뿐이다. -->
+           v14(스펙 §A/B, B안): 아이콘은 다시 두 칩 모두에 항상 있다(선택=체크 배지 공통,
+           비선택=유형 아이콘 45%, renderTypeTab이 매 렌더마다 src와 aria-selected만 갱신,
+           <img> 자체는 첫 렌더 이후 계속 남는다). 여기 남는 건 항상 있는 라벨(span)뿐이다.
+           또한 리드 문구(#type-lead)가 카드 목록 밖, 이 칩 그룹 안으로 다시 들어와 칩 줄
+           바로 아래 마지막 자식으로 붙는다(renderInput이 내용만 채우고 DOM 위치는 안
+           옮긴다. §B, v11 당시 .rt-scroll 맨 뒤로 옮겼던 걸 되돌린 것). -->
       <div class="rt-seg">
         <div class="rt-seg-row" role="tablist">
           <button type="button" id="seg-normal" class="rt-seg-tab" role="tab" aria-selected="true">
@@ -787,15 +835,13 @@
             <span class="rt-seg-label"></span>
           </button>
         </div>
+        <div id="type-lead"></div>
       </div>
 
       <div class="rt-scroll">
         <div class="rt-card" id="card-route"></div>
         <div class="rt-card" id="card-pickup"></div>
         <div class="rt-card" id="card-charter" hidden></div>
-        <!-- v11(스펙 §3): 리드 문구가 칩 줄 아래에서 카드 목록 맨 아래로 옮겨졌다. .rt-scroll의
-             마지막 자식이어야 한다(renderInput이 내용만 채우고 DOM 위치는 안 옮긴다). -->
-        <div id="type-lead"></div>
       </div>
 
       <div class="rt-footer">
@@ -1007,6 +1053,12 @@ const COPY = {
   // 직접 텍스트를 만들었지 COPY[reason].cta를 읽지 않았다). 손대지 않고 그대로 둔다.
   'short-trip':    { title:s=>`${s.etaMin}분이면 도착하는 경로예요`,
                      body: s=>`${s.charterHours}시간을 빌리지 않아도 일반예약으로 갈 수 있어요`,
+                     // v14(스펙 §E): 브리지 본문에서 "일반예약" 넉 자만 #0086EA로 강조한다.
+                     // body()는 바텀시트(옛 openSheet, 지금은 죽은 경로)와 셀프테스트(§Task1
+                     // '9913 브리지 카피가...')가 순수 텍스트로 그대로 기대하므로 손대지
+                     // 않고, 브리지 전용 HTML만 별도 필드로 둔다(openBridge 참고). 9915에는
+                     // 이런 강조가 없어 bodyHtml 필드 자체가 없다.
+                     bodyHtml: s=>`${escapeHtml(String(s.charterHours))}시간을 빌리지 않아도 <span>일반예약</span>으로 갈 수 있어요`,
                      cta:'일반예약으로 바꾸기' },
   // v13(§v13-1): golf/no-return/long-distance 세 사유의 카피가 한 화면(왕복 카피 + 표지판
   // 일러스트)으로 통일됐다. 골프장 시나리오(13339)도 이제 골프 카피가 아니라 이 카피를 쓴다.
@@ -1156,21 +1208,22 @@ function confirmCharterWheel(h){
 const ICON_ADD = '<svg class="rt-icon-add" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M34.6654 29.334V13.334H29.332V29.334H13.332V34.6673H29.332V50.6673H34.6654V34.6673H50.6654V29.334H34.6654Z" fill="black"/></svg>';
 const ICON_ARROW = '<svg class="rt-icon-arrow" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M38.8955 32L22.1146 15.2192L25.8858 11.448L46.4379 32L25.8858 52.5521L22.1146 48.7809L38.8955 32Z" fill="#262A38"/></svg>';
 
-// 칩 아이콘(스펙 §2, assets_reservation_type/illust/chip-call.png·chip-charter.png, 60px를
-// base64로 인라인해 20x20으로 쓴다). Figma는 선택 상태를 따라 두 아이콘이 스왑되지만
-// (§7 "프로토타입이 일부러 다르게 한 곳") 그러면 탭할 때마다 아이콘이 자리를 바꿔 유형을
-// 식별할 수 없다. 유형에 고정한다(renderTypeTab 참고).
-// v13(§v13-2, 13339:84831 4배 렌더 실측): v12는 이 두 상수를 "노드 이름(_call/_charter)
+// 칩 아이콘(스펙 §A, assets_reservation_type/illust/, 144px(20의 7배 이상)를 base64로
+// 인라인해 20x20으로 쓴다).
+// v13(§v13-2, 13339:84831 4배 렌더 실측): v12는 CHIP_ICON_NODE_CALL을 "노드 이름(_call)
 // 근거"로 유형에 매핑했었는데 그게 거꾸로였다(렌더가 정답, 이름은 아니다). Figma 노드
 // ic_thumbnail_reservation_call(파란 원)이 실제로는 "일반예약" 칩이 아니라 "시간대절" 칩
-// 안에 있고, ic_thumbnail_reservation_charter(스케줄 그림)가 "시간대절"이 아니라
-// "일반예약" 칩 안에 있다. 그래서 상수 이름을 유형(NORMAL/CHARTER)이 아니라 Figma 노드
-// 이름 그대로(NODE_CALL/NODE_CHARTER)로 바꿔, "이름 = 어느 유형에 쓰이는가"로 오해할 여지를
-// 없앴다. 값(base64)은 건드리지 않았고, 아래 renderTypeTab 호출부에서 NODE_CHARTER를
-// 일반예약에, NODE_CALL을 시간대절에 준다(매핑만 뒤집음).
+// 안에 있다. 그래서 상수 이름을 유형(NORMAL/CHARTER)이 아니라 Figma 노드 이름 그대로
+// (NODE_CALL)로 바꿔, "이름 = 어느 유형에 쓰이는가"로 오해할 여지를 없앴다.
+// v14(스펙 §A, B안): 디자이너 제안으로 "선택된 칩에만, 유형별 아이콘" → "양쪽 다 아이콘,
+// 선택은 공통 체크 배지"로 바뀌었다. CHIP_ICON_NODE_CHARTER(스케줄 그림, 옛 "일반예약"
+// 아이콘)는 이제 아무 자리에도 안 쓰여 base64 상수째 지웠다(약 3KB 감소). 대신 선택 칩
+// 공통 체크 배지(CHIP_ICON_CHECK, 신규)와 "일반예약" 비선택 칩의 위치 핀
+// (CHIP_ICON_DESTINATION, 신규)을 추가한다. CHIP_ICON_NODE_CALL(파란 원)은 이제 "시간대절"
+// 비선택 칩 아이콘으로 그대로 재사용한다(renderTypeTab 호출부 참고).
 const CHIP_ICON_NODE_CALL = 'data:image/png;base64,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';
-const CHIP_ICON_NODE_CHARTER = 'data:image/png;base64,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';
-
+const CHIP_ICON_CHECK = 'data:image/png;base64,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';
+const CHIP_ICON_DESTINATION = 'data:image/png;base64,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';
 // 리드 문구 아이콘(btn_info_detail). Figma 에셋 미확보, 임시로 원 안에 i를 그리는 인라인
 // SVG(currentColor, 16x16)를 쓴다. 진짜 에셋을 만나면 이 상수만 교체하면 된다.
 const ICON_INFO = '<svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.3" fill="none"/><rect x="7.25" y="6.75" width="1.5" height="4.5" rx="0.75" fill="currentColor"/><rect x="7.15" y="4.1" width="1.7" height="1.7" rx="0.85" fill="currentColor"/></svg>';
@@ -1509,24 +1562,24 @@ function charterCardHtml(s, isOpen){
 // aria-selected·라벨 텍스트에 더해 아이콘도 채운다. 아이콘은 버튼(유형) 하나당 고정값이라
 // isActive와 무관하게 매번 같은 iconSrc를 준다(스펙 §7: Figma는 선택 상태를 따라 스왑하지만
 // 프로토는 유형에 고정한다).
-// v13(스펙 §v13-2): "아이콘은 유형에 고정 + 선택된 칩에만 보인다"로 바뀌었다. 아이콘 자체는
-// 여전히 버튼(유형)에 고정이지만, isActive가 false면 <img> 엘리먼트를 DOM에서 아예 뗀다
-// (CSS display:none이 아니라 진짜 제거. 셀프테스트가 querySelectorAll('img').length로
-// "비선택엔 아이콘이 없다"를 검사한다).
-function renderTypeTab(btn, title, isActive, iconSrc){
+// v13(스펙 §v13-2): "아이콘은 유형에 고정 + 선택된 칩에만 보인다"였다. isActive가 false면
+// <img> 엘리먼트를 DOM에서 아예 뗐다(CSS display:none이 아니라 진짜 제거).
+// v14(스펙 §A, B안): 탭을 바꿀 때마다 아이콘이 붙었다 떨어지며 칩 폭이 24px(아이콘 20 +
+// gap 6) 흔들리는 게 문제였다. 이제 <img>는 첫 렌더에서 만들어지면 계속 남고(더 이상
+// remove하지 않는다), src와 opacity(CSS, aria-selected 기반)만 매번 갱신한다. typeIconSrc는
+// "이 칩이 비선택일 때" 보여줄 유형 아이콘이고, 선택일 때는 유형과 무관하게 항상
+// CHIP_ICON_CHECK(공통 체크 배지)를 보여준다.
+function renderTypeTab(btn, title, isActive, typeIconSrc){
   btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
   let icon = btn.querySelector('.rt-seg-icon');
-  if (isActive){
-    if (!icon){
-      icon = document.createElement('img');
-      icon.className = 'rt-seg-icon';
-      icon.alt = '';
-      btn.insertBefore(icon, btn.firstChild);
-    }
-    if (icon.getAttribute('src') !== iconSrc) icon.src = iconSrc;
-  } else if (icon){
-    icon.remove();
+  if (!icon){
+    icon = document.createElement('img');
+    icon.className = 'rt-seg-icon';
+    icon.alt = '';
+    btn.insertBefore(icon, btn.firstChild);
   }
+  const src = isActive ? CHIP_ICON_CHECK : typeIconSrc;
+  if (icon.getAttribute('src') !== src) icon.src = src;
   btn.querySelector('.rt-seg-label').textContent = title;
 }
 
@@ -1569,9 +1622,10 @@ function fitRouteSummaryValue(el, s){
 function renderInput(){
   const openName = S.openCard || 'route';
 
-  // v13: 매핑이 뒤집혀 있었다(위 CHIP_ICON_NODE_* 선언부 주석 참고). NODE_CHARTER(스케줄
-  // 그림)를 일반예약에, NODE_CALL(파란 원)을 시간대절에 준다.
-  renderTypeTab(document.getElementById('seg-normal'), '일반예약', S.type === 'normal', CHIP_ICON_NODE_CHARTER);
+  // v14(스펙 §A, B안): 비선택일 때 보여줄 유형 아이콘. 일반예약=위치 핀(CHIP_ICON_DESTINATION,
+  // 신규), 시간대절=파란 원(CHIP_ICON_NODE_CALL, 기존 재사용). 선택일 때는 renderTypeTab이
+  // 이 값을 무시하고 항상 CHIP_ICON_CHECK를 그린다.
+  renderTypeTab(document.getElementById('seg-normal'), '일반예약', S.type === 'normal', CHIP_ICON_DESTINATION);
   renderTypeTab(document.getElementById('seg-charter'), '시간대절', S.type === 'charter', CHIP_ICON_NODE_CALL);
   // v11(스펙 §3): 아이콘(ICON_INFO, 임시) + 텍스트. innerHTML을 쓰지만 텍스트는 이 파일의
   // escapeHtml을 거치지 않아도 안전하다(TYPE_LEAD는 상수 리터럴이라 사용자 입력이 아니다).
@@ -1620,11 +1674,24 @@ function closeBridge(){
 // 버튼 위계는 스타일이 고정(주버튼=navy, 보조버튼=회색)이고 라벨·동작만 방향마다 뒤집힌다
 // (스펙 §4 "핵심"). to-charter(9915, 골프/복귀불가/장거리, 돌아갈 차가 없는 "위험")는 주버튼이
 // 전환을 권하고, to-normal(9913, 짧은 경로, "요금" 문제)은 주버튼이 오히려 "이대로 계속하기"다.
+// v14(스펙 §D): 제목 개행 위치가 바뀌었다(9915 "왕복이라면 시간대절이 ⏎ 더 편해요", 9913
+// "{h}분이면 도착하는 ⏎ 경로예요"). 이 파일은 U+2028/\n으로 강제 개행을 넣지 않는 규칙이라
+// (title()이 순수 텍스트를 돌려줘야 하는 셀프테스트·바텀시트 쪽 사용도 있다), 대신
+// #bridge-title의 max-width를 사유별로 좁혀 기존 word-break:keep-all이 그 지점에서 접히게
+// 한다. 값은 실제 폰트(22px Bold, 시스템 산세리프)로 각 줄 조각의 캔버스 픽셀 폭을 재서
+// 정했다(v14 보고서 §D 참고). 9913(short-trip)은 etaMin이 1~999분 어느 값이어도 같은
+// 지점("도착하는" 뒤)에서 접히도록 폭에 여유를 뒀다.
+const BRIDGE_TITLE_MAXW = { 'round-trip': 210, 'short-trip': 200 };
 function openBridge(n){
   const c = COPY[n.reason];
   document.getElementById('bridge-illust').src = BRIDGE_ILLUST[n.reason];
-  document.getElementById('bridge-title').textContent = c.title(S);
-  document.getElementById('bridge-desc').textContent = c.body(S);
+  const titleEl = document.getElementById('bridge-title');
+  titleEl.textContent = c.title(S);
+  titleEl.style.maxWidth = BRIDGE_TITLE_MAXW[n.reason] + 'px';
+  // v14(스펙 §E): 9913 본문은 "일반예약"만 강조하는 HTML(c.bodyHtml)을 쓴다. c.body()는
+  // 상수 리터럴 문자열이라(스펙 §E 지시대로) escapeHtml 없이 innerHTML에 넣어도 안전하지만,
+  // bodyHtml이 없는 사유(9915)는 값을 담을 수 있으니 습관적으로 escapeHtml을 거친다.
+  document.getElementById('bridge-desc').innerHTML = c.bodyHtml ? c.bodyHtml(S) : escapeHtml(c.body(S));
   const primary = document.getElementById('bridge-primary');
   const secondary = document.getElementById('bridge-secondary');
   if (n.dir === 'to-charter'){
@@ -2453,20 +2520,21 @@ function runLayoutTests(){
     eq(getComputedStyle(b).backgroundColor, 'rgb(25, 37, 77)');
     eq(px(b,'borderTopLeftRadius'), 4);
   });
-  // Figma 실측(§9): reserv_button_group padding 10 24 20 24 -> 폭 360 기준 버튼은 x 24..336.
-  // 카드(328, 좌우 16)보다 좁다. 좌우를 카드와 같은 16으로 두는 실수를 잡는다.
-  test('CTA는 카드보다 좁고 좌우 24에 놓인다', ()=>{
+  // v14(스펙 §C, 옛 §9): reserv_button_group 실측이 padding 10 24 20 24, 폭 312에서
+  // padding 20(네 방향)·폭 320으로 바뀌었다(x 20..339.5, 카드 328보다는 여전히 좁다).
+  // 좌우가 24로 되돌아가거나(뮤테이션 d) 폭이 다시 312로 좁아지는 회귀를 잡는다.
+  test('CTA는 좌우 20, 폭 320', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
     const phone = document.getElementById('phone').getBoundingClientRect();
     const b = document.getElementById('cta').getBoundingClientRect();
     const card = document.getElementById('card-route').getBoundingClientRect();
-    eq(Math.round(b.left - phone.left), 24);
-    eq(Math.round(phone.right - b.right), 24);
-    eq(Math.round(b.width), 312);
+    eq(Math.round(b.left - phone.left), 20);
+    eq(Math.round(phone.right - b.right), 20);
+    eq(Math.round(b.width), 320);
     eq(Math.round(b.height), 52);
     if (b.width >= card.width) throw new Error('CTA should be narrower than the cards');
     const f = document.querySelector('#screen-input .rt-footer').getBoundingClientRect();
-    eq(Math.round(b.top - f.top), 10);
+    eq(Math.round(b.top - f.top), 20);
     eq(Math.round(f.bottom - b.bottom), 20);
   });
   // v11: "넛지 카드 배경은 #F1F9FE"는 지운다(#nudge 자체가 없어졌다). 브리지 배경은 단색이
@@ -2504,11 +2572,16 @@ function runLayoutTests(){
   // v13(§v13-2): 비선택 칩 라벨이 #384F85로 바뀌었다(선택 라벨 #19254D는 NAVY와 같은 값이라
   // 이미 통과한다). 채도(133-56=77)가 30을 넘어 그냥 두면 일반 규칙에 걸리므로, 다른
   // 강조색처럼 .rt-seg-tab 안에서만 허용하는 CHIP_LABEL_ACCENT로 등록한다.
+  // v14(스펙 §E): 9913 브리지 본문의 "일반예약" 강조가 ACCENT_0086EA(#0086EA)를 #bridge
+  // 안에서도 쓴다. 원래 .rt-wheel-col 전용이었던 예외를 #bridge까지 넓힌다.
+  // v14(스펙 §B): 리드 문구 아이콘 색이 #556895→#7282A6로 바뀌면서(텍스트는 그대로) 이제
+  // WHEEL_MUTED(#7282A6)가 #type-lead 안에서도 나온다. 원래 .rt-wheel-col 전용이었던 예외를
+  // #type-lead까지 넓힌다.
   function scanAccents(){
     const NAVY = 'rgb(25, 37, 77)';          // --navy #19254d, 유일한 전역 강조색
-    const ACCENT_0086EA = 'rgb(0, 134, 234)'; // --wheel-band-ink #0086EA, .rt-wheel-col 안에서만 허용
+    const ACCENT_0086EA = 'rgb(0, 134, 234)'; // --wheel-band-ink #0086EA, .rt-wheel-col·#bridge 안에서만 허용
     const PILL_ACCENT = 'rgb(49, 72, 125)';  // #31487D, #bridge(본문 글자) 안에서만 허용
-    const WHEEL_MUTED = 'rgb(114, 130, 166)'; // #7282A6, 휠 미선택 행 글자색. 휠 컬럼 안에서만 허용
+    const WHEEL_MUTED = 'rgb(114, 130, 166)'; // #7282A6. 휠 미선택 행 글자색과 리드 아이콘. 휠 컬럼과 #type-lead 안에서만 허용
     const LEAD_ACCENT = 'rgb(85, 104, 149)'; // #556895, #type-lead(아이콘+글자) 안에서만 허용
     const SECONDARY_ACCENT = 'rgb(40, 56, 115)'; // #283873, #bridge(보조버튼 글자) 안에서만 허용
     const CHIP_LABEL_ACCENT = 'rgb(56, 79, 133)'; // v13: #384F85, 비선택 칩 라벨. .rt-seg-tab 안에서만 허용
@@ -2520,8 +2593,8 @@ function runLayoutTests(){
         const v = cs[prop];
         if (v === NAVY) continue;
         if (v === ACCENT_0086EA){
-          if (el.closest('.rt-wheel-col')) continue;
-          throw new Error(`unexpected accent ${prop}=${v} outside .rt-wheel-col`);
+          if (el.closest('.rt-wheel-col') || el.closest('#bridge')) continue;
+          throw new Error(`unexpected accent ${prop}=${v} outside .rt-wheel-col/#bridge`);
         }
         if (v === PILL_ACCENT){
           if (el.closest('#bridge')) continue;
@@ -2540,8 +2613,8 @@ function runLayoutTests(){
           throw new Error(`unexpected accent ${prop}=${v} outside .rt-seg-tab`);
         }
         if (v === WHEEL_MUTED){
-          if (el.closest('.rt-wheel-col')) continue;
-          throw new Error(`unexpected accent ${prop}=${v} outside wheel column`);
+          if (el.closest('.rt-wheel-col') || el.closest('#type-lead')) continue;
+          throw new Error(`unexpected accent ${prop}=${v} outside wheel column/#type-lead`);
         }
         const m = v.match(rgbRe);
         if (!m) continue;   // transparent, rgba(...) 등은 강조색 검사 대상이 아니다
@@ -2569,17 +2642,20 @@ function runLayoutTests(){
   });
   // v11: #nudge가 스크롤 맨 뒤에 있는지 보던 네 개 테스트('넛지가 스크롤 영역 안 카드들
   // 뒤에 있다', '9913/9915 넛지는 스크롤 영역 맨 뒤에 있다', '방향이 바뀌어도 넛지 자리는
-  // 그대로다')는 전부 지운다. #nudge 자체가 없어졌고, 그 자리를 이제 #type-lead가 차지한다
-  // (스펙 §3: 카드 목록 맨 아래). 같은 의도("고정된 자리, 방향과 무관")를 아래 '리드 문구는
-  // 방향과 무관하게 스크롤 맨 뒤에 있다'로 옮긴다(신규 필수 테스트 '리드 문구가 카드 아래에
-  // 있다'는 golf 시나리오 하나만 보므로, 이 테스트가 short/charter까지 함께 확인한다).
-  test('리드 문구는 방향과 무관하게 스크롤 맨 뒤에 있다', ()=>{
+  // 그대로다')는 전부 지운다. #nudge 자체가 없어졌고, 그 자리를 이제 #type-lead가 차지했다
+  // (당시 스펙 §3: 카드 목록 맨 아래).
+  // v14(스펙 §B): Figma가 리드 문구를 카드 목록 맨 아래에서 칩 그룹(.rt-seg) 안, 칩 줄
+  // 바로 아래로 되돌렸다. "고정된 자리, 방향과 무관"이라는 의도 자체는 그대로라 이 테스트는
+  // 남기되, 확인하는 자리를 .rt-scroll 맨 뒤에서 .rt-seg 맨 뒤로 바꾼다(신규 필수 테스트
+  // '리드 문구가 칩 바로 아래에 있다'는 golf 시나리오 하나만 보므로, 이 테스트가
+  // short/charter까지 함께 확인한다).
+  test('리드 문구는 방향과 무관하게 칩 그룹 맨 뒤에 있다', ()=>{
     for (const [sc, tp, hrs] of [['golf','normal',null], ['short','charter',3]]) {
       S = fresh(sc, tp); S.pickupAt = new Date(); if (hrs) S.charterHours = hrs; render();
       const lead = document.getElementById('type-lead');
-      const s = document.querySelector('#screen-input .rt-scroll');
-      if (!s.contains(lead)) throw new Error(sc + ': type-lead not in scroll');
-      eq(s.lastElementChild, lead);
+      const seg = document.querySelector('#screen-input .rt-seg');
+      if (!seg.contains(lead)) throw new Error(sc + ': type-lead not in .rt-seg');
+      eq(seg.lastElementChild, lead);
     }
   });
   // COPY[key].banner가 없어져(브리지도 title+body를 쓴다) title+body 조합이 reason 별로
@@ -2822,14 +2898,23 @@ function runBridgeTests(){
   // (스펙 §v13-2) 선택이 바뀌면 그 버튼의 img 자체가 사라진다. 좌측 정렬은 아래 '칩 묶음과
   // 리드 문구가 좌측 정렬이다'가 이미 보고, 높이/아이콘 유무/라벨색은 아래 runV13Tests의
   // '칩은 높이 40, 선택에만 아이콘...'과 '칩 아이콘이 유형에 맞게 붙는다'가 대신한다.
-  test('리드 문구가 카드 아래에 있다', ()=>{
+  // v14(스펙 §B): v11이 리드 문구를 칩 줄 아래에서 카드 목록 맨 아래로 옮겼던 걸, Figma가
+  // 다시 칩 그룹(.rt-seg) 안, 칩 바로 아래로 되돌렸다. "카드 아래에 있다"는 전제가
+  // 뒤집혀서(이제 카드보다 위에 있다) 이 테스트는 지우고, 대신 "칩 그룹 안, 칩 바로
+  // 아래"를 검사하는 테스트로 바꾼다. 원 셀렉터는 사용자 제공 새 테스트가 '.rt-seg-row'의
+  // parentElement로 그룹을 찾는 방식이라 그대로 따른다(= .rt-seg).
+  test('리드 문구가 칩 바로 아래에 있다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard='none'; render();
-    const s = document.querySelector('#screen-input .rt-scroll');
     const lead = document.getElementById('type-lead');
-    eq(s.lastElementChild, lead);
+    const row = document.querySelector('#screen-input .rt-seg-row');
+    const group = row.parentElement;
+    eq(lead.parentElement, group);                       // 칩 그룹 안
+    eq(group.lastElementChild, lead);
+    eq(getComputedStyle(group).rowGap, '12px');
     eq(lead.textContent.indexOf('사용해요') >= 0, true);
-    const lr = lead.getBoundingClientRect(), cr = document.getElementById('card-route').getBoundingClientRect();
-    if (lr.top < cr.bottom) throw new Error('lead must sit below the cards');
+    const card = document.getElementById('card-route').getBoundingClientRect();
+    if (lead.getBoundingClientRect().bottom > card.top)
+      throw new Error('리드가 카드 위에 있어야 한다');
   });
   test('어시스트와 넛지는 완전히 사라졌다', ()=>{
     for (const id of ['assist','assist-star','assist-text','nudge','nudge-cta','nudge-wrap'])
@@ -2866,37 +2951,71 @@ function runV13Tests(){
   test('골프 일러스트는 더 이상 번들에 없다', ()=>{
     if (typeof ILLUST_BRIDGE_GOLF !== 'undefined') throw new Error('ILLUST_BRIDGE_GOLF 가 남아 있다');
   });
-  // v13(§v13-2, 13339:84831 4배 렌더 실측): 칩 높이 40, 배경·라벨색은 audit(REST) 실측,
-  // 선택에만 아이콘이 있는지까지 한 번에 본다.
-  test('칩은 높이 40, 선택에만 아이콘, 색이 Figma 실측과 맞는다', ()=>{
+  // v13(§v13-2, 13339:84831 4배 렌더 실측): 칩 높이 40, 배경·라벨색은 audit(REST) 실측.
+  // v14(스펙 §A, B안): "선택에만 아이콘" 전제가 뒤집혔다(이제 양쪽 다 아이콘이 있다). 그
+  // 부분 단언은 지우고, 아이콘 유무와 불투명도, 매핑은 아래 새 테스트들로 옮긴다.
+  // 이 테스트는 높이·배경, 라벨색만 남긴다.
+  test('칩은 높이 40, 배경과 라벨색이 Figma 실측과 맞는다', ()=>{
     S = fresh('golf','normal'); render();
     let chips = [...document.querySelectorAll('#screen-input .rt-seg-tab')];
     eq(chips.length, 2);
     eq(Math.round(chips[0].getBoundingClientRect().height), 40);
     eq(getComputedStyle(chips[0]).backgroundColor, 'rgb(209, 212, 219)');   // #D1D4DB
     eq(getComputedStyle(chips[1]).backgroundColor, 'rgb(232, 235, 240)');   // #E8EBF0
-    eq(chips[0].querySelectorAll('img').length, 1);
-    eq(chips[1].querySelectorAll('img').length, 0);                          // 비선택엔 아이콘 없음
     const lab = chips.map(c => getComputedStyle(c.querySelector('.rt-seg-label') || c).color);
     eq(lab[0], 'rgb(25, 37, 77)');    // #19254D
     eq(lab[1], 'rgb(56, 79, 133)');   // #384F85
   });
-  // v13: 아이콘은 유형에 고정이지 선택 상태에 스왑되지 않는다(§v13-2). golf(일반예약 선택)와
-  // short/charter(시간대절 선택) 두 시나리오로 "일반예약 아이콘 ≠ 시간대절 아이콘"과
-  // "비선택 칩엔 <img>가 없다"를 함께 검사한다.
-  // "서로 다르기만 하면" 통과라 매핑이 통째로 다시 뒤집혀도(일반예약↔시간대절 아이콘이
-  // 서로 자리만 바꿔도) 못 잡는다. 어느 쪽이 어느 상수인지까지 CHIP_ICON_NODE_* 원본과
-  // 직접 대조한다(§v13-2 표: 일반예약=NODE_CHARTER 스케줄 그림, 시간대절=NODE_CALL 파란 원).
-  test('칩 아이콘이 유형에 맞게 붙는다', ()=>{
+  // v14(스펙 §A, B안): 선택 칩은 유형과 무관하게 항상 공통 체크 배지(CHIP_ICON_CHECK)이고,
+  // 비선택 칩은 그 칩의 유형 아이콘(일반예약=CHIP_ICON_DESTINATION 위치 핀, 시간대절=
+  // CHIP_ICON_NODE_CALL 파란 원)을 45% 불투명도로 보여준다. 사용자 제공 필수 테스트를
+  // 그대로 쓴다(셀렉터는 실제 마크업 '#screen-input .rt-seg-tab'과 일치해 변경 없음).
+  // opacity는 getComputedStyle로 실제 렌더된 값을 읽는다(과거 naturalWidth를 data URI
+  // 디코드 전에 읽어 0으로 통과해 버린 함정과 같은 종류 실수를 피하려면, "존재 여부"가
+  // 아니라 "계산된 스타일값"을 봐야 한다).
+  test('칩은 선택에 체크 배지, 비선택에 유형 아이콘 45%', ()=>{
     S = fresh('golf','normal'); render();
-    const normalIcon = document.querySelector('#screen-input .rt-seg-tab img').src;
-    eq(normalIcon, CHIP_ICON_NODE_CHARTER, '일반예약은 NODE_CHARTER(스케줄 그림)여야 한다');
+    let tabs = [...document.querySelectorAll('#screen-input .rt-seg-tab')];
+    eq(tabs.length, 2);
+    const selImg = tabs[0].querySelector('img'), unselImg = tabs[1].querySelector('img');
+    if (!selImg || !unselImg) throw new Error('양쪽 칩 모두 아이콘이 있어야 한다');
+    eq(Math.round(parseFloat(getComputedStyle(selImg).opacity) * 100), 100);
+    eq(Math.round(parseFloat(getComputedStyle(unselImg).opacity) * 100), 45);
+    const checkSrc = selImg.src;
     S = fresh('short','charter'); S.charterHours = 3; render();
-    const tabs = [...document.querySelectorAll('#screen-input .rt-seg-tab')];
-    const charterIcon = tabs[1].querySelector('img').src;
-    eq(charterIcon, CHIP_ICON_NODE_CALL, '시간대절은 NODE_CALL(파란 원)이어야 한다');
-    if (normalIcon === charterIcon) throw new Error('두 유형이 같은 아이콘을 쓴다');
-    eq(tabs[0].querySelectorAll('img').length, 0);
+    tabs = [...document.querySelectorAll('#screen-input .rt-seg-tab')];
+    eq(tabs[1].querySelector('img').src, checkSrc);   // 선택 아이콘은 유형과 무관하게 같다
+    if (tabs[0].querySelector('img').src === checkSrc)
+      throw new Error('비선택은 체크 배지가 아니라 유형 아이콘이어야 한다');
+  });
+  // v14(스펙 §A-2, B안): 탭 전환 시 아이콘이 붙었다 떨어지며 칩 폭이 흔들리던 문제(A안)를
+  // B안(양쪽 다 아이콘)으로 고쳤다. 실제로 폭이 고정됐는지 직접 잰다.
+  test('탭을 전환해도 칩 폭이 그대로다', ()=>{
+    S = fresh('golf','normal'); render();
+    const a = [...document.querySelectorAll('#screen-input .rt-seg-tab')]
+      .map(c => Math.round(c.getBoundingClientRect().width));
+    S = fresh('golf','charter'); S.charterHours = 3; render();
+    const b = [...document.querySelectorAll('#screen-input .rt-seg-tab')]
+      .map(c => Math.round(c.getBoundingClientRect().width));
+    if (Math.abs(a[0]-b[0]) > 1 || Math.abs(a[1]-b[1]) > 1)
+      throw new Error('폭이 흔들린다: ' + a + ' -> ' + b);
+  });
+  // v13: "아이콘은 유형에 고정이지 선택 상태에 스왑되지 않는다"를 검사하던 자리다.
+  // v14(스펙 §A): 이제 "유형에 고정"인 건 비선택일 때 보여주는 아이콘뿐이다(선택일 때는
+  // 유형 무관 공통 체크 배지, 위 테스트가 이미 확인한다). 여기서는 비선택 아이콘이
+  // CHIP_ICON_NODE_CHARTER(더 이상 존재하지 않음)가 아니라 올바른 신규 상수와 맞는지,
+  // 그리고 "서로 다르기만 하면"이 아니라 어느 쪽이 어느 상수인지까지 직접 대조한다(매핑이
+  // 통째로 뒤집혀도 잡도록: 일반예약=CHIP_ICON_DESTINATION, 시간대절=CHIP_ICON_NODE_CALL).
+  test('비선택 칩 아이콘이 유형에 맞게 붙는다', ()=>{
+    S = fresh('golf','normal'); render();
+    let tabs = [...document.querySelectorAll('#screen-input .rt-seg-tab')];
+    // golf/normal: seg-normal(0)이 선택, seg-charter(1)이 비선택 -> 파란 원(CHIP_ICON_NODE_CALL)
+    eq(tabs[1].querySelector('img').src, CHIP_ICON_NODE_CALL, '비선택 시간대절은 NODE_CALL(파란 원)이어야 한다');
+    S = fresh('short','charter'); S.charterHours = 3; render();
+    tabs = [...document.querySelectorAll('#screen-input .rt-seg-tab')];
+    // short/charter: seg-normal(0)이 비선택 -> 위치 핀(CHIP_ICON_DESTINATION)
+    eq(tabs[0].querySelector('img').src, CHIP_ICON_DESTINATION, '비선택 일반예약은 CHIP_ICON_DESTINATION(위치 핀)이어야 한다');
+    if (CHIP_ICON_DESTINATION === CHIP_ICON_NODE_CALL) throw new Error('두 유형 아이콘이 같은 값이다');
   });
   test('선택 칩은 눌리고 비선택 칩은 떠 있다', ()=>{
     S = fresh('golf','normal'); render();
@@ -2922,6 +3041,46 @@ function runV13Tests(){
   });
 }
 
+// ---- v14: 유형 칩 B안(§A) + 리드 문구 위치 복귀(§B) + CTA 여백(§C) + 브리지 개행/강조(§D·E) ----
+function runV14Tests(){
+  // §D: 개행 위치가 "왕복이라면 시간대절이" / "더 편해요"로 접혀야 한다. max-width로
+  // word-break:keep-all이 그 지점에서 접히게 했으므로(openBridge/BRIDGE_TITLE_MAXW),
+  // 정확히 두 줄(line-height 30 x2 = 60)인지로 확인한다.
+  test('브리지 제목이 Figma 지점에서 접힌다', ()=>{
+    S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard='none'; render(); onCtaPress();
+    const t = document.getElementById('bridge-title');
+    eq(getComputedStyle(t).fontSize, '22px');
+    eq(getComputedStyle(t).lineHeight, '30px');
+    eq(Math.round(t.getBoundingClientRect().height), 60);   // 정확히 2줄
+    const d = document.getElementById('bridge-desc');
+    eq(getComputedStyle(d).lineHeight, '22px');
+  });
+  // §D(9913): "{h}분이면 도착하는" / "경로예요"로 접혀야 한다. etaMin=48인 short 시나리오로
+  // 확인한다(측정한 max-width는 1~999분 범위에서 같은 지점에 접히도록 잡았다, v14 보고서 참고).
+  test('9913 브리지 제목도 Figma 지점에서 접힌다', ()=>{
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; S.openCard='none';
+    render(); onCtaPress();
+    const t = document.getElementById('bridge-title');
+    eq(Math.round(t.getBoundingClientRect().height), 60);   // 정확히 2줄
+  });
+  // §E: 9913 본문에서 "일반예약" 넉 자만 #0086EA로 강조. 9915에는 강조가 없다(bodyHtml
+  // 필드 자체가 COPY['round-trip']에 없다).
+  test('9913 본문에서 일반예약만 강조된다', ()=>{
+    S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3;
+    S.openCard='none'; render(); onCtaPress();
+    const d = document.getElementById('bridge-desc');
+    const em = d.querySelector('span');
+    if (!em) throw new Error('강조 span 이 없다');
+    eq(em.textContent, '일반예약');
+    eq(getComputedStyle(em).color, 'rgb(0, 134, 234)');      // #0086EA
+    eq(getComputedStyle(d).color, 'rgb(49, 72, 125)');       // #31487D
+    // 9915 에는 강조가 없다
+    S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard='none'; render(); onCtaPress();
+    if (document.getElementById('bridge-desc').querySelector('span'))
+      throw new Error('9915 본문에는 강조가 없어야 한다');
+  });
+}
+
 function selftest(){
   T.length = 0;
   runJudgeTests();          // Task 1
@@ -2936,6 +3095,7 @@ function selftest(){
   runV10Tests();            // v10 잔존분(어시스트/넛지와 무관하게 아직 유효한 것)
   runBridgeTests();         // v11: 브리지(스펙 §4)
   runV13Tests();            // v13: 트리거 2종 통합(§v13-1) + 유형 탭 재설계(§v13-2)
+  runV14Tests();            // v14: 유형 칩 B안 + 리드 문구 위치 복귀 + CTA 여백 + 브리지 개행/강조
   const out = document.getElementById('selftest-out');
   const fail = T.filter(l=>l.startsWith('FAIL'));
   out.hidden = false;
