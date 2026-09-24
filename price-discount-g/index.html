@@ -132,6 +132,21 @@ body{font-variant-numeric:tabular-nums}
 .hchip.on img{filter:none;opacity:1}
 .hchip.on .hn{color:#19254D;font-weight:700}
 .hchip.on .hwas{color:#60667A}
+/* 세로 축약형 */
+.phone.vcmode .map{height:298px}
+.sheet.vc{top:298px;height:502px}
+.sheet.vc.hx{top:150px;height:650px}
+.vclist{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:4px 8px 8px;scrollbar-width:none}
+.vclist::-webkit-scrollbar{display:none}
+.vcrow{width:100%;height:46px;display:flex;align-items:center;gap:10px;padding:0 8px;border:0;border-radius:10px;background:none;font:inherit;font-family:inherit;text-align:left;cursor:pointer;color:#000}
+.vcrow img{width:60px;height:40px;flex:none;filter:grayscale(1);opacity:.45}
+.vcrow .vn{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;line-height:18px;color:#60667A}
+.vcrow .vw{flex:none;font-size:11px;line-height:15px;color:#9DA0AE;text-decoration:line-through;white-space:nowrap}
+.vcrow .vp{flex:none;font-size:15px;line-height:21px;font-weight:700;color:#262A38;white-space:nowrap}
+.vcrow.on{background:#E7EBF2}
+.vcrow.on img{filter:none;opacity:1}
+.vcrow.on .vn{color:#19254D;font-weight:700}
+.vcrow.on .vw{color:#60667A}
 /* 확장형 — 선택 라인업 한 대 */
 .hx1{flex:1 1 auto;min-height:0;overflow-y:auto;padding:0 20px 8px;scrollbar-width:none}
 .hx1::-webkit-scrollbar{display:none}
@@ -242,6 +257,7 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
   <div class="row"><div class="lab">리스트 형태</div><div class="chips" data-key="list">
     <button class="chip" data-v="v">세로 리스트 (현재)</button>
     <button class="chip" data-v="h">가로 칩 + 확장형 (Yandex)</button>
+    <button class="chip" data-v="vc">세로 축약 + 확장형</button>
   </div></div>
   <div class="row"><div class="lab">행이 지는 할인</div><div class="chips" data-key="scope">
     <button class="chip" data-v="row">쿠폰·크레딧까지 (현재)</button>
@@ -478,6 +494,14 @@ function hchipHTML(id){
     <img src="${TH[id]}" alt=""><span class="hn">${esc(r.short)}</span>
     ${w}<span class="hnow">${won(rowPay(c))}</span></button>`;
 }
+function vcrowHTML(id){
+  const r=BY[id], c=calc(id), on=id===S.lineup;
+  const useStrike=(S.scope!=='below'&&(c.couponOn||c.crOn))?true:c.strikeOK;
+  const w = c.discounted&&useStrike ? `<span class="vw">${won(c.base)}</span>` : '';
+  return `<button class="vcrow${on?' on':''}" data-pick="${id}">
+    <img src="${TH[id]}" alt=""><span class="vn">${esc(r.short)}</span>
+    ${w}<span class="vp">${won(rowPay(c))}</span></button>`;
+}
 function hexpandHTML(){
   const id=S.lineup, r=BY[id], c=calc(id);
   const useStrike=(S.scope!=='below'&&(c.couponOn||c.crOn))?true:c.strikeOK;
@@ -521,14 +545,16 @@ function phoneHTML(){
     const ds=R.filter(r=>r.surge).map(r=>r.id);
     ids=[ids[0], ...ds.filter(i=>i!==ids[0]), ...ids.slice(1).filter(i=>!ds.includes(i))];
   }
-  const H = S.list==='h';
-  const body = H
-    ? (S.open==='1' ? hexpandHTML() : `<div class="hstrip">${ids.map(hchipHTML).join('')}</div>`)
+  const H = S.list==='h', VC = S.list==='vc', TWO = H||VC;   // 축약↔확장 2단계
+  const body = TWO
+    ? (S.open==='1' ? hexpandHTML()
+       : (H ? `<div class="hstrip">${ids.map(hchipHTML).join('')}</div>`
+            : `<div class="vclist">${ids.map(vcrowHTML).join('')}</div>`))
     : `<div class="list${S.open==='1'?' all':''}">${ids.map(rowHTML).join('')}</div>`;
   // 볼트식 전체폭 바 — 지금 고른 라인업이 할인 대상이 아닐 때만 띄운다(대상일 땐 카드 안 칩이 말한다)
   const selDisc = calc(S.lineup).discounted;
-  const showBar = S.list==='h'
-    ? (anyDisc && S.open!=='1')                       // 축약형: 칩엔 명분 자리가 없다
+  const showBar = TWO
+    ? (anyDisc && S.open!=='1')                       // 축약형엔 명분 자리가 없다
     : (anyDisc && S.expand!=='1' && (S.open==='1' || !selDisc));
   const ds = R.filter(r=>r.surge).map(r=>{const k=calc(r.id); return {short:r.short, cut:k.base-k.fare};}).filter(x=>x.cut>0);
   const barTxt = ds.length
@@ -538,14 +564,14 @@ function phoneHTML(){
   const more = '';
   const c=calc(S.lineup);
   const chipOn=(c.discounted||c.couponOn||c.crOn)&&S.expand!=='1'&&S.open!=='1';
-  const up = S.list==='h' ? false : (S.open==='1'||S.expand==='1'||(bar&&chipOn));
+  const up = TWO ? false : (S.open==='1'||S.expand==='1'||(bar&&chipOn));
   const cOn=c.couponOn||S.credit==='1';
   const userCut=(c.couponOn?c.cpAmt:0)+(c.crOn?c.crAmt:0);
   const coupon=cOn
     ? `<span class="g on">${IC_COUPON_ON}${S.scope==='below'&&userCut?`할인 −${won(userCut)}`:'할인 적용됨'}</span>`
     : `<span class="g">${IC_COUPON}할인 적용하기</span>`;
   return `<div class="map"></div>${sheetHTML()}
-  <div class="sheet${H?' h':''}${H&&S.open==='1'?' hx':''}${up?' up':''}">
+  <div class="sheet${H?' h':''}${VC?' vc':''}${TWO&&S.open==='1'?' hx':''}${up?' up':''}">
     <button class="handle" data-open="${S.open==='1'?'0':'1'}" aria-label="시트 높이"><i></i></button>
     ${bar}
     ${body}
@@ -588,7 +614,7 @@ function sheetHTML(){
 
 function render(){
   const ph=document.getElementById('phone');
-  ph.className='phone'+(S.room==='wide'?' wide':'')+(S.list==='h'?' hmode':'');
+  ph.className='phone'+(S.room==='wide'?' wide':'')+(S.list==='h'?' hmode':'')+(S.list==='vc'?' vcmode':'');
   ph.innerHTML=phoneHTML();
   document.getElementById('scrTitle').firstChild.nodeValue = (S.open==='1'?'시트 펼침 ':'시트 기본 ');
   document.getElementById('scrSub').textContent = S.expand==='1' ? '선택 행 인라인 확장' : '핸들 탭으로 단계 전환 · 리스트 스크롤';
@@ -653,7 +679,7 @@ document.getElementById('phone').addEventListener('click',e=>{
   const dd=e.target.closest('[data-dd]'); if(dd){ S.dd=dd.dataset.dd; save(); render(); return; }
   const cr=e.target.closest('[data-cr]'); if(cr){ S.pcr=cr.dataset.cr; save(); render(); return; }
   const ap=e.target.closest('[data-apply]'); if(ap){ S.coupon=S.pc; S.credit=S.pcr; S.sheet='0'; S.dd='0'; save(); render(); return; }
-  const p=e.target.closest('[data-pick]'); if(p){ if(S.list==='h'&&p.dataset.pick===S.lineup){S.open='1';} else pick(p.dataset.pick); save(); render(); return; }
+  const p=e.target.closest('[data-pick]'); if(p){ if(S.list!=='v'&&p.dataset.pick===S.lineup){S.open='1';} else pick(p.dataset.pick); save(); render(); return; }
   const o=e.target.closest('[data-open]'); if(o){ S.open=o.dataset.open; S.expand='0'; save(); render(); return; }
   const x=e.target.closest('[data-exp]'); if(x){ S.expand=S.expand==='1'?'0':'1'; save(); render(); }
 });
