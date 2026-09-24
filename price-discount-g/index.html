@@ -108,6 +108,29 @@ body{font-variant-numeric:tabular-nums}
 
 /* ===== 실물 할인 시트 — Figma discount_Selector_re 실측 ===== */
 .sheet.up{top:215px;height:585px}
+
+/* 여유 모드: 지도 310->230, 행 56->64, 이름 13->15, 부제목 11->12, 가격 15->17 */
+.phone.wide .map{height:230px;background-size:360px 310px}
+.phone.wide .sheet{top:225px;height:575px}
+.phone.wide .sheet.up{top:130px;height:670px}
+.phone.wide .row{height:64px;gap:6px;padding:0 6px}
+.phone.wide .selhead{gap:8px;padding:0 6px}
+.phone.wide .row img{width:84px;height:57px}
+.phone.wide .rtx .n{font-size:15px;line-height:21px}
+.phone.wide .rtx .d{font-size:12px;line-height:17px}
+.phone.wide .rpr .now{font-size:15px;line-height:21px}
+.phone.wide .rpr .was{font-size:12px;line-height:16px}
+.phone.wide .selhead{height:74px}
+.phone.wide .selhead img{width:84px;height:57px}
+.phone.wide .stx .n{font-size:15px;line-height:21px}
+.phone.wide .stx .d{font-size:12px;line-height:17px}
+.phone.wide .spr .now{font-size:17px;line-height:23px}
+.phone.wide .spr .was{font-size:12px;line-height:16px}
+.phone.wide .reasonchip{font-size:12px;line-height:17px}
+.phone.wide .list.all .row{height:56px}
+.phone.wide .list.all .row img{width:80px;height:54px}
+.phone.wide .list.all .sel .selhead{height:64px}
+.phone.wide .list.all .sel .selhead img{width:80px;height:54px}
 .dim{position:absolute;inset:0;background:rgba(0,0,0,.4);border:0;padding:0;cursor:pointer;z-index:5}
 .dsel{position:absolute;left:0;bottom:0;width:360px;background:#fff;border-radius:12px 12px 0 0;z-index:6;display:flex;flex-direction:column;overflow:hidden}
 .dsec{padding:20px 20px 14px;display:flex;flex-direction:column;gap:14px}
@@ -146,6 +169,8 @@ body{font-variant-numeric:tabular-nums}
 /* 인라인 확장 */
 .exp{border-top:1px solid #D7E6F4;padding:7px 12px 8px;background:#fff}
 .exp dl{margin:0;display:grid;grid-template-columns:1fr auto;gap:3px 8px;font-size:12px;line-height:18px}
+
+.exp dt.sub,.exp dd.sub{color:#60667A}
 .exp dt{color:#4B5064;margin:0}
 .exp dd{margin:0;text-align:right;color:#262A38}
 .exp dt.dc,.exp dd.dc{color:#19254D;font-weight:700}
@@ -197,6 +222,14 @@ tr[data-on="1"] td{background:color-mix(in srgb,var(--accent) 7%,transparent)}
 <div class="panel" id="panel" role="region" aria-label="설정">
   <p class="hint"><b>여기는 표기 방식 스위치입니다.</b> 고르면 바로 반영돼요. <b>쿠폰·크레딧은 폰 안 <code>할인 적용하기</code> 를 눌러</b> 실제 시트에서 고르세요.</p>
   <div class="prev" id="prev"></div>
+  <div class="row"><div class="lab">행이 지는 할인</div><div class="chips" data-key="scope">
+    <button class="chip" data-v="row">쿠폰·크레딧까지 (현재)</button>
+    <button class="chip" data-v="below">서지만 · 쿠폰은 아래로</button>
+  </div></div>
+  <div class="row"><div class="lab">리스트 공간</div><div class="chips" data-key="room">
+    <button class="chip" data-v="now">현재 (지도 310)</button>
+    <button class="chip" data-v="wide">여유 (지도 230 · 글자 확대)</button>
+  </div></div>
   <div class="row"><div class="lab">중첩 표기</div><div class="chips" data-key="stack">
     <button class="chip" data-v="both">둘 다 이름으로 (채택)</button>
     <button class="chip" data-v="surge">서지 할인만</button>
@@ -320,7 +353,7 @@ const COUPONS=[
 const CP=id=>COUPONS.find(c=>c.id===id)||COUPONS[0];
 const CREDIT_TOTAL=90000, CREDIT_TADA=10000;
 const BASE_WIN=['prime','next','carseat'];   // 접힌 창의 기본 구성
-const DEF={open:'0', expand:'0', lineup:'prime', discount:'ok', coupon:'none', credit:'0', stack:'both', pin:'1', strike:'thr', win:BASE_WIN.join(','), sheet:'0', dd:'0', pc:'none', pcr:'0'};
+const DEF={open:'0', expand:'0', lineup:'prime', discount:'ok', coupon:'none', credit:'0', stack:'both', scope:'row', room:'now', pin:'1', strike:'thr', win:BASE_WIN.join(','), sheet:'0', dd:'0', pc:'none', pcr:'0'};
 let S=Object.assign({},DEF);
 try{const s=localStorage.getItem('pd-g');if(s)S=Object.assign({},DEF,JSON.parse(s));}catch(e){}
 const save=()=>{try{localStorage.setItem('pd-g',JSON.stringify(S))}catch(e){}};
@@ -351,10 +384,13 @@ const paxH=n=>n?`<span class="pax">${IC_PAX}<i>${n}</i></span>`:'';
 function parts(c){
   const p=[];
   if(c.discounted) p.push({k:'surge',  name:`${REASON} ${c.pct?c.pct+'%':'할인'}`, cut:c.base-c.fare});
+  if(S.scope==='below') return p;            // 행은 라인업마다 다른 것만 말한다
   if(c.couponOn)   p.push({k:'coupon', name:'쿠폰',   cut:c.cpAmt});
   if(c.crOn)       p.push({k:'credit', name:'크레딧', cut:c.crAmt});
   return p;
 }
+// 행에 찍히는 금액 — below 에서는 서지까지만
+function rowPay(c){ return S.scope==='below' ? c.fare : c.pay; }
 function one(c,p){ return p.k==='surge' ? `${REASON}이라 ${c.pct?c.pct+'% 할인 중':'할인 적용 중'}` : `${p.name} 적용 중`; }
 function chipCut(c){
   const p=parts(c);
@@ -390,7 +426,7 @@ function pick(id){
 }
 
 function priceRow(c, sel){
-  const picked = c.couponOn||c.crOn;                    // 유저가 직접 고른 할인
+  const picked = S.scope!=='below' && (c.couponOn||c.crOn);   // 유저가 직접 고른 할인
   const cls = c.discounted||picked ? ' dc' : '';
   // 취소선 기준: '서지만' 말할 땐 서지 직후 금액, 총액을 말할 땐 정가
   const was = picked ? ((S.stack==='surge' && c.discounted) ? c.fare : c.base) : c.base;
@@ -398,18 +434,20 @@ function priceRow(c, sel){
   const show = ((c.discounted&&useStrike)||picked) ? `<span class="was">${won(was)}</span>`
              : (c.discounted ? `<span class="was" style="text-decoration:none;color:#19254D;font-weight:700">${won(c.base-c.fare)} 할인</span>` : '');
   return sel
-    ? `<span class="pstack"><span class="now${cls}">${won(c.pay)}</span>${show}</span>${(c.discounted||c.couponOn||c.crOn)&&S.expand!=='1'&&S.open!=='1'?'':`<span class="${S.expand==='1'?'cup':'cdn'}"></span>`}`
-    : `<span class="now${cls}">${won(c.pay)}</span>${show}`;
+    ? `<span class="pstack"><span class="now${cls}">${won(rowPay(c))}</span>${show}</span>${parts(c).length&&S.expand!=='1'&&S.open!=='1'?'':`<span class="${S.expand==='1'?'cup':'cdn'}"></span>`}`
+    : `<span class="now${cls}">${won(rowPay(c))}</span>${show}`;
 }
 
 function expandBody(id){
   const r=BY[id], c=calc(id);
-  if(!c.discounted && !c.couponOn && !c.crOn){
+  if(!c.discounted && !parts(c).length && !c.couponOn && !c.crOn){
     return `<div class="exp"><dl><dt>기본 요금</dt><dd>${won(c.base)}</dd></dl>
       <p class="note">이용료·탄력요금이 반영된 금액이에요. 실제 이동거리에 따라 달라질 수 있어요.</p></div>`;
   }
   let rows=`<dt>정가</dt><dd>${won(c.base)}</dd>`;
   if(c.discounted) rows+=`<dt class="dc">${esc(REASON)} 할인${c.pct?' '+c.pct+'%':''}</dt><dd class="dc">−${won(c.base-c.fare)}</dd>`;
+  // below: 리스트에 찍힌 금액을 소계로 한 번 확인시키고 그 아래에 유저 할인을 붙인다
+  if(S.scope==='below' && c.discounted && (c.couponOn||c.crOn)) rows+=`<dt class="sub">서지 적용가</dt><dd class="sub">${won(c.fare)}</dd>`;
   if(c.couponOn) rows+=`<dt>할인 쿠폰</dt><dd>−${won(c.cpAmt)}</dd>`;
   if(c.crOn) rows+=`<dt>크레딧 사용</dt><dd>−${won(c.crAmt)}</dd>`;
   const note=c.discounted
@@ -424,14 +462,17 @@ function expandBody(id){
 
 function rowHTML(id){
   const r=BY[id], c=calc(id), sel=id===S.lineup;
-  if(sel) return `<div class="sel">
+  if(sel){
+  const chip = parts(c).length&&S.expand!=='1'&&S.open!=='1';
+  return `<div class="sel">
     <button class="selhead" data-exp="1">
       <img src="${TH[id]}" alt="">
       <span class="stx"><span class="n"><span class="t">${esc(r.name)}</span>${r.info?IC_INFO:''}</span>
-      <span class="d"><span class="t">${esc(r.desc)}</span>${paxH(r.pax)}${c.discounted&&c.pct&&S.expand!=='1'?'<span class="tag">'+c.pct+'%</span>':''}</span></span>
+      <span class="d"><span class="t">${esc(r.desc)}</span>${paxH(r.pax)}</span></span>
       <span class="spr">${priceRow(c,true)}</span></button>
-    ${(c.discounted||c.couponOn||c.crOn)&&S.expand!=='1'&&S.open!=='1'?`<button class="reasonchip" data-exp="1"><span>${chipLabel(c)}</span><span class="r"><b>${won(chipCut(c))} 낮아졌어요</b><span class="caret"></span></span></button>`:''}
+    ${chip?`<button class="reasonchip" data-exp="1"><span>${chipLabel(c)}</span><span class="r"><b>${won(chipCut(c))} 낮아졌어요</b><span class="caret"></span></span></button>`:''}
     ${S.expand==='1'?expandBody(id):''}</div>`;
+  }
   return `<button class="row" data-pick="${id}">
     <img src="${TH[id]}" alt="">
     <span class="rtx"><span class="n"><span class="t">${esc(r.name)}</span></span>
@@ -441,9 +482,13 @@ function rowHTML(id){
 
 function phoneHTML(){
   const anyDisc=S.discount!=='none';
-  let ids = S.open==='1' ? R.map(r=>r.id) : S.win.split(',');
-  // 저장된 상태가 어긋나 고른 라인업이 창 밖에 있으면 선택 행이 통째로 사라진다. 가운데에 끼워 넣는다.
-  if(S.open!=='1' && !ids.includes(S.lineup)){ ids=[ids[0], S.lineup, ...ids.slice(1)].slice(0,3); }
+  const winN = S.room==='wide' ? 4 : 3;
+  let ids = S.open==='1' ? R.map(r=>r.id) : S.win.split(',').slice(0,winN);
+  if(S.open!=='1'){
+    // 저장된 상태가 어긋나 고른 라인업이 창 밖에 있으면 선택 행이 통째로 사라진다. 가운데에 끼워 넣는다.
+    if(!ids.includes(S.lineup)) ids=[ids[0], S.lineup, ...ids.slice(1)].slice(0,winN);
+    while(ids.length<winN){ const nx=R.map(r=>r.id).find(i=>!ids.includes(i)); if(!nx) break; ids.push(nx); }
+  }
   const list = ids.map(rowHTML).join('');
   // 볼트식 전체폭 바 — 지금 고른 라인업이 할인 대상이 아닐 때만 띄운다(대상일 땐 카드 안 칩이 말한다)
   const selDisc = calc(S.lineup).discounted;
@@ -460,7 +505,10 @@ function phoneHTML(){
   const chipOn=(c.discounted||c.couponOn||c.crOn)&&S.expand!=='1'&&S.open!=='1';
   const up = S.open==='1'||S.expand==='1'||(bar&&chipOn);
   const cOn=c.couponOn||S.credit==='1';
-  const coupon=cOn?`<span class="g on">${IC_COUPON_ON}할인 적용됨</span>`:`<span class="g">${IC_COUPON}할인 적용하기</span>`;
+  const userCut=(c.couponOn?c.cpAmt:0)+(c.crOn?c.crAmt:0);
+  const coupon=cOn
+    ? `<span class="g on">${IC_COUPON_ON}${S.scope==='below'&&userCut?`쿠폰·크레딧 −${won(userCut)}`:'할인 적용됨'}</span>`
+    : `<span class="g">${IC_COUPON}할인 적용하기</span>`;
   return `<div class="map"></div>${sheetHTML()}
   <div class="sheet${up?' up':''}">
     <div class="handle"><i></i></div>
@@ -473,7 +521,7 @@ function phoneHTML(){
     <button class="orow" data-sheet="1" style="width:100%;border:0;background:none;font-family:inherit;cursor:pointer">${coupon}<span class="chev"></span></button>
     <div class="hr inset"></div>
     <div class="orow"><span class="g">${IC_CARD}<b>개인 계정</b>하나 **1234 개인</span><span class="chev"></span></div>
-    <div class="cta"><button type="button">${esc(BY[S.lineup].short)} 호출</button></div>
+    <div class="cta"><button type="button">${S.scope==='below'&&userCut?won(c.pay)+' · ':''}${esc(BY[S.lineup].short)} 호출</button></div>
   </div>`;
 }
 
@@ -502,7 +550,9 @@ function sheetHTML(){
 }
 
 function render(){
-  document.getElementById('phone').innerHTML=phoneHTML();
+  const ph=document.getElementById('phone');
+  ph.className='phone'+(S.room==='wide'?' wide':'');
+  ph.innerHTML=phoneHTML();
   document.getElementById('scrTitle').firstChild.nodeValue = (S.open==='1'?'펼침 ':'접힘 ');
   document.getElementById('scrSub').textContent = S.expand==='1' ? '선택 행 인라인 확장' : (S.open==='1'?'라인업 전체':'창 3줄');
   const g=document.querySelector('[data-key="lineup"]');
