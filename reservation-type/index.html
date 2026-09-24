@@ -1269,7 +1269,9 @@ function routeSummaryText(s){
 
 // ---- Task 6: 미리보기 문자열 규칙 ----
 function previewTitle(s){
-  return s.type === 'charter' ? `넥스트 ${s.charterHours}시간 대절` : '넥스트 일반 예약';
+  // 용어 표기 정본은 붙여 쓴 형태다(시간대절, 일반예약). Figma 미리보기·이용내역 화면은 아직
+  // `넥스트 N시간 대절`, `넥스트 시간 대절 (2시간)` 처럼 띄어 쓴다. 화면 카피 쪽을 고쳐야 한다.
+  return s.type === 'charter' ? `넥스트 ${s.charterHours}시간대절` : '넥스트 일반예약';
 }
 function previewSubtitle(s){
   // 실제 플로우에서는 preview 화면에 pickupAt 없이 도달할 수 없다(onCtaPress가 막는다).
@@ -2409,7 +2411,7 @@ function runPreviewTests(){
   const at = new Date(2026,11,12,15,20);   // 2026-12-12(토) 오후 3시 20분
   test('미리보기 타이틀 · 일반예약', ()=>{
     S = fresh('normal','normal'); S.pickupAt = at;
-    eq(previewTitle(S), '넥스트 일반 예약');
+    eq(previewTitle(S), '넥스트 일반예약');
   });
   // 수정 6: 미리보기 앱바에 뒤로가기 버튼만 있고 타이틀 텍스트가 비어 있었다(스펙 §4 "예약 신청").
   test('미리보기 앱바 타이틀이 예약 신청', ()=>{
@@ -2417,9 +2419,21 @@ function runPreviewTests(){
     const appbar = document.getElementById('screen-preview').querySelector('.rt-appbar-title');
     eq(appbar.textContent, '예약 신청');
   });
-  test('미리보기 타이틀 · 시간대절은 N시간 대절', ()=>{
+  test('미리보기 타이틀 · 시간대절은 N시간대절', ()=>{
     S = fresh('short','charter'); S.pickupAt = at; S.charterHours = 3;
-    eq(previewTitle(S), '넥스트 3시간 대절');
+    eq(previewTitle(S), '넥스트 3시간대절');
+  });
+  // 용어 표기는 붙여 쓴 형태가 정본이다(사용자 확정). 화면에 띄어 쓴 형태가 한 군데라도
+  // 새로 들어오면 여기서 잡는다. previewTitle 만 보는 게 아니라 렌더된 화면 전체를 훑는다.
+  test('용어 표기 · 화면 어디에도 띄어 쓴 형태가 없다', ()=>{
+    const bad = [];
+    for (const sc of ['route','vehicle','preview']){
+      S = fresh('short','charter'); S.pickupAt = at; S.charterHours = 3; S.screen = sc; render();
+      const txt = document.getElementById('phone').innerText || '';
+      for (const term of ['시간 대절', '시간 예약', '일반 예약'])
+        if (txt.includes(term)) bad.push(sc + ': ' + term);
+    }
+    if (bad.length) throw new Error(bad.join(', '));
   });
   test('미리보기 부제 · 일반예약은 시작 시각만', ()=>{
     S = fresh('normal','normal'); S.pickupAt = at;
