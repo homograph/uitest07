@@ -392,7 +392,7 @@
     font-size:22px;font-weight:700;line-height:30px;color:#19254D;
     text-align:center;
     word-break:keep-all;
-    /* v14(스펙 §D): 개행 위치가 바뀌었다(왕복/시외 "왕복이라면 시간대절이 ⏎ 더 편해요", 짧은 경로
+    /* v14(스펙 §D): 개행 위치가 바뀌었다(왕복/시외 "왕복이라면 시간 대절이 ⏎ 더 편해요", 짧은 경로
        "{h}분이면 도착하는 ⏎ 경로예요"). U+2028/\n은 이 파일 규칙상 금지라 max-width로 그
        지점에서 word-break:keep-all이 접히게 한다(openBridge가 사유별 값을 인라인
        style.maxWidth로 준다, JS RENDER 참고). align-self:center로 줄어든 박스를 가운데에
@@ -406,7 +406,7 @@
     text-align:center;
     word-break:keep-all;
   }
-  /* v14(스펙 §E): 짧은 경로 본문에서 "일반예약" 넉 자만 강조(#0086EA, inspect.js range override
+  /* v14(스펙 §E): 짧은 경로 본문에서 "일반 예약" 넉 자만 강조(#0086EA, inspect.js range override
      실측). 왕복/시외 본문에는 강조 span이 없다(COPY['round-trip']에 bodyHtml 필드 자체가 없다,
      openBridge 참고). */
   #bridge-desc span{color:#0086EA;}
@@ -487,7 +487,7 @@
   .rt-icon-add{width:16px;height:16px;display:block;}
   .rt-icon-arrow{width:18px;height:18px;flex:0 0 auto;display:block;}
 
-  /* ---- 왕복/시외 바텀시트 (Task 4): 일반예약 → 시간대절, "위험" 확인용 ---- */
+  /* ---- 왕복/시외 바텀시트 (Task 4): 일반 예약 → 시간 대절, "위험" 확인용 ---- */
   .rt-sheet-backdrop{
     position:absolute;
     inset:0;
@@ -800,8 +800,8 @@
     <div class="panel-row">
       <div class="panel-label">시작 탭</div>
       <div class="panel-chips" id="panel-types">
-        <button type="button" class="panel-chip" data-type="normal">일반예약</button>
-        <button type="button" class="panel-chip" data-type="charter">시간대절</button>
+        <button type="button" class="panel-chip" data-type="normal">일반 예약</button>
+        <button type="button" class="panel-chip" data-type="charter">시간 대절</button>
       </div>
     </div>
     <a class="panel-reset" href="?">처음으로</a>
@@ -948,7 +948,7 @@ const MIN_CHARTER_HOURS = 1;   // 확인 필요 항목(스펙 §9). 확정되면
 // "공항 이동은 건드리지 않는다"). short는 "48분이면 갈 경로에 3시간 대절을 잡은 상황"을
 // 노리는 시나리오라 공항처럼 먼 목적지가 아니라 normal과 같은 짧은 시내 이동 경로를 쓴다.
 // 공항 목적지는 airport 시나리오에만 남는다. 아래 SELFTEST의
-// '전환 · 시간대절에서 일반예약으로' 테스트는 지명 리터럴이 아니라 전환 전/후 값을 비교해
+// '전환 · 시간 대절에서 일반 예약으로' 테스트는 지명 리터럴이 아니라 전환 전/후 값을 비교해
 // "경로가 유지되는가"만 검사하므로 시나리오의 실제 지명이 바뀌어도 영향받지 않는다.
 // v13(§v13-1): '복귀 불가 지역'(noReturn) 시나리오는 지운다. Figma에서 해당 variant·노드가
 // 통째로 삭제됐고, 사용자 확정으로 복귀 불가 지역은 더 이상 트리거가 아니다(judgeNudge 참고).
@@ -1040,7 +1040,7 @@ function judgeNudge(s){
     if (s.etaMin < s.charterHours * 60 * 0.5) return { dir:'to-normal', reason:'short-trip' };
     return null;
   }
-  // v15(2026-09-23 PRD): 일반예약 -> 시간대절 트리거는 왕복과 시외 둘뿐이다. 2026-09-23 개정에서
+  // v15(2026-09-23 PRD): 일반 예약 -> 시간 대절 트리거는 왕복과 시외 둘뿐이다. 2026-09-23 개정에서
   // 요구 사항 절이 다시 쓰이면서 골프장, 목적지가 타다가 잡히지 않는 지역, 경유지 2개 이상은
   // 요구 사항에서 빠지고 킥오프 메모에 취소선으로만 남았다. 그래서 flags.golf 는 판정에서 읽지 않는다.
   // 같은 개정에서 수도권의 기준이 "수도권(srt)"로 명시됐다. 다만 SRT 노선 기준인지 정차역 기준인지,
@@ -1063,19 +1063,19 @@ const COPY = {
   // 둘 다가 쓴다. cta 필드는 이 리팩터 전부터 이미 죽은 코드였다(넛지 CTA는 방향 기반으로
   // 직접 텍스트를 만들었지 COPY[reason].cta를 읽지 않았다). 손대지 않고 그대로 둔다.
   'short-trip':    { title:s=>`${s.etaMin}분이면 도착하는 경로예요`,
-                     body: s=>`${s.charterHours}시간을 빌리지 않아도 일반예약으로 갈 수 있어요`,
-                     // v14(스펙 §E): 브리지 본문에서 "일반예약" 넉 자만 #0086EA로 강조한다.
+                     body: s=>`${s.charterHours}시간을 빌리지 않아도 일반 예약으로 갈 수 있어요`,
+                     // v14(스펙 §E): 브리지 본문에서 "일반 예약" 넉 자만 #0086EA로 강조한다.
                      // body()는 바텀시트(옛 openSheet, 지금은 죽은 경로)와 셀프테스트(§Task1
                      // '짧은 경로 브리지 카피가...')가 순수 텍스트로 그대로 기대하므로 손대지
                      // 않고, 브리지 전용 HTML만 별도 필드로 둔다(openBridge 참고). 왕복/시외에는
                      // 이런 강조가 없어 bodyHtml 필드 자체가 없다.
-                     bodyHtml: s=>`${escapeHtml(String(s.charterHours))}시간을 빌리지 않아도 <span>일반예약</span>으로 갈 수 있어요`,
-                     cta:'일반예약으로 바꾸기' },
+                     bodyHtml: s=>`${escapeHtml(String(s.charterHours))}시간을 빌리지 않아도 <span>일반 예약</span>으로 갈 수 있어요`,
+                     cta:'일반 예약으로 바꾸기' },
   // v13(§v13-1): golf/no-return/long-distance 세 사유의 카피가 한 화면(왕복 카피 + 표지판
   // 일러스트)으로 통일됐다. 골프장 시나리오(13339)도 이제 골프 카피가 아니라 이 카피를 쓴다.
-  'round-trip':    { title:()=>'왕복이라면 시간대절이 더 편해요',
+  'round-trip':    { title:()=>'왕복이라면 시간 대절이 더 편해요',
                      body: ()=>'돌아올 차편까지 한 번에 확보할 수 있어요',
-                     cta:'시간대절로 바꾸기' },
+                     cta:'시간 대절로 바꾸기' },
 };
 
 /* ---- 3. ACTIONS ---- */
@@ -1145,14 +1145,14 @@ function onCtaPress(){
 // v5부터 CTA 경로에서는 쓰이지 않는다. 바텀시트가 대체된 뒤(v6) 강조(flashNudge)를 거쳐
 // 이제(v11) 전체 화면 브리지(openBridge)가 대체했다. 되돌리려면 onCtaPress의 브리지 분기를
 // openSheet로 바꾸면 된다.
-// 왕복/시외 방향(일반예약 → 시간대절)만 가로막는 확인 바텀시트.
+// 왕복/시외 방향(일반 예약 → 시간 대절)만 가로막는 확인 바텀시트.
 // 요금이 아니라 '복귀 위험'을 확인시키는 절차라 인라인 카드로 그치지 않는다.
 function openSheet(reason){
   const c = COPY[reason];
   document.getElementById('sheet-title').textContent = '돌아올 차편은 준비되셨나요?';
   document.getElementById('sheet-body').textContent  =
-    c.title(S) + '\n' + '시간대절은 기사가 목적지에서 기다렸다가 함께 돌아와요.';
-  document.getElementById('sheet-convert').textContent = '시간대절로 바꾸기';
+    c.title(S) + '\n' + '시간 대절은 기사가 목적지에서 기다렸다가 함께 돌아와요.';
+  document.getElementById('sheet-convert').textContent = '시간 대절로 바꾸기';
   document.getElementById('sheet-go').textContent      = '그대로 진행';
   document.getElementById('sheet-convert').onclick = ()=>{ closeSheet(); convert('charter'); };
   document.getElementById('sheet-go').onclick      = dismissSheet;
@@ -1176,7 +1176,7 @@ function convert(to){
   if (to === 'normal') S.charterHours = null;
   S.convertedTo = to;          // 왕복 방지 표식
   if (to === 'charter') S.openCard = 'charter';   // 대절 시간 카드 열린 상태로 착지
-  // 수정 4: 스펙 §5.4는 시간대절 → 일반예약 착지 상태를 "카드 모두 접힘"으로 요구한다.
+  // 수정 4: 스펙 §5.4는 시간 대절 → 일반 예약 착지 상태를 "카드 모두 접힘"으로 요구한다.
   // null을 넣으면 renderInput()의 `S.openCard || 'route'` 폴백에 흡수돼 경로 카드가 열려
   // 버린다(null은 "아직 아무 것도 고르지 않은 기본값"과 "명시적으로 다 접음"을 구분하지
   // 못한다). 'none' sentinel로 명시해 폴백에 흡수되지 않게 한다.
@@ -1222,14 +1222,14 @@ const ICON_ARROW = '<svg class="rt-icon-arrow" viewBox="0 0 64 64" fill="none" x
 // 인라인해 20x20으로 쓴다).
 // v13(§v13-2, 13339:84831 4배 렌더 실측): v12는 CHIP_ICON_NODE_CALL을 "노드 이름(_call)
 // 근거"로 유형에 매핑했었는데 그게 거꾸로였다(렌더가 정답, 이름은 아니다). Figma 노드
-// ic_thumbnail_reservation_call(파란 원)이 실제로는 "일반예약" 칩이 아니라 "시간대절" 칩
+// ic_thumbnail_reservation_call(파란 원)이 실제로는 "일반 예약" 칩이 아니라 "시간 대절" 칩
 // 안에 있다. 그래서 상수 이름을 유형(NORMAL/CHARTER)이 아니라 Figma 노드 이름 그대로
 // (NODE_CALL)로 바꿔, "이름 = 어느 유형에 쓰이는가"로 오해할 여지를 없앴다.
 // v14(스펙 §A, B안): 디자이너 제안으로 "선택된 칩에만, 유형별 아이콘" → "양쪽 다 아이콘,
-// 선택은 공통 체크 배지"로 바뀌었다. CHIP_ICON_NODE_CHARTER(스케줄 그림, 옛 "일반예약"
+// 선택은 공통 체크 배지"로 바뀌었다. CHIP_ICON_NODE_CHARTER(스케줄 그림, 옛 "일반 예약"
 // 아이콘)는 이제 아무 자리에도 안 쓰여 base64 상수째 지웠다(약 3KB 감소). 대신 선택 칩
-// 공통 체크 배지(CHIP_ICON_CHECK, 신규)와 "일반예약" 비선택 칩의 위치 핀
-// (CHIP_ICON_DESTINATION, 신규)을 추가한다. CHIP_ICON_NODE_CALL(파란 원)은 이제 "시간대절"
+// 공통 체크 배지(CHIP_ICON_CHECK, 신규)와 "일반 예약" 비선택 칩의 위치 핀
+// (CHIP_ICON_DESTINATION, 신규)을 추가한다. CHIP_ICON_NODE_CALL(파란 원)은 이제 "시간 대절"
 // 비선택 칩 아이콘으로 그대로 재사용한다(renderTypeTab 호출부 참고).
 const CHIP_ICON_NODE_CALL = 'data:image/png;base64,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';
 const CHIP_ICON_CHECK = 'data:image/png;base64,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';
@@ -1269,12 +1269,9 @@ function routeSummaryText(s){
 
 // ---- Task 6: 미리보기 문자열 규칙 ----
 function previewTitle(s){
-  // 용어 표기 정본은 붙여 쓴 형태다(시간대절, 일반예약). 숫자는 용어에 붙이지 않는다.
-  // `넥스트 3시간대절` 은 숫자가 용어에 들러붙어 읽기 나쁘고, 그렇다고 `3시간 대절` 로 띄우면
-  // 용어가 자리마다 갈린다(옛 용어 시간 예약 이 정확히 그 상태였다). 그래서 시간 수를 괄호로 뺀다.
-  // 이용내역 화면이 이미 `넥스트 시간 대절 (2시간)` 형태라 두 화면이 같은 꼴이 되는 이점도 있다.
-  // Figma 미리보기 카피는 아직 `넥스트 N시간 대절` 이다. 화면 쪽을 고쳐야 한다.
-  return s.type === 'charter' ? `넥스트 시간대절 (${s.charterHours}시간)` : '넥스트 일반예약';
+  // 용어 표기 정본은 띄어 쓴 형태다(시간 대절, 일반 예약). PRD 요구사항 3 과 같은 표기다.
+  // 시간 수는 Figma 원안대로 용어 앞에 붙인다(`넥스트 3시간 대절`).
+  return s.type === 'charter' ? `넥스트 ${s.charterHours}시간 대절` : '넥스트 일반 예약';
 }
 function previewSubtitle(s){
   // 실제 플로우에서는 preview 화면에 pickupAt 없이 도달할 수 없다(onCtaPress가 막는다).
@@ -1637,11 +1634,11 @@ function fitRouteSummaryValue(el, s){
 function renderInput(){
   const openName = S.openCard || 'route';
 
-  // v14(스펙 §A, B안): 비선택일 때 보여줄 유형 아이콘. 일반예약=위치 핀(CHIP_ICON_DESTINATION,
-  // 신규), 시간대절=파란 원(CHIP_ICON_NODE_CALL, 기존 재사용). 선택일 때는 renderTypeTab이
+  // v14(스펙 §A, B안): 비선택일 때 보여줄 유형 아이콘. 일반 예약=위치 핀(CHIP_ICON_DESTINATION,
+  // 신규), 시간 대절=파란 원(CHIP_ICON_NODE_CALL, 기존 재사용). 선택일 때는 renderTypeTab이
   // 이 값을 무시하고 항상 CHIP_ICON_CHECK를 그린다.
-  renderTypeTab(document.getElementById('seg-normal'), '일반예약', S.type === 'normal', CHIP_ICON_DESTINATION);
-  renderTypeTab(document.getElementById('seg-charter'), '시간대절', S.type === 'charter', CHIP_ICON_NODE_CALL);
+  renderTypeTab(document.getElementById('seg-normal'), '일반 예약', S.type === 'normal', CHIP_ICON_DESTINATION);
+  renderTypeTab(document.getElementById('seg-charter'), '시간 대절', S.type === 'charter', CHIP_ICON_NODE_CALL);
   // v11(스펙 §3): 아이콘(ICON_INFO, 임시) + 텍스트. innerHTML을 쓰지만 텍스트는 이 파일의
   // escapeHtml을 거치지 않아도 안전하다(TYPE_LEAD는 상수 리터럴이라 사용자 입력이 아니다).
   document.getElementById('type-lead').innerHTML = ICON_INFO + `<span>${TYPE_LEAD[S.type]}</span>`;
@@ -1689,7 +1686,7 @@ function closeBridge(){
 // 버튼 위계는 스타일이 고정(주버튼=navy, 보조버튼=회색)이고 라벨·동작만 방향마다 뒤집힌다
 // (스펙 §4 "핵심"). to-charter(왕복/시외, 골프/복귀불가/장거리, 돌아갈 차가 없는 "위험")는 주버튼이
 // 전환을 권하고, to-normal(짧은 경로, 짧은 경로, "요금" 문제)은 주버튼이 오히려 "이대로 계속하기"다.
-// v14(스펙 §D): 제목 개행 위치가 바뀌었다(왕복/시외 "왕복이라면 시간대절이 ⏎ 더 편해요", 짧은 경로
+// v14(스펙 §D): 제목 개행 위치가 바뀌었다(왕복/시외 "왕복이라면 시간 대절이 ⏎ 더 편해요", 짧은 경로
 // "{h}분이면 도착하는 ⏎ 경로예요"). 이 파일은 U+2028/\n으로 강제 개행을 넣지 않는 규칙이라
 // (title()이 순수 텍스트를 돌려줘야 하는 셀프테스트·바텀시트 쪽 사용도 있다), 대신
 // #bridge-title의 max-width를 사유별로 좁혀 기존 word-break:keep-all이 그 지점에서 접히게
@@ -1703,21 +1700,21 @@ function openBridge(n){
   const titleEl = document.getElementById('bridge-title');
   titleEl.textContent = c.title(S);
   titleEl.style.maxWidth = BRIDGE_TITLE_MAXW[n.reason] + 'px';
-  // v14(스펙 §E): 짧은 경로 본문은 "일반예약"만 강조하는 HTML(c.bodyHtml)을 쓴다. c.body()는
+  // v14(스펙 §E): 짧은 경로 본문은 "일반 예약"만 강조하는 HTML(c.bodyHtml)을 쓴다. c.body()는
   // 상수 리터럴 문자열이라(스펙 §E 지시대로) escapeHtml 없이 innerHTML에 넣어도 안전하지만,
   // bodyHtml이 없는 사유(왕복/시외)는 값을 담을 수 있으니 습관적으로 escapeHtml을 거친다.
   document.getElementById('bridge-desc').innerHTML = c.bodyHtml ? c.bodyHtml(S) : escapeHtml(c.body(S));
   const primary = document.getElementById('bridge-primary');
   const secondary = document.getElementById('bridge-secondary');
   if (n.dir === 'to-charter'){
-    primary.textContent = '시간대절로 변경하기';
+    primary.textContent = '시간 대절로 변경하기';
     primary.onclick = ()=>{ convert('charter'); closeBridge(); };
     secondary.textContent = '이대로 계속하기';
     secondary.onclick = ()=>{ closeBridge(); S.screen = 'vehicle'; render(); };
   } else {
     primary.textContent = '이대로 계속하기';
     primary.onclick = ()=>{ closeBridge(); S.screen = 'vehicle'; render(); };
-    secondary.textContent = '일반예약으로 변경하기';
+    secondary.textContent = '일반 예약으로 변경하기';
     secondary.onclick = ()=>{ convert('normal'); closeBridge(); };
   }
   document.getElementById('bridge').hidden = false;
@@ -1752,7 +1749,7 @@ function previewRouteRowsHtml(s){
 }
 
 // 프로토타입용 목업 요금. 실제 값은 서버 계산이라 이 태스크 범위 밖이다.
-// 줄 순서: 기본요금 → 통행료 → 서비스이용료 → (시간대절만) 시간 추가요금 → 거리 추가요금 → 할인 → 총 예상요금.
+// 줄 순서: 기본요금 → 통행료 → 서비스이용료 → (시간 대절만) 시간 추가요금 → 거리 추가요금 → 할인 → 총 예상요금.
 function fareRowsHtml(s){
   const rows = [
     ['기본요금', 95000],
@@ -1846,7 +1843,7 @@ function applyQueryToState(){
   const screen = params.get('screen');
   if (screen === 'vehicle' || screen === 'preview'){
     S.screen = screen;
-    // 실제 플로우라면 입력 화면에서 CTA가 '설정 완료'가 될 때까지 픽업 시간(과 시간대절이면
+    // 실제 플로우라면 입력 화면에서 CTA가 '설정 완료'가 될 때까지 픽업 시간(과 시간 대절이면
     // 대절 시간)이 이미 채워져 있다. 쿼리로 두 화면을 바로 열 때도 같은 전제를 맞춰 둔다
     // (scenario=normal은 위 분기에서 pickupAt을 안 채우므로 여기서 보정하지 않으면 미리보기가
     // null Date를 만나 그린다).
@@ -2003,7 +2000,7 @@ function runJudgeTests(){
   test('공항이면 넛지 없음', ()=>{
     const s = fresh('airport','normal'); eq(judgeNudge(s), null);
   });
-  test('일반예약 · 골프장이면 시간대절 권유', ()=>{
+  test('일반 예약 · 골프장이면 시간 대절 권유', ()=>{
     // v13(§v13-1): 사유가 'golf'에서 통합 사유 'round-trip'으로 바뀌었다.
     const s = fresh('golf','normal'); eq(judgeNudge(s).reason, 'round-trip');
   });
@@ -2011,22 +2008,22 @@ function runJudgeTests(){
   // 전제 자체가 없어졌다(더 이상 가릴 우선순위가 없다). 지우고 아래 새 필수 테스트
   // '왕복/시외 사유가 round-trip 하나로 합쳐졌다'· '복귀 불가 지역은 더 이상 트리거가 아니다'로
   // 대체한다(selftest() 마지막에서 함께 돈다).
-  test('시간대절 · 대절 시간 미입력이면 판정 불가', ()=>{
+  test('시간 대절 · 대절 시간 미입력이면 판정 불가', ()=>{
     const s = fresh('short','charter'); eq(judgeNudge(s), null);
   });
-  test('시간대절 · 48분 경로에 3시간이면 일반예약 권유', ()=>{
+  test('시간 대절 · 48분 경로에 3시간이면 일반 예약 권유', ()=>{
     const s = fresh('short','charter'); s.charterHours = 3;
     eq(judgeNudge(s).reason, 'short-trip');
   });
-  test('시간대절 · 경유지가 있으면 발동 안 함', ()=>{
+  test('시간 대절 · 경유지가 있으면 발동 안 함', ()=>{
     const s = fresh('short','charter'); s.charterHours = 3; s.route.vias = ['강남역'];
     eq(judgeNudge(s), null);
   });
-  test('시간대절 · 최소 단위면 발동 안 함', ()=>{
+  test('시간 대절 · 최소 단위면 발동 안 함', ()=>{
     const s = fresh('short','charter'); s.charterHours = MIN_CHARTER_HOURS;
     eq(judgeNudge(s), null);
   });
-  test('시간대절 · 예상 소요가 절반 이상이면 발동 안 함', ()=>{
+  test('시간 대절 · 예상 소요가 절반 이상이면 발동 안 함', ()=>{
     const s = fresh('short','charter'); s.charterHours = 3; s.etaMin = 90;
     eq(judgeNudge(s), null);
   });
@@ -2037,12 +2034,12 @@ function runJudgeTests(){
   test('카피에 실제 값이 들어감', ()=>{
     const s = fresh('short','charter'); s.charterHours = 3;
     eq(COPY['short-trip'].title(s), '48분이면 도착하는 경로예요');
-    eq(COPY['short-trip'].body(s),  '3시간을 빌리지 않아도 일반예약으로 갈 수 있어요');
+    eq(COPY['short-trip'].body(s),  '3시간을 빌리지 않아도 일반 예약으로 갈 수 있어요');
   });
   // 수정 7: 경로 미입력 가드가 원래 normal 분기에만 있어, charter + charterHours=3 +
   // route.to=null이면 short-trip을 잘못 반환했다(이 프로토에서는 도달 불가한 조합이지만
   // judgeNudge는 스펙의 실행형이므로 가드가 두 분기 모두를 막아야 한다).
-  test('시간대절 · 경로 미입력이면 두 방향 모두 판정 불가', ()=>{
+  test('시간 대절 · 경로 미입력이면 두 방향 모두 판정 불가', ()=>{
     const s = fresh('short','charter'); s.charterHours = 3; s.route.to = null;
     eq(judgeNudge(s), null);
   });
@@ -2054,7 +2051,7 @@ function runInputTests(){
   test('CTA · 픽업 시간 없으면 픽업 시간 입력하기', ()=>{
     const s = fresh('normal','normal'); eq(ctaLabel(s), '픽업 시간 입력하기');
   });
-  test('CTA · 시간대절은 대절 시간까지 있어야 설정 완료', ()=>{
+  test('CTA · 시간 대절은 대절 시간까지 있어야 설정 완료', ()=>{
     const s = fresh('normal','charter'); s.pickupAt = new Date();
     eq(ctaLabel(s), '대절 시간 입력하기');
     s.charterHours = 3; eq(ctaLabel(s), '설정 완료');
@@ -2077,11 +2074,11 @@ function runInputTests(){
     if (txt.includes('시간예약')) throw new Error('found 시간예약 in phone frame');
     S.screen = 'input'; render();
   });
-  test('세그먼트 라벨이 일반예약 / 시간대절', ()=>{
+  test('세그먼트 라벨이 일반 예약 / 시간 대절', ()=>{
     // Figma 최종판(pill 칩)은 라벨을 감싸는 별도 span이 없다. 버튼 자신의 textContent를 읽는다
     // (설명은 칩이 아니라 #type-lead가 보여준다).
-    eq(document.getElementById('seg-normal').textContent.trim(), '일반예약');
-    eq(document.getElementById('seg-charter').textContent.trim(), '시간대절');
+    eq(document.getElementById('seg-normal').textContent.trim(), '일반 예약');
+    eq(document.getElementById('seg-charter').textContent.trim(), '시간 대절');
   });
   test('유형 카드 두 개는 높이가 같다', ()=>{
     S = fresh('normal','normal'); render();
@@ -2149,8 +2146,8 @@ function runSheetTests(){
     openSheet(judgeNudge(S).reason);
     eq(document.getElementById('sheet-title').textContent, '돌아올 차편은 준비되셨나요?');
     eq(document.getElementById('sheet-body').textContent,
-       '왕복이라면 시간대절이 더 편해요\n시간대절은 기사가 목적지에서 기다렸다가 함께 돌아와요.');
-    eq(document.getElementById('sheet-convert').textContent, '시간대절로 바꾸기');
+       '왕복이라면 시간 대절이 더 편해요\n시간 대절은 기사가 목적지에서 기다렸다가 함께 돌아와요.');
+    eq(document.getElementById('sheet-convert').textContent, '시간 대절로 바꾸기');
     eq(document.getElementById('sheet-go').textContent, '그대로 진행');
   });
   // v11(스펙 §4 트리거): 원래 이름은 "짧은 경로 방향은 왕복/시외와 달리 첫 CTA를 막지 않는다"(v10에서
@@ -2176,7 +2173,7 @@ function runSheetTests(){
   test('배너 CTA에서 전환하면 대절 시간 카드가 열린 상태로 착지', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); render();
     onCtaPress();
-    document.getElementById('bridge-primary').click();   // to-charter: 주버튼 = "시간대절로 변경하기"
+    document.getElementById('bridge-primary').click();   // to-charter: 주버튼 = "시간 대절로 변경하기"
     eq(S.type, 'charter');
     eq(S.openCard, 'charter');
     eq(S.screen, 'input');
@@ -2222,7 +2219,7 @@ function runSheetTests(){
   });
 }
 function runConvertTests(){
-  test('전환 · 시간대절에서 일반예약으로', ()=>{
+  test('전환 · 시간 대절에서 일반 예약으로', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3;
     const before = S.route.to;
     convert('normal');
@@ -2236,10 +2233,10 @@ function runConvertTests(){
     S = fresh('short','charter'); S.charterHours = 3; convert('normal');
     eq(judgeNudge(S), null);
   });
-  // 수정 4: 스펙 §5.4 "일반예약 탭, 카드 모두 접힘, CTA 활성". openCard가 null이면
+  // 수정 4: 스펙 §5.4 "일반 예약 탭, 카드 모두 접힘, CTA 활성". openCard가 null이면
   // renderInput()의 `S.openCard || 'route'` 폴백에 흡수돼 경로 카드가 열려 버렸다.
   // 'none' sentinel이 실제로 세 카드를 모두 접는지 DOM에서 직접 확인한다.
-  test('시간대절 → 일반예약 전환 직후는 카드 모두 접힘, CTA 활성', ()=>{
+  test('시간 대절 → 일반 예약 전환 직후는 카드 모두 접힘, CTA 활성', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3;
     convert('normal');
     eq(S.openCard, 'none');
@@ -2250,7 +2247,7 @@ function runConvertTests(){
   });
   // v11: "짧은 경로 넛지가 대절 시간 입력 전에는 안 보임"(#nudge DOM 기준)은 지운다. #nudge가
   // 없어졌고, 같은 사실(대절 시간 미입력이면 판정 자체가 안 선다)은 이미 runJudgeTests의
-  // '시간대절 · 대절 시간 미입력이면 판정 불가'가 judgeNudge(s)===null로 직접 검사한다.
+  // '시간 대절 · 대절 시간 미입력이면 판정 불가'가 judgeNudge(s)===null로 직접 검사한다.
   // v11: "짧은 경로 넛지 카피가 화면에 그려짐"을 브리지 제목·본문 검사로 옮긴다(라벨은 새 필수
   // 테스트 '브리지 버튼 위계가...'가 이미 보므로 여기서는 카피 내용만 본다).
   test('짧은 경로 브리지 카피가 화면에 그려짐', ()=>{
@@ -2258,7 +2255,7 @@ function runConvertTests(){
     onCtaPress();
     eq(document.getElementById('bridge').hidden, false);
     eq(document.getElementById('bridge-title').textContent, '48분이면 도착하는 경로예요');
-    eq(document.getElementById('bridge-desc').textContent, '3시간을 빌리지 않아도 일반예약으로 갈 수 있어요');
+    eq(document.getElementById('bridge-desc').textContent, '3시간을 빌리지 않아도 일반 예약으로 갈 수 있어요');
   });
   // v11: "넛지가 제목과 본문 두 줄을 보여 준다"를 골프(왕복/시외) 브리지 카피 검사로 옮겼었다.
   // v13(§v13-1): golf/no-return/long-distance 세 사유의 카피가 round-trip 하나로 합쳐지며
@@ -2269,9 +2266,9 @@ function runConvertTests(){
       S = fresh(sc,'normal'); S.pickupAt = new Date(); S.openCard = 'none'; render();
       onCtaPress();
       eq(document.getElementById('bridge').hidden, false);
-      eq(document.getElementById('bridge-title').textContent, '왕복이라면 시간대절이 더 편해요');
+      eq(document.getElementById('bridge-title').textContent, '왕복이라면 시간 대절이 더 편해요');
       eq(document.getElementById('bridge-desc').textContent, '돌아올 차편까지 한 번에 확보할 수 있어요');
-      eq(document.getElementById('bridge-primary').textContent, '시간대절로 변경하기');
+      eq(document.getElementById('bridge-primary').textContent, '시간 대절로 변경하기');
     }
   });
   // v11: "변경 버튼 터치 타깃이 44 이상이다"는 지운다. 새 필수 테스트 '브리지 치수가 Figma
@@ -2319,7 +2316,7 @@ function runLifecycleTests(){
   });
   // 수정 5: 위 테스트는 convertedTo가 이미 null인 상태만 봐서, setType()이 convertedTo를
   // 안 비우는 버그를 못 잡았다. 실제로 벌어지는 시퀀스를 그대로 재현한다. 왕복/시외 시트에서
-  // 시간대절로 전환(convertedTo='charter') → 유저가 일반예약 세그먼트 탭 → 다시 시간대절
+  // 시간 대절로 전환(convertedTo='charter') → 유저가 일반 예약 세그먼트 탭 → 다시 시간 대절
   // 세그먼트 탭 → 대절 시간 확정. setType()이 convertedTo를 비우지 않으면 여기서 왕복 방지가
   // 영구히 남아 짧은 경로 넛지가 뜨지 않는다.
   test('시트 전환 후 세그먼트를 오가면 왕복 방지가 풀린다', ()=>{
@@ -2412,9 +2409,9 @@ function runLifecycleTests(){
 }
 function runPreviewTests(){
   const at = new Date(2026,11,12,15,20);   // 2026-12-12(토) 오후 3시 20분
-  test('미리보기 타이틀 · 일반예약', ()=>{
+  test('미리보기 타이틀 · 일반 예약', ()=>{
     S = fresh('normal','normal'); S.pickupAt = at;
-    eq(previewTitle(S), '넥스트 일반예약');
+    eq(previewTitle(S), '넥스트 일반 예약');
   });
   // 수정 6: 미리보기 앱바에 뒤로가기 버튼만 있고 타이틀 텍스트가 비어 있었다(스펙 §4 "예약 신청").
   test('미리보기 앱바 타이틀이 예약 신청', ()=>{
@@ -2422,43 +2419,37 @@ function runPreviewTests(){
     const appbar = document.getElementById('screen-preview').querySelector('.rt-appbar-title');
     eq(appbar.textContent, '예약 신청');
   });
-  test('미리보기 타이틀 · 시간대절은 시간 수를 괄호로 뺀다', ()=>{
-    S = fresh('short','charter'); S.pickupAt = at; S.charterHours = 3;
-    eq(previewTitle(S), '넥스트 시간대절 (3시간)');
-  });
-  // 숫자가 용어에 들러붙으면(넥스트 3시간대절) 읽기 나쁘고, 띄우면(3시간 대절) 용어가 갈린다.
-  // 둘 다 막는다. 시간 수는 반드시 용어 바깥에 있어야 한다.
-  test('미리보기 타이틀 · 숫자가 용어에 붙지 않는다', ()=>{
+  test('미리보기 타이틀 · 시간 대절은 N시간 대절', ()=>{
     for (const h of [1, 3, 12]){
       S = fresh('short','charter'); S.pickupAt = at; S.charterHours = h;
-      const t = previewTitle(S);
-      if (/\d시간대절|\d시간 대절/.test(t)) throw new Error(h + '시간: ' + t);
+      eq(previewTitle(S), '넥스트 ' + h + '시간 대절');
     }
   });
-  // 용어 표기는 붙여 쓴 형태가 정본이다(사용자 확정). 화면에 띄어 쓴 형태가 한 군데라도
-  // 새로 들어오면 여기서 잡는다. previewTitle 만 보는 게 아니라 렌더된 화면 전체를 훑는다.
-  test('용어 표기 · 화면 어디에도 띄어 쓴 형태가 없다', ()=>{
+  // 용어 표기는 띄어 쓴 형태가 정본이다(사용자 확정, PRD 요구사항 3 과 같은 표기).
+  // 붙여 쓴 형태나 옛 용어가 화면에 한 군데라도 들어오면 여기서 잡는다. previewTitle 만
+  // 보는 게 아니라 렌더된 화면 전체를 훑는다.
+  test('용어 표기 · 화면 어디에도 붙여 쓴 형태나 옛 용어가 없다', ()=>{
     const bad = [];
     for (const sc of ['route','vehicle','preview']){
       S = fresh('short','charter'); S.pickupAt = at; S.charterHours = 3; S.screen = sc; render();
       const txt = document.getElementById('phone').innerText || '';
-      for (const term of ['시간 대절', '시간 예약', '일반 예약'])
+      for (const term of ['시간대절', '일반예약', '시간예약', '시간 예약'])
         if (txt.includes(term)) bad.push(sc + ': ' + term);
     }
     if (bad.length) throw new Error(bad.join(', '));
   });
-  test('미리보기 부제 · 일반예약은 시작 시각만', ()=>{
+  test('미리보기 부제 · 일반 예약은 시작 시각만', ()=>{
     S = fresh('normal','normal'); S.pickupAt = at;
     eq(previewSubtitle(S), '12월 12일 (토) 오후 3시 20분');
   });
-  test('미리보기 부제 · 시간대절은 종료 시각까지', ()=>{
+  test('미리보기 부제 · 시간 대절은 종료 시각까지', ()=>{
     S = fresh('short','charter'); S.pickupAt = at; S.charterHours = 3;
     eq(previewSubtitle(S), '12월 12일 (토) 오후 3시 20분 ~ 오후 6시 20분');
   });
-  test('경로 칩 · 일반예약은 예상 시간 하나', ()=>{
+  test('경로 칩 · 일반 예약은 예상 시간 하나', ()=>{
     S = fresh('normal','normal'); eq(routeChips(S).join('|'), '48분 예상');
   });
-  test('경로 칩 · 시간대절은 이용 시간과 예상 시간 둘', ()=>{
+  test('경로 칩 · 시간 대절은 이용 시간과 예상 시간 둘', ()=>{
     S = fresh('short','charter'); S.charterHours = 3;
     eq(routeChips(S).join('|'), '3시간 이용|48분 예상');
   });
@@ -2614,7 +2605,7 @@ function runLayoutTests(){
   // v13(§v13-2): 비선택 칩 라벨이 #384F85로 바뀌었다(선택 라벨 #19254D는 NAVY와 같은 값이라
   // 이미 통과한다). 채도(133-56=77)가 30을 넘어 그냥 두면 일반 규칙에 걸리므로, 다른
   // 강조색처럼 .rt-seg-tab 안에서만 허용하는 CHIP_LABEL_ACCENT로 등록한다.
-  // v14(스펙 §E): 짧은 경로 브리지 본문의 "일반예약" 강조가 ACCENT_0086EA(#0086EA)를 #bridge
+  // v14(스펙 §E): 짧은 경로 브리지 본문의 "일반 예약" 강조가 ACCENT_0086EA(#0086EA)를 #bridge
   // 안에서도 쓴다. 원래 .rt-wheel-col 전용이었던 예외를 #bridge까지 넓힌다.
   // v14(스펙 §B): 리드 문구 아이콘 색이 #556895→#7282A6로 바뀌면서(텍스트는 그대로) 이제
   // WHEEL_MUTED(#7282A6)가 #type-lead 안에서도 나온다. 원래 .rt-wheel-col 전용이었던 예외를
@@ -2874,11 +2865,11 @@ function runBridgeTests(){
   });
   test('브리지 버튼 위계가 방향마다 뒤집힌다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard='none'; render(); onCtaPress();
-    eq(document.getElementById('bridge-primary').textContent, '시간대절로 변경하기');
+    eq(document.getElementById('bridge-primary').textContent, '시간 대절로 변경하기');
     eq(document.getElementById('bridge-secondary').textContent, '이대로 계속하기');
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3; S.openCard='none'; render(); onCtaPress();
     eq(document.getElementById('bridge-primary').textContent, '이대로 계속하기');
-    eq(document.getElementById('bridge-secondary').textContent, '일반예약으로 변경하기');
+    eq(document.getElementById('bridge-secondary').textContent, '일반 예약으로 변경하기');
   });
   test('주버튼은 언제나 navy, 보조는 언제나 회색', ()=>{
     for (const [sc, tp, hrs] of [['golf','normal',null], ['short','charter',3]]) {
@@ -2896,7 +2887,7 @@ function runBridgeTests(){
     eq(S.type, 'charter');                 // 전환되지 않았다
     eq(document.getElementById('bridge').hidden, true);
   });
-  test('왕복/시외에서 navy 버튼은 시간대절로 전환한다', ()=>{
+  test('왕복/시외에서 navy 버튼은 시간 대절로 전환한다', ()=>{
     S = fresh('golf','normal'); S.pickupAt = new Date(); S.openCard='none';
     render(); onCtaPress();
     document.getElementById('bridge-primary').click();
@@ -3019,7 +3010,7 @@ function runV13Tests(){
     eq(lab[1], 'rgb(56, 79, 133)');   // #384F85
   });
   // v14(스펙 §A, B안): 선택 칩은 유형과 무관하게 항상 공통 체크 배지(CHIP_ICON_CHECK)이고,
-  // 비선택 칩은 그 칩의 유형 아이콘(일반예약=CHIP_ICON_DESTINATION 위치 핀, 시간대절=
+  // 비선택 칩은 그 칩의 유형 아이콘(일반 예약=CHIP_ICON_DESTINATION 위치 핀, 시간 대절=
   // CHIP_ICON_NODE_CALL 파란 원)을 45% 불투명도로 보여준다. 사용자 제공 필수 테스트를
   // 그대로 쓴다(셀렉터는 실제 마크업 '#screen-input .rt-seg-tab'과 일치해 변경 없음).
   // opacity는 getComputedStyle로 실제 렌더된 값을 읽는다(과거 naturalWidth를 data URI
@@ -3057,16 +3048,16 @@ function runV13Tests(){
   // 유형 무관 공통 체크 배지, 위 테스트가 이미 확인한다). 여기서는 비선택 아이콘이
   // CHIP_ICON_NODE_CHARTER(더 이상 존재하지 않음)가 아니라 올바른 신규 상수와 맞는지,
   // 그리고 "서로 다르기만 하면"이 아니라 어느 쪽이 어느 상수인지까지 직접 대조한다(매핑이
-  // 통째로 뒤집혀도 잡도록: 일반예약=CHIP_ICON_DESTINATION, 시간대절=CHIP_ICON_NODE_CALL).
+  // 통째로 뒤집혀도 잡도록: 일반 예약=CHIP_ICON_DESTINATION, 시간 대절=CHIP_ICON_NODE_CALL).
   test('비선택 칩 아이콘이 유형에 맞게 붙는다', ()=>{
     S = fresh('golf','normal'); render();
     let tabs = [...document.querySelectorAll('#screen-input .rt-seg-tab')];
     // golf/normal: seg-normal(0)이 선택, seg-charter(1)이 비선택 -> 파란 원(CHIP_ICON_NODE_CALL)
-    eq(tabs[1].querySelector('img').src, CHIP_ICON_NODE_CALL, '비선택 시간대절은 NODE_CALL(파란 원)이어야 한다');
+    eq(tabs[1].querySelector('img').src, CHIP_ICON_NODE_CALL, '비선택 시간 대절은 NODE_CALL(파란 원)이어야 한다');
     S = fresh('short','charter'); S.charterHours = 3; render();
     tabs = [...document.querySelectorAll('#screen-input .rt-seg-tab')];
     // short/charter: seg-normal(0)이 비선택 -> 위치 핀(CHIP_ICON_DESTINATION)
-    eq(tabs[0].querySelector('img').src, CHIP_ICON_DESTINATION, '비선택 일반예약은 CHIP_ICON_DESTINATION(위치 핀)이어야 한다');
+    eq(tabs[0].querySelector('img').src, CHIP_ICON_DESTINATION, '비선택 일반 예약은 CHIP_ICON_DESTINATION(위치 핀)이어야 한다');
     if (CHIP_ICON_DESTINATION === CHIP_ICON_NODE_CALL) throw new Error('두 유형 아이콘이 같은 값이다');
   });
   test('선택 칩은 눌리고 비선택 칩은 떠 있다', ()=>{
@@ -3095,7 +3086,7 @@ function runV13Tests(){
 
 // ---- v14: 유형 칩 B안(§A) + 리드 문구 위치 복귀(§B) + CTA 여백(§C) + 브리지 개행/강조(§D·E) ----
 function runV14Tests(){
-  // §D: 개행 위치가 "왕복이라면 시간대절이" / "더 편해요"로 접혀야 한다. max-width로
+  // §D: 개행 위치가 "왕복이라면 시간 대절이" / "더 편해요"로 접혀야 한다. max-width로
   // word-break:keep-all이 그 지점에서 접히게 했으므로(openBridge/BRIDGE_TITLE_MAXW),
   // 정확히 두 줄(line-height 30 x2 = 60)인지로 확인한다.
   test('브리지 제목이 Figma 지점에서 접힌다', ()=>{
@@ -3115,15 +3106,15 @@ function runV14Tests(){
     const t = document.getElementById('bridge-title');
     eq(Math.round(t.getBoundingClientRect().height), 60);   // 정확히 2줄
   });
-  // §E: 짧은 경로 본문에서 "일반예약" 넉 자만 #0086EA로 강조. 왕복/시외에는 강조가 없다(bodyHtml
+  // §E: 짧은 경로 본문에서 "일반 예약" 넉 자만 #0086EA로 강조. 왕복/시외에는 강조가 없다(bodyHtml
   // 필드 자체가 COPY['round-trip']에 없다).
-  test('짧은 경로 본문에서 일반예약만 강조된다', ()=>{
+  test('짧은 경로 본문에서 일반 예약만 강조된다', ()=>{
     S = fresh('short','charter'); S.pickupAt = new Date(); S.charterHours = 3;
     S.openCard='none'; render(); onCtaPress();
     const d = document.getElementById('bridge-desc');
     const em = d.querySelector('span');
     if (!em) throw new Error('강조 span 이 없다');
-    eq(em.textContent, '일반예약');
+    eq(em.textContent, '일반 예약');
     eq(getComputedStyle(em).color, 'rgb(0, 134, 234)');      // #0086EA
     eq(getComputedStyle(d).color, 'rgb(49, 72, 125)');       // #31487D
     // 왕복/시외 에는 강조가 없다
