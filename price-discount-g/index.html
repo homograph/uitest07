@@ -126,7 +126,9 @@ body{font-variant-numeric:tabular-nums}
 .hchip{flex:none;width:84px;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 4px 8px;border:0;border-radius:12px;background:none;font:inherit;font-family:inherit;cursor:pointer;color:#000}
 .hchip img{width:72px;height:48px;filter:grayscale(1);opacity:.42}
 .hchip .hn{font-size:12px;line-height:17px;color:#60667A;white-space:nowrap;max-width:76px;overflow:hidden;text-overflow:ellipsis}
-.hchip .hwas{font-size:11px;line-height:14px;color:#9DA0AE;text-decoration:line-through;white-space:nowrap;min-height:14px}
+.hchip .hwas{display:flex;align-items:baseline;gap:3px;font-size:11px;line-height:14px;color:#9DA0AE;white-space:nowrap;min-height:14px}
+.hchip .hwas s{text-decoration:line-through}
+.hchip .pct{font-size:11px;line-height:14px}
 .hchip .hnow{font-size:15px;line-height:21px;font-weight:700;color:#262A38;white-space:nowrap}
 .hchip.on{background:#E7EBF2}
 .hchip.on img{filter:none;opacity:1}
@@ -153,6 +155,12 @@ body{font-variant-numeric:tabular-nums}
 .vcl2{display:flex;align-items:center;gap:4px;margin-top:2px;min-width:0}
 .vcl2 .x{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;line-height:16px;font-weight:700;color:#19254D}
 .vcl2 .cr{width:6px;height:10px;flex:none;background:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAeCAYAAAAsEj5rAAABPElEQVR4nK3WbW+CMBAH8PMyBeOYAgUy9sLv/6mWmDkECZOEmTl5WM4EwkN1pfT/glyP8KNJoTCrqqoChcH24HrNoSzLSeBTXcTxF0RxcqtdZgFjpvwMz+efBqNQTTeQBufzZqKTUaxBh1lKUKwLh5lKUGwPVKDYb0xFkdecguK9E4/QJEnHgzVqm2vo5xDFcDplMBqkeB6DzdqAfj4PIRdFEIj/6gqjKAI+QsPo2NlQhEHKUtcHvaK3OwmDaZpBEB4HfYdZgIjjQML2QcjFnN42h7KYbW0G2L/gPYwWx3Nt7jUog9GK3wuqxLjg5fIrjQ1Awt53e5DFOmCNlUX3QX15XgljDVgUJew+ggG21Bbg++JYA+Z5fvvI97Ht9q3zFogE6aBpC9B1bTJGmbX/bbLsG2hkGKvREBdUkT+onbXLI6nwowAAAABJRU5ErkJggg==") center/6px 10px no-repeat}
+.vcl2 .x b{color:#F93D48}
+/* 할인율 배지 — 레퍼런스의 '44% 9,590원' 형태 */
+.pct{flex:none;font-size:12px;line-height:17px;font-weight:700;color:#F93D48;white-space:nowrap}
+.hchip .pct,.hx1 .pct{font-size:12px}
+.exp dd.dc{color:#F93D48}
+.exp dt.dc{color:#F93D48}
 /* 확장형 — 선택 라인업 한 대 */
 .hx1{flex:1 1 auto;min-height:0;overflow-y:auto;padding:0 20px 8px;scrollbar-width:none}
 .hx1::-webkit-scrollbar{display:none}
@@ -480,8 +488,8 @@ function expandBody(id){
   if(c.discounted) rows+=`<dt class="dc">${esc(REASON)} 할인${c.pct?' '+c.pct+'%':''}</dt><dd class="dc">−${won(c.base-c.fare)}</dd>`;
   // below: 리스트에 찍힌 금액을 소계로 한 번 확인시키고 그 아래에 유저 할인을 붙인다
   if(S.scope==='below' && c.discounted && (c.couponOn||c.crOn)) rows+=`<dt class="sub">서지 적용가</dt><dd class="sub">${won(c.fare)}</dd>`;
-  if(c.couponOn) rows+=`<dt>할인 쿠폰</dt><dd>−${won(c.cpAmt)}</dd>`;
-  if(c.crOn) rows+=`<dt>크레딧 사용</dt><dd>−${won(c.crAmt)}</dd>`;
+  if(c.couponOn) rows+=`<dt class="dc">할인 쿠폰</dt><dd class="dc">−${won(c.cpAmt)}</dd>`;
+  if(c.crOn) rows+=`<dt class="dc">크레딧 사용</dt><dd class="dc">−${won(c.crAmt)}</dd>`;
   const note=c.discounted
     ? (c.strikeOK?'신고된 탄력요금 범위 안에서 조정된 금액이에요.':`할인율이 ${c.rate.toFixed(1)}%라 정가 취소선 대신 할인액으로 알려드려요.`)
     : '이용료·탄력요금이 반영된 금액이에요.';
@@ -494,8 +502,9 @@ function expandBody(id){
 
 function hchipHTML(id){
   const r=BY[id], c=calc(id), on=id===S.lineup;
+  const pct = c.discounted&&c.pct ? `<span class="pct">${c.pct}%</span>` : '';
   const w = (c.discounted&&c.strikeOK)||(S.scope!=='below'&&(c.couponOn||c.crOn))
-    ? `<span class="hwas">${won(S.scope==='below'||!(c.couponOn||c.crOn)?c.base:c.base)}</span>` : '<span class="hwas"></span>';
+    ? `<span class="hwas">${pct}<s>${won(c.base)}</s></span>` : `<span class="hwas">${pct}</span>`;
   return `<button class="hchip${on?' on':''}" data-pick="${id}">
     <img src="${TH[id]}" alt=""><span class="hn">${esc(r.short)}</span>
     ${w}<span class="hnow">${won(rowPay(c))}</span></button>`;
@@ -504,11 +513,12 @@ function vcrowHTML(id){
   const r=BY[id], c=calc(id), on=id===S.lineup;
   const useStrike=(S.scope!=='below'&&(c.couponOn||c.crOn))?true:c.strikeOK;
   const w = c.discounted&&useStrike ? `<span class="vw">${won(c.base)}</span>` : '';
-  const l1 = `<span class="vcl1"><span class="vn">${esc(r.short)}</span>${w}<span class="vp">${won(rowPay(c))}</span></span>`;
+  const pct = c.discounted&&c.pct ? `<span class="pct">${c.pct}%</span>` : '';
+  const l1 = `<span class="vcl1"><span class="vn">${esc(r.short)}</span>${w}${pct}<span class="vp">${won(rowPay(c))}</span></span>`;
   // 선택 행에만 두 번째 줄 — 확장 뷰가 있다는 신호이자, 할인이 걸렸으면 그 명분을 여기서 말한다
   const p = parts(c);
   const l2 = on ? `<span class="vcl2"><span class="x">${p.length
-      ? esc(chipLabel(c))+' · '+won(chipCut(c))+' 낮아졌어요'
+      ? esc(chipLabel(c))+' · <b>'+won(chipCut(c))+' 낮아졌어요</b>'
       : '요금 상세 보기'}</span><i class="cr"></i></span>` : '';
   return `<button class="vcrow${on?' on':''}" data-pick="${id}">
     <img src="${TH[id]}" alt=""><span class="vctx">${l1}${l2}</span></button>`;
@@ -518,13 +528,13 @@ function hexpandHTML(){
   const useStrike=(S.scope!=='below'&&(c.couponOn||c.crOn))?true:c.strikeOK;
   const w = c.discounted&&useStrike ? `<span class="w">${won(c.base)}</span>` : '';
   const p = parts(c);
-  const rc = p.length ? `<button class="rc" data-exp="1"><span>${chipLabel(c)}</span><span class="r"><b>${won(chipCut(c))} 낮아졌어요</b><span class="caret"></span></span></button>` : '';
+  const rc = p.length ? `<button class="rc" data-exp="1"><span>${chipLabel(c)}</span><span class="r"><b style="color:#F93D48">${won(chipCut(c))} 낮아졌어요</b><span class="caret"></span></span></button>` : '';
   return `<div class="hx1">
     <button class="hback" data-open="0"><span class="cl"></span>라인업 전체</button>
     <img class="big" src="${TH[id]}" alt="">
     <div class="t1">${esc(r.name)}</div>
     <div class="t2"><span>${esc(r.desc)}</span>${paxH(r.pax)}</div>
-    <div class="pr">${w}<span class="n">예상 ${won(rowPay(c))}</span></div>
+    <div class="pr">${w}${c.discounted&&c.pct?`<span class="pct" style="font-size:17px;line-height:23px">${c.pct}%</span>`:''}<span class="n">예상 ${won(rowPay(c))}</span></div>
     ${rc}
     ${S.expand==='1'?expandBody(id):''}</div>`;
 }
@@ -538,7 +548,7 @@ function rowHTML(id){
       <span class="stx"><span class="n"><span class="t">${esc(r.name)}</span>${r.info?IC_INFO:''}</span>
       <span class="d"><span class="t">${esc(r.desc)}</span>${paxH(r.pax)}</span></span>
       <span class="spr">${priceRow(c,true)}</span></button>
-    ${chip?`<button class="reasonchip" data-exp="1"><span>${chipLabel(c)}</span><span class="r"><b>${won(chipCut(c))} 낮아졌어요</b><span class="caret"></span></span></button>`:''}
+    ${chip?`<button class="reasonchip" data-exp="1"><span>${chipLabel(c)}</span><span class="r"><b style="color:#F93D48">${won(chipCut(c))} 낮아졌어요</b><span class="caret"></span></span></button>`:''}
     ${S.expand==='1'?expandBody(id):''}</div>`;
   }
   return `<button class="row" data-pick="${id}">
