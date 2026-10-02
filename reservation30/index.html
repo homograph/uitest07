@@ -697,6 +697,17 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
 .rsum .hint{flex:1 0 100%;display:flex;align-items:center;gap:6px;font-size:13px;line-height:19px;font-weight:400;color:#0086EA;word-break:keep-all;}
 .rsum .hint .icon{flex:0 0 auto;width:14px;height:14px;color:#0086EA;}
 .flentry .pl{width:16px;height:16px;color:var(--a-ink-3);}
+/* E안: 휠이 기본이고 항공편은 그 아래 넛지 한 줄. 누르기 전에 이용료까지 보여 준다 */
+.fnudge{margin:14px 20px 0;}
+.fnudge button{display:flex;align-items:center;gap:12px;width:100%;background:#F1F9FE;border:1px solid #32A2FA;
+  border-radius:8px;padding:14px 16px;font:inherit;text-align:left;cursor:pointer;}
+.fnudge .pl{flex:0 0 auto;width:20px;height:20px;color:#0086EA;}
+.fnudge .tx{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.fnudge .t1{font-size:15px;line-height:22px;font-weight:700;color:var(--a-ink-2);}
+.fnudge .t2{font-size:13px;line-height:19px;color:var(--a-ink-6);word-break:keep-all;}
+.fnudge .icon{flex:0 0 auto;width:16px;height:16px;color:var(--a-ink-7);}
+/* 고를 수 없는 차량의 사유는 고르기 전에 보여 준다 */
+.lnote{margin:10px 24px 0;font-size:13px;line-height:19px;color:var(--a-ink-6);word-break:keep-all;}
 .acard.fl .imgwrap .pl{width:26px;height:26px;color:#0086EA;}
 .acard[aria-disabled="true"] .ck{opacity:.5;}
 .fcand .rt .dt{display:block;font-size:14px;line-height:20px;font-weight:700;color:var(--a-ink-2);}
@@ -822,7 +833,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
   <header class="head">
     <h1>항공편 입력 위치 비교 · 예약 3.0</h1>
-    <p><b>"항공편에 맞춰 픽업"을 어떤 상품으로, 어디에 둘지</b> 눌러 보며 고르는 프로토타입입니다. <b>기본은 E안(서버 모델) · 인천공항 출발</b>입니다. 예약 홈에서 일반예약을 누르면 곧바로 <b>픽업 시간을 고르는 화면</b>이 열리고, 맨 위가 항공편명 입력입니다. 오른쪽 위 <b>배치 A / B / C / D</b>로 지난 안과 비교할 수 있습니다. A·B·C는 <b>우리가 픽업 시각을 정해 주면서 추적은 옵션</b>이던 안이고, 그 구조가 픽업 시각을 꼬이게 해서 폐기했습니다. D는 <b>편명을 참고값으로만 쓰는</b> 안입니다. 예약 3.0 핸드오프 보드의 네 화면을 한 흐름으로 이었고, 색·간격·타이포는 Figma REST 실측값입니다.</p>
+    <p><b>"항공편에 맞춰 픽업"을 어떤 상품으로, 어디에 둘지</b> 눌러 보며 고르는 프로토타입입니다. <b>기본은 E안(서버 모델) · 인천공항 출발</b>입니다. 예약 홈에서 일반예약을 누르면 곧바로 <b>픽업 시간을 고르는 화면</b>이 열립니다. 시내 출발과 똑같이 <b>휠이 기본</b>이고, 항공편은 휠 아래 <b>넛지 한 줄</b>입니다(PO 2026-10-02: "직접 고르기 + 항공편 넛지 혹은 옵션"). 오른쪽 위 <b>배치 A / B / C / D</b>로 지난 안과 비교할 수 있습니다. A·B·C는 <b>우리가 픽업 시각을 정해 주면서 추적은 옵션</b>이던 안이고, 그 구조가 픽업 시각을 꼬이게 해서 폐기했습니다. D는 <b>편명을 참고값으로만 쓰는</b> 안입니다. 예약 3.0 핸드오프 보드의 네 화면을 한 흐름으로 이었고, 색·간격·타이포는 Figma REST 실측값입니다.</p>
     <div class="meta">
       <span class="htag">파일 <code>pgHS64des…</code></span>
       <span class="htag">예약 홈 <code>recurring-entry D안</code></span>
@@ -909,10 +920,11 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         <h2>E · 서버 모델 (PRD 2026-09-30 + 결정 4건 반영)</h2>
         <p class="lede"><b>이제 이 안이 기본값입니다(2026-10-02).</b> 주소에 아무것도 붙이지 않으면 E안으로 열립니다. 지난 안은 오른쪽 위 배치 스위치나 <code>?place=route|vehicle|split|ref</code>로 그대로 볼 수 있습니다.</p>
         <ul>
-          <li><b>입력은 편명 + 도착편 + 여유 N분.</b> 휠이 없고, 픽업 시간 카드에는 "9월 14일 (월) 오전 6시 10분 예상"처럼 예상값만 보입니다. 여유는 40분 · 1시간 · 1시간 20분 · 2시간, 처음엔 1시간. 표본 920건에서 도착부터 실제 탑승까지 중앙 48분이고 40분을 고른 유저의 56%가 늦게 타서, 40분을 하한으로 두고 1시간을 권합니다. 같은 편명이 하루에 두 번 있을 수 있어 날짜별 도착편 목록에서 고르게 했습니다.</li>
+          <li><b>휠이 기본, 항공편은 넛지.</b> 공항 출발이어도 휠이 먼저 있고 그 아래 "항공편에 맞춰 픽업받기 · 도착이 늦어지면 픽업 시각도 함께 옮겨요. 이용료 무료(베타)" 한 줄이 있습니다. 누르면 편명 검색으로 바로 들어갑니다. <b>대등한 탭으로 두는 안은 폐기했습니다</b> — 탭은 두 방식이 같은 위계라는 신호라서, 유료가 되면 무료 경로와 유료 상품이 나란히 보입니다.</li>
+          <li><b>편명을 고르면 입력은 여유 N분 하나.</b> 휠이 사라지고, 픽업 시간 카드에는 "9월 14일 (월) 오전 6시 10분 예상"처럼 예상값만 보입니다. 여유는 40분 · 1시간 · 1시간 20분 · 2시간, 처음엔 1시간. 표본 920건에서 도착부터 실제 탑승까지 중앙 48분이고 40분을 고른 유저의 56%가 늦게 타서, 40분을 하한으로 두고 1시간을 권합니다. 같은 편명이 하루에 두 번 있을 수 있어 날짜별 도착편 목록에서 고르게 했습니다.</li>
           <li><b>확정 시점을 한 줄로.</b> "도착 1시간 20분 전쯤 실제 도착 예상에 맞춰 픽업 시각을 확정해요". 서버 조건(도착 예상이 한 번이라도 바뀌었고 도착까지 80분 이내면 콜 리스트, 픽업 = 도착 예상 + N분, 10분 올림)을 유저 말로 옮긴 것입니다. 콜 등록부터 수락까지 리드타임이 중앙 75분이라 80분이면 보통 잡히고 재배차 여지도 남습니다.</li>
           <li><b>지원 안 되는 편.</b> 데이터에 없는 편명은 기존 "찾지 못했어요 → 픽업 시간 직접 고르기". 베타 시간대 밖(도착 예정이 밤 10시 ~ 다음 날 새벽 5시)은 검색 결과에 회색으로 "지원하지 않는 시간대예요"로 보이고 누를 수 없습니다.</li>
-          <li><b>차량 선택</b>은 알약에 "예상 06:20 · 편명", 시각이 바뀔 수 있어 프리미엄 밴 불가. <b>끄고 켜는 스위치를 두지 않습니다.</b> 읽기 전용 상태 카드("항공편에 맞춰 픽업 · 포함됨 · 이용료 무료")와 "픽업 시간 고치기"만 둡니다.</li>
+          <li><b>차량 선택</b>은 알약에 "예상 06:20 · 편명", 시각이 바뀔 수 있어 프리미엄 밴 불가. <b>불가 사유를 고르기 전에 보여 줍니다(2026-10-02)</b> — 밴 썸네일은 전부터 흐렸지만 사유는 고른 뒤에야 떴습니다. 이제 썸네일 줄 아래에 "항공편에 맞춰 픽업은 프리미엄 밴을 고를 수 없어요"가 바로 보입니다. <b>끄고 켜는 스위치를 두지 않습니다.</b> 읽기 전용 상태 카드("항공편에 맞춰 픽업 · 포함됨 · 이용료 무료")와 "픽업 시간 고치기"만 둡니다.</li>
           <li><b>왜 스위치가 없나 — 쪼개면 픽업 시각이 꼬입니다(2026-10-02 사용자 지적).</b> 편명으로 시각을 계산해 주고 추적은 끌 수 있게 하면 "닷새 전 예정 시각 + 여유"가 그대로 고정됩니다. 당일 비행기가 2시간 늦으면 차는 그 시각에 오고 유저는 아직 비행기 안입니다. 게다가 앱이 계산해 준 숫자라 유저는 "알아서 맞춰 주겠지"라고 믿습니다 — <b>계산해 주고 안 지켜보는 상태가 가장 위험합니다.</b> 그래서 편명 입력과 지연 추적은 한 상품으로 묶습니다.</li>
           <li><b>가입과 해지의 자리.</b> 편명을 고르는 순간이 가입이라 <b>이용료를 2단계 카드 안에 적습니다</b>("이용료 · 무료 BETA 기간"). 해지는 같은 카드의 <b>"편명 없이 직접 고를게요"</b>입니다 — 편명을 떼면 휠로 직접 고르는 일반 예약이 됩니다. 시각을 정하는 자리와 해지하는 자리가 같은 곳이라 값이 어긋날 수 없습니다. 3단계에 해지 버튼을 두면 바로 위의 꼬임이 생깁니다.</li>
           <li><b>미리보기</b>의 항공편 카드에 "이렇게 진행돼요" 여섯 줄: 확정 시점, 배차 뒤 더 늦어지면 기사님이 기다리고 <b>그 대기요금은 타다가 냄</b>, 입국 수속·짐 찾기로 늦으면 <b>유저 부담</b>, 20분 넘게 일찍 오면 앞당겨 재배차, 결항 자동 취소, 예약 뒤 편명·여유 변경 불가. 요금 명세는 "항공편에 맞춰 픽업 0원 · 베타 기간 무료. 정식 출시 때 유료로 바뀔 수 있어요".</li>
@@ -942,7 +954,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         <ul>
           <li><b>D안 UX 개선을 반영했습니다(2026-09-13, Figma <code>7yJmkBct… 12134:2</code>).</b>
             <ul>
-              <li><b>편명 먼저.</b> 공항 출발이면 픽업 시간 카드 맨 위가 "항공편명 입력"이고, 휠은 "편명 없이 직접 고를게요"를 눌렀을 때만 열립니다. 둘 다 고르기 전에는 설정 완료가 잠깁니다.</li>
+              <li><b>편명 먼저(D안에만 남았습니다).</b> 공항 출발이면 픽업 시간 카드 맨 위가 "항공편명 입력"이고, 휠은 "편명 없이 직접 고를게요"를 눌렀을 때만 열립니다. 둘 다 고르기 전에는 설정 완료가 잠깁니다. <b>기본안(E)은 2026-10-02에 휠 기본 + 넛지로 바뀌었습니다.</b></li>
               <li><b>날짜별 도착편.</b> 편명 검색은 3일 안에 도착하는 편을 날짜별로 보여 주고(이미 도착한 날은 뺍니다), 고르면 픽업 날짜도 그 날로 맞춥니다.</li>
               <li><b>여유 시간 칩(2026-09-13 추가).</b> 편명 줄 아래 "도착 후 여유 [30분][50분][1시간][1시간 30분]". 누르면 휠이 "도착 + N분"(10분 단위 올림)으로 굴러갑니다. 오른쪽에는 실제 차이("도착 35분 뒤")를 적습니다. 처음 편명을 넣으면 50분이 골라진 상태이고, 휠을 직접 굴리면 칩 선택이 풀립니다.</li>
               <li><b>편명을 바꾸면</b> 여유를 칩으로 골랐으면 새 편에 같은 여유를 적용하고, 휠을 직접 굴렸으면 시각을 그대로 두고 날짜만 따라갑니다.</li>
@@ -1222,7 +1234,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   function arrDate(){ var x = DATES[fdiOf()]; return new Date(x.y, x.m - 1, x.d, 0, mins(S.flight.eta)); }
   function dLong(di){ var x = DATES[di]; return x.m + "월 " + x.d + "일 (" + x.w + ")"; }
   /* 공항 출발 D안에서 편명도, '직접 고를게요'도 아직 고르지 않은 상태 */
-  function dNeedsInput(){ return placeDE() && eligible() && !S.flight && !S.manual; }
+  /* 편명을 먼저 받는 카드는 D안에만. E안은 PO 결정대로 휠이 기본이고 항공편은 넛지다(2026-10-02) */
+  function dNeedsInput(){ return placeD() && eligible() && !S.flight && !S.manual; }
   function chipLabel(err){ return /8주/.test(err) ? "가능한 마지막 시간으로 설정" : /도착/.test(err) ? "도착 + 50분으로 설정" : "가장 빠른 시간으로 설정"; }
   /* 도착 + 여유를 10분 단위로 올린 픽업 시각(휠이 10분 단위라서) */
   function bufDate(b){
@@ -1508,7 +1521,12 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         + '<div class="wheelwrap">' + wheel() + '</div>'
         + '<div class="chipbox" id="fastbox"' + (err && !/도착/.test(err) ? '' : ' hidden') + '><button class="fastest" data-act="fastest">'
         + chipLabel(err) + '</button></div>'
-        + (placeDE() ? (eligible() && !S.flight ? '<div class="flentry"><button class="ghost" data-act="refOpen"><span class="pl">' + PLANE + '</span>항공편명 입력</button></div>' : '')
+        + (placeE() ? (eligible() && !S.flight
+              ? '<div class="fnudge"><button data-act="refOpen"><span class="pl">' + PLANE + '</span>'
+                + '<span class="tx"><span class="t1">항공편에 맞춰 픽업받기</span>'
+                + '<span class="t2">도착이 늦어지면 픽업 시각도 함께 옮겨요. 이용료 무료(베타)</span></span>'
+                + ico("erArrow") + '</button></div>' : '')
+            : placeD() ? (eligible() && !S.flight ? '<div class="flentry"><button class="ghost" data-act="refOpen"><span class="pl">' + PLANE + '</span>항공편명 입력</button></div>' : '')
             : flightOn() ? flSumBlock()
             : eligible() && placeA() ? '<div class="flentry"><button class="ghost" data-act="fOpen">✈️ 항공편 도착에 맞춰 입력</button></div>'
             : '')
@@ -1715,7 +1733,11 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         + '"' + (d ? ' aria-disabled="true"' : '') + ' aria-label="' + esc(l.name) + (d ? " (예약 불가)" : "") + '">'
         + '<img src="' + ASSET[l.img] + '" alt="" /><span class="badge">' + SVG.checkOn + '</span></button>');
     });
-    h.push('</div><div class="ltitle"><span class="n">' + esc(L.name) + '</span>'
+    h.push('</div>');
+    /* 사유를 고른 뒤에야 보여 주면 늦다(fail late). 고를 수 없는 차량이 있으면 목록 아래에 적는다 */
+    if (!dis && LINEUP.some(function(l){ return unavailable(l.id); }))
+      h.push('<p class="lnote">항공편에 맞춰 픽업은 프리미엄 밴을 고를 수 없어요</p>');
+    h.push('<div class="ltitle"><span class="n">' + esc(L.name) + '</span>'
       + (dis ? '' : '<span class="f">' + won(baseFare()) + '</span>')
       + '<span class="meta"><span>' + ico("passenger") + esc(L.cap) + '</span><span class="dot">・</span>'
       + '<span>' + ico("tip") + '수하물 가이드' + ico("arrow","arr") + '</span></span>'
