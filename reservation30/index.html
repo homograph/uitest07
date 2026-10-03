@@ -903,14 +903,13 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 .fp-dec .rec{margin:16px 0 0;font-size:13px;line-height:19px;color:var(--a-ink-5);}
 .fp-dec .keep{margin:4px 0 -8px -10px;min-height:44px;}
 .fp-foot{background:#fff;box-shadow:0 -8px 16px rgba(26,38,77,.10);position:relative;z-index:2;}
-.fp-agree{display:flex;align-items:center;gap:8px;padding:6px 10px 0 20px;}
-.fp-agree .ckb{display:flex;align-items:center;gap:8px;flex:1 1 auto;min-width:0;min-height:44px;border:0;background:none;
-  padding:0;font:inherit;text-align:left;cursor:pointer;}
-.fp-agree .ck{flex:0 0 auto;width:20px;height:20px;}
-.fp-agree .ck svg{display:block;width:100%;height:100%;}
-.fp-agree .lb{font-size:14px;line-height:20px;color:var(--a-ink-2);word-break:keep-all;}
-.fp-agree .ghost{min-height:44px;color:var(--a-ink-3);}
-.fp-bar{display:flex;align-items:center;gap:20px;padding:6px 20px 20px;}
+.fp-bar{display:flex;align-items:center;gap:20px;padding:20px;}
+/* 유의사항: 차량 선택 .terms/.tblock 스타일을 그대로 쓴다. 페이지 맨 아래에 붙인다 */
+.fp{display:flex;flex-direction:column;}
+.fp .fp-terms{margin-top:auto;gap:0;padding:24px 24px 24px 20px;}
+.fp-terms .tblock li{line-height:20px;}
+.fp-terms .tlink{align-self:flex-start;margin:-2px 0 -12px 25px;padding:0;min-height:44px;border:0;background:none;
+  font:inherit;font-size:13px;line-height:20px;font-weight:700;color:var(--a-ink-6);cursor:pointer;text-align:left;}
 .fp-bar .l{flex:1 1 auto;min-width:0;}
 .fp-bar .k{display:block;font-size:13px;line-height:18px;color:#000;}
 .fp-bar .v{font-size:16px;line-height:24px;font-weight:700;color:#000;font-variant-numeric:tabular-nums;}
@@ -1250,8 +1249,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       fsheet:null, fquery:"", swapped:false, fpending:false, termSwitched:false, failed:false,
       track:false, fintent:"set", anchor:"clock", pend:null,
       fdi:null, touched:false, manual:false, buf:null,
-      fpage:false, fsel:null, fbuf:60, fagree:false, fprev:null
-      /* F안 페이지: fpage 열림 · fsel 고른 편 {f, di, val} · fbuf 도착 후 여유 · fagree 동의 · fprev 앞서 휠로 고른 시각(Date) */
+      fpage:false, fsel:null, fbuf:60, fprev:null
+      /* F안 페이지: fpage 열림 · fsel 고른 편 {f, di, val} · fbuf 도착 후 여유 · fprev 앞서 휠로 고른 시각(Date) */
       /* track: 지연 추적 부가 서비스(C안) · fintent: 편명 입력 의도
          anchor: 픽업 시각의 기준. "clock" = 내가 고른 시각이 진짜 값,
                  "flight" = 도착 + 여유로 계산된 값이 진짜 값.
@@ -1516,7 +1515,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   }
   function fpBody(){
     var q = S.fquery.trim();
-    if (S.fsel) return '<div class="fp">' + fpDecide() + '</div>';
+    if (S.fsel) return '<div class="fp">' + fpDecide() + fpTerms() + '</div>';
     if (!q){
       return '<div class="fp"><section class="fp-hero"><h2>항공편이 늦어지면<br>픽업도 같이 늦춰 드려요</h2>'
         + '<div class="fp-ex"><p class="cap">예시 · 도착이 30분 늦어지면</p>'
@@ -1531,7 +1530,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
            ["20분","일찍 도착하면","20분 넘게 일찍 오면 앞당겨 다시 배차해요"]].map(function(r){
              return '<li><span class="v">' + r[0] + '</span><span><span class="t">' + r[1] + '</span><span class="s">' + r[2] + '</span></span></li>';
            }).join("")
-        + '</ul></section></div>';
+        + '</ul></section>' + fpTerms() + '</div>';
     }
     var rows = fpCands();
     if (!rows.length){
@@ -1572,17 +1571,22 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
           + (S.fbuf !== prevGap ? '<button class="ghost keep" data-act="fpBuf" data-v="' + prevGap + '">여유 ' + prevGap + '분 그대로 두기</button>' : '') : '')
       + '</div></div>';
   }
+  function fpTerms(){
+    return '<div class="terms fp-terms"><div class="tblock"><h3>항공편에 맞춰 픽업 유의사항</h3><ul>'
+      + ["입국 수속이나 짐 찾기가 늦어져 생긴 대기요금은 이용자가 부담해요.",
+         "예약한 뒤에는 편명과 여유 시간을 바꿀 수 없어요.",
+         "베타 기간에는 오전 5시부터 밤 10시 사이에 도착하는 편만 지원해요."].map(function(t){
+           return '<li><span>•</span><span>' + t + '</span></li>'; }).join("")
+      + '</ul></div><button class="tlink" data-act="fpPolicy">항공편에 맞춰 픽업 이용 정책 보기</button></div>';
+  }
   function fpFoot(){
     var q = S.fquery.trim();
     if (!S.fsel && q && !fpCands().length){
       return '<div class="fp-foot fp-nfoot"><p>편명 없이 고르면 이 옵션은 추가되지 않아요</p>'
         + '<div class="btnbar"><button class="big" data-act="fpNoFlight">편명 없이 픽업 시간 고르기</button></div></div>';
     }
-    var sum = baseFare() + addonFee() + F_FEE, ok = !!S.fsel && S.fagree;
-    return '<div class="fp-foot"><div class="fp-agree"><button class="ckb" data-act="fpAgree" role="checkbox" aria-checked="' + S.fagree + '">'
-      + '<span class="ck">' + (S.fagree ? SVG.checkOn : SVG.checkOff) + '</span>'
-      + '<span class="lb">' + won(F_FEE) + ' 추가와 유의사항에 동의해요</span></button>'
-      + '<button class="ghost" data-act="fpTerms">보기</button></div>'
+    var sum = baseFare() + addonFee() + F_FEE, ok = !!S.fsel;
+    return '<div class="fp-foot">'
       + '<div class="fp-bar"><span class="l"><span class="k">추가하면 합계</span>'
       + '<span class="v">' + won(sum) + '<small>+' + won(F_FEE) + '</small></span></span>'
       + '<button class="big" data-act="fpAdd"' + (ok ? '' : ' disabled') + '>추가하기</button></div></div>';
@@ -2425,12 +2429,12 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       case "fOffset":   S.foffset = +v; break;
       /* ── F안 페이지 ── */
       case "fpOpen":    /* 진입. 앞서 휠을 직접 굴렸다면 그 시각을 기억해 두고 바뀌는 걸 알려 준다 */
-        S.fpage = true; S.fquery = ""; S.fsel = null; S.fbuf = 60; S.fagree = false;
+        S.fpage = true; S.fquery = ""; S.fsel = null; S.fbuf = 60;
         S.fprev = (S.touched && !flightOn()) ? selDate() : null;
         scroll.scrollTop = 0; break;
       case "fpEdit":    /* 추가된 상태에서 다시 열기: ⑥′ 로 바로 */
         if (S.screen !== "vehicle") go("vehicle");
-        S.fpage = true; S.fquery = S.flight.no; S.fprev = null; S.fagree = true;
+        S.fpage = true; S.fquery = S.flight.no; S.fprev = null;
         S.fsel = {f:S.flight, di:fdiOf(), val:S.swapped ? "share" : S.fpending ? "pending" : S.flight.no, pending:S.fpending};
         S.fbuf = S.buf != null ? S.buf : 60; scroll.scrollTop = 0; break;
       case "fpBack":    if (S.fsel){ S.fsel = null; } else S.fpage = false; scroll.scrollTop = 0; break;
@@ -2440,10 +2444,9 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         S.fsel = {f:pf, di:+pv2[1], val:pv2[0], pending:pv2[0] === "pending"}; S.fbuf = 60;
         scroll.scrollTop = 0; break;
       case "fpBuf":     S.fbuf = +v; break;
-      case "fpAgree":   S.fagree = !S.fagree; break;
-      case "fpTerms":   S.toast = "유의사항 본문은 이 프로토 범위 밖이에요"; break;
+      case "fpPolicy":  S.toast = "이용 정책 본문은 이 프로토 범위 밖이에요"; break;
       case "fpAdd":
-        if (!S.fsel || !S.fagree) break;
+        if (!S.fsel) break;
         var fs2 = S.fsel;
         S.flight = fs2.f; S.fdi = fs2.di; S.swapped = fs2.val === "share"; S.fpending = !!fs2.pending;
         S.termSwitched = fs2.f.term !== S.term; S.term = fs2.f.term; S.failed = false; S.manual = false;
@@ -2521,7 +2524,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     S.flPlace = v; S.flight = null; S.offset = null; S.foffset = null; S.fsheet = null;
     S.failed = false; S.swapped = false; S.fpending = false; S.termSwitched = false; S.track = false;
     S.anchor = "clock"; S.pend = null; S.fdi = null; S.manual = false; S.buf = null;
-    S.fpage = false; S.fsel = null; S.fagree = false; S.fprev = null;
+    S.fpage = false; S.fsel = null; S.fprev = null;
   });
   function setHotLabel(){
     var on = document.body.classList.contains("showhot"), b = $("hotToggle");
@@ -2597,8 +2600,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     S.fquery = "KE086";
     var r0 = fpCands().filter(function(r){ return !r.off; })[0];
     if (r0) act("fpPick", r0.val + "|" + r0.di);
-    if (st === "f6"){ act("fpAgree"); return; }
-    act("fpAgree"); act("fpAdd");
+    if (st === "f6") return;
+    act("fpAdd");
   })();
 })();
 </script>
