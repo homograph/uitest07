@@ -828,13 +828,6 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
 /* ══════════ F안 재구성안 v2 (Figma 섹션 12409:50 아래 행, 2026-10-03) ══════════
    항공편은 차량 선택 부가 서비스 카드에서 들어가는 전체 페이지(③′~⑥′)다. */
-.acard.ff .imgwrap{background:var(--a-blue-bg);}
-.acard.ff .imgwrap .pl{width:26px;height:26px;color:var(--a-ink-3);}
-.acard.ff .n{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
-.acard.ff .d{word-break:keep-all;}
-.acard.ff .chev{flex:0 0 auto;width:8px;height:13px;color:var(--a-ink-2);}
-.acard.ff .tag{flex:0 0 auto;padding:3px 8px;border-radius:9999px;background:var(--a-sunken);
-  font-size:12px;line-height:17px;font-weight:700;color:var(--a-ink-5);}
 .fp{min-height:100%;background:var(--a-bg);word-break:keep-all;}
 .fp-hero{background:var(--a-nudge-bg);padding:20px 24px;}
 .fp-hero h2{margin:0 0 16px;font-size:18px;line-height:26px;font-weight:700;color:var(--a-ink);}
@@ -904,6 +897,42 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 .fp-dec .keep{margin:4px 0 -8px -10px;min-height:44px;}
 .fp-foot{background:#fff;box-shadow:0 -8px 16px rgba(26,38,77,.10);position:relative;z-index:2;}
 .fp-bar{display:flex;align-items:center;gap:20px;padding:20px;}
+/* ── F안 부가 서비스: 한 줄 행 (Figma vr A~D) ── */
+.xlist{display:flex;flex-direction:column;gap:8px;padding:0 24px;}
+.xrow{display:flex;align-items:center;gap:12px;width:100%;text-align:left;background:#fff;
+  border:1px solid var(--a-chip-line);border-radius:8px;padding:14px 16px;font:inherit;cursor:pointer;}
+.xrow.on{background:var(--a-blue-bg);border-color:var(--a-blue);}
+.xrow .th{flex:0 0 auto;width:40px;height:40px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.xrow .th img{width:40px;height:40px;object-fit:cover;display:block;}
+.xrow .th.pln{background:var(--a-blue-bg);}
+.xrow .th.pln .pl{width:20px;height:20px;color:var(--a-ink-3);}
+.xrow .tx{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;}
+.xrow .n{font-size:15px;line-height:22px;font-weight:700;color:var(--a-ink-2);word-break:keep-all;}
+.xrow .m{font-size:13px;line-height:19px;color:var(--a-ink-5);word-break:keep-all;}
+.xrow .ck{flex:0 0 auto;width:24px;height:24px;}
+.xrow .ck svg{display:block;width:100%;height:100%;}
+.xrow .chev{flex:0 0 auto;width:8px;height:13px;margin:0 8px;color:var(--a-ink-2);}
+.xstep{flex:0 0 auto;display:flex;align-items:center;gap:2px;}
+.xstep button{position:relative;width:28px;height:28px;border-radius:50%;border:1px solid var(--a-ink-7);background:#fff;
+  padding:0;font:inherit;font-size:18px;line-height:26px;color:var(--a-ink);cursor:pointer;}
+.xstep button::after{content:"";position:absolute;inset:-9px;}
+.xstep button span{display:block;margin-top:-1px;}
+.xstep button[aria-disabled="true"]{border-color:var(--a-chip-line);cursor:default;}
+.xstep button[aria-disabled="true"] span{opacity:.3;}
+.xstep b{min-width:28px;text-align:center;font-size:15px;line-height:22px;font-weight:700;color:var(--a-ink);font-variant-numeric:tabular-nums;}
+.xnote{margin:0;padding:8px 8px 0;font-size:13px;line-height:19px;color:var(--a-ink-6);word-break:keep-all;}
+.xlock{background:var(--a-sunken);border-radius:8px;padding:12px 16px;word-break:keep-all;}
+.xlock .h{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.xlock .h b{font-size:14px;line-height:20px;color:var(--a-ink-4);}
+.xlock .h button{position:relative;border:0;background:none;padding:0;font:inherit;font-size:13px;line-height:19px;font-weight:700;
+  color:var(--a-ink-3);cursor:pointer;}
+.xlock .h button::after{content:"";position:absolute;left:-12px;right:-12px;top:-13px;bottom:-13px;}
+.xlock p{margin:2px 0 0;font-size:13px;line-height:19px;color:var(--a-ink-5);}
+.xlock p b{color:var(--a-ink-3);}
+.addon.bare{padding-top:24px;}
+/* 드라이버 지정 페이지 */
+.dp{padding:8px 24px 24px;display:flex;flex-direction:column;gap:8px;}
+.dp .cap{margin:0 0 8px;font-size:14px;line-height:20px;color:var(--a-ink-5);word-break:keep-all;}
 /* 유의사항: 차량 선택 .terms/.tblock 스타일을 그대로 쓴다. 페이지 맨 아래에 붙인다 */
 .fp{display:flex;flex-direction:column;}
 .fp .fp-terms{margin-top:auto;gap:0;padding:24px 24px 24px 20px;}
@@ -1234,6 +1263,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     try { var m = /[?&]place=(route|vehicle|split|ref|server|rebuild)\b/.exec(location.search); return m ? m[1] : "rebuild"; }
     catch(e){ return "rebuild"; }
   })();
+  /* ?seat2=1: 서울엄마아빠택시 규칙(카시트 최대 2개, 1개 필수)을 넥스트에서 흉내 낸다. 차량 피커에 4번째 차를 넣지 않기 위한 훅 */
+  var SEAT2 = (function(){ try { return /[?&]seat2=1\b/.test(location.search) || /[?&]state=v2\b/.test(location.search); } catch(e){ return false; } })();
   function fresh(){
     return {
       /* 기본 흐름 = 인천공항 출발 · 경로가 채워진 예약 · E안(서버 모델, PRD 2026-09-30).
@@ -1249,7 +1280,9 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       fsheet:null, fquery:"", swapped:false, fpending:false, termSwitched:false, failed:false,
       track:false, fintent:"set", anchor:"clock", pend:null,
       fdi:null, touched:false, manual:false, buf:null,
-      fpage:false, fsel:null, fbuf:60, fprev:null
+      fpage:false, fsel:null, fbuf:60, fprev:null,
+      fx:{drivers:[], seats:SEAT2 ? 1 : 0, wait:false, lockOpen:false}, dpage:false, dsel:[]
+      /* fx: F안 부가 서비스(드라이버 id 목록 · 카시트 수 · 대기 보장 · 잠금 블록 펼침) · dpage/dsel: 드라이버 지정 페이지 */
       /* F안 페이지: fpage 열림 · fsel 고른 편 {f, di, val} · fbuf 도착 후 여유 · fprev 앞서 휠로 고른 시각(Date) */
       /* track: 지연 추적 부가 서비스(C안) · fintent: 편명 입력 의도
          anchor: 픽업 시각의 기준. "clock" = 내가 고른 시각이 진짜 값,
@@ -1306,7 +1339,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   function trackOn(){ return flightOn() && ((placeC() || placeD()) ? S.track : true); }
   /* 밴 제약은 '시각이 바뀔 수 있어서' 생긴 것이다.
      D안은 예약 시점에 시각을 건드리지 않으므로 제약이 없다. */
-  function unavailable(id){ return id === "van" && trackOn() && !placeD(); }
+  function unavailable(id){ return id === "van" && trackOn() && !placeD() && !placeF(); }   /* F: 밴을 고르면 항공편을 해제한다 */
   function chosenMin(){ return HOURS[S.hi] * 60 + MINS[S.mi]; }
   function derived(){ return chosenMin() - mins(S.flight.eta); }   /* 고른 시각에서 여유 시간 역산 */
   function derivedOK(d){ return d >= 20 && d <= 240; }
@@ -1453,6 +1486,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     return out;
   }
   function addonFee(){
+    if (placeF()) return (S.fx.drivers.length ? 3000 : 0) + S.fx.seats * 5000;   /* 대기 보장은 이용한 만큼이라 예상 요금에 넣지 않는다 */
     var t = 0; ADDONS.forEach(function(a){ if (S.addons[a.id]) t += a.price; }); return t;
   }
   function baseFare(){ return S.surge === "on" ? Math.round(lineup().fare * 1.2 / 100) * 100 : lineup().fare; }
@@ -1475,18 +1509,82 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       + '<span class="s">' + esc(dLong(fdiOf()) + " " + f.eta + " 도착") + '</span></span>'
       + '<button class="ghost" data-act="' + act + '">변경</button></div>';
   }
-  /* 차량 선택 부가 서비스 첫 카드: 진입(s2) / 추가됨(s7) */
-  function fpCard(){
-    var on = flightOn(), f = S.flight;
-    var h = '<button class="acard fl ff" data-act="' + (on ? "fpEdit" : "fpOpen") + '">'
-      + '<span class="imgwrap" aria-hidden="true"><span class="pl">' + PLANE + '</span></span><span class="row"><span class="tx">'
-      + '<span class="n">항공편에 맞춰 픽업' + (on ? '<span class="tag">추가됨</span>' : '') + '</span>'
-      + (on ? '<span class="d">' + esc(f.no + " · 도착 예정 " + f.eta) + '<br>' + esc("여유 " + offLabel(fGap())) + '</span>'
-            : '<span class="d">도착이 늦어지면 픽업 시각을 함께 옮겨 드려요</span>')
-      + '<span class="p">이용료 ' + won(F_FEE) + '</span></span>'
-      + (on ? '' : '<span class="icon chev">' + SVG.arrow + '</span>') + '</span></button>';
-    if (on) h += '<div class="flcard-act"><button class="ghost" data-act="fpEdit">픽업 시간 고치기</button></div>';
-    return h;
+  /* ── F안 부가 서비스 행 (Figma vr A~D): 5개 서비스를 4줄로. 잠긴 것은 행으로 보이지 않고 아래 블록에 모은다 ── */
+  var DRIVERS = [{id:"d1", name:"김타다 드라이버", sub:"최근 탑승 9월 28일"}, {id:"d2", name:"이서준 드라이버", sub:"최근 탑승 9월 12일"},
+                 {id:"d3", name:"박하늘 드라이버", sub:"최근 탑승 8월 30일"}];
+  function fxLocked(){
+    var v = S.lineup === "van";
+    return {flight:v, driver:v, seat:v || S.lineup === "plus", wait:v};
+  }
+  function seatCap(){ return SEAT2 ? 2 : 1; }
+  function seatMax(){ return SEAT2 && (selDate() - new Date()) > 48 * 3600000 ? 2 : 1; }
+  /* 차량·시각이 바뀌어 고를 수 없게 된 것은 해제하고 알린다 */
+  function fxNormalize(){
+    var k = fxLocked(), x = S.fx, n = 0;
+    if (k.flight && S.flight){ S.flight = null; S.buf = null; S.fdi = null; S.swapped = false; S.fpending = false; S.termSwitched = false; n++; }
+    if (k.driver && x.drivers.length){ x.drivers = []; n++; }
+    if (k.seat && x.seats){ x.seats = 0; n++; }
+    if (k.wait && x.wait){ x.wait = false; n++; }
+    if (!k.seat && SEAT2 && x.seats < 1) x.seats = 1;
+    if (x.seats > seatMax()){ x.seats = seatMax(); if (!S.toast) S.toast = "카시트 2개는 출발 48시간 전에 신청 가능합니다"; }
+    if (n && !S.toast) S.toast = "고를 수 없는 부가 서비스 " + n + "개를 해제했어요";
+  }
+  function xrow(o){
+    var tag = o.div ? "div" : "button";
+    return '<' + tag + ' class="xrow' + (o.on ? " on" : "") + '"' + (o.act ? ' data-act="' + o.act + '"' : '')
+      + (o.div ? ' role="group" aria-label="' + o.name + '"' : o.check ? ' role="checkbox" aria-checked="' + !!o.on + '"' : '') + '>'
+      + '<span class="th' + (o.plane ? " pln" : "") + '" aria-hidden="true">' + (o.plane ? '<span class="pl">' + PLANE + '</span>' : '<img src="' + o.img + '" alt="" />') + '</span>'
+      + '<span class="tx"><span class="n">' + o.name + '</span><span class="m">' + esc(o.meta) + '</span></span>'
+      + (o.ctl || (o.on ? '<span class="ck">' + SVG.checkOn + '</span>' : o.chev ? '<span class="icon chev">' + SVG.arrow + '</span>' : '<span class="ck">' + SVG.checkOff + '</span>'))
+      + '</' + tag + '>';
+  }
+  function fxSection(){
+    var k = fxLocked(), x = S.fx, rows = [], locked = [];
+    if (eligible()){
+      if (k.flight) locked.push(["항공편에 맞춰 픽업", "프리미엄 밴에서는 고를 수 없어요"]);
+      else {
+        var on = flightOn();
+        rows.push(xrow({name:"항공편에 맞춰 픽업", plane:true, on:on, chev:true, act:on ? "fpEdit" : "fpOpen",
+          meta:on ? S.flight.no + ", 여유 " + offLabel(fGap()) + " · " + won(F_FEE) : won(F_FEE) + " · 지연되면 같이 늦춰요"}));
+      }
+    }
+    if (k.driver) locked.push(["드라이버 지정", "선택하신 차종과 조건에 맞는 드라이버가 없습니다"]);
+    else rows.push(xrow({name:"드라이버 지정", img:ASSET.driver, on:x.drivers.length > 0, chev:true, act:"dpOpen",
+      meta:x.drivers.length ? "마이 드라이버 " + x.drivers.length + "명 지정 · 3,000원" : "3,000원 · 원하는 드라이버로"}));
+    if (k.seat) locked.push(["카시트", "선택하신 차종과 조건에 맞는 카시트 차량이 없습니다"]);
+    else if (!x.seats) rows.push(xrow({name:"카시트", img:ASSET.carseat, check:true, act:"seatOn", meta:"개당 5,000원 · 최대 " + seatCap() + "개"}));
+    else if (seatCap() === 1) rows.push(xrow({name:"카시트", img:ASSET.carseat, on:true, check:true, act:"seatOff", meta:"1개 · 5,000원"}));
+    else rows.push(xrow({name:"카시트", img:ASSET.carseat, on:true, div:true, meta:x.seats + "개 · " + won(x.seats * 5000),
+      ctl:'<span class="xstep"><button data-act="seatMinus" aria-label="카시트 줄이기" aria-disabled="' + (x.seats <= 1) + '"><span>−</span></button>'
+        + '<b aria-live="polite">' + x.seats + '</b>'
+        + '<button data-act="seatPlus" aria-label="카시트 늘리기" aria-disabled="' + (x.seats >= seatMax()) + '"><span>+</span></button></span>'}));
+    if (k.wait) locked.push(["드라이버 대기 보장", "선택하신 차종은 드라이버 대기가 어렵습니다"]);
+    else rows.push(xrow({name:"드라이버 대기 보장", img:ASSET.clock, on:x.wait, check:true, act:"waitToggle", meta:"10분당 3,000원 · 최대 60분"}));
+    var h = '<div class="addon' + (rows.length ? '' : ' bare') + '">' + (rows.length ? '<div class="vhead"><h2>부가 서비스</h2></div>' : '') + '<div class="xlist">' + rows.join("");
+    if (!k.seat) h += '<p class="xnote">배차 가능한 카시트 차량이 없을 시 예약 취소됩니다</p>';
+    if (locked.length){
+      var all = S.lineup === "van";
+      h += '<div class="xlock"><div class="h"><b>고를 수 없는 부가 서비스 ' + locked.length + '개</b>'
+        + '<button data-act="lockToggle" aria-expanded="' + x.lockOpen + '">' + (x.lockOpen ? "접기" : "펼치기") + '</button></div>'
+        + (x.lockOpen ? locked.map(function(l){ return '<p><b>' + l[0] + '</b> ' + l[1] + '</p>'; }).join("")
+            : '<p>' + locked.map(function(l){ return l[0]; }).join(", ") + '. ' + (all ? "선택하신 차종에서는 고를 수 없어요" : locked[0][1]) + '</p>')
+        + '</div>';
+    }
+    return h + '</div></div>';
+  }
+  /* 드라이버 지정: 폰 안 전체 페이지. 고른 채로 다시 열리고, 0명으로 확정하면 해제된다 */
+  function dpChrome(){
+    return '<div class="ab"><button class="ib" data-act="dpBack" aria-label="뒤로">' + ico("back") + '</button><span class="t">드라이버 지정</span></div>';
+  }
+  function dpBody(){
+    return '<div class="dp"><p class="cap">마이 드라이버 가운데 운행할 드라이버를 골라 주세요. 여러 명을 고를 수 있어요.</p>'
+      + DRIVERS.map(function(d){
+          var on = S.dsel.indexOf(d.id) >= 0;
+          return xrow({name:d.name, img:ASSET.driver, on:on, check:true, act:"dpPick\" data-v=\"" + d.id, meta:d.sub});
+        }).join("") + '</div>';
+  }
+  function dpFoot(){
+    return '<div class="btnbar"><button class="big" data-act="dpDone">' + (S.dsel.length ? S.dsel.length + "명 확정" : "확정") + '</button></div>';
   }
   /* 후보: D/E 시트와 같은 데이터(3일 안 도착편). 베타 미지원 시간대(22~05시)는 끈다 */
   function fpCands(){
@@ -1979,6 +2077,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       + (dis ? '<span class="why">항공편에 맞춰 픽업할 때는 예약할 수 없는 차량이에요</span>' : '')
       + '</div></div>');
     h.push('<div class="vdiv"><i></i></div>');
+    if (placeF()) h.push(fxSection()); else {
     h.push('<div class="addon"><div class="vhead"><h2>부가 서비스</h2></div><div class="addlist">');
     if (placeB() && eligible()){
       var on_ = flightOn(), fl = S.flight;
@@ -2024,7 +2123,6 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       if (has && band === "loose") h.push('<p class="addnote" style="margin:-2px 0 0;">결항 시 무료 취소는 그대로 적용돼요</p>');
       if (has && !tr) h.push('<p class="addnote" style="margin:-2px 0 0;">지금은 픽업 ' + esc(korHM(pickMin())) + ' 고정이고, 결항 시 무료 취소도 적용되지 않아요</p>');
     }
-    if (placeF() && eligible()) h.push(fpCard());
     if (placeE() && flightOn()){
       /* 묶음 상품이라 여기에 끄는 자리를 두지 않는다. 두면 '계산만 받고 추적은 없는' 상태가 생겨 픽업 시각이 꼬인다 */
       var f3 = S.flight;
@@ -2045,6 +2143,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         + '<span class="ck">' + (on ? SVG.checkOn : SVG.checkOff) + '</span></span></button>');
     });
     h.push('<p class="addnote">배차 가능한 카시트 차량이 없을 시 예약 취소됩니다</p></div></div>');
+    }
     h.push('<div class="terms"><div class="tgroup">' + termBlock("넥스트/플러스", 12, ["일반 예약 요금 정책 보기", "시간 예약 요금 정책 보기"])
       + termBlock("프리미엄 밴", 36, ["프리미엄 밴 요금 정책 보기"]) + '</div>'
       + '<div class="help"><span class="r">' + ico("info") + '도움이 필요하신가요?</span><a href="#" data-act="noop">고객센터 문의하기</a></div></div>');
@@ -2079,6 +2178,12 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     if (placeB() && flightOn()) picked.unshift("항공편에 맞춰 픽업");
     if (placeC() && trackOn()) picked.unshift("항공편 지연 자동 조정");
     if (placeD() && trackOn()) picked.unshift("결항·지연 보장");
+    if (placeF()){
+      picked = [];
+      if (S.fx.drivers.length) picked.push("드라이버 지정 " + S.fx.drivers.length + "명");
+      if (S.fx.seats) picked.push("카시트 " + S.fx.seats + "개");
+      if (S.fx.wait) picked.push("드라이버 대기 보장");
+    }
     if ((placeE() || placeF()) && flightOn()) picked.unshift("항공편에 맞춰 픽업");
     h.push('<div class="pv">');
     h.push('<div class="pvtitle" id="pvtitle"><span class="tx"><span class="n">' + esc(L.short) + ' ' + (S.tab === "time" ? "시간" : "일반") + ' 예약</span>'
@@ -2194,7 +2299,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     vehicle:"③ 차량 선택 · 48558:155628", preview:"④ 미리보기 · 55257:55731"
   };
   function render(){
-    phone.classList.toggle("white", S.screen === "vehicle" && !S.fpage);
+    phone.classList.toggle("white", S.screen === "vehicle" && !S.fpage && !S.dpage);
     phone.classList.toggle("home", S.screen === "home");
     phone.classList.toggle("img", S.screen === "rEdit");
     var oldO = phone.querySelector(".rh-overlay"); if (oldO) oldO.remove();
@@ -2212,6 +2317,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
     } else if (S.screen === "rEdit"){
       chrome.innerHTML = ""; scroll.innerHTML = rEditBody(); foot.innerHTML = "";
+    } else if (S.screen === "vehicle" && S.dpage){
+      chrome.innerHTML = dpChrome(); scroll.innerHTML = dpBody(); foot.innerHTML = dpFoot();
     } else if (S.screen === "vehicle" && S.fpage){
       chrome.innerHTML = fpChrome(); scroll.innerHTML = fpBody(); foot.innerHTML = fpFoot();
     } else if (S.screen === "vehicle"){
@@ -2227,6 +2334,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     if (S.toast){ phone.insertAdjacentHTML("beforeend", '<div class="ptoast" role="status">' + esc(S.toast) + '</div>'); S.toast = ""; }
     S.animate = false; S.appear = null;
     stepLabel.textContent = (S.screen === "rEdit" ? RE[S.rstep].label
+          : S.screen === "vehicle" && S.dpage ? "드라이버 지정 (프로토 임시 화면)"
           : S.screen === "vehicle" && S.fpage ? "③′ 항공편에 맞춰 픽업 · 12409:50" : LABEL[S.screen])
       + " · 배치 " + (S.flPlace === "route" ? "A(시간&경로)" : S.flPlace === "vehicle" ? "B(차량 선택)"
           : S.flPlace === "split" ? "C(나눠 붙이기)" : S.flPlace === "ref" ? "D(참고값)"
@@ -2275,7 +2383,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     scroll.onscroll = function(){ ab.classList.toggle("scrolled", scroll.scrollTop >= threshold); };
   }
 
-  function go(screen){ S.screen = screen; S.fsheet = null; S.fpage = false;
+  function go(screen){ S.screen = screen; S.fsheet = null; S.fpage = false; S.dpage = false;
     S.animate = (screen === "vehicle" || screen === "preview"); scroll.onscroll = null; scroll.scrollTop = 0; }
 
   function openTime(){
@@ -2427,6 +2535,22 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         } else S.fsheet = "offset";
         break;
       case "fOffset":   S.foffset = +v; break;
+      /* ── F안 부가 서비스 행 ── */
+      case "dpOpen":    S.dpage = true; S.dsel = S.fx.drivers.slice(); scroll.scrollTop = 0; break;
+      case "dpPick":    var di2 = S.dsel.indexOf(v); if (di2 >= 0) S.dsel.splice(di2, 1); else S.dsel.push(v); break;
+      case "dpBack":    S.dpage = false; break;
+      case "dpDone":    S.fx.drivers = S.dsel.slice(); S.dpage = false; break;
+      case "seatOn":    S.fx.seats = 1; break;
+      case "seatOff":   S.fx.seats = 0; break;
+      case "seatMinus":
+        if (S.fx.seats <= 1) S.toast = "엄마아빠택시는 카시트 1개 필수 선택입니다"; else S.fx.seats--;
+        break;
+      case "seatPlus":
+        if (S.fx.seats < seatMax()) S.fx.seats++;
+        else if (S.fx.seats < seatCap()) S.toast = "카시트 2개는 출발 48시간 전에 신청 가능합니다";
+        break;
+      case "waitToggle": S.fx.wait = !S.fx.wait; break;
+      case "lockToggle": S.fx.lockOpen = !S.fx.lockOpen; break;
       /* ── F안 페이지 ── */
       case "fpOpen":    /* 진입. 앞서 휠을 직접 굴렸다면 그 시각을 기억해 두고 바뀌는 걸 알려 준다 */
         S.fpage = true; S.fquery = ""; S.fsel = null; S.fbuf = 60;
@@ -2451,7 +2575,6 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         S.flight = fs2.f; S.fdi = fs2.di; S.swapped = fs2.val === "share"; S.fpending = !!fs2.pending;
         S.termSwitched = fs2.f.term !== S.term; S.term = fs2.f.term; S.failed = false; S.manual = false;
         S.anchor = "clock"; S.buf = S.fbuf; setTime(bufDate(S.buf)); S.timeSet = true;
-        if (S.lineup === "van") S.lineup = "next";
         S.fpage = false; S.fsel = null; scroll.scrollTop = 0; break;
       case "fpNoFlight":  /* 편명 없이: 옵션을 붙이지 않고 휠로 돌아간다 */
         S.flight = null; S.buf = null; S.fdi = null; S.swapped = false; S.fpending = false; S.termSwitched = false;
@@ -2472,10 +2595,13 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         break;
     }
     var keep = S.screen === "preview" ? scroll.scrollTop : null;
+    var keepV = (S.screen === "vehicle" && /^(seat|wait|lock|lineup)/.test(a)) ? scroll.scrollTop : null;
+    if (placeF() && S.screen === "vehicle" && !S.fpage && !S.dpage) fxNormalize();
     render();
+    if (keepV != null) scroll.scrollTop = keepV;
     /* F안: 페이지를 닫고 차량 선택으로 돌아오면 방금 다룬 카드가 보이게 */
-    if ((a === "fpAdd" || a === "fpBack") && S.screen === "vehicle" && !S.fpage){
-      var fc = scroll.querySelector(".acard.ff"); if (fc) scroll.scrollTop = Math.max(0, fc.offsetTop - 200);
+    if (/^(fpAdd|fpBack|dpBack|dpDone)$/.test(a) && S.screen === "vehicle" && !S.fpage && !S.dpage){
+      var fc = scroll.querySelector(".xlist"); if (fc) scroll.scrollTop = Math.max(0, fc.offsetTop - 260);
     }
     if (keep != null && a !== "back" && a !== "toPreview"){ scroll.scrollTop = keep; scroll.onscroll && scroll.onscroll(); }
   }
@@ -2582,7 +2708,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
   /* 화면 확인용 훅: ?state=f2|f3|f4|f5|f6|f7 (F안 각 화면으로 바로). 클릭과 같은 act() 경로를 탄다 */
   (function(){
-    var m; try { m = /[?&]state=(f[2-7])\b/.exec(location.search); } catch(e){}
+    var m; try { m = /[?&]state=(f[2-7]|v[1-4])\b/.exec(location.search); } catch(e){}
     if (!m) return;
     var st = m[1];
     S.flPlace = "rebuild"; S.routeFilled = true; S.origin = "icn"; S.tab = "normal";
@@ -2592,7 +2718,19 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       while (d0 < 2 && new Date(DATES[d0].y, DATES[d0].m - 1, DATES[d0].d, 0, mins(k.eta)) <= new Date()) d0++;
       S.di = d0; S.hi = 5; S.mi = 4; S.touched = true;
     }
+    if (st === "v2" && SEAT2){   /* 카시트 2개는 출발 48시간 뒤부터라, 가장 먼 날의 편을 고른다 */
+      act("timeDone"); act("fpOpen"); S.fquery = "KE";
+      var c2 = fpCands().filter(function(r){ return !r.off; }), far = c2.filter(function(r){ return fpPick({f:r.b, di:r.di}, 60) - new Date() > 48 * 3600000; });
+      var pick = far.filter(function(r){ return r.label === "KE086"; })[0] || far[far.length - 1] || c2[0];
+      act("fpPick", pick.val + "|" + pick.di); act("fpAdd");
+      act("dpOpen"); act("dpPick", "d1"); act("dpDone"); act("seatPlus"); act("waitToggle");
+      scroll.scrollTop = Math.max(0, scroll.querySelector(".xlist").offsetTop - 330);
+      return;
+    }
     act("timeDone");
+    if (st === "v1"){ scroll.scrollTop = 150; return; }
+    if (st === "v3"){ act("lineup", "plus"); scroll.scrollTop = 150; return; }
+    if (st === "v4"){ act("lineup", "van"); act("lockToggle"); scroll.scrollTop = 120; return; }
     if (st === "f2") return;
     act("fpOpen");
     if (st === "f4" || st === "f5"){ S.fquery = st === "f4" ? "KE" : "KE999"; render(); return; }
