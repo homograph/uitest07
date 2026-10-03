@@ -922,10 +922,10 @@ div.arow{cursor:default;}
 .arow .p s{color:#868B9C;text-decoration:line-through;}
 .arow .p b{font-weight:700;color:#383D4F;}
 .arow .p .cp{margin-left:8px;font-size:13px;line-height:18px;font-weight:700;color:#0086EA;}
-.arow .ct{flex:none;min-width:28px;height:52px;display:flex;align-items:center;justify-content:center;}
+.arow .ct{flex:none;width:24px;min-width:24px;height:52px;display:flex;align-items:center;justify-content:center;}
 .arow .ct svg{display:block;flex:none;}
-.arow .ct .ck{display:block;width:28px;height:28px;}
-.arow .ct .plus{flex:none;width:28px;height:28px;box-sizing:border-box;border-radius:50%;box-shadow:inset 0 0 0 1px #D5D7DC;
+.arow .ct .ck{display:block;width:24px;height:24px;}
+.arow .ct .plus{flex:none;width:24px;height:24px;box-sizing:border-box;border-radius:50%;box-shadow:inset 0 0 0 1px #D5D7DC;
   background:#fff;display:flex;align-items:center;justify-content:center;}
 .xnote{margin:0;padding:12px 24px 0;font-size:13px;line-height:18px;color:#73788B;word-break:keep-all;}
 /* 엄마아빠택시가 붙어 차량이 4대일 때: 88px 원을 왼쪽부터 놓고 옆으로 민다 */
@@ -1574,7 +1574,7 @@ div.arow{cursor:default;}
   }
   var IC_LOCK = '<svg width="20" height="20" viewBox="0 0 66 66" fill="none" aria-hidden="true"><path d="M54.9995 21.9998H46.7495V17.0773C46.7495 9.89979 41.497 3.49229 34.347 2.80479C26.152 2.03479 19.2495 8.46979 19.2495 16.4998V21.9998H10.9995V60.4998H54.9995V21.9998ZM32.9995 46.7498C29.9745 46.7498 27.4995 44.2748 27.4995 41.2498C27.4995 38.2248 29.9745 35.7498 32.9995 35.7498C36.0245 35.7498 38.4995 38.2248 38.4995 41.2498C38.4995 44.2748 36.0245 46.7498 32.9995 46.7498ZM24.7495 21.9998V16.4998C24.7495 11.9348 28.4345 8.24979 32.9995 8.24979C37.5645 8.24979 41.2495 11.9348 41.2495 16.4998V21.9998H24.7495Z" fill="#C0C2CC"/></svg>';
   var IC_PLANE = '<svg width="26" height="26" viewBox="0 0 54 54" fill="none" aria-hidden="true"><path d="M40.05 43.2L36 24.75L43.875 16.875C47.25 13.5 48.375 9 47.25 6.75C45 5.625 40.5 6.75 37.125 10.125L29.25 18L10.8 13.95C9.675 13.725 8.775 14.175 8.325 15.075L7.65 16.2C7.2 17.325 7.425 18.45 8.325 19.125L20.25 27L15.75 33.75H9L6.75 36L13.5 40.5L18 47.25L20.25 45V38.25L27 33.75L34.875 45.675C35.55 46.575 36.675 46.8 37.8 46.35L38.925 45.9C39.825 45.225 40.275 44.325 40.05 43.2Z" stroke="#31487D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  var IC_PLUS = '<span class="plus"><svg width="18" height="18" viewBox="0 0 73 73" fill="none" aria-hidden="true"><path d="M39.5413 33.458V15.208H33.458V33.458H15.208V39.5413H33.458V57.7913H39.5413V39.5413H57.7913V33.458H39.5413Z" fill="#262A38"/></svg></span>';
+  var IC_PLUS = '<span class="plus"><svg width="16" height="16" viewBox="0 0 73 73" fill="none" aria-hidden="true"><path d="M39.5413 33.458V15.208H33.458V33.458H15.208V39.5413H33.458V57.7913H39.5413V39.5413H57.7913V33.458H39.5413Z" fill="#262A38"/></svg></span>';
   /* o: name · desc · img|plane · fill(썸네일 꽉 채움) · price | unit[앞말, 금액, 뒷말] · on · lock · req(필수라 끌 수 없음) · cp(쿠폰 키) · act */
   function arow(o){
     var has = !!(o.cp && COUPON[o.cp]) && !o.lock, zero = has && o.on, can = has && !o.on;
@@ -1602,8 +1602,8 @@ div.arow{cursor:default;}
         desc:k.flight ? "프리미엄 밴에서는 고를 수 없어요" : on ? S.flight.no + " · 여유 " + offLabel(fGap()) : "늦어지면 픽업도 같이 늦춰 드려요"}));
     }
     var dn = x.drivers.length;
-    var don = !k.driver && dn > 0;   /* 지정하면 썸네일이 인원수(1 · 2 · 3 · 4명 이상)를 따라 바뀐다 */
-    rows.push(arow({name:"드라이버 지정", img:don ? ASSET["driver" + Math.min(dn, 4)] : ASSET.driver, fill:true, price:3000, cp:"driver", lock:k.driver, on:don, act:"dpOpen",
+    var don = !k.driver && dn > 0;   /* 썸네일은 인원수(1 · 2 · 3 · 4명 이상)를 따른다: 고르기 전에는 등록한 마이 드라이버 수, 고른 뒤에는 지정한 수 */
+    rows.push(arow({name:"드라이버 지정", img:ASSET["driver" + Math.max(1, Math.min(don ? dn : DRIVERS.length, 4))], fill:true, price:3000, cp:"driver", lock:k.driver, on:don, act:"dpOpen",
       desc:k.driver ? "선택하신 차종과 조건에 맞는 드라이버가 없습니다" : dn ? "마이 드라이버 " + dn + "명 지정" : "마이 드라이버 중에서 지정합니다"}));
     if (k.seat) rows.push(arow({name:"카시트 1개", img:ASSET.carseat, lock:true, desc:"선택하신 차종과 조건에 맞는 카시트 차량이 없습니다"}));
     else if (fam){
