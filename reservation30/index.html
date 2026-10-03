@@ -1559,7 +1559,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         + '<b aria-live="polite">' + x.seats + '</b>'
         + '<button data-act="seatPlus" aria-label="카시트 늘리기" aria-disabled="' + (x.seats >= seatMax()) + '"><span>+</span></button></span>'}));
     if (k.wait) locked.push(["드라이버 대기 보장", "선택하신 차종은 드라이버 대기가 어렵습니다"]);
-    else rows.push(xrow({name:"드라이버 대기 보장", img:ASSET.clock, on:x.wait, check:true, act:"waitToggle", meta:"10분당 3,000원 · 최대 60분"}));
+    else rows.push(xrow({name:"드라이버 대기 보장", img:ASSET.clock, on:x.wait, check:true, act:"waitToggle",
+      meta:eligible() && flightOn() ? "입국 수속 대비 · 10분당 3,000원" : "10분당 3,000원 · 최대 60분"}));
     var h = '<div class="addon' + (rows.length ? '' : ' bare') + '">' + (rows.length ? '<div class="vhead"><h2>부가 서비스</h2></div>' : '') + '<div class="xlist">' + rows.join("");
     if (!k.seat) h += '<p class="xnote">배차 가능한 카시트 차량이 없을 시 예약 취소됩니다</p>';
     if (locked.length){
@@ -1623,7 +1624,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         + '</div></section>'
         + fpInput() + '<div class="fp-div"></div>'
         + '<section class="fp-inc"><h3>' + won(F_FEE) + '에 포함돼요</h3><ul>'
-        + [["0원","대기요금","배차 뒤 더 늦어져도 타다가 부담해요"],
+        + [["0원","항공편 지연 대기요금","항공편이 더 늦어져 생긴 대기요금은 타다가 부담해요"],
            ["0원","결항 취소 수수료","결항되면 자동으로 무료 취소돼요"],
            ["20분","일찍 도착하면","20분 넘게 일찍 오면 앞당겨 다시 배차해요"]].map(function(r){
              return '<li><span class="v">' + r[0] + '</span><span><span class="t">' + r[1] + '</span><span class="s">' + r[2] + '</span></span></li>';
@@ -1671,7 +1672,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
   }
   function fpTerms(){
     return '<div class="terms fp-terms"><div class="tblock"><h3>항공편에 맞춰 픽업 유의사항</h3><ul>'
-      + ["입국 수속이나 짐 찾기가 늦어져 생긴 대기요금은 이용자가 부담해요.",
+      + ["입국 수속이나 짐 찾기로 늦어진 시간은 10분당 3,000원이에요. 드라이버 대기 보장을 추가하면 최대 60분까지 기다려요.",
          "예약한 뒤에는 편명과 여유 시간을 바꿀 수 없어요.",
          "베타 기간에는 오전 5시부터 밤 10시 사이에 도착하는 편만 지원해요."].map(function(t){
            return '<li><span>•</span><span>' + t + '</span></li>'; }).join("")
@@ -2206,8 +2207,9 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
           + '<span class="s">' + esc(f.from + " → 인천 " + f.term + " · " + dLong(fdiOf()) + " " + f.eta + (placeF() ? " 도착 예정, 여유 " + offLabel(fGap()) : " 도착 예정 · 여유 " + offLabel(S.buf || 60))) + '</span></span></div>'
           + '<div class="pvdiv"><i></i></div><div class="fare dguard"><div class="h">이렇게 진행돼요</div>'
           + '<div class="li">도착 1시간 20분 전쯤 실제 도착 예상에 맞춰 픽업 시각을 확정해요</div>'
-          + '<div class="li">그 뒤 비행기가 더 늦어지면 기사님이 기다려요. 이때 대기요금은 타다가 냅니다</div>'
-          + '<div class="li">입국 수속이나 짐 찾기로 늦으시면 대기요금이 따로 부과돼요</div>'
+          + '<div class="li">' + (placeF() ? "그 뒤 항공편이 더 늦어져 생긴 대기요금은 타다가 부담해요" : "그 뒤 비행기가 더 늦어지면 기사님이 기다려요. 이때 대기요금은 타다가 냅니다") + '</div>'
+          + '<div class="li">' + (placeF() ? "입국 수속이나 짐 찾기로 늦어진 시간은 10분당 3,000원이에요" + (S.fx.wait ? ". 드라이버 대기 보장으로 최대 60분까지 기다려요" : "")
+                                          : "입국 수속이나 짐 찾기로 늦으시면 대기요금이 따로 부과돼요") + '</div>'
           + '<div class="li">20분 넘게 일찍 도착하면 픽업 시각을 앞당겨 다시 배차해요</div>'
           + '<div class="li">결항되면 수수료 없이 자동으로 취소돼요</div>'
           + '<div class="li">예약한 뒤에는 편명과 여유 시간을 바꿀 수 없어요</div></div></div>');
