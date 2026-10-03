@@ -897,37 +897,46 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 .fp-dec .keep{margin:4px 0 -8px -10px;min-height:44px;}
 .fp-foot{background:#fff;box-shadow:0 -8px 16px rgba(26,38,77,.10);position:relative;z-index:2;}
 .fp-bar{display:flex;align-items:center;gap:20px;padding:20px;}
-/* ── F안 부가 서비스 행 (2026-10-03 개편): 상자·구분선 없이 4px 간격. 원 썸네일, 제목, 설명, 금액 줄, 오른쪽 끝 조작부 ── */
-.addon.fx{gap:10px;padding-bottom:24px;}
-.xlist{display:flex;flex-direction:column;gap:4px;}
+/* ── F안 부가 서비스 행 (2026-10-04 최종안): 상자·구분선·선택 배경 없이 2px 간격. 원 썸네일, 제목, 설명, 금액 줄, 오른쪽 끝 조작부 ── */
+.vband{flex:none;height:8px;background:#F5F6F7;}
+.addon.fx{gap:12px;padding-bottom:24px;}
+.addon.fx .vhead{gap:6px;}
+.addon.fx .vhead h2{flex:none;line-height:24px;}
+.addon.fx .vhead .opt{flex:none;align-self:center;padding:2px 6px;border-radius:4px;background:#F5F6F7;font-size:12px;line-height:16px;
+  font-weight:500;color:#60667A;white-space:nowrap;}
+.xlist{display:flex;flex-direction:column;gap:2px;}
 .arw{padding:0 12px;}
 .arow{width:100%;box-sizing:border-box;margin:0;padding:12px 12px;display:flex;align-items:flex-start;gap:12px;text-align:left;
   border:0;border-radius:12px;background:transparent;font:inherit;color:inherit;cursor:pointer;}
 div.arow{cursor:default;}
-.arow.on{background:#F1F9FE;}
 .arow .th{flex:none;width:52px;height:52px;border-radius:50%;background:#F9F9F9;box-shadow:inset 0 0 0 1px #E3E4E8;
   display:flex;align-items:center;justify-content:center;overflow:hidden;}
-.arow.on .th{background:transparent;box-shadow:none;}
 .arow.lock .th{opacity:.45;filter:grayscale(1);}
 .arow .th img{display:block;width:46px;height:46px;object-fit:contain;}
 .arow .th img.fill{width:52px;height:52px;object-fit:cover;}
 .arow .bd{flex:1 1 0;min-width:0;min-height:52px;display:flex;flex-direction:column;justify-content:center;}
-.arow .n{font-size:15px;line-height:22px;font-weight:700;color:#262A38;word-break:keep-all;}
+.arow .n{font-size:15px;line-height:22px;font-weight:500;color:#262A38;word-break:keep-all;}
 .arow.lock .n{color:#868B9C;}
 .arow .m{margin-top:1px;font-size:13px;line-height:18px;color:#60667A;word-break:keep-all;
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
-/* 금액 줄: 전부 한 굵기. 쿠폰이 적용되면 원래 금액에 취소선, 0원만 굵게 */
+/* 고른 뒤의 요약(편명 · 여유, 지정 인원): 한 줄 말줄임 + 작은 회색 화살표. 행을 누르면 다시 열린다 */
+.arow .m.lk{display:flex;align-items:center;gap:2px;min-width:0;overflow:visible;}
+.arow .m.lk .tx{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.arow .m.lk svg{flex:none;display:block;}
+/* 금액 줄: 앞말은 보통, 금액만 500. 쿠폰이 있으면 고르기 전후 모두 "쿠폰가 0원 + 원래 금액 취소선" */
 .arow .p{margin-top:3px;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:4px;font-size:14px;line-height:20px;
   font-weight:400;color:#383D4F;white-space:nowrap;}
 .arow .p s{color:#868B9C;text-decoration:line-through;}
+.arow .p .a{font-weight:500;color:#262A38;}
 .arow .p b{font-weight:700;color:#383D4F;}
-.arow .p .cp{margin-left:8px;font-size:13px;line-height:18px;font-weight:700;color:#0086EA;}
+.arow .p .cp{font-weight:700;color:#0086EA;}
+.arow .nt{margin-top:4px;font-size:12px;line-height:16px;color:#73788B;word-break:keep-all;}
+.pricebar .sub{display:block;font-size:12px;line-height:16px;color:#60667A;}
 .arow .ct{flex:none;width:24px;min-width:24px;height:52px;display:flex;align-items:center;justify-content:center;}
 .arow .ct svg{display:block;flex:none;}
 .arow .ct .ck{display:block;width:24px;height:24px;}
 .arow .ct .plus{flex:none;width:24px;height:24px;box-sizing:border-box;border-radius:50%;box-shadow:inset 0 0 0 1px #D5D7DC;
   background:#fff;display:flex;align-items:center;justify-content:center;}
-.xnote{margin:0;padding:12px 24px 0;font-size:13px;line-height:18px;color:#73788B;word-break:keep-all;}
 /* 엄마아빠택시가 붙어 차량이 4대일 때: 88px 원을 왼쪽부터 놓고 옆으로 민다 */
 .lineup.four{overflow-x:auto;scrollbar-width:none;}
 .lineup.four::-webkit-scrollbar{display:none;}
@@ -973,7 +982,7 @@ div.arow{cursor:default;}
 
   <header class="head">
     <h1>항공편 입력 위치 비교 · 예약 3.0</h1>
-    <p><b>"항공편에 맞춰 픽업"을 어떤 상품으로, 어디에 둘지</b> 눌러 보며 고르는 프로토타입입니다. <b>기본은 F안(재구성안 v2, Figma 섹션 12409:50 아래 행, 2026-10-03)</b>입니다. 시간&amp;경로는 휠만 두고, 항공편은 <b>차량 선택의 부가 서비스 행</b>에서 여는 전체 페이지에서 편명을 찾고 도착 후 여유를 고른 뒤 이용료 20,000원에 동의하고 추가합니다. 부가 서비스 행은 꺼짐이 더하기, 켜짐이 체크, 잠금이 자물쇠입니다(2026-10-03 개편). 아래는 직전 기본이던 E안 설명입니다. 예약 홈에서 일반예약을 누르면 곧바로 <b>픽업 시간을 고르는 화면</b>이 열립니다. 시내 출발과 똑같이 <b>휠이 기본</b>이고, 항공편은 휠 아래 <b>넛지 한 줄</b>입니다(PO 2026-10-02: "직접 고르기 + 항공편 넛지 혹은 옵션"). 오른쪽 위 <b>배치 A / B / C / D / E</b>로 지난 안과 비교할 수 있습니다. A·B·C는 <b>우리가 픽업 시각을 정해 주면서 추적은 옵션</b>이던 안이고, 그 구조가 픽업 시각을 꼬이게 해서 폐기했습니다. D는 <b>편명을 참고값으로만 쓰는</b> 안입니다. 예약 3.0 핸드오프 보드의 네 화면을 한 흐름으로 이었고, 색·간격·타이포는 Figma REST 실측값입니다.</p>
+    <p><b>"항공편에 맞춰 픽업"을 어떤 상품으로, 어디에 둘지</b> 눌러 보며 고르는 프로토타입입니다. <b>기본은 F안(재구성안 v2, Figma 섹션 12409:50 아래 행, 2026-10-03)</b>입니다. 시간&amp;경로는 휠만 두고, 항공편은 <b>차량 선택의 부가 서비스 행</b>에서 여는 전체 페이지에서 편명을 찾고 도착 후 여유를 고른 뒤 이용료 20,000원에 동의하고 추가합니다. 부가 서비스 행은 꺼짐이 화살표(페이지를 여는 행)나 더하기(바로 켜지는 행), 켜짐이 체크, 잠금이 자물쇠입니다(2026-10-04 최종안). 아래는 직전 기본이던 E안 설명입니다. 예약 홈에서 일반예약을 누르면 곧바로 <b>픽업 시간을 고르는 화면</b>이 열립니다. 시내 출발과 똑같이 <b>휠이 기본</b>이고, 항공편은 휠 아래 <b>넛지 한 줄</b>입니다(PO 2026-10-02: "직접 고르기 + 항공편 넛지 혹은 옵션"). 오른쪽 위 <b>배치 A / B / C / D / E</b>로 지난 안과 비교할 수 있습니다. A·B·C는 <b>우리가 픽업 시각을 정해 주면서 추적은 옵션</b>이던 안이고, 그 구조가 픽업 시각을 꼬이게 해서 폐기했습니다. D는 <b>편명을 참고값으로만 쓰는</b> 안입니다. 예약 3.0 핸드오프 보드의 네 화면을 한 흐름으로 이었고, 색·간격·타이포는 Figma REST 실측값입니다.</p>
     <div class="meta">
       <span class="htag">파일 <code>pgHS64des…</code></span>
       <span class="htag">예약 홈 <code>recurring-entry D안</code></span>
@@ -1292,10 +1301,10 @@ div.arow{cursor:default;}
     try { var m = /[?&]place=(route|vehicle|split|ref|server|rebuild)\b/.exec(location.search); return m ? m[1] : "rebuild"; }
     catch(e){ return "rebuild"; }
   })();
-  /* ?family=1: F안 차량 선택에 서울엄마아빠택시를 붙인다(?state=v2 도 같다). ?coupon=flight|driver|seat: 그 부가 서비스 하나에 쿠폰이 있다(쿠폰은 늘 하나에만. 여러 개를 넘기면 첫 번째만 쓴다) */
+  /* ?family=1: F안 차량 선택에 서울엄마아빠택시를 붙인다(?state=v2 도 같다). ?coupon=flight|driver|seat|wait: 그 부가 서비스 하나에 쿠폰이 있다(쿠폰은 늘 하나에만. 여러 개를 넘기면 첫 번째만 쓴다) */
   var FAMILY_ON = (function(){ try { return /[?&]family=1\b/.test(location.search) || /[?&]state=v2\b/.test(location.search); } catch(e){ return false; } })();
   var COUPON = (function(){ var o = {}; try { var m = /[?&]coupon=([a-z0-9,]+)/.exec(location.search);
-    var k = m ? m[1].split(",")[0] : ""; if (k === "flight" || k === "driver" || k === "seat") o[k] = true; } catch(e){} return o; })();
+    var k = m ? m[1].split(",")[0] : ""; if (k === "flight" || k === "driver" || k === "seat" || k === "wait") o[k] = true; } catch(e){} return o; })();
   function fresh(){
     return {
       /* 기본 흐름 = 인천공항 출발 · 경로가 채워진 예약 · E안(서버 모델, PRD 2026-09-30).
@@ -1543,7 +1552,7 @@ div.arow{cursor:default;}
       + '<span class="s">' + esc(dLong(fdiOf()) + " " + f.eta + " 도착") + '</span></span>'
       + '<button class="ghost" data-act="' + act + '">변경</button></div>';
   }
-  /* ── F안 부가 서비스 행 (2026-10-03 개편). 꺼짐은 더하기, 켜짐은 체크, 잠금은 자물쇠. 잠긴 것도 사유와 함께 행으로 보인다 ── */
+  /* ── F안 부가 서비스 행 (2026-10-04 최종안). 꺼짐은 페이지를 여는 행이면 화살표, 바로 켜지는 행이면 더하기. 켜짐은 체크, 잠금은 자물쇠. 잠긴 것도 사유와 함께 행으로 보인다 ── */
   var DRIVERS = [{id:"d1", name:"김타다 드라이버", sub:"최근 탑승 9월 28일"}, {id:"d2", name:"이서준 드라이버", sub:"최근 탑승 9월 12일"},
                  {id:"d3", name:"박하늘 드라이버", sub:"최근 탑승 8월 30일"}];
   function fxLocked(){
@@ -1575,48 +1584,62 @@ div.arow{cursor:default;}
   var IC_LOCK = '<svg width="20" height="20" viewBox="0 0 66 66" fill="none" aria-hidden="true"><path d="M54.9995 21.9998H46.7495V17.0773C46.7495 9.89979 41.497 3.49229 34.347 2.80479C26.152 2.03479 19.2495 8.46979 19.2495 16.4998V21.9998H10.9995V60.4998H54.9995V21.9998ZM32.9995 46.7498C29.9745 46.7498 27.4995 44.2748 27.4995 41.2498C27.4995 38.2248 29.9745 35.7498 32.9995 35.7498C36.0245 35.7498 38.4995 38.2248 38.4995 41.2498C38.4995 44.2748 36.0245 46.7498 32.9995 46.7498ZM24.7495 21.9998V16.4998C24.7495 11.9348 28.4345 8.24979 32.9995 8.24979C37.5645 8.24979 41.2495 11.9348 41.2495 16.4998V21.9998H24.7495Z" fill="#C0C2CC"/></svg>';
   var IC_PLANE = '<svg width="26" height="26" viewBox="0 0 54 54" fill="none" aria-hidden="true"><path d="M40.05 43.2L36 24.75L43.875 16.875C47.25 13.5 48.375 9 47.25 6.75C45 5.625 40.5 6.75 37.125 10.125L29.25 18L10.8 13.95C9.675 13.725 8.775 14.175 8.325 15.075L7.65 16.2C7.2 17.325 7.425 18.45 8.325 19.125L20.25 27L15.75 33.75H9L6.75 36L13.5 40.5L18 47.25L20.25 45V38.25L27 33.75L34.875 45.675C35.55 46.575 36.675 46.8 37.8 46.35L38.925 45.9C39.825 45.225 40.275 44.325 40.05 43.2Z" stroke="#31487D" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var IC_PLUS = '<span class="plus"><svg width="16" height="16" viewBox="0 0 73 73" fill="none" aria-hidden="true"><path d="M39.5413 33.458V15.208H33.458V33.458H15.208V39.5413H33.458V57.7913H39.5413V39.5413H57.7913V33.458H39.5413Z" fill="#262A38"/></svg></span>';
-  /* o: name · desc · img|plane · fill(썸네일 꽉 채움) · price | unit[앞말, 금액, 뒷말] · on · lock · req(필수라 끌 수 없음) · cp(쿠폰 키) · act */
+  function icChev(c, n){ return '<svg width="' + n + '" height="' + n + '" viewBox="0 0 42 42" fill="none" aria-hidden="true"><path fill-rule="evenodd" clip-rule="evenodd" d="M25.5248 21.0006L14.5122 9.98806L16.9871 7.51318L30.4745 21.0006L16.9871 34.4881L14.5122 32.0132L25.5248 21.0006Z" fill="' + c + '"/></svg>'; }
+  var IC_GO = '<span class="plus">' + icChev("#262A38", 12) + '</span>';
+  var SEAT_NOTE = "배차 가능한 카시트 차량이 없으면 예약이 취소돼요";
+  /* o: name · desc · img|plane · fill(썸네일 꽉 채움) · price | unit[앞말, 금액, 뒷말] · on · lock · req(필수라 끌 수 없음) · cp(쿠폰 키) · act
+        · page(누르면 페이지가 열리는 행) · note(금액 줄 아래 안내) */
   function arow(o){
-    var has = !!(o.cp && COUPON[o.cp]) && !o.lock, zero = has && o.on, can = has && !o.on;
+    var has = !!(o.cp && COUPON[o.cp]) && !o.lock;
     var tag = (o.lock || o.req) ? "div" : "button";
-    var mark = o.lock ? IC_LOCK : o.on ? '<span class="ck">' + SVG.checkOn + '</span>' : IC_PLUS;
+    var mark = o.lock ? IC_LOCK : o.on ? '<span class="ck">' + SVG.checkOn + '</span>' : o.page ? IC_GO : IC_PLUS;
     var l3 = '';
     if (!o.lock){
       var pre = o.unit ? o.unit[0] : "이용료", amt = o.unit ? o.unit[1] : won(o.price);
-      l3 = '<span class="p"><span>' + pre + '</span>' + (zero ? '<s>' + amt + '</s><b>0원</b>' : '<span>' + amt + '</span>')
-         + (o.unit && o.unit[2] ? '<span>(' + o.unit[2] + ')</span>' : '')
-         + (zero ? '<span class="cp">쿠폰 적용됨</span>' : can ? '<span class="cp">쿠폰 적용 가능</span>' : '') + '</span>';
+      l3 = '<span class="p">' + (has ? '<span class="cp">쿠폰가</span>' + (o.unit ? '<span>' + pre + '</span>' : '') + '<b>0원</b><s>' + amt + '</s>'
+                                     : '<span>' + pre + '</span><span class="a">' + amt + '</span>')
+         + (o.unit && o.unit[2] ? '<span>(' + o.unit[2] + ')</span>' : '') + '</span>';
     }
+    var m = (o.on && o.page) ? '<span class="m lk"><span class="tx">' + esc(o.desc) + '</span>' + icChev("#868B9C", 12) + '</span>'
+                             : '<span class="m">' + esc(o.desc) + '</span>';
     return '<div class="arw"><' + tag + ' class="arow' + (o.on ? " on" : "") + (o.lock ? " lock" : "") + '"'
       + (tag === "button" ? ' type="button" aria-pressed="' + !!o.on + '" data-act="' + o.act + '"' : '') + '>'
       + '<span class="th" aria-hidden="true">' + (o.plane ? IC_PLANE : '<img' + (o.fill ? ' class="fill"' : '') + ' src="' + o.img + '" alt="" />') + '</span>'
       + '<span class="bd"><span class="n">' + o.name + '</span>'
-      + '<span class="m">' + esc(o.desc) + '</span>' + l3 + '</span>'
+      + m + l3 + (o.note ? '<span class="nt">' + esc(o.note) + '</span>' : '') + '</span>'
       + '<span class="ct">' + mark + '</span></' + tag + '></div>';
   }
   function fxSection(){
     var k = fxLocked(), x = S.fx, rows = [], fam = family();
     if (eligible()){
       var on = !k.flight && flightOn();
-      rows.push(arow({name:"항공편에 맞춰 픽업", plane:true, price:F_FEE, cp:"flight", lock:k.flight, on:on, act:on ? "fpEdit" : "fpOpen",
+      rows.push(arow({name:"항공편에 맞춰 픽업", plane:true, price:F_FEE, cp:"flight", lock:k.flight, on:on, page:true, act:on ? "fpEdit" : "fpOpen",
         desc:k.flight ? "프리미엄 밴에서는 고를 수 없어요" : on ? S.flight.no + " · 여유 " + offLabel(fGap()) : "늦어지면 픽업도 같이 늦춰 드려요"}));
     }
     var dn = x.drivers.length;
     var don = !k.driver && dn > 0;   /* 썸네일은 인원수(1 · 2 · 3 · 4명 이상)를 따른다: 고르기 전에는 등록한 마이 드라이버 수, 고른 뒤에는 지정한 수 */
-    rows.push(arow({name:"드라이버 지정", img:ASSET["driver" + Math.max(1, Math.min(don ? dn : DRIVERS.length, 4))], fill:true, price:3000, cp:"driver", lock:k.driver, on:don, act:"dpOpen",
+    rows.push(arow({name:"드라이버 지정", img:ASSET["driver" + Math.max(1, Math.min(don ? dn : DRIVERS.length, 4))], fill:true, price:3000, cp:"driver", lock:k.driver, on:don, page:true, act:"dpOpen",
       desc:k.driver ? "선택하신 차종과 조건에 맞는 드라이버가 없습니다" : dn ? "마이 드라이버 " + dn + "명 지정" : "마이 드라이버 중에서 지정합니다"}));
     if (k.seat) rows.push(arow({name:"카시트 1개", img:ASSET.carseat, lock:true, desc:"선택하신 차종과 조건에 맞는 카시트 차량이 없습니다"}));
     else if (fam){
-      rows.push(arow({name:"카시트 1개", img:ASSET.carseat, price:5000, cp:"seat", on:true, req:true, desc:"엄마아빠택시는 1개가 필수예요"}));
+      rows.push(arow({name:"카시트 1개", img:ASSET.carseat, price:5000, cp:"seat", on:true, req:true, note:SEAT_NOTE, desc:"엄마아빠택시는 1개가 필수예요"}));
       rows.push(arow({name:"추가 카시트 1개", img:ASSET.carseat, price:5000, cp:"seat2", on:x.seats >= 2, act:"seat2Toggle",
         desc:x.seats >= 2 ? "카시트를 총 2개 이용해요" : "추가 카시트로 총 2개의 카시트를 선택합니다"}));
     }
-    else rows.push(arow({name:"카시트 1개", img:ASSET.carseat, price:5000, cp:"seat", on:x.seats > 0, act:x.seats ? "seatOff" : "seatOn",
+    else rows.push(arow({name:"카시트 1개", img:ASSET.carseat, price:5000, cp:"seat", on:x.seats > 0, act:x.seats ? "seatOff" : "seatOn", note:x.seats > 0 ? SEAT_NOTE : "",
       desc:"0세부터 이용하는 카시트 1개"}));
-    rows.push(arow({name:"드라이버 대기 보장", img:ASSET.hourglass, unit:["10분당", "3,000원", "최대 60분"], lock:k.wait, on:!k.wait && x.wait, act:"waitToggle",
+    rows.push(arow({name:"드라이버 대기 보장", img:ASSET.hourglass, unit:["10분당", "3,000원", "최대 60분"], cp:"wait", lock:k.wait, on:!k.wait && x.wait, act:"waitToggle",
       desc:k.wait ? "선택하신 차종은 드라이버 대기가 어렵습니다" : eligible() && flightOn() ? "입국 수속이 길어져도 기다려요" : "늦어도 기다려주는 차량"}));
-    return '<div class="addon fx"><div class="vhead"><h2>부가 서비스</h2></div><div><div class="xlist">' + rows.join("") + '</div>'
-      + (k.seat ? '' : '<p class="xnote">배차 가능한 카시트 차량이 없을 시 예약 취소됩니다</p>') + '</div></div>';
+    return '<div class="addon fx"><div class="vhead"><h2>부가 서비스</h2><span class="opt">선택</span></div><div><div class="xlist">' + rows.join("") + '</div></div></div>';
+  }
+  /* 고른 부가 서비스 수(필수 카시트 포함). 하단 "부가 서비스 N개 포함"에 쓴다 */
+  function fxCount(){
+    var k = fxLocked(), x = S.fx, n = 0;
+    if (eligible() && !k.flight && flightOn()) n++;
+    if (!k.driver && x.drivers.length) n++;
+    if (!k.seat) n += Math.min(x.seats, 2);
+    if (!k.wait && x.wait) n++;
+    return n;
   }
   /* 드라이버 지정: 폰 안 전체 페이지. 고른 채로 다시 열리고, 0명으로 확정하면 해제된다 */
   function dpChrome(){
@@ -2122,7 +2145,7 @@ div.arow{cursor:default;}
       + '<span class="models">' + esc(L.models) + '</span>'
       + (dis ? '<span class="why">항공편에 맞춰 픽업할 때는 예약할 수 없는 차량이에요</span>' : '')
       + '</div></div>');
-    h.push('<div class="vdiv"><i></i></div>');
+    h.push(placeF() ? '<div class="vband"></div>' : '<div class="vdiv"><i></i></div>');
     if (placeF()) h.push(fxSection()); else {
     h.push('<div class="addon"><div class="vhead"><h2>부가 서비스</h2></div><div class="addlist">');
     if (placeB() && eligible()){
@@ -2209,7 +2232,8 @@ div.arow{cursor:default;}
     var h = '<div class="bottom' + (S.animate ? " enter" : "") + '">';
     if (S.lineup === "next") h += '<div class="nudge">⚡ 넥스트 예약 시 <b>100% 확정</b></div>';
     h += '<div class="pricebar"><span class="l"><span class="k">예상 요금</span><br>'
-      + '<span class="v">' + won(total()) + '</span></span>'
+      + '<span class="v">' + won(total()) + '</span>'
+      + (placeF() && S.screen === "vehicle" && fxCount() ? '<span class="sub">부가 서비스 ' + fxCount() + '개 포함</span>' : '') + '</span>'
       + '<button class="big" data-act="' + act + '"' + (unavailable(S.lineup) ? " disabled" : "") + '>' + cta + '</button></div></div>';
     return h;
   }
