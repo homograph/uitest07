@@ -897,11 +897,11 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 .fp-dec .keep{margin:4px 0 -8px -10px;min-height:44px;}
 .fp-foot{background:#fff;box-shadow:0 -8px 16px rgba(26,38,77,.10);position:relative;z-index:2;}
 .fp-bar{display:flex;align-items:center;gap:20px;padding:20px;}
-/* ── F안 부가 서비스 행 (2026-10-03 개편): 상자·구분선 없이 4px 간격. 원 썸네일, 제목과 금액 한 줄, 설명, 오른쪽 끝 조작부 ── */
+/* ── F안 부가 서비스 행 (2026-10-03 개편): 상자·구분선 없이 4px 간격. 원 썸네일, 제목, 설명, 금액 줄, 오른쪽 끝 조작부 ── */
 .addon.fx{gap:10px;padding-bottom:24px;}
 .xlist{display:flex;flex-direction:column;gap:4px;}
 .arw{padding:0 12px;}
-.arow{width:100%;box-sizing:border-box;margin:0;padding:14px 12px;display:flex;align-items:flex-start;gap:12px;text-align:left;
+.arow{width:100%;box-sizing:border-box;margin:0;padding:12px 12px;display:flex;align-items:flex-start;gap:12px;text-align:left;
   border:0;border-radius:12px;background:transparent;font:inherit;color:inherit;cursor:pointer;}
 div.arow{cursor:default;}
 .arow.on{background:#F1F9FE;}
@@ -912,19 +912,17 @@ div.arow{cursor:default;}
 .arow .th img{display:block;width:46px;height:46px;object-fit:contain;}
 .arow .th img.fill{width:52px;height:52px;object-fit:cover;}
 .arow .bd{flex:1 1 0;min-width:0;min-height:52px;display:flex;flex-direction:column;justify-content:center;}
-.arow .l1{display:flex;align-items:baseline;justify-content:space-between;column-gap:8px;}
 .arow .n{font-size:15px;line-height:22px;font-weight:700;color:#262A38;word-break:keep-all;}
 .arow.lock .n{color:#868B9C;}
-.arow .pr{flex:none;display:flex;align-items:baseline;column-gap:4px;font-size:15px;line-height:22px;font-weight:700;color:#262A38;
-  white-space:nowrap;}
-.arow .pr s{font-size:13px;line-height:19px;font-weight:400;color:#868B9C;text-decoration:line-through;}
-.arow .m{margin-top:1px;font-size:13px;line-height:19px;color:#60667A;word-break:keep-all;
+.arow .m{margin-top:1px;font-size:13px;line-height:18px;color:#60667A;word-break:keep-all;
   display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
 .arow .m .chg{margin-left:4px;font-weight:700;color:#31487D;white-space:nowrap;}
-.arow .u{margin-top:4px;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:4px;font-size:13px;line-height:19px;color:#60667A;
-  white-space:nowrap;}
-.arow .u b{font-weight:700;color:#262A38;}
-.arow .cp{margin-top:2px;display:flex;font-size:12px;line-height:18px;font-weight:700;color:#0086EA;white-space:nowrap;}
+/* 금액 줄: 전부 한 굵기. 쿠폰이 적용되면 원래 금액에 취소선, 0원만 굵게 */
+.arow .p{margin-top:3px;display:flex;flex-wrap:wrap;align-items:baseline;column-gap:4px;font-size:14px;line-height:20px;
+  font-weight:400;color:#383D4F;white-space:nowrap;}
+.arow .p s{color:#868B9C;text-decoration:line-through;}
+.arow .p b{font-weight:700;color:#383D4F;}
+.arow .p .cp{margin-left:8px;font-size:13px;line-height:18px;font-weight:700;color:#0086EA;}
 .arow .ct{flex:none;min-width:22px;height:52px;display:flex;align-items:center;justify-content:flex-end;}
 .arow .ct svg{display:block;flex:none;}
 .arow .ct .ck{display:block;width:22px;height:22px;}
@@ -969,6 +967,7 @@ div.arow{cursor:default;}
 .fp-nfoot .btnbar{padding:0 10px 10px;}
 
 </style>
+<link rel="stylesheet" href="https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css">
 </head>
 <body>
 <div class="page">
@@ -1288,10 +1287,10 @@ div.arow{cursor:default;}
     try { var m = /[?&]place=(route|vehicle|split|ref|server|rebuild)\b/.exec(location.search); return m ? m[1] : "rebuild"; }
     catch(e){ return "rebuild"; }
   })();
-  /* ?family=1: F안 차량 선택에 서울엄마아빠택시를 붙인다(?state=v2 도 같다). ?coupon=flight,driver,seat: 그 부가 서비스에 쿠폰이 있다 */
+  /* ?family=1: F안 차량 선택에 서울엄마아빠택시를 붙인다(?state=v2 도 같다). ?coupon=flight|driver|seat: 그 부가 서비스 하나에 쿠폰이 있다(쿠폰은 늘 하나에만. 여러 개를 넘기면 첫 번째만 쓴다) */
   var FAMILY_ON = (function(){ try { return /[?&]family=1\b/.test(location.search) || /[?&]state=v2\b/.test(location.search); } catch(e){ return false; } })();
   var COUPON = (function(){ var o = {}; try { var m = /[?&]coupon=([a-z0-9,]+)/.exec(location.search);
-    if (m) m[1].split(",").forEach(function(k){ o[k] = true; }); } catch(e){} return o; })();
+    var k = m ? m[1].split(",")[0] : ""; if (k === "flight" || k === "driver" || k === "seat") o[k] = true; } catch(e){} return o; })();
   function fresh(){
     return {
       /* 기본 흐름 = 인천공항 출발 · 경로가 채워진 예약 · E안(서버 모델, PRD 2026-09-30).
@@ -1576,13 +1575,17 @@ div.arow{cursor:default;}
     var has = !!(o.cp && COUPON[o.cp]) && !o.lock, zero = has && o.on, can = has && !o.on;
     var tag = (o.lock || o.req) ? "div" : "button";
     var mark = o.lock ? IC_LOCK : o.on ? '<span class="ck">' + SVG.checkOn + '</span>' : IC_PLUS;
-    var pr = (o.lock || o.unit) ? '' : '<span class="pr">' + (zero ? '<s>' + won(o.price) + '</s>0원' : won(o.price)) + '</span>';
-    var l3 = (!o.lock && o.unit) ? '<span class="u"><span>' + o.unit[0] + '</span><b>' + o.unit[1] + '</b><span>' + o.unit[2] + '</span></span>'
-           : can ? '<span class="cp">쿠폰 적용 가능</span>' : '';
+    var l3 = '';
+    if (!o.lock){
+      var pre = o.unit ? o.unit[0] : "이용료", amt = o.unit ? o.unit[1] : won(o.price);
+      l3 = '<span class="p"><span>' + pre + '</span>' + (zero ? '<s>' + amt + '</s><b>0원</b>' : '<span>' + amt + '</span>')
+         + (o.unit && o.unit[2] ? '<span>(' + o.unit[2] + ')</span>' : '')
+         + (zero ? '<span class="cp">쿠폰 적용됨</span>' : can ? '<span class="cp">쿠폰 적용 가능</span>' : '') + '</span>';
+    }
     return '<div class="arw"><' + tag + ' class="arow' + (o.on ? " on" : "") + (o.lock ? " lock" : "") + '"'
       + (tag === "button" ? ' type="button" aria-pressed="' + !!o.on + '" data-act="' + o.act + '"' : '') + '>'
       + '<span class="th" aria-hidden="true">' + (o.plane ? IC_PLANE : '<img' + (o.fill ? ' class="fill"' : '') + ' src="' + o.img + '" alt="" />') + '</span>'
-      + '<span class="bd"><span class="l1"><span class="n">' + o.name + '</span>' + pr + '</span>'
+      + '<span class="bd"><span class="n">' + o.name + '</span>'
       + '<span class="m">' + esc(o.desc) + (o.on && o.config ? ' <span class="chg">변경</span>' : '') + '</span>' + l3 + '</span>'
       + '<span class="ct">' + mark + '</span></' + tag + '></div>';
   }
@@ -1595,7 +1598,7 @@ div.arow{cursor:default;}
     }
     var dn = x.drivers.length;
     rows.push(arow({name:"드라이버 지정", img:ASSET.driver, fill:true, price:3000, cp:"driver", config:true, lock:k.driver, on:!k.driver && dn > 0, act:"dpOpen",
-      desc:k.driver ? "선택하신 차종과 조건에 맞는 드라이버가 없습니다" : dn ? "마이 드라이버 " + dn + "명을 지정했어요" : "마이 드라이버 중에서 지정합니다"}));
+      desc:k.driver ? "선택하신 차종과 조건에 맞는 드라이버가 없습니다" : dn ? "마이 드라이버 " + dn + "명 지정" : "마이 드라이버 중에서 지정합니다"}));
     if (k.seat) rows.push(arow({name:"카시트 1개", img:ASSET.carseat, lock:true, desc:"선택하신 차종과 조건에 맞는 카시트 차량이 없습니다"}));
     else if (fam){
       rows.push(arow({name:"카시트 1개", img:ASSET.carseat, price:5000, cp:"seat", on:true, req:true, desc:"엄마아빠택시는 1개가 필수예요"}));
