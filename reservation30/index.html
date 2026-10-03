@@ -683,7 +683,7 @@ body.showhot .hot{outline:2px dashed #FE4C00;outline-offset:-2px;background:rgba
   font-size:12px;line-height:17px;font-weight:700;color:var(--a-ink-5);}
 .fcand button.off{cursor:default;}
 .fcand button.off .no,.fcand button.off .eta,.fcand button.off .eta small,.fcand button.off .rt .dt{color:#C0C2CC;}
-.fcand button.off .rt{color:var(--a-ink-6);}
+.fcand button.off .rt{color:var(--a-ink-3);}   /* ink-6 은 4.39:1 로 AA 미달이라 ink-3 으로 */
 .dbuf{padding:14px 20px 0;display:flex;flex-direction:column;gap:8px;}
 .dbh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-size:13px;line-height:19px;color:var(--a-ink-5);}
 #dgap{color:#0086EA;font-variant-numeric:tabular-nums;}
@@ -826,6 +826,99 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 }
 @media (prefers-reduced-motion:reduce){.rail,.railscrim{transition:none;}}
 
+/* ══════════ F안 재구성안 v2 (Figma 섹션 12409:50 아래 행, 2026-10-03) ══════════
+   항공편은 차량 선택 부가 서비스 카드에서 들어가는 전체 페이지(③′~⑥′)다. */
+.acard.ff .imgwrap{background:var(--a-blue-bg);}
+.acard.ff .imgwrap .pl{width:26px;height:26px;color:var(--a-ink-3);}
+.acard.ff .n{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.acard.ff .d{word-break:keep-all;}
+.acard.ff .chev{flex:0 0 auto;width:8px;height:13px;color:var(--a-ink-2);}
+.acard.ff .tag{flex:0 0 auto;padding:3px 8px;border-radius:9999px;background:var(--a-sunken);
+  font-size:12px;line-height:17px;font-weight:700;color:var(--a-ink-5);}
+.fp{min-height:100%;background:var(--a-bg);word-break:keep-all;}
+.fp-hero{background:var(--a-nudge-bg);padding:20px 24px;}
+.fp-hero h2{margin:0 0 16px;font-size:18px;line-height:26px;font-weight:700;color:var(--a-ink);}
+.fp-ex{background:#fff;border-radius:8px;padding:16px;}
+.fp-ex .cap{margin:0 0 12px;font-size:13px;line-height:19px;color:var(--a-ink-5);}
+.fp-step,.fp-link{display:grid;grid-template-columns:8px minmax(0,1fr);column-gap:15px;}
+.fp-step .dot{width:8px;height:8px;border-radius:50%;background:var(--a-navy);margin-top:6px;}
+.fp-step .lb{display:block;font-size:13px;line-height:19px;color:var(--a-ink-3);}
+.fp-step .tm{display:flex;align-items:center;gap:8px;font-variant-numeric:tabular-nums;}
+.fp-step .tm b{font-size:18px;line-height:26px;font-weight:700;color:var(--a-navy);}
+.fp-step .tm s{font-size:13px;line-height:19px;color:var(--a-ink-5);}
+.fp-step .tm em{font-style:normal;font-size:12px;line-height:17px;font-weight:700;color:var(--a-navy);
+  background:var(--a-blue-bg);border-radius:4px;padding:1px 6px;}
+.fp-link{padding:4px 0;}
+.fp-link i{justify-self:center;width:2px;background:var(--a-off);}
+.fp-link span{font-size:12px;line-height:16px;color:var(--a-ink-5);}
+.fp-in{padding:20px 24px 24px;}
+.fp-in .lab{display:block;margin:0 0 12px;font-size:14px;line-height:20px;color:var(--a-ink-5);}
+.fp-box{background:#fff;border:1px solid var(--a-chip-line);border-radius:8px;padding:14px 16px;}
+.fp-box:focus-within{border-color:var(--a-blue);}
+.fp-box input{width:100%;border:0;outline:0;background:none;font:inherit;font-size:18px;line-height:26px;
+  font-weight:700;color:#000;letter-spacing:.04em;padding:0;}
+.fp-box input::placeholder{color:var(--a-ink-6);letter-spacing:normal;}
+.fp-in .help{margin:12px 0 0;font-size:13px;line-height:19px;color:var(--a-ink-5);}
+.fp-div{height:1px;background:var(--a-divider);}
+.fp-inc{padding:20px 24px 28px;}
+.fp-inc h3{margin:0 0 16px;font-size:15px;line-height:22px;font-weight:700;color:var(--a-ink);}
+.fp-inc ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px;}
+.fp-inc li{display:flex;gap:12px;}
+.fp-inc .v{flex:0 0 52px;font-size:17px;line-height:24px;font-weight:700;color:var(--a-navy);}
+.fp-inc .t{display:block;font-size:14px;line-height:20px;font-weight:700;color:var(--a-ink-2);}
+.fp-inc .s{display:block;font-size:13px;line-height:19px;color:var(--a-ink-5);}
+.fp .fcand{margin:0 24px;}
+.fp .fcand li+li{border-top-color:#DCDFE5;}
+.fp .fcand button{padding:14px 0;}
+.fp-beta{margin:10px 24px 0;font-size:13px;line-height:19px;color:var(--a-ink-5);}
+/* 탈출구는 결과 수와 상관없이 첫 화면에 보여야 한다: 스크롤 영역 아래에 붙인다 */
+.fp-nonewrap{position:sticky;bottom:0;z-index:1;background:var(--a-bg);padding:12px 24px;margin-top:12px;}
+.fp-none{display:flex;align-items:center;justify-content:space-between;gap:8px;
+  background:#fff;border-radius:8px;padding:2px 6px 2px 16px;}
+.fp-none span{font-size:13px;line-height:19px;color:var(--a-ink-5);}
+.fp-none .ghost{min-height:44px;color:var(--a-ink-3);}
+.fp-nf{margin:-14px 24px 24px;background:#fff;border-radius:12px;padding:16px;}
+.fp-nf b{display:block;font-size:15px;line-height:22px;color:var(--a-ink-2);}
+.fp-nf span{display:block;margin-top:6px;font-size:13px;line-height:19px;color:var(--a-ink-5);}
+.fp-sel{padding:20px 24px 24px;}
+.fp-sel .dfrow{margin:0;padding:12px 6px 12px 16px;}
+.fp-sel .dfrow .ghost{min-height:44px;}
+.fp-dec{margin-top:12px;background:#fff;border-radius:12px;padding:16px;}
+.fp-top{display:flex;align-items:flex-end;gap:8px;}
+.fp-top{justify-content:space-between;}
+.fp-top .c{flex:0 0 auto;}
+.fp-top .c.r{text-align:right;}
+.fp-top .k{display:block;font-size:13px;line-height:19px;color:var(--a-ink-5);}
+.fp-top .t{display:flex;align-items:baseline;gap:6px;font-size:24px;line-height:32px;font-weight:700;color:var(--a-ink);
+  font-variant-numeric:tabular-nums;white-space:nowrap;}
+.fp-top .c.r .t{justify-content:flex-end;color:var(--a-navy);}
+.fp-top .k s{margin-left:6px;font-size:13px;line-height:19px;color:var(--a-ink-5);font-variant-numeric:tabular-nums;}
+.fp-top .pillb{flex:0 0 auto;white-space:nowrap;margin-bottom:4px;padding:3px 10px;border-radius:9999px;background:var(--a-sunken);
+  font-size:13px;line-height:19px;font-weight:700;color:var(--a-ink-3);}
+.fp-dec .why{margin:12px 0 0;font-size:13px;line-height:19px;color:var(--a-ink-5);}
+.fp-dec hr{border:0;height:1px;background:var(--a-divider);margin:16px 0;}
+.fp-dec .lab{display:block;margin:0 0 8px;font-size:13px;line-height:19px;color:var(--a-ink-5);}
+.fpchip{position:relative;padding:8px 12px;}
+.fpchip::after{content:"";position:absolute;left:0;right:0;top:-5px;bottom:-5px;}
+.fp-dec .rec{margin:16px 0 0;font-size:13px;line-height:19px;color:var(--a-ink-5);}
+.fp-dec .keep{margin:4px 0 -8px -10px;min-height:44px;}
+.fp-foot{background:#fff;box-shadow:0 -8px 16px rgba(26,38,77,.10);position:relative;z-index:2;}
+.fp-agree{display:flex;align-items:center;gap:8px;padding:6px 10px 0 20px;}
+.fp-agree .ckb{display:flex;align-items:center;gap:8px;flex:1 1 auto;min-width:0;min-height:44px;border:0;background:none;
+  padding:0;font:inherit;text-align:left;cursor:pointer;}
+.fp-agree .ck{flex:0 0 auto;width:20px;height:20px;}
+.fp-agree .ck svg{display:block;width:100%;height:100%;}
+.fp-agree .lb{font-size:14px;line-height:20px;color:var(--a-ink-2);word-break:keep-all;}
+.fp-agree .ghost{min-height:44px;color:var(--a-ink-3);}
+.fp-bar{display:flex;align-items:center;gap:20px;padding:6px 20px 20px;}
+.fp-bar .l{flex:1 1 auto;min-width:0;}
+.fp-bar .k{display:block;font-size:13px;line-height:18px;color:#000;}
+.fp-bar .v{font-size:16px;line-height:24px;font-weight:700;color:#000;font-variant-numeric:tabular-nums;}
+.fp-bar .v small{margin-left:6px;font-size:13px;line-height:19px;font-weight:400;color:var(--a-ink-5);}
+.fp-bar .big{flex:0 0 120px;width:120px;height:52px;padding:0;line-height:24px;}
+.fp-nfoot p{margin:0;padding:16px 24px 12px;font-size:13px;line-height:19px;color:var(--a-ink-5);word-break:keep-all;}
+.fp-nfoot .btnbar{padding:0 10px 10px;}
+
 </style>
 </head>
 <body>
@@ -833,7 +926,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
   <header class="head">
     <h1>항공편 입력 위치 비교 · 예약 3.0</h1>
-    <p><b>"항공편에 맞춰 픽업"을 어떤 상품으로, 어디에 둘지</b> 눌러 보며 고르는 프로토타입입니다. <b>기본은 E안(서버 모델) · 인천공항 출발</b>입니다. 예약 홈에서 일반예약을 누르면 곧바로 <b>픽업 시간을 고르는 화면</b>이 열립니다. 시내 출발과 똑같이 <b>휠이 기본</b>이고, 항공편은 휠 아래 <b>넛지 한 줄</b>입니다(PO 2026-10-02: "직접 고르기 + 항공편 넛지 혹은 옵션"). 오른쪽 위 <b>배치 A / B / C / D</b>로 지난 안과 비교할 수 있습니다. A·B·C는 <b>우리가 픽업 시각을 정해 주면서 추적은 옵션</b>이던 안이고, 그 구조가 픽업 시각을 꼬이게 해서 폐기했습니다. D는 <b>편명을 참고값으로만 쓰는</b> 안입니다. 예약 3.0 핸드오프 보드의 네 화면을 한 흐름으로 이었고, 색·간격·타이포는 Figma REST 실측값입니다.</p>
+    <p><b>"항공편에 맞춰 픽업"을 어떤 상품으로, 어디에 둘지</b> 눌러 보며 고르는 프로토타입입니다. <b>기본은 F안(재구성안 v2, Figma 섹션 12409:50 아래 행, 2026-10-03)</b>입니다. 시간&amp;경로는 휠만 두고, 항공편은 <b>차량 선택의 부가 서비스 카드</b>에서 여는 전체 페이지에서 편명을 찾고 도착 후 여유를 고른 뒤 이용료 20,000원에 동의하고 추가합니다. 아래는 직전 기본이던 E안 설명입니다. 예약 홈에서 일반예약을 누르면 곧바로 <b>픽업 시간을 고르는 화면</b>이 열립니다. 시내 출발과 똑같이 <b>휠이 기본</b>이고, 항공편은 휠 아래 <b>넛지 한 줄</b>입니다(PO 2026-10-02: "직접 고르기 + 항공편 넛지 혹은 옵션"). 오른쪽 위 <b>배치 A / B / C / D / E</b>로 지난 안과 비교할 수 있습니다. A·B·C는 <b>우리가 픽업 시각을 정해 주면서 추적은 옵션</b>이던 안이고, 그 구조가 픽업 시각을 꼬이게 해서 폐기했습니다. D는 <b>편명을 참고값으로만 쓰는</b> 안입니다. 예약 3.0 핸드오프 보드의 네 화면을 한 흐름으로 이었고, 색·간격·타이포는 Figma REST 실측값입니다.</p>
     <div class="meta">
       <span class="htag">파일 <code>pgHS64des…</code></span>
       <span class="htag">예약 홈 <code>recurring-entry D안</code></span>
@@ -849,8 +942,9 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       <button role="tab" data-v="route">A<span class="lbl"> · 시간&amp;경로</span></button>
       <button role="tab" data-v="vehicle">B<span class="lbl"> · 차량 선택</span></button>
       <button role="tab" data-v="split">C<span class="lbl"> · 나눠 붙이기</span></button>
-      <button role="tab" data-v="ref" class="on">D<span class="lbl"> · 참고값</span></button>
+      <button role="tab" data-v="ref">D<span class="lbl"> · 참고값</span></button>
       <button role="tab" data-v="server">E<span class="lbl"> · 서버 모델</span></button>
+      <button role="tab" data-v="rebuild" class="on">F<span class="lbl"> 재구성안</span></button>
     </div>
     <button class="railfab" id="railFab" aria-expanded="false" aria-controls="rail">
       <span class="g" aria-hidden="true">⚙</span>설정</button>
@@ -1138,8 +1232,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
   var S;
   var INIT_PLACE = (function(){
-    try { var m = /[?&]place=(route|vehicle|split|ref|server)\b/.exec(location.search); return m ? m[1] : "server"; }
-    catch(e){ return "server"; }
+    try { var m = /[?&]place=(route|vehicle|split|ref|server|rebuild)\b/.exec(location.search); return m ? m[1] : "rebuild"; }
+    catch(e){ return "rebuild"; }
   })();
   function fresh(){
     return {
@@ -1155,7 +1249,9 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       origin:"icn", term:"T1", fkase:"ok", flight:null, offset:null, foffset:null,
       fsheet:null, fquery:"", swapped:false, fpending:false, termSwitched:false, failed:false,
       track:false, fintent:"set", anchor:"clock", pend:null,
-      fdi:null, touched:false, manual:false, buf:null
+      fdi:null, touched:false, manual:false, buf:null,
+      fpage:false, fsel:null, fbuf:60, fagree:false, fprev:null
+      /* F안 페이지: fpage 열림 · fsel 고른 편 {f, di, val} · fbuf 도착 후 여유 · fagree 동의 · fprev 앞서 휠로 고른 시각(Date) */
       /* track: 지연 추적 부가 서비스(C안) · fintent: 편명 입력 의도
          anchor: 픽업 시각의 기준. "clock" = 내가 고른 시각이 진짜 값,
                  "flight" = 도착 + 여유로 계산된 값이 진짜 값.
@@ -1200,6 +1296,10 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
      픽업은 도착 80분 전쯤 서버가 '도착 예상 + N분'(10분 올림)으로 확정한다. 휠이 없다. */
   function placeE(){ return S.flPlace === "server"; }
   function placeDE(){ return placeD() || placeE(); }
+  /* F안(재구성안 v2, Figma 12409:50 아래 행): 시간&경로는 휠만. 항공편은 차량 선택 부가 서비스 카드 → 전체 페이지.
+     유료(20,000원) 부가 서비스라 동의를 받고 추가한다. 추가하면 픽업 = 도착 + 여유(10분 올림)이 휠 값이 된다. */
+  function placeF(){ return S.flPlace === "rebuild"; }
+  var F_FEE = 20000;
   function flightOn(){ return !!(S.flight && eligible() && (S.anchor === "clock" || S.offset != null)); }
   /* C안: 편명으로 시각을 잡는 것(무료)과 지연 추적(유료 예정)을 나눈다.
      추적이 꺼지면 시각은 그대로 두고 '예상'이 아닌 확정 시각이 되므로
@@ -1357,7 +1457,136 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     var t = 0; ADDONS.forEach(function(a){ if (S.addons[a.id]) t += a.price; }); return t;
   }
   function baseFare(){ return S.surge === "on" ? Math.round(lineup().fare * 1.2 / 100) * 100 : lineup().fare; }
-  function total(){ return baseFare() + addonFee(); }
+  function fFee(){ return placeF() && flightOn() ? F_FEE : 0; }
+  function total(){ return baseFare() + addonFee() + fFee(); }
+
+  /* ══════════ F안: 항공편에 맞춰 픽업 전체 페이지 (③′ 입력 전 · ④′ 검색 결과 · ⑤′ 못 찾음 · ⑥′ 여유 정하기) ══════════ */
+  /* 추가된 뒤 보여 줄 여유. 휠을 다시 돌렸으면(buf=null) 실제 간격을 역산한다 */
+  function fGap(){ return S.buf != null ? S.buf : Math.round((selDate() - arrDate()) / 60000); }
+  function fpArr(sel){ var x = DATES[sel.di]; return new Date(x.y, x.m - 1, x.d, 0, mins(sel.f.eta)); }
+  function fpPick(sel, b){ var x = DATES[sel.di], m = mins(sel.f.eta) + b;
+    return new Date(x.y, x.m - 1, x.d + (m >= 1440 ? 1 : 0), 0, ceil10(m)); }
+  function hmOf(d){ return String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0"); }
+  /* 앞서 휠로 고른 시각과 도착 사이 간격(분). 휠을 만진 적이 없으면 null */
+  function fpPrevGap(){ return S.fprev && S.fsel ? Math.round((S.fprev - fpArr(S.fsel)) / 60000) : null; }
+  function fpRow(act){
+    var f = S.flight;
+    return '<div class="dfrow"><span class="pl">' + PLANE + '</span><span class="tx">'
+      + '<span class="no">' + esc(f.no + " " + f.air) + '</span>'
+      + '<span class="s">' + esc(dLong(fdiOf()) + " " + f.eta + " 도착") + '</span></span>'
+      + '<button class="ghost" data-act="' + act + '">변경</button></div>';
+  }
+  /* 차량 선택 부가 서비스 첫 카드: 진입(s2) / 추가됨(s7) */
+  function fpCard(){
+    var on = flightOn(), f = S.flight;
+    var h = '<button class="acard fl ff" data-act="' + (on ? "fpEdit" : "fpOpen") + '">'
+      + '<span class="imgwrap" aria-hidden="true"><span class="pl">' + PLANE + '</span></span><span class="row"><span class="tx">'
+      + '<span class="n">항공편에 맞춰 픽업' + (on ? '<span class="tag">추가됨</span>' : '') + '</span>'
+      + (on ? '<span class="d">' + esc(f.no + " · 도착 예정 " + f.eta) + '<br>' + esc("여유 " + offLabel(fGap())) + '</span>'
+            : '<span class="d">도착이 늦어지면 픽업 시각을 함께 옮겨 드려요</span>')
+      + '<span class="p">이용료 ' + won(F_FEE) + '</span></span>'
+      + (on ? '' : '<span class="icon chev">' + SVG.arrow + '</span>') + '</span></button>';
+    if (on) h += '<div class="flcard-act"><button class="ghost" data-act="fpEdit">픽업 시간 고치기</button></div>';
+    return h;
+  }
+  /* 후보: D/E 시트와 같은 데이터(3일 안 도착편). 베타 미지원 시간대(22~05시)는 끈다 */
+  function fpCands(){
+    var now = new Date(), rows = [];
+    candidates().forEach(function(c){
+      var b = c.share ? findFlight(SHARE.oper) : c.pending ? PENDING : c;
+      var label = c.share ? SHARE.no : c.pending ? PENDING.no : c.no;
+      var val = c.share ? "share" : c.pending ? "pending" : c.no;
+      var sub = c.share ? SHARE.air + " 판매, " + b.air + " " + b.no + " 운항" : b.air + " · " + b.from;
+      for (var di = 0; di < 3; di++){
+        var dx = DATES[di]; if (new Date(dx.y, dx.m - 1, dx.d, 0, mins(b.eta)) <= now) continue;
+        rows.push({label:label, val:val, sub:sub, b:b, di:di, off:lateNight(b.eta), pending:!!c.pending});
+      }
+    });
+    return rows;
+  }
+  function fpChrome(){
+    return '<div class="ab"><button class="ib" data-act="fpBack" aria-label="뒤로">' + ico("back") + '</button>'
+      + '<span class="t">항공편에 맞춰 픽업</span></div>';
+  }
+  function fpInput(){
+    return '<div class="fp-in"><label class="lab" for="fpq">타고 오시는 항공편</label>'
+      + '<div class="fp-box"><input id="fpq" type="text" autocomplete="off" spellcheck="false" placeholder="편명을 입력해 주세요" value="'
+      + esc(S.fquery) + '" /></div>'
+      + (S.fquery.trim() && !fpCands().length ? '' : '<p class="help">티켓에 적힌 편명을 그대로 넣어 주세요</p>') + '</div>';
+  }
+  function fpBody(){
+    var q = S.fquery.trim();
+    if (S.fsel) return '<div class="fp">' + fpDecide() + '</div>';
+    if (!q){
+      return '<div class="fp"><section class="fp-hero"><h2>항공편이 늦어지면<br>픽업도 같이 늦춰 드려요</h2>'
+        + '<div class="fp-ex"><p class="cap">예시 · 도착이 30분 늦어지면</p>'
+        + '<div class="fp-step"><i class="dot"></i><div><span class="lb">도착</span><div class="tm"><b>05:45</b><s>05:15</s><em>+30분</em></div></div></div>'
+        + '<div class="fp-link"><i></i><span>도착이 밀린 만큼 픽업도 같이 밀려요</span></div>'
+        + '<div class="fp-step"><i class="dot"></i><div><span class="lb">픽업</span><div class="tm"><b>06:50</b><s>06:20</s><em>+30분</em></div></div></div>'
+        + '</div></section>'
+        + fpInput() + '<div class="fp-div"></div>'
+        + '<section class="fp-inc"><h3>' + won(F_FEE) + '에 포함돼요</h3><ul>'
+        + [["0원","대기요금","배차 뒤 더 늦어져도 타다가 부담해요"],
+           ["0원","결항 취소 수수료","결항되면 자동으로 무료 취소돼요"],
+           ["20분","일찍 도착하면","20분 넘게 일찍 오면 앞당겨 다시 배차해요"]].map(function(r){
+             return '<li><span class="v">' + r[0] + '</span><span><span class="t">' + r[1] + '</span><span class="s">' + r[2] + '</span></span></li>';
+           }).join("")
+        + '</ul></section></div>';
+    }
+    var rows = fpCands();
+    if (!rows.length){
+      return '<div class="fp">' + fpInput() + '<div class="fp-nf"><b>' + esc(q.toUpperCase()) + ' 편을 찾지 못했어요</b>'
+        + '<span>3일 안에 인천공항에 도착하는 국제선 정기편만<br>찾을 수 있어요. 편명을 다시 확인해 주세요.</span></div></div>';
+    }
+    return '<div class="fp">' + fpInput() + '<ul class="fcand">' + rows.map(function(r){
+        return '<li><button ' + (r.off ? 'class="off" disabled aria-disabled="true"' : 'data-act="fpPick" data-v="' + r.val + '|' + r.di + '"') + '><span class="no">' + esc(r.label) + '</span>'
+          + '<span class="rt"><b class="dt">' + esc(dLong(r.di)) + '</b>' + esc(r.off ? "아직 지원하지 않는 시간대예요" : r.sub) + '</span>'
+          + '<span class="eta">' + r.b.eta + '<small>' + (r.pending ? "예정 미확정" : r.b.term + " 도착") + '</small></span></button></li>';
+      }).join("") + '</ul>'
+      + '<p class="fp-beta">고르면 픽업 날짜도 이 날로 맞춰져요<br>베타 기간에는 오전 5시 ~ 밤 10시 도착편만 지원해요</p>'
+      + '<div class="fp-nonewrap"><div class="fp-none"><span>찾는 편이 없나요?</span><button class="ghost" data-act="fpNoFlight">편명 없이 픽업 시간 고르기</button></div></div></div>';
+  }
+  /* ⑥′ 고른 편 + 여유 결정 카드 */
+  function fpDecide(){
+    var sel = S.fsel, f = sel.f, eta = mins(f.eta), pk = fpPick(sel, S.fbuf);
+    var prev = S.fprev, prevGap = fpPrevGap();
+    var moved = prev && prev.getTime() !== pk.getTime();
+    var why = [];
+    var sameDay = prev && prev.toDateString() === pk.toDateString();
+    if (moved) why.push("앞서 고른 " + (sameDay ? "" : (prev.getMonth() + 1) + "월 " + prev.getDate() + "일 ") + hmOf(prev) + "에서 바뀌어요.");
+    if ((eta + S.fbuf) % 10) why.push("픽업은 10분 단위라 " + hmOf(pk) + "으로 잡혀요.");
+    var showRec = prevGap != null && prevGap > 0 && prevGap < 40;
+    return '<div class="fp-sel"><div class="dfrow"><span class="pl">' + PLANE + '</span><span class="tx">'
+      + '<span class="no">' + esc(f.no + " " + f.air) + '</span>'
+      + '<span class="s">' + esc(dLong(sel.di) + " " + f.eta + (sel.pending ? " 도착 예정" : " 도착")) + '</span></span>'
+      + '<button class="ghost" data-act="fpChange">변경</button></div>'
+      + '<div class="fp-dec"><div class="fp-top">'
+      + '<div class="c"><span class="k">도착 예정</span><span class="t">' + f.eta + '</span></div>'
+      + '<span class="pillb">여유 ' + esc(offLabel(S.fbuf)) + '</span>'
+      + '<div class="c r"><span class="k">픽업 예정' + (moved ? '<s>' + hmOf(prev) + '</s>' : '') + '</span><span class="t">' + hmOf(pk) + '</span></div></div>'
+      + (why.length ? '<p class="why">' + esc(why.join(" ")) + '</p>' : '')
+      + '<hr><span class="lab">도착 후 여유</span><div class="dchips" role="group" aria-label="도착 후 여유">'
+      + BUFS_E.map(function(b){ return '<button class="dchip fpchip" data-act="fpBuf" data-v="' + b + '" aria-pressed="' + (S.fbuf === b) + '">' + offLabel(b) + '</button>'; }).join("")
+      + '</div>'
+      + (showRec ? '<p class="rec">' + prevGap + '분으로 잡은 분들 가운데 3명 중 2명은<br>그 시간보다 늦게 탔어요.</p>'
+          + (S.fbuf !== prevGap ? '<button class="ghost keep" data-act="fpBuf" data-v="' + prevGap + '">여유 ' + prevGap + '분 그대로 두기</button>' : '') : '')
+      + '</div></div>';
+  }
+  function fpFoot(){
+    var q = S.fquery.trim();
+    if (!S.fsel && q && !fpCands().length){
+      return '<div class="fp-foot fp-nfoot"><p>편명 없이 고르면 이 옵션은 추가되지 않아요</p>'
+        + '<div class="btnbar"><button class="big" data-act="fpNoFlight">편명 없이 픽업 시간 고르기</button></div></div>';
+    }
+    var sum = baseFare() + addonFee() + F_FEE, ok = !!S.fsel && S.fagree;
+    return '<div class="fp-foot"><div class="fp-agree"><button class="ckb" data-act="fpAgree" role="checkbox" aria-checked="' + S.fagree + '">'
+      + '<span class="ck">' + (S.fagree ? SVG.checkOn : SVG.checkOff) + '</span>'
+      + '<span class="lb">' + won(F_FEE) + ' 추가와 유의사항에 동의해요</span></button>'
+      + '<button class="ghost" data-act="fpTerms">보기</button></div>'
+      + '<div class="fp-bar"><span class="l"><span class="k">추가하면 합계</span>'
+      + '<span class="v">' + won(sum) + '<small>+' + won(F_FEE) + '</small></span></span>'
+      + '<button class="big" data-act="fpAdd"' + (ok ? '' : ' disabled') + '>추가하기</button></div></div>';
+  }
 
   function col(id, items, sel){
     var h = '<div class="col" data-col="' + id + '"><div class="pad"></div>';
@@ -1379,7 +1608,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     var s = selDate();
     if (s < earliest()) return "30분 이후부터 예약 가능";
     if (s > latest())   return "최대 8주 후까지 예약 가능";
-    if (placeD() && flightOn() && s < arrDate()) return "도착(" + S.flight.eta + ") 이후로 골라 주세요";
+    if ((placeD() || placeF()) && flightOn() && s < arrDate()) return "도착(" + S.flight.eta + ") 이후로 골라 주세요";
     return "";
   }
   function setTime(d){
@@ -1527,6 +1756,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
                 + '<span class="t2">도착이 늦어지면 픽업 시각도 함께 옮겨요. 이용료 무료(베타)</span></span>'
                 + ico("erArrow") + '</button></div>' : '')
             : placeD() ? (eligible() && !S.flight ? '<div class="flentry"><button class="ghost" data-act="refOpen"><span class="pl">' + PLANE + '</span>항공편명 입력</button></div>' : '')
+            : placeF() ? (flightOn() ? '<p class="dnote" style="padding:12px 20px 4px;">' + esc(S.flight.no + " 도착 " + S.flight.eta + " 기준이에요. 여유는 차량 선택에서 고칠 수 있어요") + '</p>' : '')
             : flightOn() ? flSumBlock()
             : eligible() && placeA() ? '<div class="flentry"><button class="ghost" data-act="fOpen">✈️ 항공편 도착에 맞춰 입력</button></div>'
             : '')
@@ -1535,7 +1765,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       h.push('<div class="tcard' + ap("time") + '">' + tmode
         + '<button class="trow" data-act="openTime"><span class="k">픽업 시간</span>'
         + '<span class="v">' + (S.timeSet ? esc(timeLong()) + (placeE() && flightOn() ? " 예상" : "") : "언제 출발하세요?") + '</span></button>'
-        + (flightOn() ? (placeDE() ? '<div class="dcoll">' + dRow() + '</div>' : flSumBlock()) : '')
+        + (flightOn() ? (placeDE() ? '<div class="dcoll">' + dRow() + '</div>' : placeF() ? '<div class="dcoll">' + fpRow("fpEdit") + '</div>' : flSumBlock()) : '')
         + (!flightOn() && eligible() && placeA() ? '<div class="flentry"><button class="ghost" data-act="fOpen">✈️ 항공편 도착에 맞춰 입력</button></div>' : '')
         + '</div>');
     }
@@ -1572,7 +1802,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     /* 휠이 열려 있으면 '설정 완료'(오류면 비활성), 시간이 정해졌으면 '설정 완료', 아니면 '픽업 시간 입력하기' */
     if (S.open === "time" && dNeedsInput())
       return '<div class="btnbar"><button class="big" disabled>설정 완료</button></div>';
-    if (S.open === "time" && (!flightOn() || placeD()))
+    if (S.open === "time" && (!flightOn() || placeD() || placeF()))
       return '<div class="btnbar"><button class="big" data-act="timeDone"' + (wheelErr() ? " disabled" : "") + '>설정 완료</button></div>';
     if (S.timeSet || flightOn())
       return '<div class="btnbar"><button class="big" data-act="timeDone">설정 완료</button></div>';
@@ -1719,7 +1949,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     return '<div class="ab2"><button class="ib" data-act="back" aria-label="뒤로" style="border:0;background:none;padding:10px;cursor:pointer;line-height:0;">'
       + '<span class="icon" style="width:24px;height:24px;color:#000;">' + SVG.back + '</span></button>'
       + '<span class="pill"><span class="t">' + esc(pillRoute()) + '</span>'
-      + '<span class="d">' + esc(placeE() && flightOn() ? ePill() : placeD() && flightOn() ? timePill()
+      + '<span class="d">' + esc((placeE() || placeF()) && flightOn() ? ePill() : placeD() && flightOn() ? timePill()
             : flightOn() ? pickPill() : (S.timeSet ? timePill() : "3.5 오후 14:30")) + '</span></span>'
       + '<span style="width:44px;"></span></div>';
   }
@@ -1790,6 +2020,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       if (has && band === "loose") h.push('<p class="addnote" style="margin:-2px 0 0;">결항 시 무료 취소는 그대로 적용돼요</p>');
       if (has && !tr) h.push('<p class="addnote" style="margin:-2px 0 0;">지금은 픽업 ' + esc(korHM(pickMin())) + ' 고정이고, 결항 시 무료 취소도 적용되지 않아요</p>');
     }
+    if (placeF() && eligible()) h.push(fpCard());
     if (placeE() && flightOn()){
       /* 묶음 상품이라 여기에 끄는 자리를 두지 않는다. 두면 '계산만 받고 추적은 없는' 상태가 생겨 픽업 시각이 꼬인다 */
       var f3 = S.flight;
@@ -1844,10 +2075,10 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     if (placeB() && flightOn()) picked.unshift("항공편에 맞춰 픽업");
     if (placeC() && trackOn()) picked.unshift("항공편 지연 자동 조정");
     if (placeD() && trackOn()) picked.unshift("결항·지연 보장");
-    if (placeE() && flightOn()) picked.unshift("항공편에 맞춰 픽업");
+    if ((placeE() || placeF()) && flightOn()) picked.unshift("항공편에 맞춰 픽업");
     h.push('<div class="pv">');
     h.push('<div class="pvtitle" id="pvtitle"><span class="tx"><span class="n">' + esc(L.short) + ' ' + (S.tab === "time" ? "시간" : "일반") + ' 예약</span>'
-      + '<span class="d">' + esc(placeE() && flightOn() ? timeTitle() + " 예상 픽업" : !flightOn() || placeD() ? timeTitle()
+      + '<span class="d">' + esc((placeE() || placeF()) && flightOn() ? timeTitle() + " 예상 픽업" : !flightOn() || placeD() ? timeTitle()
             : pickTitle() + (trackOn() && S.anchor === "flight" ? " 예상 픽업" : " 픽업")) + '\n(한국시간/KST)</span></span>'
       + '<img src="' + (L.id === "next" ? ASSET.pvThumb : ASSET[L.img]) + '" alt="" /></div>');
     h.push('<div class="pvcards">');
@@ -1859,11 +2090,11 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
     if (flightOn()){
       var f = S.flight;
-      if (placeE()){
+      if (placeE() || placeF()){
         /* 서버 흐름을 유저 말로: 확정 시점 · 늦을 때 · 일찍 올 때 · 결항 */
         h.push('<div class="pvc"><div class="pvh"><h3>항공편</h3><span class="chip">BETA</span></div>'
           + '<div class="pvb"><span class="tx"><span class="t">' + esc(f.no + " " + f.air) + '</span>'
-          + '<span class="s">' + esc(f.from + " → 인천 " + f.term + " · " + dLong(fdiOf()) + " " + f.eta + " 도착 예정 · 여유 " + offLabel(S.buf || 60)) + '</span></span></div>'
+          + '<span class="s">' + esc(f.from + " → 인천 " + f.term + " · " + dLong(fdiOf()) + " " + f.eta + (placeF() ? " 도착 예정, 여유 " + offLabel(fGap()) : " 도착 예정 · 여유 " + offLabel(S.buf || 60))) + '</span></span></div>'
           + '<div class="pvdiv"><i></i></div><div class="fare dguard"><div class="h">이렇게 진행돼요</div>'
           + '<div class="li">도착 1시간 20분 전쯤 실제 도착 예상에 맞춰 픽업 시각을 확정해요</div>'
           + '<div class="li">그 뒤 비행기가 더 늦어지면 기사님이 기다려요. 이때 대기요금은 타다가 냅니다</div>'
@@ -1923,6 +2154,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
       fare += '<div class="r"><span>항공편 지연 자동 조정</span><span>' + won(0) + '</span></div>'
             + '<div class="sub">* 베타 기간 무료. 정식 출시 때 유료로 바뀔 수 있어요</div>';
     }
+    if (placeF() && flightOn()) fare += '<div class="r"><span>항공편에 맞춰 픽업</span><span>' + won(F_FEE) + '</span></div>';
     if (placeE() && flightOn()){
       fare += '<div class="r"><span>항공편에 맞춰 픽업</span><span>' + won(0) + '</span></div>'
             + '<div class="sub">* 베타 기간 무료. 정식 출시 때 유료로 바뀔 수 있어요</div>';
@@ -1958,7 +2190,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     vehicle:"③ 차량 선택 · 48558:155628", preview:"④ 미리보기 · 55257:55731"
   };
   function render(){
-    phone.classList.toggle("white", S.screen === "vehicle");
+    phone.classList.toggle("white", S.screen === "vehicle" && !S.fpage);
     phone.classList.toggle("home", S.screen === "home");
     phone.classList.toggle("img", S.screen === "rEdit");
     var oldO = phone.querySelector(".rh-overlay"); if (oldO) oldO.remove();
@@ -1976,6 +2208,8 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
     } else if (S.screen === "rEdit"){
       chrome.innerHTML = ""; scroll.innerHTML = rEditBody(); foot.innerHTML = "";
+    } else if (S.screen === "vehicle" && S.fpage){
+      chrome.innerHTML = fpChrome(); scroll.innerHTML = fpBody(); foot.innerHTML = fpFoot();
     } else if (S.screen === "vehicle"){
       chrome.innerHTML = vehicleChrome(); scroll.innerHTML = vehicleBody(); foot.innerHTML = bottomBar("다음", "toPreview");
     } else {
@@ -1988,9 +2222,11 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     }
     if (S.toast){ phone.insertAdjacentHTML("beforeend", '<div class="ptoast" role="status">' + esc(S.toast) + '</div>'); S.toast = ""; }
     S.animate = false; S.appear = null;
-    stepLabel.textContent = (S.screen === "rEdit" ? RE[S.rstep].label : LABEL[S.screen])
+    stepLabel.textContent = (S.screen === "rEdit" ? RE[S.rstep].label
+          : S.screen === "vehicle" && S.fpage ? "③′ 항공편에 맞춰 픽업 · 12409:50" : LABEL[S.screen])
       + " · 배치 " + (S.flPlace === "route" ? "A(시간&경로)" : S.flPlace === "vehicle" ? "B(차량 선택)"
-          : S.flPlace === "split" ? "C(나눠 붙이기)" : S.flPlace === "ref" ? "D(참고값)" : "E(서버 모델)");
+          : S.flPlace === "split" ? "C(나눠 붙이기)" : S.flPlace === "ref" ? "D(참고값)"
+          : S.flPlace === "rebuild" ? "F(재구성안 v2)" : "E(서버 모델)");
     sync("segScreen", S.screen);
     sync("segOrigin", S.origin); sync("segFkase", S.fkase); sync("segPlace", S.flPlace);
   }
@@ -2035,7 +2271,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     scroll.onscroll = function(){ ab.classList.toggle("scrolled", scroll.scrollTop >= threshold); };
   }
 
-  function go(screen){ S.screen = screen; S.fsheet = null;
+  function go(screen){ S.screen = screen; S.fsheet = null; S.fpage = false;
     S.animate = (screen === "vehicle" || screen === "preview"); scroll.onscroll = null; scroll.scrollTop = 0; }
 
   function openTime(){
@@ -2082,7 +2318,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         return;
       case "timeDone":
         /* 오류 시각이 남아 있으면 넘어가지 않고 휠을 다시 연다 */
-        if ((!flightOn() || placeD()) && wheelErr()){ if (S.open !== "time") openTime(); break; }
+        if ((!flightOn() || placeD() || placeF()) && wheelErr()){ if (S.open !== "time") openTime(); break; }
         go("vehicle"); break;
       case "toVehicle": go("vehicle"); break;
       case "toPreview": go("preview"); break;
@@ -2187,6 +2423,36 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
         } else S.fsheet = "offset";
         break;
       case "fOffset":   S.foffset = +v; break;
+      /* ── F안 페이지 ── */
+      case "fpOpen":    /* 진입. 앞서 휠을 직접 굴렸다면 그 시각을 기억해 두고 바뀌는 걸 알려 준다 */
+        S.fpage = true; S.fquery = ""; S.fsel = null; S.fbuf = 60; S.fagree = false;
+        S.fprev = (S.touched && !flightOn()) ? selDate() : null;
+        scroll.scrollTop = 0; break;
+      case "fpEdit":    /* 추가된 상태에서 다시 열기: ⑥′ 로 바로 */
+        if (S.screen !== "vehicle") go("vehicle");
+        S.fpage = true; S.fquery = S.flight.no; S.fprev = null; S.fagree = true;
+        S.fsel = {f:S.flight, di:fdiOf(), val:S.swapped ? "share" : S.fpending ? "pending" : S.flight.no, pending:S.fpending};
+        S.fbuf = S.buf != null ? S.buf : 60; scroll.scrollTop = 0; break;
+      case "fpBack":    if (S.fsel){ S.fsel = null; } else S.fpage = false; scroll.scrollTop = 0; break;
+      case "fpChange":  S.fsel = null; scroll.scrollTop = 0; break;
+      case "fpPick":
+        var pv2 = String(v).split("|"), pf = pv2[0] === "share" ? findFlight(SHARE.oper) : pv2[0] === "pending" ? PENDING : findFlight(pv2[0]);
+        S.fsel = {f:pf, di:+pv2[1], val:pv2[0], pending:pv2[0] === "pending"}; S.fbuf = 60;
+        scroll.scrollTop = 0; break;
+      case "fpBuf":     S.fbuf = +v; break;
+      case "fpAgree":   S.fagree = !S.fagree; break;
+      case "fpTerms":   S.toast = "유의사항 본문은 이 프로토 범위 밖이에요"; break;
+      case "fpAdd":
+        if (!S.fsel || !S.fagree) break;
+        var fs2 = S.fsel;
+        S.flight = fs2.f; S.fdi = fs2.di; S.swapped = fs2.val === "share"; S.fpending = !!fs2.pending;
+        S.termSwitched = fs2.f.term !== S.term; S.term = fs2.f.term; S.failed = false; S.manual = false;
+        S.anchor = "clock"; S.buf = S.fbuf; setTime(bufDate(S.buf)); S.timeSet = true;
+        if (S.lineup === "van") S.lineup = "next";
+        S.fpage = false; S.fsel = null; scroll.scrollTop = 0; break;
+      case "fpNoFlight":  /* 편명 없이: 옵션을 붙이지 않고 휠로 돌아간다 */
+        S.flight = null; S.buf = null; S.fdi = null; S.swapped = false; S.fpending = false; S.termSwitched = false;
+        S.fsel = null; S.manual = true; go("route"); openTime(); S.appear = null; break;
       case "fConfirm":
         S.offset = S.foffset; S.fsheet = null; S.timeSet = true; S.open = null; S.appear = "time";
         S.anchor = "flight";
@@ -2204,6 +2470,10 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     }
     var keep = S.screen === "preview" ? scroll.scrollTop : null;
     render();
+    /* F안: 페이지를 닫고 차량 선택으로 돌아오면 방금 다룬 카드가 보이게 */
+    if ((a === "fpAdd" || a === "fpBack") && S.screen === "vehicle" && !S.fpage){
+      var fc = scroll.querySelector(".acard.ff"); if (fc) scroll.scrollTop = Math.max(0, fc.offsetTop - 200);
+    }
     if (keep != null && a !== "back" && a !== "toPreview"){ scroll.scrollTop = keep; scroll.onscroll && scroll.onscroll(); }
   }
 
@@ -2217,6 +2487,11 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
   document.addEventListener("input", function(e){
     if (e.target && e.target.id === "fq"){ S.fquery = e.target.value; render(); }
+    if (e.target && e.target.id === "fpq"){
+      var pos = e.target.selectionStart;
+      S.fquery = e.target.value; render();
+      var nq = $("fpq"); if (nq){ nq.focus(); try { nq.setSelectionRange(pos, pos); } catch(_){} }
+    }
   });
 
   document.addEventListener("keydown", function(e){
@@ -2246,6 +2521,7 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     S.flPlace = v; S.flight = null; S.offset = null; S.foffset = null; S.fsheet = null;
     S.failed = false; S.swapped = false; S.fpending = false; S.termSwitched = false; S.track = false;
     S.anchor = "clock"; S.pend = null; S.fdi = null; S.manual = false; S.buf = null;
+    S.fpage = false; S.fsel = null; S.fagree = false; S.fprev = null;
   });
   function setHotLabel(){
     var on = document.body.classList.contains("showhot"), b = $("hotToggle");
@@ -2283,6 +2559,12 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
     var place = S.flPlace;
     S = fresh(); S.flPlace = place; S.routeFilled = true; S.origin = "icn"; setTime(earliest()); S.timeSet = true;
     S.flight = findFlight("LJ082"); S.open = null; S.track = false;   /* 추적은 기본 꺼짐 — 유저가 3단계에서 켠다 */
+    if (place === "rebuild"){   /* F: 차량 선택에서 추가를 마친 상태 */
+      S.flight = findFlight("KE086"); S.anchor = "clock"; S.fdi = 0;
+      while (S.fdi < 2 && arrDate() <= new Date()) S.fdi++;
+      S.buf = 60; setTime(bufDate(S.buf)); S.term = "T2";
+      go("vehicle"); scroll.onscroll = null; render(); return;
+    }
     if (place === "ref" || place === "server"){
       S.anchor = "clock"; S.track = false; S.open = "time"; S.fdi = 0;
       while (S.fdi < 2 && arrDate() <= new Date()) S.fdi++;   /* 아직 도착하지 않은 가장 가까운 날 */
@@ -2294,6 +2576,30 @@ body.railopen .rail{visibility:visible;opacity:1;transform:none;}
 
   S = fresh();
   render();
+
+  /* 화면 확인용 훅: ?state=f2|f3|f4|f5|f6|f7 (F안 각 화면으로 바로). 클릭과 같은 act() 경로를 탄다 */
+  (function(){
+    var m; try { m = /[?&]state=(f[2-7])\b/.exec(location.search); } catch(e){}
+    if (!m) return;
+    var st = m[1];
+    S.flPlace = "rebuild"; S.routeFilled = true; S.origin = "icn"; S.tab = "normal";
+    go("route"); openTime();
+    if (st === "f6"){   /* Figma ⑥′: 앞서 휠로 05:40 을 골라 둔 상태 → 여유 25분 추천 줄이 뜬다 */
+      var k = findFlight("KE086"), d0 = 0;
+      while (d0 < 2 && new Date(DATES[d0].y, DATES[d0].m - 1, DATES[d0].d, 0, mins(k.eta)) <= new Date()) d0++;
+      S.di = d0; S.hi = 5; S.mi = 4; S.touched = true;
+    }
+    act("timeDone");
+    if (st === "f2") return;
+    act("fpOpen");
+    if (st === "f4" || st === "f5"){ S.fquery = st === "f4" ? "KE" : "KE999"; render(); return; }
+    if (st === "f3") return;
+    S.fquery = "KE086";
+    var r0 = fpCands().filter(function(r){ return !r.off; })[0];
+    if (r0) act("fpPick", r0.val + "|" + r0.di);
+    if (st === "f6"){ act("fpAgree"); return; }
+    act("fpAgree"); act("fpAdd");
+  })();
 })();
 </script>
 </body>
