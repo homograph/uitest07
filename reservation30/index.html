@@ -1089,8 +1089,12 @@ div.arow{cursor:default;}
 .bq-note{margin:8px 0 0;font-size:14px;line-height:20px;color:#6A6A6A;}
 .bq-lab{margin:24px 0 0;font-size:14px;line-height:20px;font-weight:500;color:#6A6A6A;}
 .bq-list{list-style:none;margin:0;padding:0;}
-.bq-list li + li{border-top:1px solid #DDD;}
-.bq-list button,.bq-list .off{width:100%;display:flex;align-items:center;gap:12px;padding:16px 0;border:0;background:none;font:inherit;text-align:left;color:inherit;}
+.bq-list{margin-top:8px;}
+.bq-list .ic{flex:none;width:44px;height:44px;border-radius:8px;background:#F2F2F2;display:flex;align-items:center;justify-content:center;}
+.bq-list .ic svg{width:20px;height:20px;}
+.bq-list .ic svg path{stroke:#222;}
+.bq-list .off .ic{opacity:.4;}
+.bq-list button,.bq-list .off{width:100%;display:flex;align-items:center;gap:12px;padding:8px 0;border:0;background:none;font:inherit;text-align:left;color:inherit;}
 .bq-list button{cursor:pointer;}
 .bq-list .tx{flex:1 1 0;min-width:0;}
 .bq-list .d{display:flex;align-items:baseline;gap:8px;font-size:16px;line-height:22px;color:#222;font-variant-numeric:tabular-nums;}
@@ -1117,6 +1121,8 @@ div.arow{cursor:default;}
 .bq-pills button[aria-pressed="true"]{background:#222;box-shadow:none;color:#fff;font-weight:500;}
 .bq-rec{margin:16px 0 0;font-size:14px;line-height:20px;color:#6A6A6A;}
 .bq-end{height:16px;}
+.phone.bnb .fp-box .clr{flex:none;width:24px;height:24px;margin-left:8px;padding:0;border:0;border-radius:50%;background:#F2F2F2;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+.bq-sep{height:1px;background:#DDD;margin:24px 0 0;}
 </style>
 <link rel="stylesheet" href="https://spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css">
 </head>
@@ -1832,7 +1838,8 @@ div.arow{cursor:default;}
   }
   function bqInput(top){
     return '<div class="fp-in' + (top ? " top" : "") + '"><label class="lab" for="fpq">타고 오시는 항공편</label>'
-      + '<div class="fp-box"><input id="fpq" type="text" autocomplete="off" spellcheck="false" placeholder="편명을 입력해 주세요" value="' + esc(S.fquery) + '" /></div>';
+      + '<div class="fp-box"><input id="fpq" type="text" autocomplete="off" spellcheck="false" placeholder="편명을 입력해 주세요" value="' + esc(S.fquery) + '" />'
+      + (S.fquery ? '<button class="clr" data-act="fpClear" aria-label="지우기"><svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M1 1L9 9M9 1L1 9" stroke="#222" stroke-width="1.5" stroke-linecap="round"/></svg></button>' : '') + '</div>';
   }
   function bqMark(text, q){
     var t = esc(text), u = q.toUpperCase();
@@ -1867,15 +1874,15 @@ div.arow{cursor:default;}
     }
     function li(r){
       var tail = r.off ? "아직 지원하지 않는 시간대예요" : r.sub + " · " + (r.pending ? "예정 미확정" : r.b.term + " 도착");
-      var inner = '<span class="tx"><span class="d"><b>' + esc(dLong(r.di)) + '</b><span>' + r.b.eta + ' 도착</span></span>'
+      var inner = '<span class="ic" aria-hidden="true">' + IC_PLANE + '</span><span class="tx"><span class="d"><b>' + esc(dLong(r.di)) + '</b><span>' + r.b.eta + ' 도착</span></span>'
         + '<span class="s">' + bqMark(r.label, q) + ' · ' + esc(tail) + '</span></span>';
       return r.off ? '<li><div class="off">' + inner + '</div></li>'
-                   : '<li><button data-act="fpPick" data-v="' + r.val + '|' + r.di + '">' + inner + icChev("#222222", 16) + '</button></li>';
+                   : '<li><button data-act="fpPick" data-v="' + r.val + '|' + r.di + '">' + inner + '</button></li>';
     }
     var ok = rows.filter(function(r){ return !r.off; }), no = rows.filter(function(r){ return r.off; });
     return '<div class="fp">' + bqInput(true) + '<p class="help">고르면 픽업 날짜도 이 날로 맞춰져요</p></div>'
       + (ok.length ? '<p class="bq-lab">고를 수 있는 편</p><ul class="bq-list">' + ok.map(li).join("") + '</ul>' : '')
-      + (no.length ? '<p class="bq-lab">베타 기간에는 오전 5시 ~ 밤 10시 도착편만 지원해요</p><ul class="bq-list">' + no.map(li).join("") + '</ul>' : '')
+      + (ok.length && no.length ? '<div class="bq-sep"></div>' : '') + (no.length ? '<p class="bq-lab">베타 기간에는 오전 5시 ~ 밤 10시 도착편만 지원해요</p><ul class="bq-list">' + no.map(li).join("") + '</ul>' : '')
       + '<button class="bq-link" data-act="fpNoFlight">편명 없이 픽업 시간 고르기</button><div class="bq-end"></div><div class="bq-end"></div></div>';
   }
   function bqDecide(){
@@ -2639,6 +2646,7 @@ div.arow{cursor:default;}
       chrome.innerHTML = dpChrome(); scroll.innerHTML = dpBody(); foot.innerHTML = dpFoot();
     } else if (S.screen === "vehicle" && S.fpage){
       chrome.innerHTML = fpChrome(); scroll.innerHTML = bnb() ? bqBody() : fpBody(); foot.innerHTML = bnb() ? bqFoot() : fpFoot();
+      if (S.refocus){ S.refocus = false; var rq = $("fpq"); if (rq) rq.focus(); }
     } else if (S.screen === "vehicle"){
       chrome.innerHTML = vehicleChrome(); scroll.innerHTML = vehicleBody(); foot.innerHTML = bottomBar("다음", "toPreview");
     } else {
@@ -2883,6 +2891,7 @@ div.arow{cursor:default;}
         S.fsel = {f:pf, di:+pv2[1], val:pv2[0], pending:pv2[0] === "pending"}; S.fbuf = 60;
         scroll.scrollTop = 0; break;
       case "fpBuf":     S.fbuf = +v; break;
+      case "fpClear":   S.fquery = ""; S.refocus = true; scroll.scrollTop = 0; break;
       case "fpPolicy":  S.toast = "이용 정책 본문은 이 프로토 범위 밖이에요"; break;
       case "fpAdd":
         if (!S.fsel) break;
