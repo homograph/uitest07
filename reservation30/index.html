@@ -1121,6 +1121,15 @@ div.arow{cursor:default;}
 .bq-pills button[aria-pressed="true"]{background:#222;box-shadow:none;color:#fff;font-weight:500;}
 .bq-rec{margin:16px 0 0;font-size:14px;line-height:20px;color:#6A6A6A;}
 .bq-end{height:16px;}
+.bq-dp{padding:0 24px 24px;word-break:keep-all;}
+.phone.bnb .bq-dp .xlist{margin:16px 0 0;}
+.phone.bnb .arow.dv{align-items:center;padding:16px;}
+.phone.bnb .arow.dv .th{border-radius:50%;overflow:hidden;background:#F7F7F7;}
+.phone.bnb .arow.dv .th img{width:48px;height:48px;object-fit:cover;}
+.phone.bnb .arow.dv .m{margin-top:2px;}
+.phone.bnb .arow.dv .ct{height:24px;}
+.phone.bnb .btnbar{padding:16px 20px 20px;border-top:1px solid #DDD;background:#fff;}
+.phone.bnb .btnbar .big{flex:none;width:100%;}
 .phone.bnb .fp-box .clr{flex:none;width:24px;height:24px;margin-left:8px;padding:0;border:0;border-radius:50%;background:#F2F2F2;display:flex;align-items:center;justify-content:center;cursor:pointer;}
 .bq-sep{height:1px;background:#DDD;margin:24px 0 0;}
 </style>
@@ -1802,6 +1811,14 @@ div.arow{cursor:default;}
     return '<div class="ab"><button class="ib" data-act="dpBack" aria-label="뒤로">' + ico("back") + '</button><span class="t">드라이버 지정</span></div>';
   }
   function dpBody(){
+    if (bnb()) return '<div class="bq-dp"><p class="bq-sub" style="margin:16px 0 0">마이 드라이버 가운데 운행할 드라이버를 골라 주세요. 여러 명을 고를 수 있어요.</p>'
+      + '<div class="xlist">' + DRIVERS.map(function(d){
+          var on = S.dsel.indexOf(d.id) >= 0;
+          return '<div class="arw"><button class="arow dv" type="button" role="checkbox" aria-checked="' + on + '" data-act="dpPick" data-v="' + d.id + '">'
+            + '<span class="th" aria-hidden="true"><img src="' + ASSET.driver + '" alt="" /></span>'
+            + '<span class="bd"><span class="n">' + d.name + '</span><span class="m">' + esc(d.sub) + '</span></span>'
+            + '<span class="ct">' + (on ? '<span class="ck">' + SVG.checkOn + '</span>' : '<span class="ring"></span>') + '</span></button></div>';
+        }).join("") + '</div></div>';
     return '<div class="dp"><p class="cap">마이 드라이버 가운데 운행할 드라이버를 골라 주세요. 여러 명을 고를 수 있어요.</p>'
       + DRIVERS.map(function(d){
           var on = S.dsel.indexOf(d.id) >= 0;
@@ -2624,7 +2641,7 @@ div.arow{cursor:default;}
   };
   function render(){
     phone.classList.toggle("white", S.screen === "vehicle" && !S.fpage && !S.dpage);
-    phone.classList.toggle("bnb", bnb() && S.screen === "vehicle" && !S.dpage);
+    phone.classList.toggle("bnb", bnb() && S.screen === "vehicle");
     phone.classList.toggle("home", S.screen === "home");
     phone.classList.toggle("img", S.screen === "rEdit");
     var oldO = phone.querySelector(".rh-overlay"); if (oldO) oldO.remove();
