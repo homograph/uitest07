@@ -1107,13 +1107,13 @@ div.arow{cursor:default;}
 .bq-link{display:inline-block;align-self:flex-start;margin:24px 0 0;padding:0;border:0;background:none;font:inherit;font-size:16px;line-height:22px;font-weight:500;color:#222;text-decoration:underline;cursor:pointer;}
 .bq-link.sm{margin-top:16px;font-size:14px;line-height:20px;}
 .bq-nf{margin:16px 0 0;font-size:14px;line-height:20px;font-weight:500;color:#222;}
-.bq-card{margin-top:16px;border-radius:12px;box-shadow:inset 0 0 0 1px #DDD;padding:16px;}
+.bq-card{margin-top:16px;border-radius:12px;box-shadow:inset 0 0 0 1px #DDD,0 2px 10px rgba(0,0,0,.06);padding:16px;}
 .bq-card .hd{display:flex;align-items:center;gap:12px;}
 .bq-card .hd .th{flex:none;width:72px;height:72px;border-radius:12px;background:#F7F7F7;display:flex;align-items:center;justify-content:center;}
 .bq-card .hd .th img{display:block;width:60px;height:60px;object-fit:contain;}
 .bq-card .hd b{display:block;font-size:18px;line-height:24px;font-weight:700;color:#222;}
 .bq-card .hd span span{display:block;margin-top:2px;font-size:14px;line-height:20px;color:#6A6A6A;}
-.bq-card .sec{display:flex;justify-content:space-between;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid #DDD;}
+.bq-card .sec{display:flex;justify-content:space-between;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid #EBEBEB;}
 .bq-card .sec .k{display:block;font-size:14px;line-height:20px;font-weight:700;color:#222;}
 .bq-card .sec .v{display:block;margin-top:2px;font-size:14px;line-height:20px;color:#222;font-variant-numeric:tabular-nums;}
 .bq-card .sec .x{display:block;font-size:14px;line-height:20px;color:#6A6A6A;}
@@ -1135,10 +1135,10 @@ div.arow{cursor:default;}
 .phone.bnb .pvtitle img{width:72px;height:72px;box-sizing:border-box;padding:13px 8px;border-radius:12px;background:#F7F7F7;object-fit:contain;}
 .phone.bnb .pvcards{gap:0;padding:0 24px;}
 .phone.bnb .pvcards > *{margin-top:32px;padding:0;border-radius:0;background:none;}
-.phone.bnb .pvcards > .sum{margin-top:0;padding:20px 16px;border:1px solid #DDD;border-bottom:0;}
-.phone.bnb .pvcards > .sum:first-child{border-radius:12px 12px 0 0;}
-.phone.bnb .pvcards > .sum:not(:has(+ .sum)){border-bottom:1px solid #DDD;border-radius:0 0 12px 12px;}
-.phone.bnb .pvcards > .sum:first-child:not(:has(+ .sum)){border-radius:12px;}
+.phone.bnb .pvcards > .sumw{margin-top:0;border-radius:12px;box-shadow:inset 0 0 0 1px #DDD,0 2px 10px rgba(0,0,0,.06);}
+.phone.bnb .sumw > .sum{padding:20px 16px;}
+.phone.bnb .sumw > .sum + .sum,.phone.bnb .sumw > div + div{border-top:1px solid #EBEBEB;}
+.phone.bnb .sumw .pvdiv i{background:#EBEBEB;}
 .phone.bnb .pvc.sum .pvh h3{font-size:16px;line-height:22px;}
 .phone.bnb .pvc.sum .pvb,.phone.bnb .pvc.sum .pvb.pad20,.phone.bnb .pvc.sum .pvloc{padding-top:8px;}
 .phone.bnb .pvc.sum .pvb .t,.phone.bnb .pvc.sum .pvloc div{font-size:14px;line-height:20px;}
@@ -2652,7 +2652,7 @@ div.arow{cursor:default;}
       + '<span class="d">' + esc((placeE() || placeF()) && flightOn() ? timeTitle() + " 예상 픽업" : !flightOn() || placeD() ? timeTitle()
             : pickTitle() + (trackOn() && S.anchor === "flight" ? " 예상 픽업" : " 픽업")) + '\n(한국시간/KST)</span></span>'
       + '<img src="' + (L.id === "next" ? ASSET.pvThumb : ASSET[L.img]) + '" alt="" /></div>');
-    h.push('<div class="pvcards">');
+    h.push('<div class="pvcards">' + (bnb() ? '<div class="sumw">' : ''));
 
     h.push('<div class="pvc sum"><div class="pvh"><h3>경로</h3><span class="chip">' + (S.via ? "1시간 6분" : "48분") + ' 예상</span></div>'
       + '<div class="pvloc"><div>' + ico("pvHail") + esc(routeFrom()) + '</div>'
@@ -2708,6 +2708,7 @@ div.arow{cursor:default;}
         + esc(picked.join("・")) + '</span></span></div></div>');
     }
 
+    if (bnb()) h.push('</div>');
     h.push('<div class="pvc nav"><div class="pvh"><h3>탑승자 정보</h3></div>'
       + '<button class="pvb" data-act="noop"><span class="tx"><span class="t">이지현님</span><span class="s">010 2344 2321</span></span>' + ico("pvArrow","arr") + '</button></div>');
 
