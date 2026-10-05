@@ -977,11 +977,11 @@ div.arow{cursor:default;}
 
 /* ══════════ 에어비앤비 대조안 (2026-10-05, Figma 12409:50 · 차량 선택 16596:7886~ / 입력 플로우 16591:7813~). ?skin=tada 로 끈다 ══════════ */
 .phone.bnb{background:#fff;color:#222;}
-.phone.bnb .ab2{gap:4px;padding:8px 24px 8px 12px;}
+.phone.bnb .ab2{gap:4px;padding:8px 12px 12px;}
 .phone.bnb .ab2 .ib{padding:10px!important;}
-.phone.bnb .pill{border:0;border-radius:0;padding:0;text-align:left;}
-.phone.bnb .pill .t{font-size:15px;line-height:22px;font-weight:700;color:#222;}
-.phone.bnb .pill .d{font-size:13px;line-height:18px;color:#6A6A6A;}
+.phone.bnb .pill{border:1px solid #DDD;border-radius:9999px;padding:8px 20px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.08);}
+.phone.bnb .pill .t{font-size:14px;line-height:20px;font-weight:500;color:#222;}
+.phone.bnb .pill .d{font-size:12px;line-height:16px;color:#6A6A6A;}
 .phone.bnb .ab2 .go{flex:none;display:flex;}
 .phone.bnb .vsec{padding:24px 0 32px;}
 .phone.bnb .vhead h2{font-size:18px;line-height:24px;color:#222;}
@@ -1194,7 +1194,7 @@ div.arow{cursor:default;}
 .bq-hd .bq-link{margin:0;}
 .bq-gap{height:32px;}
 .phone.bnb .arow.dv{align-items:flex-start;}
-.phone.bnb .arow.dv .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;}
+.phone.bnb .arow.dv .tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;margin-right:-36px;}
 .phone.bnb .arow.dv .tags i{font-style:normal;padding:3px 8px;border-radius:9999px;background:#F2F2F2;font-size:12px;line-height:16px;font-weight:500;color:#222;white-space:nowrap;}
 .phone.bnb .arow.dv.rc{cursor:pointer;}
 .phone.bnb .arow.dv.rc .th{border-radius:10px;background:#F7F7F7;}
@@ -2512,7 +2512,7 @@ div.arow{cursor:default;}
       + '<span class="pill"><span class="t">' + esc(pillRoute()) + '</span>'
       + '<span class="d">' + esc((placeE() || placeF()) && flightOn() ? ePill() : placeD() && flightOn() ? timePill()
             : flightOn() ? pickPill() : (S.timeSet ? timePill() : "3.5 오후 14:30")) + '</span></span>'
-      + (bnb() ? '<span class="go">' + icChev("#6A6A6A", 14) + '</span>' : '<span style="width:44px;"></span>') + '</div>';
+      + '<span style="width:44px;"></span>' + '</div>';
   }
   function vehicleBody(){
     var L = lineup(), h = [], dis = unavailable(L.id);
