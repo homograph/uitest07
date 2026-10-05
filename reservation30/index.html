@@ -1134,7 +1134,22 @@ div.arow{cursor:default;}
 .phone.bnb .pvtitle .d{font-size:14px;line-height:20px;color:#6A6A6A;}
 .phone.bnb .pvtitle img{width:72px;height:72px;box-sizing:border-box;padding:13px 8px;border-radius:12px;background:#F7F7F7;object-fit:contain;}
 .phone.bnb .pvcards{gap:0;padding:0 24px;}
-.phone.bnb .pvcards > *{border-top:1px solid #DDD;padding:24px 0;border-radius:0;background:none;}
+.phone.bnb .pvcards > *{margin-top:32px;padding:0;border-radius:0;background:none;}
+.phone.bnb .pvcards > .sum{margin-top:0;padding:20px 16px;border:1px solid #DDD;border-bottom:0;}
+.phone.bnb .pvcards > .sum:first-child{border-radius:12px 12px 0 0;}
+.phone.bnb .pvcards > .sum:not(:has(+ .sum)){border-bottom:1px solid #DDD;border-radius:0 0 12px 12px;}
+.phone.bnb .pvcards > .sum:first-child:not(:has(+ .sum)){border-radius:12px;}
+.phone.bnb .pvc.sum .pvh h3{font-size:16px;line-height:22px;}
+.phone.bnb .pvc.sum .pvb,.phone.bnb .pvc.sum .pvb.pad20,.phone.bnb .pvc.sum .pvloc{padding-top:8px;}
+.phone.bnb .pvc.sum .pvb .t,.phone.bnb .pvc.sum .pvloc div{font-size:14px;line-height:20px;}
+.phone.bnb .pvc.nav > button.pvb,.phone.bnb .pvc.req > button.pvb{margin-top:16px;padding:16px!important;border-radius:12px;box-shadow:inset 0 0 0 1px #DDD;}
+.phone.bnb .pvc.nav .grp{margin-top:16px;border-radius:12px;box-shadow:inset 0 0 0 1px #DDD;}
+.phone.bnb .pvc.nav .grp button.pvb{padding:16px!important;}
+.phone.bnb .pvc.nav .grp .pvdiv{margin:0;padding:0 16px;}
+.phone.bnb .pvcards > .price{border-top:1px solid #DDD;padding-top:32px;}
+.phone.bnb .pvcards > .presets{margin-top:8px;padding:0 0 24px;}
+.phone.bnb .pvcards > .req{padding-bottom:0;}
+.phone.bnb .pvcards > :last-child{padding-bottom:24px;}
 .phone.bnb .pvc{background:none;border-radius:0;}
 .phone.bnb .pvh{padding:0!important;}
 .phone.bnb .pvh h3{font-size:18px;line-height:24px;color:#222;}
@@ -1164,7 +1179,7 @@ div.arow{cursor:default;}
 .phone.bnb .req .pvh .opt,.phone.bnb .req .pvh .guide{color:#6A6A6A;}
 .phone.bnb .req .ph{font-size:16px;line-height:22px;color:#6A6A6A;}
 .phone.bnb .req .ph.filled{color:#222;}
-.phone.bnb .presets{border-top:0;padding:0 0 24px;gap:8px;}
+.phone.bnb .presets{gap:8px;}
 .phone.bnb .preset{border-radius:12px;box-shadow:inset 0 0 0 1px #DDD;padding:14px 16px;}
 .phone.bnb .preset span{font-size:14px;line-height:20px;color:#6A6A6A;}
 .phone.bnb .preset button{padding:0;font-size:14px;line-height:20px;font-weight:500;color:#222;text-decoration:underline;}
@@ -2639,7 +2654,7 @@ div.arow{cursor:default;}
       + '<img src="' + (L.id === "next" ? ASSET.pvThumb : ASSET[L.img]) + '" alt="" /></div>');
     h.push('<div class="pvcards">');
 
-    h.push('<div class="pvc"><div class="pvh"><h3>경로</h3><span class="chip">' + (S.via ? "1시간 6분" : "48분") + ' 예상</span></div>'
+    h.push('<div class="pvc sum"><div class="pvh"><h3>경로</h3><span class="chip">' + (S.via ? "1시간 6분" : "48분") + ' 예상</span></div>'
       + '<div class="pvloc"><div>' + ico("pvHail") + esc(routeFrom()) + '</div>'
       + (S.via ? '<div>' + ico("pvFlag") + '서울역</div>' : '')
       + '<div>' + ico("pvFlag") + esc(routeTo()) + '</div></div></div>');
@@ -2648,7 +2663,7 @@ div.arow{cursor:default;}
       var f = S.flight;
       if (placeE() || placeF()){
         /* 서버 흐름을 유저 말로: 확정 시점 · 늦을 때 · 일찍 올 때 · 결항 */
-        h.push('<div class="pvc"><div class="pvh"><h3>항공편</h3><span class="chip">BETA</span></div>'
+        h.push('<div class="pvc sum"><div class="pvh"><h3>항공편</h3><span class="chip">BETA</span></div>'
           + '<div class="pvb"><span class="tx"><span class="t">' + esc(f.no + " " + f.air) + '</span>'
           + '<span class="s">' + esc(f.from + " → 인천 " + f.term + " · " + dLong(fdiOf()) + " " + f.eta + (placeF() ? " 도착 예정, 여유 " + offLabel(fGap()) : " 도착 예정 · 여유 " + offLabel(S.buf || 60))) + '</span></span></div>'
           + '<div class="pvdiv"><i></i></div><div class="fare dguard"><div class="h">이렇게 진행돼요</div>'
@@ -2683,23 +2698,23 @@ div.arow{cursor:default;}
       }
     }
 
-    h.push('<div class="pvc"><div class="pvh"><h3>차량</h3><span class="chip">' + esc(L.chip) + '</span></div>'
+    h.push('<div class="pvc sum"><div class="pvh"><h3>차량</h3><span class="chip">' + esc(L.chip) + '</span></div>'
       + '<div class="pvb">' + ico("pvCar") + '<span class="tx"><span class="t">' + esc(L.name) + '</span><span class="s">' + esc(L.model1) + '</span></span></div></div>');
 
     /* 부가 서비스가 없으면 카드를 통째로 뺀다 (Figma 55257:116077) */
     if (picked.length){
-      h.push('<div class="pvc"><div class="pvh"><h3>부가 서비스</h3></div>'
+      h.push('<div class="pvc sum"><div class="pvh"><h3>부가 서비스</h3></div>'
         + '<div class="pvb pad20">' + ico("pvAddon") + '<span class="tx"><span class="t">'
         + esc(picked.join("・")) + '</span></span></div></div>');
     }
 
-    h.push('<div class="pvc"><div class="pvh"><h3>탑승자 정보</h3></div>'
+    h.push('<div class="pvc nav"><div class="pvh"><h3>탑승자 정보</h3></div>'
       + '<button class="pvb" data-act="noop"><span class="tx"><span class="t">이지현님</span><span class="s">010 2344 2321</span></span>' + ico("pvArrow","arr") + '</button></div>');
 
-    h.push('<div><div class="pvc"><div class="pvh" style="padding-bottom:16px;"><h3>결제 수단 및 할인</h3></div>'
+    h.push('<div class="navw"><div class="pvc nav"><div class="pvh" style="padding-bottom:16px;"><h3>결제 수단 및 할인</h3></div><div class="grp">'
       + '<button class="pvb pad20" data-act="noop">' + ico("pvCard") + '<span class="tx"><span class="t">하나 ****1234</span></span>' + ico("pvArrow","arr") + '</button>'
       + '<div class="pvdiv"><i></i></div>'
-      + '<button class="pvb pad20" data-act="noop">' + ico("pvCoupon") + '<span class="tx"><span class="t">할인 수단 적용하기</span></span>' + ico("pvArrow","arr") + '</button></div>'
+      + '<button class="pvb pad20" data-act="noop">' + ico("pvCoupon") + '<span class="tx"><span class="t">할인 수단 적용하기</span></span>' + ico("pvArrow","arr") + '</button></div></div>'
       + '<p class="pvnote">예약 시 할인 전 금액으로 선결제하며, 하차 시 할인 적용된 최종 금액으로 자동 재결제합니다.</p></div>');
 
     /* 요금. Figma 기록용 표의 순서를 따른다: 기본 → 통행료 → 서비스 이용료 → 할인 → 합계 */
@@ -2721,7 +2736,7 @@ div.arow{cursor:default;}
             + '<div class="sub">* 베타 기간 무료. 정식 출시 때 유료로 바뀔 수 있어요</div>';
     }
     fare += '</div>';
-    h.push('<div class="pvc">' + fare + '<div class="pvdiv"><i></i></div>'
+    h.push('<div class="pvc price">' + fare + '<div class="pvdiv"><i></i></div>'
       + '<div class="total"><span>총 예상 요금</span><b>' + won(total()) + '</b></div>'
       + '<div class="msg"><i></i>예약 접수비는 무료에요</div></div>');
 
