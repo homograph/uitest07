@@ -1112,7 +1112,21 @@ div.arow{cursor:default;}
 .bq-card .hd .th{flex:none;width:72px;height:72px;border-radius:12px;background:#F7F7F7;display:flex;align-items:center;justify-content:center;}
 .bq-card .hd .th img{display:block;width:60px;height:60px;object-fit:contain;}
 .bq-card .hd b{display:block;font-size:18px;line-height:24px;font-weight:700;color:#222;}
-.bq-card .hd span span{display:block;margin-top:2px;font-size:14px;line-height:20px;color:#6A6A6A;}
+.bq-card .hd .tt{flex:1 1 0;min-width:0;}
+.bq-card .hd .tt span{display:block;margin-top:2px;font-size:14px;line-height:20px;color:#6A6A6A;word-break:keep-all;}
+.bq-card .hd .chg{align-self:flex-start;}
+.bq-card .tl{display:flex;align-items:center;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid #EBEBEB;}
+.bq-card .tl .c{flex:none;display:flex;flex-direction:column;}
+.bq-card .tl .c.r{text-align:right;align-items:flex-end;}
+.bq-card .tl .k{font-size:14px;line-height:20px;color:#6A6A6A;white-space:nowrap;}
+.bq-card .tl b{margin-top:2px;font-size:24px;line-height:30px;font-weight:700;letter-spacing:-.3px;color:#222;font-variant-numeric:tabular-nums;}
+.bq-card .tl .d{margin-top:2px;font-size:13px;line-height:18px;color:#6A6A6A;white-space:nowrap;}
+.bq-card .tl .mid{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:4px;}
+.bq-card .tl .mid i{flex:1 1 0;height:1px;background:#DDD;}
+.bq-card .tl .mid i.hd2{position:relative;}
+.bq-card .tl .mid i.hd2::after{content:"";position:absolute;right:0;top:-3px;width:6px;height:6px;border-top:1px solid #B0B0B0;border-right:1px solid #B0B0B0;transform:rotate(45deg);}
+.bq-card .tl em{flex:none;font-style:normal;padding:3px 8px;border-radius:9999px;background:#F2F2F2;font-size:12px;line-height:16px;font-weight:500;color:#222;white-space:nowrap;}
+.bq-card .tlx{margin:12px 0 0;font-size:14px;line-height:20px;color:#6A6A6A;word-break:keep-all;}
 .bq-card .sec{display:flex;justify-content:space-between;gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid #EBEBEB;}
 .bq-card .sec .k{display:block;font-size:14px;line-height:20px;font-weight:700;color:#222;}
 .bq-card .sec .v{display:block;margin-top:2px;font-size:14px;line-height:20px;color:#222;font-variant-numeric:tabular-nums;}
@@ -2014,7 +2028,7 @@ div.arow{cursor:default;}
         + '<p class="bq-note">편명 없이 고르면 이 옵션은 추가되지 않아요</p></div>';
     }
     function li(r){
-      var tail = r.off ? "아직 지원하지 않는 시간대예요" : r.sub + " · " + (r.pending ? "예정 미확정" : r.b.term + " 도착");
+      var tail = r.off ? "아직 지원하지 않는 시간대예요" : r.val === "share" ? r.sub + " · " + r.b.term + " 도착" : r.sub + (r.pending ? " · 예정 미확정" : " → 인천 " + r.b.term);
       var inner = '<span class="ic" aria-hidden="true">' + IC_PLANE + '</span><span class="tx"><span class="d"><b>' + esc(dLong(r.di)) + '</b><span>' + r.b.eta + ' 도착</span></span>'
         + '<span class="s">' + bqMark(r.label, q) + ' · ' + esc(tail) + '</span></span>';
       return r.off ? '<li><div class="off">' + inner + '</div></li>'
@@ -2031,17 +2045,22 @@ div.arow{cursor:default;}
     var prev = S.fprev, prevGap = fpPrevGap();
     var moved = prev && prev.getTime() !== pk.getTime();
     var sameDay = !prev || prev.toDateString() === pk.toDateString();
-    var why = ["도착 후 여유 " + offLabel(S.fbuf) + "."];
+    var why = [];
+    var WD = ["일","월","화","수","목","금","토"], dOf = function(d){ return (d.getMonth() + 1) + "월 " + d.getDate() + "일 (" + WD[d.getDay()] + ")"; };
+    var arr = fpArr(sel);
     if (moved) why.push("앞서 고른 " + (sameDay ? "" : (prev.getMonth() + 1) + "월 " + prev.getDate() + "일 ") + hmOf(prev) + "에서 바뀌어요.");
     if ((eta + S.fbuf) % 10) why.push("픽업은 10분 단위라 " + hmOf(pk) + "으로 잡혀요.");
     var showRec = prevGap != null && prevGap > 0 && prevGap < 40;
     var sw = bqEditing() ? S.termSwitched : f.term !== S.term, tn = f.term === "T2" ? "제2터미널" : "제1터미널";
     return '<div class="bq-card"><div class="hd"><span class="th"><img src="' + ASSET.flightTh + '" alt="" /></span>'
-      + '<span><b>' + esc(f.no + " " + f.air) + '</b><span>' + esc(f.from + " 출발 · " + (sel.pending ? "도착 예정 미확정" : f.term + " 도착")) + '</span></span></div>'
-      + '<div class="sec"><span><span class="k">항공편</span><span class="v">' + esc(dLong(sel.di) + " " + f.eta + (sel.pending ? " 도착 예정" : " 도착")) + '</span></span>'
+      + '<span class="tt"><b>' + esc(f.no + " " + f.air) + '</b><span>' + esc(f.from + " → 인천" + (sel.pending ? "" : " " + f.term)) + '</span></span>'
       + '<button class="chg" data-act="fpChange">변경</button></div>'
-      + '<div class="sec"><span><span class="k">픽업 시간</span><span class="v">' + (sameDay ? "" : esc(dLong(sel.di)) + " ") + hmOf(pk) + '</span>'
-      + '<span class="x">' + why.map(esc).join("<br>") + '</span></span></div>'
+      /* 도착 → 픽업을 좌→우 한 줄로. 여유를 바꾸면 오른쪽만 움직인다 */
+      + '<div class="tl" aria-label="도착 ' + f.eta + ', 여유 ' + offLabel(S.fbuf) + ', 픽업 ' + hmOf(pk) + '">'
+      + '<span class="c"><span class="k">' + (sel.pending ? "도착 예정" : "인천 " + f.term + " 도착") + '</span><b>' + f.eta + '</b><span class="d">' + esc(dOf(arr)) + '</span></span>'
+      + '<span class="mid"><i></i><em>여유 ' + esc(offLabel(S.fbuf)) + '</em><i class="hd2"></i></span>'
+      + '<span class="c r"><span class="k">픽업</span><b>' + hmOf(pk) + '</b><span class="d">' + esc(dOf(pk)) + '</span></span></div>'
+      + (why.length ? '<p class="tlx">' + why.map(esc).join("<br>") + '</p>' : '')
       + (sw ? '<div class="sec"><span><span class="k">탑승지</span><span class="v">인천공항 ' + tn + '</span>'
             + '<span class="x">' + tn + '에 도착하는 편이라<br>탑승지를 옮겼어요</span></span></div>' : '')
       + '</div><div class="bq-div"></div><h3 class="bq-h2">도착 후 여유</h3>' + ((eta + S.fbuf) % 10 ? '' : '<p class="bq-sub">픽업은 10분 단위로 잡혀요</p>')
