@@ -1279,6 +1279,7 @@ div.arow{cursor:default;}
 .phone.v3 .fl-how .fare.dguard{padding:12px 0 0;}
 /* ── v6 (2026-10-13) · Figma 19064:7379. 차량 선택은 현행 구성, 나머지는 큰 제목 + 선 구분 ── */
 .phone.v3 .pill{box-shadow:none;}
+.pill .t,.pill .d{display:block;}
 .phone.v3 .pill .t{font-weight:700;}
 .phone.v3 .vsec{padding:16px 0 24px;}
 .phone.v3 .vhead h2{font-size:16px;line-height:22px;}
@@ -1592,7 +1593,7 @@ div.arow{cursor:default;}
       <section class="card">
         <h2>Figma에 없어서 제가 정한 것</h2>
         <ul>
-          <li><b>이전 경로 첫 줄</b>은 흐름이 이어지도록 Figma 샘플("회사 → 성보 역삼 빌딩") 대신 "신세계백화점 강남점 정문 → 인천공항 제 1터미널"로 바꿨습니다. 누르면 Figma 규칙대로 출발지 미세조정으로 갑니다. 목적지가 입력된 이동 경로 선택에서 출발지 필드를 누르면 검색을 건너뛰고 신세계백화점을 고른 것으로 처리합니다.</li>
+          <li><b>이전 경로 첫 줄</b>은 흐름이 이어지도록 Figma 샘플("회사 → 성보 역삼 빌딩") 대신 "강남역 1번 출구 → 인천공항 제 1터미널"로 바꿨습니다. 누르면 Figma 규칙대로 출발지 미세조정으로 갑니다. 목적지가 입력된 이동 경로 선택에서 출발지 필드를 누르면 검색을 건너뛰고 강남역 1번 출구를 고른 것으로 처리합니다.</li>
           <li><b>D안 컴포넌트 전체.</b> 상품 이름 "결항·지연 보장", 추천값 <b>도착 + 50분을 10분 단위로 올림</b>, 검색 범위 3일, "맞춰 뒀어요"·"도착(05:15) 이후로 골라 주세요" 문구, 비행기 아이콘(임시), 밴 제약을 푼 규칙, 미리보기의 "추가 요금 [정책 확정 후 기재]" 자리는 모두 제가 정한 것입니다.</li>
           <li><b>C안 컴포넌트 전체.</b> 방식 선택 칩(예약 탭 칩 #31487D 규칙만 따름), 카드 제목 "항공편 지연 자동 조정", 무료 배지, 추적을 끄면 밴이 다시 가능해지는 규칙은 모두 제가 정한 것입니다.</li>
           <li><b>여유 시간을 셋으로 나눈 경계.</b> 20분 미만 = 고쳐야 함 / 20분~4시간 = 정상 / 4시간 초과 = 연결이 느슨함(8시간 초과면 상대 표기 생략). 기본 제안은 도착 + 50분입니다. 실제 입국 수속 시간 분포로 다시 잡아야 합니다.</li>
@@ -1838,9 +1839,9 @@ div.arow{cursor:default;}
   function derived(){ return chosenMin() - mins(S.flight.eta); }   /* 고른 시각에서 여유 시간 역산 */
   function derivedOK(d){ return d >= 20 && d <= 240; }
   function termName(t){ return t === "T2" ? "인천공항 제2터미널" : "인천공항 제1터미널"; }
-  function routeFrom(){ return S.origin === "icn" ? termName(S.term) + " 1층 " + (S.term === "T2" ? "3번" : "14번") + " 게이트" : "신세계백화점 강남점 정문"; }
-  function routeTo(){ return S.origin === "icn" ? "신세계백화점 강남점 정문" : "인천공항 제 1터미널"; }
-  function pillRoute(){ return S.origin === "icn" ? termName(S.term) + ", 신세계백화점 강남점" : "신세계백화점 강남점, 인천공항 제 1터미널"; }
+  function routeFrom(){ return S.origin === "icn" ? termName(S.term) + " 1층 " + (S.term === "T2" ? "3번" : "14번") + " 게이트" : "강남역 1번 출구"; }
+  function routeTo(){ return S.origin === "icn" ? "강남역 1번 출구" : "인천공항 제 1터미널"; }
+  function pillRoute(){ return S.origin === "icn" ? termName(S.term) + ", 강남역" : "강남역, 인천공항 제 1터미널"; }
   function mins(hm){ var p = hm.split(":"); return (+p[0]) * 60 + (+p[1]); }
   function hhmm(m){ m = ((m % 1440) + 1440) % 1440; return String(Math.floor(m / 60)).padStart(2,"0") + ":" + String(m % 60).padStart(2,"0"); }
   function korHM(m){ m = ((m % 1440) + 1440) % 1440; var h = Math.floor(m / 60), r = m % 60; return ampm(h) + (r ? " " + r + "분" : " 정각"); }
@@ -2484,7 +2485,7 @@ div.arow{cursor:default;}
 
     /* 경로 카드: 빈 상태 = '어디로 가세요?' + 이전 경로 / 열림 = 입력칸 / 접힘 = '경로 | 요약' */
     if (!S.routeFilled){
-      var prev = [["erRoute", "신세계백화점 강남점 정문  →  인천공항 제 1터미널", "rPrev"],
+      var prev = [["erRoute", "강남역 1번 출구  →  인천공항 제 1터미널", "rPrev"],
                   ["erRestore", "회사  →  성보 역삼 빌딩", "rEdit"], ["erRestore", "회사  →  성보 역삼 빌딩", "rEdit"]];
       h.push('<div class="rcard"><div class="ehead"><h2>경로</h2></div>'
         + '<button class="efield" data-act="rEdit"><span>어디로 가세요?</span>' + ico("erArrow") + '</button>'
@@ -2623,7 +2624,7 @@ div.arow{cursor:default;}
       {x:8,  y:694, w:344, h:58, act:"rGo", v:"dest", label:"목적지 설정"}]},
     dest:    {img:"reEditorDest", label:"이동 경로 선택(목적지 입력됨) · 55257:56260", hots:[
       {x:10, y:62,  w:46,  h:52, act:"rGo", v:"empty", label:"뒤로"},
-      {x:54, y:52,  w:250, h:30, act:"rGo", v:"mapStart", toast:"검색은 생략하고 신세계백화점 강남점 정문을 고른 것으로 처리했어요", label:"출발지 입력"}]},
+      {x:54, y:52,  w:250, h:30, act:"rGo", v:"mapStart", toast:"검색은 생략하고 강남역 1번 출구를 고른 것으로 처리했어요", label:"출발지 입력"}]},
     mapStart:{img:"reMapStart", label:"출발지 미세조정 · 55257:56271", hots:[
       {x:6,  y:36,  w:50,  h:50, act:"rGo", v:"dest", label:"뒤로"},
       {x:8,  y:694, w:344, h:58, act:"rDone", label:"출발지 설정"}]}
