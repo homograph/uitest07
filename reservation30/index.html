@@ -1348,6 +1348,15 @@ div.arow{cursor:default;}
 .fb .tband svg{flex:none;display:block;}
 .phone.v3 .fq .fc-node{margin-top:28px;font-size:20px;line-height:26px;font-weight:700;}
 .phone.v3 .fq .fc-node svg,.phone.v3 .fq .fc-node .icon{width:24px;height:24px;}
+.bq-skel{list-style:none;margin:8px 0 0;padding:0;}
+.bq-skel li{display:flex;align-items:center;gap:14px;padding:12px 0;}
+.bq-skel .c{flex:none;width:40px;height:40px;border-radius:50%;}
+.bq-skel .tx{flex:1 1 0;display:flex;flex-direction:column;gap:8px;}
+.bq-skel i{display:block;height:14px;border-radius:4px;}
+.bq-skel i:first-child{width:62%;} .bq-skel i:last-child{width:86%;}
+.bq-skel .c,.bq-skel i{background:linear-gradient(90deg,#F2F2F2 25%,#E6E6E6 37%,#F2F2F2 63%);background-size:400% 100%;animation:bqSkel 1.2s ease infinite;}
+@keyframes bqSkel{0%{background-position:100% 50%}100%{background-position:0 50%}}
+@media (prefers-reduced-motion:reduce){.bq-skel .c,.bq-skel i{animation:none;}}
 .fq-why{margin:4px 0 0;font-size:14px;line-height:20px;color:#6A6A6A;word-break:keep-all;}
 .phone.v3 .bq-pills{gap:8px;}
 .phone.v3 .bq-pills button{padding:0 14px;font-weight:500;}
@@ -1792,6 +1801,25 @@ div.arow{cursor:default;}
   /* F안(재구성안 v2, Figma 12409:50 아래 행): 시간&경로는 휠만. 항공편은 차량 선택 부가 서비스 카드 → 전체 페이지.
      유료(20,000원) 부가 서비스라 동의를 받고 추가한다. 추가하면 픽업 = 도착 + 여유(10분 올림)이 휠 값이 된다. */
   function placeF(){ return S.flPlace === "rebuild"; }
+  /* 편명 검색은 실제로 글자마다 바로 조회되지 않는다. 입력이 멈춘 뒤(FQ_WAIT) 조회를 보내고, 응답(FQ_LAT)이 올 때까지 "찾는 중"을 보여 준다.
+     ?lat=밀리초 로 응답 시간을 바꿔 볼 수 있다 */
+  var FQ_WAIT = 300;
+  var FQ_LAT = (function(){ try { var m = /[?&]lat=(\d+)/.exec(location.search); return m ? +m[1] : 600; } catch(e){ return 600; } })();
+  var fqT1 = null, fqT2 = null;
+  function fqStop(){ clearTimeout(fqT1); clearTimeout(fqT2); fqT1 = fqT2 = null; S.fwait = false; }
+  function fqSearch(){
+    clearTimeout(fqT1); clearTimeout(fqT2);
+    if (!S.fquery.trim()){ S.fwait = false; return; }
+    S.fwait = true;
+    fqT1 = setTimeout(function(){
+      fqT2 = setTimeout(function(){
+        S.fwait = false;
+        var a = document.activeElement, had = a && a.id === "fpq", pos = had ? a.selectionStart : 0;
+        render();
+        var nq = $("fpq"); if (had && nq){ nq.focus(); try { nq.setSelectionRange(pos, pos); } catch(_){} }
+      }, FQ_LAT);
+    }, FQ_WAIT);
+  }
   var SKIN_TADA = (function(){ try { return /[?&]skin=tada\b/.test(location.search); } catch(e){ return false; } })();
   /* 개선안. 차량 선택과 항공편 입력 페이지에만 건다 */
   function v3on(){ return placeF() && !SKIN_TADA; }
@@ -2196,6 +2224,11 @@ div.arow{cursor:default;}
            }).join("")
         + '</ul><div class="bq-end"></div>' + bqNotice() + '</div>';
     }
+    if (S.fwait){
+      var sk = '<li><span class="c"></span><span class="tx"><i></i><i></i></span></li>';
+      return '<div class="fp"><h2 class="bq-h1">항공편에 맞춰 픽업</h2>' + bqInput(true) + '<p class="help">고르면 픽업 날짜도 이 날로 맞춰져요</p></div>'
+        + '<p class="bq-lab" role="status" aria-live="polite">항공편을 찾고 있어요</p><ul class="bq-skel" aria-hidden="true">' + sk + sk + sk + '</ul><div class="bq-end"></div></div>';
+    }
     var rows = fpCands();
     if (!rows.length){
       return '<div class="fp">' + '<h2 class="bq-h1">항공편에 맞춰 픽업</h2>' + bqInput(true) + '</div>'
@@ -2247,7 +2280,7 @@ div.arow{cursor:default;}
   }
   function bqFoot(){
     var q = S.fquery.trim();
-    if (!S.fsel && q && fpCands().length) return '';
+    if (!S.fsel && q && (S.fwait || fpCands().length)) return '';
     var ed = bqEditing(), ff = cfee("flight", F_FEE), sum = ed ? total() : baseFare() + addonFee() + ff, ok = !!S.fsel;
     return '<div class="fp-foot"><div class="fp-bar"><span class="l"><span class="k">' + (ed ? "합계" : "추가하면 합계") + '</span>'
       + '<span class="v">' + won(sum) + (ed ? '' : '<small>+' + won(ff) + '</small>') + '</span></span>'
@@ -3228,22 +3261,22 @@ div.arow{cursor:default;}
       case "waitToggle": S.fx.wait = !S.fx.wait; break;
       /* ── F안 페이지 ── */
       case "fpOpen":    /* 진입. 앞서 휠을 직접 굴렸다면 그 시각을 기억해 두고 바뀌는 걸 알려 준다 */
-        S.fpage = true; S.fquery = ""; S.fsel = null; S.fbuf = 60;
+        fqStop(); S.fpage = true; S.fquery = ""; S.fsel = null; S.fbuf = 60;
         S.fprev = (S.touched && !flightOn()) ? selDate() : null;
         scroll.scrollTop = 0; break;
       case "fpEdit":    /* 추가된 상태에서 다시 열기: ⑥′ 로 바로 */
         if (S.screen !== "vehicle") go("vehicle");
-        S.fpage = true; S.fquery = S.flight.no; S.fprev = null;
+        fqStop(); S.fpage = true; S.fquery = S.flight.no; S.fprev = null;
         S.fsel = {f:S.flight, di:fdiOf(), val:S.swapped ? "share" : S.fpending ? "pending" : S.flight.no, pending:S.fpending};
         S.fbuf = S.buf != null ? S.buf : 60; scroll.scrollTop = 0; break;
-      case "fpBack":    if (S.fsel){ S.fsel = null; } else S.fpage = false; scroll.scrollTop = 0; break;
+      case "fpBack":    fqStop(); if (S.fsel){ S.fsel = null; } else S.fpage = false; scroll.scrollTop = 0; break;
       case "fpChange":  S.fsel = null; scroll.scrollTop = 0; break;
       case "fpPick":
         var pv2 = String(v).split("|"), pf = pv2[0] === "share" ? findFlight(SHARE.oper) : pv2[0] === "pending" ? PENDING : findFlight(pv2[0]);
         S.fsel = {f:pf, di:+pv2[1], val:pv2[0], pending:pv2[0] === "pending"}; S.fbuf = 60;
         scroll.scrollTop = 0; break;
       case "fpBuf":     S.fbuf = +v; break;
-      case "fpClear":   S.fquery = ""; S.refocus = true; scroll.scrollTop = 0; break;
+      case "fpClear":   fqStop(); S.fquery = ""; S.refocus = true; scroll.scrollTop = 0; break;
       case "fpPolicy":  S.toast = "이용 정책 본문은 이 프로토 범위 밖이에요"; break;
       case "fpAdd":
         if (!S.fsel) break;
@@ -3295,7 +3328,7 @@ div.arow{cursor:default;}
     if (e.target && e.target.id === "fq"){ S.fquery = e.target.value; render(); }
     if (e.target && e.target.id === "fpq"){
       var pos = e.target.selectionStart;
-      S.fquery = e.target.value; render();
+      S.fquery = e.target.value; if (v3on()) fqSearch(); render();
       var nq = $("fpq"); if (nq){ nq.focus(); try { nq.setSelectionRange(pos, pos); } catch(_){} }
     }
   });
