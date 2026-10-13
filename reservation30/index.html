@@ -2220,7 +2220,7 @@ div.arow{cursor:default;}
         + '<ul class="bq-inc">'
         + [["0원","항공편 지연 대기요금","항공편이 더 늦어져 생긴 대기요금은 타다가 부담해요","schedule"],
            ["0원","결항 취소 수수료","결항되면 자동으로 무료 취소돼요","event"],
-           ["다시 배차","일찍 도착하면","20분 넘게 일찍 오면 앞당겨요","flight_land"]].map(function(r){
+           ["다시 배차","일찍 도착하면","30분 넘게 일찍 오면 앞당겨요","flight_land"]].map(function(r){
              return '<li><span class="i" aria-hidden="true">' + icMs(r[3], 24) + '</span><span><span class="t">' + r[1] + '</span><span class="s">' + r[2] + '</span></span><span class="v">' + r[0] + '</span></li>';
            }).join("")
         + '</ul><div class="bq-end"></div>' + bqNotice() + '</div>';
@@ -2311,7 +2311,7 @@ div.arow{cursor:default;}
         + '<section class="fp-inc"><h3>' + won(F_FEE) + '에 포함돼요</h3><ul>'
         + [["0원","항공편 지연 대기요금","항공편이 더 늦어져 생긴 대기요금은 타다가 부담해요"],
            ["0원","결항 취소 수수료","결항되면 자동으로 무료 취소돼요"],
-           ["20분","일찍 도착하면","20분 넘게 일찍 오면 앞당겨 다시 배차해요"]].map(function(r){
+           ["30분","일찍 도착하면","30분 넘게 일찍 오면 앞당겨 다시 배차해요"]].map(function(r){
              return '<li><span class="v">' + r[0] + '</span><span><span class="t">' + r[1] + '</span><span class="s">' + r[2] + '</span></span></li>';
            }).join("")
         + '</ul></section>' + fpTerms() + '</div>';
@@ -2866,11 +2866,11 @@ div.arow{cursor:default;}
   }
   function flHow(){
     return '<div class="fare dguard"><div class="h">이렇게 진행돼요</div>'
-      + '<div class="li">도착 1시간 20분 전쯤 실제 도착 예상에 맞춰 픽업 시각을 확정해요</div>'
+      + '<div class="li">도착 1시간 20분 전쯤부터 드라이버를 찾고, 배정되면 픽업 시각이 확정돼요</div>'
       + '<div class="li">' + (placeF() ? "그 뒤 항공편이 더 늦어져 생긴 대기요금은 타다가 부담해요" : "그 뒤 비행기가 더 늦어지면 기사님이 기다려요. 이때 대기요금은 타다가 냅니다") + '</div>'
       + '<div class="li">' + (placeF() ? "입국 수속이나 짐 찾기로 늦어진 시간은 10분당 3,000원이에요" + (S.fx.wait ? ". 드라이버 대기 보장으로 최대 60분까지 기다려요" : "")
                                       : "입국 수속이나 짐 찾기로 늦으시면 대기요금이 따로 부과돼요") + '</div>'
-      + '<div class="li">20분 넘게 일찍 도착하면 픽업 시각을 앞당겨 다시 배차해요</div>'
+      + '<div class="li">30분 넘게 일찍 도착하면 픽업 시각을 앞당겨 다시 배차해요</div>'
       + '<div class="li">결항되면 수수료 없이 자동으로 취소돼요</div>'
       + '<div class="li">예약한 뒤에는 편명과 여유 시간을 바꿀 수 없어요</div></div>';
   }
