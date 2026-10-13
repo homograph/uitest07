@@ -1930,6 +1930,7 @@ div.arow{cursor:default;}
   }
   function gapText(){
     var g = Math.round((selDate() - arrDate()) / 60000);
+    if (S.buf != null && selDate().getTime() === bufDate(S.buf).getTime()) g = S.buf;   /* 여유를 골라 10분 단위로 올린 시각이면 고른 값으로 말한다 */
     return g < 0 ? "" : "도착 " + (g === 0 ? "시각" : offLabel(g) + " 뒤");
   }
   function pickDate(){   /* 도착 + 여유가 자정을 넘기면 다음 날 */
@@ -3113,7 +3114,7 @@ div.arow{cursor:default;}
       + '<div class="r2"><span>' + esc(p.city) + '</span><span>인천 ' + f.term + ' · ' + esc(fbDate(fdiOf())) + '</span></div>'
       + '<div class="r3"><span class="fn"><b>' + esc(f.no) + '</b> ' + esc(f.air) + '</span><span class="at">'
       + (C.status ? '<b class="st">' + C.status + '</b>' : '<b>' + hhmm(C.eta) + '</b> 도착') + (C.sub ? '<span class="sub">' + C.sub + '</span>' : '') + '</span></div></div>'
-      + (off ? '' : '<div class="fc-bar">' + IC_MS_WALK(18) + '<span>도착 ' + esc(offLabel(C.pick - C.eta)) + ' 뒤 픽업</span></div>')
+      + (off ? '' : '<div class="fc-bar">' + IC_MS_WALK(18) + '<span>도착 ' + esc(offLabel(st === "C" ? C.pick - C.eta : g)) + ' 뒤 픽업</span></div>')
       + '<div class="dt-loc"><div>' + ico("pvHail") + esc(routeFrom()) + '</div><i></i><div>' + ico("pvFlag") + esc(routeTo()) + '</div></div>'
       + (off ? '' : '<img class="dt-map" src="' + ASSET.dtMap + '" alt="" />') + '<div class="dt-hr"></div>');
     if (off) h.push('<h3 class="dt-h">환불</h3><div class="dt-fee"><div class="r"><span>운행 요금</span><span>' + won(baseFare()) + '</span></div>'
@@ -3129,9 +3130,11 @@ div.arow{cursor:default;}
   }
 
   /* ══════════ 렌더 ══════════ */
+  var toastT = null;
   var LABEL = {
     home:"① 예약 홈 · recurring-entry D안 (Figma 10766:65699)", route:"② 시간&경로 입력 · 57703:365197",
-    vehicle:"③ 차량 선택 · 48558:155628", preview:"④ 미리보기 · 55257:55731"
+    vehicle:"③ 차량 선택 · 48558:155628", preview:"④ 미리보기 · 55257:55731",
+    detail:"⑤ 이용내역 상세 · 예약 뒤 상태 (Figma 19081:8832)"
   };
   function render(){
     phone.classList.toggle("white", S.screen === "vehicle" && !S.fpage && !S.dpage);
@@ -3170,7 +3173,8 @@ div.arow{cursor:default;}
       phone.insertAdjacentHTML("beforeend", flightSheet());
       var fq = $("fq"); if (fq){ fq.focus(); try { fq.setSelectionRange(fq.value.length, fq.value.length); } catch(e){} }
     }
-    if (S.toast){ phone.insertAdjacentHTML("beforeend", '<div class="ptoast" role="status">' + esc(S.toast) + '</div>'); S.toast = ""; }
+    if (S.toast){ phone.insertAdjacentHTML("beforeend", '<div class="ptoast" role="status">' + esc(S.toast) + '</div>'); S.toast = "";
+      clearTimeout(toastT); toastT = setTimeout(function(){ var tt = phone.querySelector(".ptoast"); if (tt) tt.remove(); }, 2600); }
     S.animate = false; S.appear = null;
     stepLabel.textContent = (S.screen === "rEdit" ? RE[S.rstep].label
           : S.screen === "vehicle" && S.dpage ? "드라이버 지정 (프로토 임시 화면)"
