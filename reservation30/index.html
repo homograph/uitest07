@@ -3086,8 +3086,8 @@ div.arow{cursor:default;}
     var C = {
       N:{chip:"드라이버 매칭 중", pick:P0, kind:"예상 픽업", note:"항공편이 늦어지면 픽업도 같이 늦춰 드려요.<br>드라이버가 배정되면 픽업 시각이 확정돼요.", step:2, eta:E},
       A:{chip:"드라이버 매칭 중", pick:P0 + 30, was:P0, kind:"예상 픽업", note:"항공편이 30분 늦어져 픽업도 30분 늦췄어요.<br>드라이버가 배정되면 픽업 시각이 확정돼요.", step:2, eta:E + 30, sub:'<s>' + hhmm(E) + '</s> · <b>' + late(30) + '</b>'},
-      B:{chip:"예약 확정", on:true, pick:P0 + 30, kind:"픽업 확정", note:"드라이버가 배정되어 픽업 시각이 확정됐어요.<br>항공편이 더 늦어져도 드라이버가 기다려요.", step:3, drv:true, eta:E + 30, sub:'<s>' + hhmm(E) + '</s> · <b>' + late(30) + '</b>'},
-      C:{chip:"예약 확정", on:true, pick:P0 + 30, kind:"픽업 확정", note:"항공편이 15분 더 늦어졌어요.<br>픽업 시각은 그대로예요. 드라이버가 기다려요.", step:3, drv:true, eta:E + 45, sub:'<s>' + hhmm(E) + '</s> · <b>' + late(45) + '</b>'},
+      B:{chip:"예약 확정", on:true, pick:P0 + 30, kind:"픽업 확정", note:"드라이버가 배정되어 픽업 시각이 확정됐어요.<br>항공편이 더 늦어져도 드라이버가 기다려줘요.", step:3, drv:true, eta:E + 30, sub:'<s>' + hhmm(E) + '</s> · <b>' + late(30) + '</b>'},
+      C:{chip:"예약 확정", on:true, pick:P0 + 30, kind:"픽업 확정", note:"항공편이 15분 더 늦어졌어요.<br>픽업 시각은 그대로예요. 드라이버가 기다려줘요.", step:3, drv:true, eta:E + 45, sub:'<s>' + hhmm(E) + '</s> · <b>' + late(45) + '</b>'},
       D:{chip:"재배차 중", pick:P0, was:P0 + 30, kind:"예상 픽업", note:"도착이 30분 앞당겨져 픽업도 앞당겼어요.<br>새 시각에 맞춰 드라이버를 다시 찾고 있어요.", step:2, s2:"재배차 중", d1:"새 픽업 시각으로 드라이버를 다시 찾고 있어요", d2:"추가 요금은 없어요", eta:E, sub:'배정 때 ' + hhmm(E + 30) + ' 예상'},
       E:{chip:"취소됨", pick:P0, kind:"드라이버를 찾지 못했어요", note:"새 픽업 시각에 운행할 드라이버를 찾지 못해 예약이 취소됐어요.<br>결제하신 " + sum + "은 모두 환불돼요.", act:["지금 바로 호출하기", true], eta:E},
       F:{chip:"취소됨", pick:P0, kind:"항공편 결항", note:esc(f.no) + " 편이 결항되어 예약이 자동으로 취소됐어요.<br>결제하신 " + sum + "은 모두 환불돼요.", act:["다시 예약하기", false], status:"결항", sub:hhmm(E) + ' 도착 예정'},
