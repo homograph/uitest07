@@ -2144,7 +2144,7 @@ div.arow{cursor:default;}
     else rows.push(arow({name:"카시트 1개", img:ASSET.carseat, price:5000, cp:"seat", on:x.seats > 0, act:x.seats ? "seatOff" : "seatOn", note:x.seats > 0 ? SEAT_NOTE : "",
       desc:"0세부터 이용하는 카시트 1개"}));
     rows.push(arow({name:"드라이버 대기 보장", img:ASSET.hourglass, unit:["10분당", "3,000원", "최대 60분"], cp:"wait", lock:k.wait, on:!k.wait && x.wait, act:"waitToggle",
-      desc:k.wait ? "선택하신 차종은 드라이버 대기가 어렵습니다" : eligible() && flightOn() ? "입국 수속이 길어져도 기다려요" : "늦어도 기다려주는 차량"}));
+      desc:k.wait ? "선택하신 차종은 드라이버 대기가 어렵습니다" : eligible() && flightOn() ? "입국 수속이 길어져도 기다려줘요" : "늦어도 기다려주는 차량"}));
     return '<div class="addon fx"><div class="vhead"><h2>부가 서비스</h2><span class="opt">선택</span></div><div><div class="xlist">' + rows.join("") + '</div></div></div>';
   }
   /* 고른 부가 서비스 수(필수 카시트 포함). 하단 "부가 서비스 N개 포함"에 쓴다 */
@@ -2240,7 +2240,7 @@ div.arow{cursor:default;}
   function bqEditing(){ return flightOn(); }
   function bqNotice(){
     return '<details class="bq-acc"><summary>유의사항과 이용 정책' + icChev("#222222", 16) + '</summary><ul>'
-      + ["입국 수속이나 짐 찾기로 늦어진 시간은 10분당 3,000원이에요. 드라이버 대기 보장을 추가하면 최대 60분까지 기다려요.",
+      + ["입국 수속이나 짐 찾기로 늦어진 시간은 10분당 3,000원이에요. 드라이버 대기 보장을 추가하면 최대 60분까지 기다려줘요.",
          "예약한 뒤에는 편명과 여유 시간을 바꿀 수 없어요.",
          "베타 기간에는 오전 5시부터 밤 10시 사이에 도착하는 편만 지원해요."].map(function(t){ return '<li><span>•</span><span>' + t + '</span></li>'; }).join("")
       + '</ul><button class="lnk" data-act="fpPolicy">항공편에 맞춰 픽업 이용 정책 보기</button></details>';
@@ -2405,7 +2405,7 @@ div.arow{cursor:default;}
   }
   function fpTerms(){
     return '<div class="terms fp-terms"><div class="tblock"><h3>항공편에 맞춰 픽업 유의사항</h3><ul>'
-      + ["입국 수속이나 짐 찾기로 늦어진 시간은 10분당 3,000원이에요. 드라이버 대기 보장을 추가하면 최대 60분까지 기다려요.",
+      + ["입국 수속이나 짐 찾기로 늦어진 시간은 10분당 3,000원이에요. 드라이버 대기 보장을 추가하면 최대 60분까지 기다려줘요.",
          "예약한 뒤에는 편명과 여유 시간을 바꿀 수 없어요.",
          "베타 기간에는 오전 5시부터 밤 10시 사이에 도착하는 편만 지원해요."].map(function(t){
            return '<li><span>•</span><span>' + t + '</span></li>'; }).join("")
@@ -2915,8 +2915,8 @@ div.arow{cursor:default;}
   function flHow(){
     return '<div class="fare dguard"><div class="h">이렇게 진행돼요</div>'
       + '<div class="li">도착 1시간 20분 전쯤부터 드라이버를 찾고, 배정되면 픽업 시각이 확정돼요</div>'
-      + '<div class="li">' + (placeF() ? "그 뒤 항공편이 더 늦어져 생긴 대기요금은 타다가 부담해요" : "그 뒤 비행기가 더 늦어지면 기사님이 기다려요. 이때 대기요금은 타다가 냅니다") + '</div>'
-      + '<div class="li">' + (placeF() ? "입국 수속이나 짐 찾기로 늦어진 시간은 10분당 3,000원이에요" + (S.fx.wait ? ". 드라이버 대기 보장으로 최대 60분까지 기다려요" : "")
+      + '<div class="li">' + (placeF() ? "그 뒤 항공편이 더 늦어져 생긴 대기요금은 타다가 부담해요" : "그 뒤 비행기가 더 늦어지면 기사님이 기다려줘요. 이때 대기요금은 타다가 냅니다") + '</div>'
+      + '<div class="li">' + (placeF() ? "입국 수속이나 짐 찾기로 늦어진 시간은 10분당 3,000원이에요" + (S.fx.wait ? ". 드라이버 대기 보장으로 최대 60분까지 기다려줘요" : "")
                                       : "입국 수속이나 짐 찾기로 늦으시면 대기요금이 따로 부과돼요") + '</div>'
       + '<div class="li">30분 넘게 일찍 도착하면 픽업 시각을 앞당겨 다시 배차해요</div>'
       + '<div class="li">결항되면 수수료 없이 자동으로 취소돼요</div>'
