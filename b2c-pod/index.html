@@ -1,0 +1,781 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>타다팟 IA 맵</title>
+<meta name="color-scheme" content="light dark" />
+<style>
+/* 토큰. 강조색은 TADA navy 하나로 잠근다.
+   폰 프레임 안은 라이트 모드 앱의 '사진'이라 다크 모드에서도 뒤집지 않는다. */
+:root{
+  --plane:#eceff4; --surface:#ffffff; --sunken:#f4f6f9;
+  --line:#dde2ea; --line-soft:#eef1f6;
+  --ink:#12172a; --ink-2:#4c5468; --ink-3:#7b8398;
+  --accent:#19254d; --accent-ink:#ffffff; --accent-soft:#e7ebf4;
+  --focus:#3d63c9;
+  --shadow:0 1px 2px rgba(18,23,42,.05), 0 12px 28px rgba(18,23,42,.09);
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --chrome:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --app:"Spoqa Han Sans Neo",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --r-surface:12px; --r-mark:4px; --r-pill:9999px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --plane:#0d1015; --surface:#161a21; --sunken:#1b2029;
+    --line:#272d38; --line-soft:#1e232c;
+    --ink:#e9ebf1; --ink-2:#a6adbe; --ink-3:#767e91;
+    --accent:#9db1e6; --accent-ink:#10141b; --accent-soft:#212838;
+    --focus:#8fa7ec;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 16px 34px rgba(0,0,0,.45);
+  }
+}
+:root[data-theme="dark"]{
+  --plane:#0d1015; --surface:#161a21; --sunken:#1b2029;
+  --line:#272d38; --line-soft:#1e232c;
+  --ink:#e9ebf1; --ink-2:#a6adbe; --ink-3:#767e91;
+  --accent:#9db1e6; --accent-ink:#10141b; --accent-soft:#212838;
+  --focus:#8fa7ec;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 16px 34px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{background:var(--plane);color:var(--ink);font-family:var(--chrome);-webkit-font-smoothing:antialiased;}
+:where(button,a,[tabindex]):focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:var(--r-mark);}
+
+.page{max-width:1640px;margin:0 auto;padding:28px 20px 80px;}
+.head h1{margin:0;font-size:22px;line-height:30px;font-weight:700;letter-spacing:-.3px;}
+.head p{margin:6px 0 0;font-size:13.5px;line-height:21px;color:var(--ink-2);max-width:820px;word-break:keep-all;}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:14px;font-size:12px;color:var(--ink-2);}
+.legend span{display:inline-flex;align-items:center;gap:6px;}
+
+.work{display:flex;gap:28px;align-items:flex-start;margin-top:22px;}
+.mapcol{flex:1 1 auto;min-width:0;}
+.stagecol{flex:0 0 auto;position:sticky;top:16px;}
+
+/* IA 맵 */
+.map{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-surface);box-shadow:var(--shadow);overflow:hidden;}
+.grid{display:grid;grid-template-columns:118px repeat(6, minmax(0,1fr));}
+.grid > div{border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);padding:10px 8px;min-width:0;}
+.grid > div:nth-child(7n){border-right:0;}
+.gh{font-size:11.5px;font-weight:700;color:var(--ink-3);background:var(--sunken);letter-spacing:.01em;}
+.gh small{display:block;font-weight:400;margin-top:2px;}
+.rh{font-size:12.5px;font-weight:700;background:var(--sunken);line-height:17px;word-break:keep-all;}
+.rh small{display:block;font-weight:400;color:var(--ink-3);font-size:11px;margin-top:3px;}
+.cell{display:flex;flex-direction:column;gap:6px;}
+.rowmuted .rh, .rowmuted .cell{background:repeating-linear-gradient(135deg, transparent 0 7px, var(--line-soft) 7px 8px);}
+
+.node{display:block;width:100%;text-align:left;font:inherit;cursor:pointer;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  border-radius:8px;padding:7px 8px 7px;font-size:12px;line-height:16px;word-break:keep-all;
+  transition:border-color .14s, background-color .14s, transform .14s;}
+.node:hover{border-color:var(--ink-3);}
+.node:active{transform:scale(.98);}
+.node b{display:block;font-weight:600;}
+.node i{display:flex;align-items:center;gap:6px;font-style:normal;font-size:10.5px;color:var(--ink-3);margin-top:4px;}
+.node[data-kind="new"]{border-left:3px solid var(--accent);}
+.node[data-kind="reuse"]{border-left:3px solid var(--line);}
+.node[data-kind="later"]{border-style:dashed;background:transparent;color:var(--ink-3);}
+.node[data-kind="later"] b{font-weight:500;}
+.node.noscreen{cursor:default;}
+.node.noscreen:hover{border-color:var(--line);}
+.node[data-kind="later"].noscreen:hover{border-color:var(--line);}
+.node.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+.node.on i{color:var(--accent-ink);opacity:.8;}
+.sid{font-family:var(--mono);font-size:10px;}
+.tag{display:inline-block;font-size:10px;line-height:14px;padding:0 5px;border-radius:var(--r-pill);border:1px solid currentColor;}
+.sw{display:inline-block;width:14px;height:10px;border-radius:3px;border:1px solid var(--line);background:var(--surface);}
+.sw.new{border-left:3px solid var(--accent);}
+.sw.reuse{border-left:3px solid var(--line);}
+.sw.later{border-style:dashed;background:transparent;}
+.sw.out{background:repeating-linear-gradient(135deg, transparent 0 3px, var(--line) 3px 4px);}
+
+/* 폰 */
+.stagehead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;width:360px;margin-bottom:8px;}
+.stagehead b{font-size:13px;}
+.stagehead span{font-size:11.5px;color:var(--ink-3);}
+.phone{flex:0 0 auto;width:360px;height:760px;border-radius:22px;border:1px solid var(--line);
+  background:#fff;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column;}
+.ctl{width:360px;margin-top:10px;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;font-size:12px;color:var(--ink-2);}
+.ctl .lab{color:var(--ink-3);font-weight:600;min-width:58px;}
+.chips{display:inline-flex;gap:4px;flex-wrap:wrap;}
+.chips button{font:inherit;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);
+  border-radius:var(--r-pill);padding:4px 10px;cursor:pointer;}
+.chips button.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);}
+.linkbtn{font:inherit;font-size:12px;border:0;background:none;color:var(--ink-3);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:4px 2px;}
+.note{width:360px;margin-top:10px;font-size:12px;line-height:18px;color:var(--ink-2);background:var(--surface);
+  border:1px solid var(--line);border-radius:10px;padding:10px 12px;word-break:keep-all;}
+.note b{color:var(--ink);}
+
+/* 근거 */
+.basis{margin-top:22px;display:grid;grid-template-columns:repeat(2, minmax(0,1fr));gap:12px;}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-surface);padding:14px 16px;}
+.card h3{margin:0;font-size:14px;line-height:20px;}
+.card .pick{margin:6px 0 0;font-size:13px;line-height:20px;font-weight:600;word-break:keep-all;}
+.card ul{margin:8px 0 0;padding-left:18px;font-size:12.5px;line-height:19px;color:var(--ink-2);word-break:keep-all;}
+.card a{color:var(--ink);}
+.foot{margin-top:18px;font-size:12px;line-height:18px;color:var(--ink-3);word-break:keep-all;}
+
+/* ═══ 폰 안쪽: 라이트 고정 ═══ */
+.app{--n:#19254d;--n2:#2e3a63;--g1:#f4f5f8;--g2:#e7e9ef;--g3:#9aa1b2;--g4:#5c6375;--t:#1b1f2b;--blue:#2c6bff;
+  font-family:var(--app);color:var(--t);background:#fff;flex:1 1 auto;display:flex;flex-direction:column;min-height:0;}
+.sbar{flex:0 0 auto;height:28px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:12px;font-weight:700;color:#111;}
+.url{flex:0 0 auto;margin:0 10px 6px;height:30px;border-radius:9px;background:var(--g1);display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;color:var(--g4);}
+.url .lk{width:7px;height:9px;border:1.5px solid var(--g3);border-radius:2px;}
+.apptop{flex:0 0 auto;height:48px;display:flex;align-items:center;padding:0 12px;gap:8px;border-bottom:1px solid var(--g2);}
+.apptop .back{font:inherit;border:0;background:none;font-size:20px;line-height:1;padding:6px 8px;cursor:pointer;color:var(--t);}
+.apptop b{font-size:16px;}
+.scroll{flex:1 1 auto;overflow-y:auto;min-height:0;padding:18px 20px 20px;}
+.bottom{flex:0 0 auto;padding:10px 20px 18px;border-top:1px solid var(--g2);background:#fff;}
+.h1{font-size:21px;line-height:30px;font-weight:700;letter-spacing:-.4px;margin:2px 0 6px;word-break:keep-all;}
+.sub{font-size:14px;line-height:21px;color:var(--g4);margin:0;word-break:keep-all;}
+.eyebrow{font-size:12.5px;font-weight:700;color:var(--n2);margin:0 0 4px;}
+.btn{display:block;width:100%;font:inherit;font-size:16px;font-weight:700;border:0;border-radius:10px;height:52px;cursor:pointer;
+  background:var(--n);color:#fff;}
+.btn:active{opacity:.85;}
+.btn.ghost{background:#fff;color:var(--n);border:1px solid var(--g2);}
+.btn + .btn{margin-top:8px;}
+.btn[disabled]{background:var(--g2);color:var(--g3);cursor:default;}
+.tlink{display:block;width:100%;font:inherit;font-size:13.5px;color:var(--g4);background:none;border:0;padding:12px 0 2px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+.box{border:1px solid var(--g2);border-radius:12px;padding:14px 16px;margin-top:14px;}
+.box.fill{background:var(--g1);border-color:var(--g1);}
+.box h4{margin:0 0 8px;font-size:14px;}
+.row{display:flex;justify-content:space-between;gap:12px;font-size:14px;line-height:22px;}
+.row span:first-child{color:var(--g4);flex:0 0 auto;}
+.row span:last-child{text-align:right;word-break:keep-all;}
+.row + .row{margin-top:4px;}
+.num{font-variant-numeric:tabular-nums;}
+.big{font-size:26px;font-weight:700;letter-spacing:-.5px;}
+.small{font-size:12.5px;line-height:19px;color:var(--g4);margin:8px 0 0;word-break:keep-all;}
+.slots{display:flex;gap:8px;margin:12px 0 4px;}
+.slot{flex:1 1 0;height:8px;border-radius:4px;background:var(--g2);}
+.slot.f{background:var(--n);}
+.slot.goal{outline:2px dashed var(--n);outline-offset:2px;background:var(--g2);}
+.mem{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--g2);font-size:14px;}
+.mem:first-of-type{border-top:0;}
+.av{width:32px;height:32px;border-radius:50%;background:var(--g1);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--n2);flex:0 0 auto;}
+.av.empty{background:#fff;border:1.5px dashed var(--g2);color:var(--g3);}
+.mem .who{flex:1 1 auto;min-width:0;}
+.mem .who small{display:block;color:var(--g3);font-size:12px;}
+.pill{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:var(--g1);color:var(--g4);white-space:nowrap;}
+.pill.n{background:var(--n);color:#fff;}
+.field{margin-top:14px;}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px;}
+.input{height:48px;border:1px solid var(--g2);border-radius:8px;background:#fff;display:flex;align-items:center;padding:0 14px;font-size:15px;color:var(--t);}
+.input.ph{color:var(--g3);}
+.input.fixed{background:var(--g1);border-color:var(--g1);}
+.code{display:flex;gap:11px;justify-content:center;margin-top:16px;}
+.code span{width:42px;height:60px;border-bottom:2px solid var(--n);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--g2);border-radius:12px;padding:14px;margin-top:10px;cursor:pointer;text-align:left;width:100%;font:inherit;background:#fff;color:var(--t);}
+.opt .rd{width:20px;height:20px;border-radius:50%;border:2px solid var(--g3);flex:0 0 auto;margin-top:1px;}
+.opt.sel{border-color:var(--n);}
+.opt.sel .rd{border:6px solid var(--n);}
+.opt b{display:block;font-size:15px;}
+.opt span{display:block;font-size:13px;color:var(--g4);margin-top:3px;line-height:19px;word-break:keep-all;}
+.share{display:flex;gap:8px;margin-top:12px;}
+.share button{flex:1 1 0;font:inherit;font-size:13px;font-weight:700;height:40px;border-radius:8px;border:1px solid var(--g2);background:#fff;color:var(--n);cursor:pointer;}
+.route{position:relative;padding-left:22px;}
+.route .pt{position:relative;font-size:14px;line-height:21px;padding:2px 0 10px;}
+.route .pt::before{content:"";position:absolute;left:-18px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--n);}
+.route .pt.me::before{background:#fff;border:2px solid var(--n);width:5px;height:5px;}
+.route .pt small{display:block;color:var(--g3);font-size:12px;}
+.route::before{content:"";position:absolute;left:8px;top:12px;bottom:18px;width:1px;background:var(--g2);}
+.banner{background:var(--g1);border-radius:12px;padding:14px 16px;margin-top:14px;font-size:13.5px;line-height:20px;word-break:keep-all;}
+.banner b{display:block;font-size:14.5px;margin-bottom:2px;}
+.check{width:56px;height:56px;border-radius:50%;background:var(--n);margin:10px 0 14px;position:relative;}
+.check::after{content:"";position:absolute;left:19px;top:15px;width:14px;height:22px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg);}
+.carplate{display:inline-block;font-weight:700;font-size:18px;border:2px solid var(--t);border-radius:6px;padding:2px 10px;letter-spacing:1px;}
+
+@media (max-width:1180px){
+  .work{flex-direction:column-reverse;align-items:stretch;}
+  .stagecol{position:static;display:flex;flex-direction:column;align-items:center;}
+}
+@media (max-width:760px){
+  .page{padding:20px 16px 60px;}
+  .grid{display:block;}
+  .grid > div{border-right:0;}
+  .gh{display:none !important;}
+  .rh{padding:12px 12px 8px;}
+  .cell{flex-direction:row;flex-wrap:wrap;padding:8px 12px 12px !important;border-bottom:0 !important;}
+  .cell:empty{display:none;}
+  .node{width:auto;flex:1 1 140px;}
+  .basis{grid-template-columns:1fr;}
+}
+@media (max-width:400px){
+  .phone,.stagehead,.ctl,.note{width:100%;}
+  .phone{flex:0 0 auto;height:720px;}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="head">
+    <h1>타다팟 IA 맵과 콘서트 클릭 프로토</h1>
+    <p>[1] B2C 셔틀 방향성 PRD 초안 기준. 왼쪽 맵의 칸을 누르면 오른쪽 폰에 그 화면이 뜨고, 폰 안에서 누르면 맵의 현재 위치가 따라와요. 이번 프로토는 콘서트 리더와 멤버의 웹 흐름만 만들었고 학원은 맵에만 있어요.</p>
+    <div class="legend" aria-label="범례">
+      <span><i class="sw new"></i>새로 만들어야 함</span>
+      <span><i class="sw reuse"></i>기존 코드 재사용 (미미르 확인)</span>
+      <span><i class="sw later"></i>v2 검토, 화면 없음</span>
+      <span><i class="sw out"></i>이번 프로토 범위 밖</span>
+    </div>
+  </header>
+
+  <div class="work">
+    <section class="mapcol" aria-label="IA 맵">
+      <div class="map"><div class="grid" id="grid"></div></div>
+
+      <div class="basis" aria-label="결정 근거">
+        <article class="card">
+          <h3>1. 팟 찾기 경로</h3>
+          <p class="pick">첫 버전은 초대 링크로만 참여. 맵에는 v2 자리만 둔다.</p>
+          <ul>
+            <li>2024 택시팟: "택시팟 찾기"를 둘러보기로 오해해 자기도 모르게 총대가 된 오조작이 여러 건.</li>
+            <li>모빈의 그룹 합승과 그룹 주문은 모두 링크 초대형: <a href="https://mobbin.com/flows/0f82655a-115f-4616-a45c-caaffbd88763" target="_blank" rel="noopener">Grab Group Ride</a>, <a href="https://mobbin.com/flows/a78cb3f8-5f79-4800-9d97-2774c97dd7a2" target="_blank" rel="noopener">Wolt</a>, <a href="https://mobbin.com/flows/3188415c-e5f3-4d0e-9d9b-047ebadffb43" target="_blank" rel="noopener">Swiggy</a>. 공개 목록형은 <a href="https://mobbin.com/screens/c4aa4b22-c55c-4e10-adfa-22a8866d7e78" target="_blank" rel="noopener">BlaBlaCar</a>처럼 운전자가 좌석을 파는 모델뿐.</li>
+            <li>PRD의 안전 가치가 "아는 사람끼리 타는 팟". 모르는 사람 매칭은 반반택시처럼 실명 가입과 동성 매칭 같은 별도 장치가 필요했다.</li>
+            <li>대신 총대 부담을 낮춘다: 랜딩에서 "팟 만들기(내가 리더)"와 "초대 링크를 받았어요"를 처음부터 갈라 둔다.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>2. 콘서트 미성년자</h3>
+          <p class="pick">멤버 결제 단계에 "보호자에게 결제 부탁하기" 분기를 둔다.</p>
+          <ul>
+            <li>현행 코드: 정회원 가입은 만 19세 미만을 KCP 인증 전에 막는다. 비회원 호출 웹은 문자 인증만 하고 나이를 보지 않는다 (미미르, 2026-10-19).</li>
+            <li>2024 택시팟: 웹 신청은 됐지만 미성년자가 앱 로그인과 결제를 못 해 CS로 처리.</li>
+            <li>선례: <a href="https://mobbin.com/screens/ed879873-ac22-4f2b-a995-2414abe32c70" target="_blank" rel="noopener">Uber 가족 프로필</a>은 보호자가 초대하고 결제하며 이동을 따라본다. <a href="https://mobbin.com/screens/d600e281-fb4b-40fd-8290-ca67876fb31f" target="_blank" rel="noopener">Grab for Family</a>는 링크 초대와 관리자 결제.</li>
+            <li>학원의 부모 결제와 자녀 탑승이 같은 구조라 부품을 함께 쓴다. 미성년 단독 탑승은 법무 확인 전.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>3. 프로토 범위</h3>
+          <p class="pick">맵은 콘서트와 학원 둘 다, 클릭 화면은 콘서트 리더와 멤버 웹만.</p>
+          <ul>
+            <li>PRD에서 미지수가 가장 큰 곳이 콘서트다: 웹 참여, 각자 가승인, 인원 미달 결정.</li>
+            <li>학원은 PRD 표현대로 "사실상 정기 예약 + 다중 하차"이고, 결석·노쇼 경계와 고정 금액은 인터뷰 대기, 어린이 통학 규정은 법무 대기.</li>
+            <li>공통 뼈대(팟, 멤버, 각자 결제)는 맵에서 학원 줄과 맞물리게 그려 두었다.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>4. IA와 클릭 프로토의 관계</h3>
+          <p class="pick">한 페이지에 두되 층은 나눈다. 맵은 구조, 폰은 과업.</p>
+          <ul>
+            <li>NN/g: 사이트맵은 논의에 필요한 정도만 담는 공유용 구조도이고, 과업 경로와 사용성 검증은 플로우와 프로토가 맡는다.</li>
+            <li>그래서 맵 칸은 화면 단위로만 두고, 상태 변화(인원, 결제 상태)는 폰 아래 설정으로 바꿔 본다.</li>
+          </ul>
+        </article>
+      </div>
+      <p class="foot">금액과 날짜는 PRD 예시값이에요 (1인 20,000원 + 거리 금액, 고양 → 서울 도심 정가 약 71,000원, 리더 혜택 3명 3,000원부터). 모집 마감, 대기 상한, 취소 수수료는 PRD에서 아직 정하지 않았어요.</p>
+    </section>
+
+    <aside class="stagecol" aria-label="화면">
+      <div class="stagehead"><b id="stTitle">화면</b><span id="stMeta"></span></div>
+      <div class="phone" id="phone"></div>
+      <div class="ctl">
+        <span class="lab">모인 인원</span>
+        <span class="chips" id="cnt"></span>
+        <button class="linkbtn" id="reset" type="button">처음으로</button>
+      </div>
+      <div class="note" id="note"></div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ── IA 구조 ─────────────────────────────── */
+var STAGES = [
+  ["진입", "링크, 랜딩"],
+  ["본인 확인", "문자 인증"],
+  ["팟 정보", "주소, 조건"],
+  ["결제", "카드, 가승인"],
+  ["모집과 확정", "대기실, 미달"],
+  ["운행과 이후", "당일, 정산"]
+];
+/* kind: new 신규 / reuse 기존 / later v2 검토 */
+var ROWS = [
+  {name:"리더", sub:"콘서트, 웹", cells:[
+    [{s:"L-land", t:"공연 팟 랜딩", k:"new"}],
+    [{s:"auth", t:"휴대폰 문자 인증", k:"reuse"}],
+    [{s:"L-create", t:"팟 만들기", k:"new"}],
+    [{s:"L-pay", t:"결제수단 등록", k:"new"}],
+    [{s:"L-lobby", t:"팟 대기실", k:"new"},{s:"L-short", t:"인원 미달 결정", k:"new"},{s:"L-done", t:"팟 확정", k:"new"}],
+    [{s:"R-day", t:"운행 당일 상태", k:"reuse"}]
+  ]},
+  {name:"멤버", sub:"콘서트, 웹", cells:[
+    [{s:"M-land", t:"초대 링크 랜딩", k:"new"},{t:"공연별 팟 찾기", k:"later"}],
+    [{s:"auth", t:"휴대폰 문자 인증", k:"reuse"}],
+    [{s:"M-drop", t:"내 하차지와 금액", k:"new"}],
+    [{s:"M-pay", t:"결제수단 등록", k:"new"}],
+    [{s:"M-status", t:"내 참여 상태, 취소", k:"new"},{s:"M-agree", t:"나눠 결제 동의", k:"new"}],
+    [{s:"R-day", t:"운행 당일 상태", k:"reuse"}]
+  ]},
+  {name:"보호자", sub:"콘서트 10대, 웹", cells:[
+    [], [], [],
+    [{s:"G-req", t:"보호자에게 결제 부탁", k:"new"},{s:"G-pay", t:"보호자 결제", k:"new"}],
+    [],
+    [{t:"탑승 알림 문자", k:"new"}]
+  ]},
+  {name:"앱", sub:"공통", cells:[
+    [{t:"예약 홈 팟 진입점", k:"later"}],
+    [],
+    [],
+    [],
+    [],
+    [{s:"A-open", t:"앱에서 이어보기", k:"new"},{t:"운행 상세, 기사 정보", k:"reuse"},{t:"내 몫 영수증", k:"new"}]
+  ]},
+  {name:"학원 정기 팟", sub:"부모 앱, 이번 범위 밖", out:true, cells:[
+    [{t:"정기 팟 만들기", k:"new"}],
+    [{t:"자녀 탑승자 등록", k:"new"}],
+    [{t:"다중 하차, 분할 방식", k:"new"}],
+    [{t:"부모 결제, 실제 요금 ÷ n", k:"new"}],
+    [{t:"회차 목록, 결석 처리", k:"new"}],
+    [{t:"하교와 귀가 알림, 노쇼 분담", k:"new"}]
+  ]}
+];
+
+/* ── 상태 ─────────────────────────────── */
+var S = {screen:"L-land", role:"leader", count:2, shortPick:"leader", guardian:false};
+var LEADER = "지수";
+var PER = 20000;
+
+function won(n){ return n.toLocaleString("ko-KR") + "원"; }
+function bonus(c){ return c >= 3 ? won(c * 1000) : "3명부터"; }
+
+/* ── 화면 ─────────────────────────────── */
+function sbar(){ return '<div class="sbar"><span>9:41</span><span>LTE</span></div>'; }
+function url(u){ return '<div class="url"><i class="lk"></i>' + u + '</div>'; }
+function top(title, back){ return '<div class="apptop">' + (back ? '<button class="back" data-go="' + back + '" aria-label="뒤로">&lsaquo;</button>' : '') + '<b>' + title + '</b></div>'; }
+function slots(c){
+  var h = '<div class="slots" aria-label="' + c + '명 모임, 최대 5명">';
+  for (var i = 1; i <= 5; i++) h += '<i class="slot' + (i <= c ? ' f' : (i === 3 && c < 3 ? ' goal' : '')) + '"></i>';
+  return h + '</div>';
+}
+function members(c, me){
+  var names = [LEADER, "민지", "서연", "하준", "도윤"];
+  var h = '';
+  for (var i = 0; i < 5; i++){
+    if (i < c){
+      var tag = i === 0 ? '<span class="pill n">리더</span>' : (me === "member" && i === c - 1 ? '<span class="pill">나</span>' : '<span class="pill">카드 등록</span>');
+      if (me === "leader" && i === 0) tag = '<span class="pill n">나, 리더</span>';
+      var isMe = me === "member" && i === c - 1 && i > 0;
+      var nm = isMe ? "서연" : (me === "member" && i === 2 && c > 3 ? "민준" : names[i]);
+      var area = isMe ? "서울 마포구" : (i === 0 ? "고양시 일산동구" : ["", "서울 은평구", "파주시", "서울 서대문구", "고양시 덕양구"][i]);
+      h += '<div class="mem"><span class="av">' + nm.charAt(0) + '</span><span class="who">' + nm + '<small>' + area + '</small></span>' + tag + '</div>';
+    } else {
+      h += '<div class="mem"><span class="av empty">+</span><span class="who" style="color:#9aa1b2">빈 자리</span></div>';
+    }
+  }
+  return h;
+}
+function statusLine(c){
+  if (c < 3) return '<b class="num">' + (3 - c) + '명</b> 더 모이면 확정돼요';
+  if (c < 5) return '확정됐어요. 1명 더 모이면 리더 혜택이 ' + won((c + 1) * 1000) + '이 돼요';
+  return '다 모였어요. 리더 혜택 ' + won(5000);
+}
+
+var SCREENS = {
+  "L-land": {t:"공연 팟 랜딩", who:"리더", web:true, render:function(){
+    return sbar() + url("tadatada.com/pod") +
+    '<div class="scroll">' +
+      '<p class="eyebrow">고양종합운동장 11월 15일(토) 공연</p>' +
+      '<div class="h1">공연 끝나고 집 앞까지, 같이 타고 나눠 내요</div>' +
+      '<p class="sub">아는 사람끼리 최대 5명. 3명이 모이면 1인 2만 원대로 확정돼요.</p>' +
+      '<div class="box fill">' +
+        '<div class="row"><span>출발</span><span>공연장 픽업존</span></div>' +
+        '<div class="row"><span>도착</span><span>각자 집 앞</span></div>' +
+        '<div class="row"><span>1인 요금</span><span class="num">20,000원 + 거리 금액</span></div>' +
+        '<div class="row"><span>결제</span><span>공연 전날 가승인, 하차 후 결제</span></div>' +
+      '</div>' +
+      '<div class="banner"><b>3명이 안 모여도 탈 수 있어요</b>리더가 정가로 확정할 수 있어서 운영사가 무산시키지 않아요.</div>' +
+    '</div>' +
+    '<div class="bottom">' +
+      '<button class="btn" data-go="auth" data-role="leader">팟 만들기 (내가 리더)</button>' +
+      '<button class="btn ghost" data-go="M-land" data-role="member">초대 링크를 받았어요</button>' +
+    '</div>';
+  }},
+
+  "auth": {t:"휴대폰 문자 인증", who:"공통", web:true, render:function(){
+    var next = S.role === "leader" ? "L-create" : "M-drop";
+    return sbar() + url("tadatada.com/pod") + top("본인 확인", S.role === "leader" ? "L-land" : "M-land") +
+    '<div class="scroll">' +
+      '<div class="h1">휴대폰 번호로 확인할게요</div>' +
+      '<p class="sub">앱 설치나 회원가입 없이 진행해요. 기사 정보와 픽업 안내도 이 번호로 보내요.</p>' +
+      '<div class="field"><label>휴대폰 번호</label><div class="input" style="width:310px;max-width:100%">010-1234-5678</div></div>' +
+      '<div class="field"><label>인증번호 6자리</label></div>' +
+      '<div class="code"><span>4</span><span>8</span><span>1</span><span>0</span><span>2</span><span>7</span></div>' +
+      '<p class="small" style="text-align:center">남은 시간 2:41</p>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" data-go="' + next + '">확인</button></div>';
+  }},
+
+  "L-create": {t:"팟 만들기", who:"리더", web:true, render:function(){
+    return sbar() + url("tadatada.com/pod/new") + top("팟 만들기", "auth") +
+    '<div class="scroll">' +
+      '<div class="field" style="margin-top:0"><label>공연</label><div class="input fixed">고양종합운동장 11월 15일(토)</div></div>' +
+      '<div class="field"><label>출발</label><div class="input fixed">공연장 3번 게이트 앞 픽업존</div><p class="small">통제 구역 밖, 걸어서 닿는 곳으로 운영팀이 정해요.</p></div>' +
+      '<div class="field"><label>내 하차 주소</label><div class="input">고양시 일산동구 정발산로 24</div></div>' +
+      '<div class="field"><label>모집 마감</label><div class="input fixed">11월 14일(금) 18:00</div></div>' +
+      '<div class="banner"><b>팟을 만들면 내가 리더가 돼요</b>링크를 공유해 멤버를 모으고, 마감까지 3명이 안 되면 결제 방식을 정해요. 3명 이상 모이면 리더 혜택을 받아요.</div>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" data-go="L-pay">다음</button></div>';
+  }},
+
+  "L-pay": {t:"결제수단 등록", who:"리더", web:true, render:function(){
+    return sbar() + url("tadatada.com/pod/new") + top("결제수단", "L-create") +
+    '<div class="scroll">' +
+      '<div class="h1">내 몫을 결제할 카드를 등록해요</div>' +
+      '<p class="sub">지금은 결제되지 않아요.</p>' +
+      '<div class="box"><div class="row"><span>카드</span><span>신한 1234</span></div><div class="row"><span>내 예상 금액</span><span class="num">약 21,400원</span></div></div>' +
+      '<div class="box fill">' +
+        '<h4>결제는 이렇게 진행돼요</h4>' +
+        '<div class="row"><span>11월 14일(금)</span><span>내 몫 가승인</span></div>' +
+        '<div class="row"><span>하차 후</span><span>최종 금액 결제</span></div>' +
+        '<p class="small">인원이 바뀌면 금액이 다시 계산되고 가승인도 새로 걸려요.</p>' +
+      '</div>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" data-go="L-lobby">팟 만들고 링크 받기</button></div>';
+  }},
+
+  "L-lobby": {t:"팟 대기실", who:"리더", web:true, render:function(){
+    var c = S.count;
+    return sbar() + url("tadatada.com/pod/7KQ2") + top("고양 공연 귀가 팟", null) +
+    '<div class="scroll">' +
+      '<p class="eyebrow">모집 마감 11월 14일(금) 18:00</p>' +
+      '<div class="h1 num">' + c + '/5명 모였어요</div>' +
+      slots(c) +
+      '<p class="sub">' + statusLine(c) + '</p>' +
+      '<div class="share"><button type="button">링크 복사</button><button type="button">X에 올리기</button><button type="button">카톡 공유</button></div>' +
+      '<div class="box">' + members(c, "leader") + '</div>' +
+      '<div class="box fill">' +
+        '<div class="row"><span>내 예상 금액</span><span class="num">약 21,400원</span></div>' +
+        '<div class="row"><span>리더 혜택</span><span class="num">' + bonus(c) + '</span></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="bottom">' + (c < 3
+      ? '<button class="btn" data-go="L-short">인원이 모자랄 때 결제 방식 정하기</button>'
+      : '<button class="btn" data-go="L-done">확정 내용 보기</button>') + '</div>';
+  }},
+
+  "L-short": {t:"인원 미달 결정", who:"리더", web:true, render:function(){
+    var c = Math.min(S.count, 2);
+    var a = S.shortPick === "leader", b = S.shortPick === "split";
+    return sbar() + url("tadatada.com/pod/7KQ2") + top("결제 방식 정하기", "L-lobby") +
+    '<div class="scroll">' +
+      '<div class="h1">지금 ' + c + '명이라 아직 확정 전이에요</div>' +
+      '<p class="sub">마감까지 3명이 안 모이면 일반 예약 요금으로 운행해요. 어떻게 낼지 정해 주세요.</p>' +
+      '<button type="button" class="opt' + (a ? ' sel' : '') + '" data-pick="leader"><i class="rd"></i><span><b>내가 전액 결제</b><span class="num">정가 약 71,000원을 내 카드로 결제해요.</span></span></button>' +
+      '<button type="button" class="opt' + (b ? ' sel' : '') + '" data-pick="split"><i class="rd"></i><span><b>나눠서 결제</b><span>거리에 비례해 나눠요. 멤버가 동의해야 확정되고, 동의하지 않은 몫은 내가 내요.</span></span></button>' +
+      '<div class="banner"><b>마감까지 정하지 않으면</b>11월 14일(금) 18:00에 내가 전액 결제하는 것으로 확정돼요. 팟은 없어지지 않아요.</div>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" data-go="' + (b ? 'M-agree' : 'L-done') + '"' + (b ? ' data-role="member"' : '') + '>' + (b ? '멤버에게 동의 요청 보내기' : '이대로 확정하기') + '</button></div>';
+  }},
+
+  "L-done": {t:"팟 확정", who:"리더", web:true, render:function(){
+    var c = S.count;
+    return sbar() + url("tadatada.com/pod/7KQ2") +
+    '<div class="scroll">' +
+      '<i class="check" aria-hidden="true"></i>' +
+      '<div class="h1">팟이 확정됐어요</div>' +
+      '<p class="sub num">' + c + '명, 공연장 픽업존에서 출발해 각자 집 앞에 내려요.</p>' +
+      '<div class="box fill">' +
+        '<div class="row"><span>11월 14일(금)</span><span>각자 몫 가승인</span></div>' +
+        '<div class="row"><span>공연 당일</span><span>픽업존과 차량 번호 문자</span></div>' +
+        '<div class="row"><span>하차 후</span><span>각자 결제</span></div>' +
+      '</div>' +
+      '<div class="banner"><b>기사 정보와 차 위치는 앱에서 더 잘 보여요</b>앱이 없어도 문자로 받은 링크에서 확인할 수 있어요.</div>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" data-go="A-open">타다 앱에서 보기</button><button class="btn ghost" data-go="R-day">공연 당일 화면 미리보기</button></div>';
+  }},
+
+  "M-land": {t:"초대 링크 랜딩", who:"멤버", web:true, render:function(){
+    var c = S.count;
+    return sbar() + url("tadatada.com/pod/7KQ2") +
+    '<div class="scroll">' +
+      '<p class="eyebrow">' + LEADER + '님이 초대했어요</p>' +
+      '<div class="h1">고양 공연 귀가 팟</div>' +
+      '<p class="sub">11월 15일(토) 공연이 끝나면 픽업존에서 출발해 각자 집 앞에 내려요.</p>' +
+      '<div class="box">' +
+        '<div class="row"><span>지금 인원</span><span class="num"><b>' + c + '/5명</b></span></div>' +
+        slots(c) +
+        '<p class="small" style="margin-top:4px">' + statusLine(c) + '</p>' +
+      '</div>' +
+      '<div class="box fill">' +
+        '<div class="row"><span>내 금액</span><span class="num">20,000원 + 거리 금액</span></div>' +
+        '<div class="row"><span>결제</span><span>전날 가승인, 하차 후 결제</span></div>' +
+        '<div class="row"><span>모집 마감</span><span>11월 14일(금) 18:00</span></div>' +
+      '</div>' +
+      '<div class="banner"><b>3명이 안 모이면</b>리더가 결제 방식을 정해요. 나눠 내자고 하면 내 동의를 다시 물어보고, 동의 없이 더 내지 않아요.</div>' +
+    '</div>' +
+    '<div class="bottom">' +
+      '<button class="btn" data-go="auth" data-role="member">팟 참여하기</button>' +
+      '<button class="tlink" data-go="M-drop" data-role="member" data-preview="1">참여 전에 내 금액만 계산해 보기</button>' +
+    '</div>';
+  }},
+
+  "M-drop": {t:"내 하차지와 금액", who:"멤버", web:true, render:function(){
+    var pv = S.preview;
+    return sbar() + url("tadatada.com/pod/7KQ2") + top(pv ? "내 금액 계산" : "내 하차지", pv ? "M-land" : "auth") +
+    '<div class="scroll">' +
+      '<div class="h1">어디서 내리세요?</div>' +
+      '<div class="field"><div class="input">서울 마포구 월드컵북로 396</div></div>' +
+      '<div class="box" style="margin-top:16px"><div class="route">' +
+        '<div class="pt">공연장 3번 게이트 픽업존<small>출발, 모두</small></div>' +
+        '<div class="pt">고양시 일산동구<small>' + LEADER + '님 하차</small></div>' +
+        '<div class="pt me"><b>서울 마포구</b><small>내 하차, 2번째</small></div>' +
+      '</div><p class="small" style="margin-top:0">하차 순서는 경로에 맞춰 정해져요.</p></div>' +
+      '<div class="box fill">' +
+        '<div class="row"><span>1인 고정</span><span class="num">20,000원</span></div>' +
+        '<div class="row"><span>거리 금액</span><span class="num">3,800원</span></div>' +
+        '<div class="row" style="margin-top:8px"><span><b style="color:#1b1f2b">내 예상 금액</b></span><span class="num big">23,800원</span></div>' +
+        '<p class="small">사람이 더 들어와 경로가 바뀌면 다시 계산하고 알려 드려요.</p>' +
+      '</div>' +
+    '</div>' +
+    '<div class="bottom">' + (pv
+      ? '<button class="btn" data-go="auth" data-role="member" data-preview="0">이 금액으로 참여하기</button>'
+      : '<button class="btn" data-go="M-pay">다음</button>') + '</div>';
+  }},
+
+  "M-pay": {t:"결제수단 등록", who:"멤버", web:true, render:function(){
+    return sbar() + url("tadatada.com/pod/7KQ2") + top("결제수단", "M-drop") +
+    '<div class="scroll">' +
+      '<div class="h1">내 몫을 결제할 카드를 등록해요</div>' +
+      '<p class="sub">지금은 결제되지 않아요. 11월 14일(금)에 23,800원을 가승인하고, 하차 후 결제해요.</p>' +
+      '<div class="field"><label>카드 번호</label><div class="input ph">0000 0000 0000 0000</div></div>' +
+      '<div class="field" style="display:flex;gap:10px"><div style="flex:1"><label>유효기간</label><div class="input ph">MM/YY</div></div><div style="flex:1"><label>생년월일 6자리</label><div class="input ph">YYMMDD</div></div></div>' +
+      '<div class="box fill"><h4>만 19세 미만이에요</h4><p class="small" style="margin-top:0">보호자에게 결제를 부탁할 수 있어요. 보호자도 픽업과 하차 소식을 문자로 받아요.</p>' +
+      '<button class="tlink" style="padding-top:8px" data-go="G-req">보호자에게 결제 부탁하기</button></div>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" data-go="M-status" data-join="1">등록하고 참여하기</button></div>';
+  }},
+
+  "G-req": {t:"보호자에게 결제 부탁", who:"멤버", web:true, render:function(){
+    return sbar() + url("tadatada.com/pod/7KQ2") + top("보호자 결제", "M-pay") +
+    '<div class="scroll">' +
+      '<div class="h1">보호자 번호를 알려 주세요</div>' +
+      '<p class="sub">결제 요청 링크를 문자로 보내요. 보호자가 결제하면 참여가 완료돼요.</p>' +
+      '<div class="field"><label>보호자 휴대폰 번호</label><div class="input">010-9876-5432</div></div>' +
+      '<div class="box fill">' +
+        '<div class="row"><span>보내는 내용</span><span>팟 정보, 내 하차지, 23,800원</span></div>' +
+        '<div class="row"><span>리더에게는</span><span>결제 대기로 보여요</span></div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" data-go="G-pay">요청 보내기</button></div>';
+  }},
+
+  "G-pay": {t:"보호자 결제", who:"보호자", web:true, render:function(){
+    return sbar() + url("tadatada.com/pod/7KQ2/guardian") +
+    '<div class="scroll">' +
+      '<p class="eyebrow">보호자 결제 요청</p>' +
+      '<div class="h1">서연님이 타다 팟 결제를 부탁했어요</div>' +
+      '<div class="box">' +
+        '<div class="row"><span>탑승</span><span>11월 15일(토) 공연 종료 후</span></div>' +
+        '<div class="row"><span>출발</span><span>고양종합운동장 픽업존</span></div>' +
+        '<div class="row"><span>하차</span><span>서울 마포구 (서연님 입력)</span></div>' +
+        '<div class="row"><span>함께 타는 사람</span><span class="num">' + S.count + '명, 리더 ' + LEADER + '</span></div>' +
+        '<div class="row"><span>예상 금액</span><span class="num"><b>23,800원</b></span></div>' +
+      '</div>' +
+      '<div class="banner"><b>보호자에게도 알려 드려요</b>차량 번호, 기사 정보, 하차 완료를 이 번호로 문자 보내요.</div>' +
+      '<div class="field"><label>카드 번호</label><div class="input ph">0000 0000 0000 0000</div></div>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" data-go="M-status" data-join="1" data-guardian="1">카드 등록하고 승인하기</button></div>';
+  }},
+
+  "M-status": {t:"내 참여 상태, 취소", who:"멤버", web:true, render:function(){
+    var c = S.count;
+    return sbar() + url("tadatada.com/pod/7KQ2") + top("고양 공연 귀가 팟", null) +
+    '<div class="scroll">' +
+      '<p class="eyebrow">참여했어요' + (S.guardian ? ', 보호자 결제' : '') + '</p>' +
+      '<div class="h1 num">' + c + '/5명' + (c >= 3 ? ', 확정' : ', 모집 중') + '</div>' +
+      slots(c) +
+      '<p class="sub">' + statusLine(c) + '</p>' +
+      '<div class="box">' + members(c, "member") + '</div>' +
+      '<div class="box fill">' +
+        '<div class="row"><span>내 예상 금액</span><span class="num">23,800원</span></div>' +
+        '<div class="row"><span>가승인</span><span>11월 14일(금)</span></div>' +
+      '</div>' +
+      '<button class="tlink" type="button">참여 취소하기</button>' +
+      '<p class="small" style="margin-top:2px">마감 이후에는 취소 수수료가 있어요.</p>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" data-go="share-me">친구도 초대하기</button><button class="btn ghost" data-go="R-day">공연 당일 화면 미리보기</button></div>';
+  }},
+
+  "M-agree": {t:"나눠 결제 동의", who:"멤버", web:true, render:function(){
+    return sbar() + url("tadatada.com/pod/7KQ2") +
+    '<div class="scroll">' +
+      '<p class="eyebrow">' + LEADER + '님의 요청</p>' +
+      '<div class="h1">2명이라 나눠서 내자고 해요</div>' +
+      '<p class="sub">3명이 모이지 않아 일반 예약 요금으로 운행해요. 거리에 비례해 나누면 내 몫은 이만큼이에요.</p>' +
+      '<div class="box fill">' +
+        '<div class="row"><span>정가</span><span class="num">약 71,000원</span></div>' +
+        '<div class="row"><span>' + LEADER + '님</span><span class="num">약 28,400원</span></div>' +
+        '<div class="row" style="margin-top:8px"><span><b style="color:#1b1f2b">내 몫</b></span><span class="num big">42,600원</span></div>' +
+        '<p class="small">원래 예상 23,800원보다 많아요.</p>' +
+      '</div>' +
+      '<p class="small">동의하지 않으면 이번 팟에서 빠지고, 내 몫은 리더가 내요.</p>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" data-go="M-status">동의하기</button><button class="btn ghost" data-go="M-land">이번 팟에서 빠지기</button></div>';
+  }},
+
+  "R-day": {t:"운행 당일 상태", who:"공통", web:true, render:function(){
+    return sbar() + url("tadatada.com/ride/7KQ2") +
+    '<div class="scroll">' +
+      '<p class="eyebrow">11월 15일(토) 공연 당일</p>' +
+      '<div class="h1">공연이 끝나면 픽업존으로 와 주세요</div>' +
+      '<div class="box">' +
+        '<div class="row"><span>픽업존</span><span>3번 게이트 앞 타다팟존</span></div>' +
+        '<div class="row"><span>차량</span><span><span class="carplate">12가 3456</span></span></div>' +
+        '<div class="row"><span>기사</span><span>김타다 기사님, 넥스트</span></div>' +
+        '<div class="row"><span>대기</span><span>공연 종료 후 대기 (상한 미정)</span></div>' +
+      '</div>' +
+      '<div class="box"><div class="route">' +
+        '<div class="pt">픽업존<small>' + S.count + '명 모두 탑승하면 출발</small></div>' +
+        '<div class="pt">고양시 일산동구<small>' + LEADER + '님</small></div>' +
+        '<div class="pt me"><b>서울 마포구</b><small>내 하차</small></div>' +
+      '</div></div>' +
+      '<p class="small">기존 비회원 호출 상태 웹(배차, 차량 위치, 기사 정보, 전화, 취소)을 그대로 쓰고, 픽업존과 하차 순서만 더해요.</p>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" data-go="A-open">앱에서 차 위치 보기</button></div>';
+  }},
+
+  "A-open": {t:"앱에서 이어보기", who:"공통", web:true, render:function(){
+    return sbar() + url("tadatada.com/ride/7KQ2") +
+    '<div class="scroll">' +
+      '<div class="h1">타다 앱에서 이어볼까요?</div>' +
+      '<p class="sub">앱에서는 차 위치를 실시간으로 보고 기사님께 바로 연락할 수 있어요.</p>' +
+      '<div class="box"><h4>앱이 있으면</h4><p class="small" style="margin-top:0">이 운행 화면으로 바로 열려요.</p></div>' +
+      '<div class="box"><h4>앱이 없으면</h4><p class="small" style="margin-top:0">스토어로 갔다가, 설치 후 같은 휴대폰 번호로 들어오면 이 운행이 이어져요.</p></div>' +
+      '<p class="small">지금 코드: 운행 딥링크는 있지만 앱이 없을 때 이어주는 경로는 없어요 (신규).</p>' +
+    '</div>' +
+    '<div class="bottom"><button class="btn" type="button">타다 앱 열기</button><button class="btn ghost" data-go="R-day">웹에서 계속 보기</button></div>';
+  }}
+};
+
+var NOTES = {
+  "L-land": "2024 오조작 대응: 리더 되기와 초대받은 사람을 첫 화면에서 가른다. 팟 찾기는 두지 않는다.",
+  "auth": "기존 비회원 호출 웹의 문자 인증 그대로. 번호 칸 310, 인증번호 칸 42 x 60, 간격 11 (미미르 2026-10-07). 나이는 확인하지 않는다.",
+  "L-create": "출발은 공연장 픽업존으로 고정. 픽업존 위치, 모집 마감 시각 기본값은 PRD 미정.",
+  "L-pay": "웹 카드 등록과 가승인은 현행 코드에 없음 (신규). 가승인 시점은 서버 확인 항목.",
+  "L-lobby": "아래 '모인 인원'을 바꾸면 미달과 확정 상태가 바뀐다. 리더 혜택 3/4/5명 = 3,000/4,000/5,000원.",
+  "L-short": "미선택 마감 시 리더 결제 (PRD). 나눠 결제에서 멤버가 거절하면 어떻게 되는지는 PRD 미정이라 '리더가 낸다'로 가정.",
+  "L-done": "앱으로 넘기는 이유를 '기사 정보와 차 위치'로 둔다. 앱이 없어도 문자 링크로 끝까지 갈 수 있어야 한다.",
+  "M-land": "PRD 'PD와 고민할 것'의 답: 지금 인원, 내 금액, 1명 더 모이면 확정, 미달 시 바뀔 수 있는 점, 마감. '금액만 계산해 보기'는 2024년 '요금만 보려다 신청' 오조작 대응.",
+  "M-drop": "주소 검색은 기존 웹 부품 재사용, 탑승자별 하차지 연결과 금액 계산은 신규. 경유지는 최대 5개라 5인 팟과 맞는다.",
+  "M-pay": "만 19세 미만 분기. 보호자 결제는 학원 부모 결제와 같은 부품으로 쓴다.",
+  "G-req": "리더 대기실에는 '결제 대기'로 보인다. 보호자가 기한 안에 결제하지 않으면 어떻게 할지는 미정.",
+  "G-pay": "Uber 가족 프로필, Grab for Family 패턴. 미성년 단독 탑승, 위치정보 노출은 법무 확인 전.",
+  "M-status": "2024년 '웹에 취소 버튼이 없어 CS 폭주' 대응. 취소 수수료 기준 시각은 미정.",
+  "M-agree": "PRD: 나눠서 결제 (그 시점에 멤버가 동의). 금액은 PRD 예시 정가 71,000원을 거리 비례로 나눈 가상의 값.",
+  "R-day": "기존 비회원 호출 상태 웹(SisterWeb) 재사용. 대기 상한, 데이터 안 터질 때 문자 안내는 운영 정책 미정.",
+  "A-open": "운행 딥링크(tada-rider://launch?rideId=)는 있음. 앱 미설치 시 스토어 경유 후 이어주는 경로는 신규."
+};
+
+/* ── 맵 렌더 ─────────────────────────────── */
+var grid = document.getElementById("grid");
+function buildGrid(){
+  var h = '<div class="gh">역할</div>';
+  STAGES.forEach(function(s){ h += '<div class="gh">' + s[0] + '<small>' + s[1] + '</small></div>'; });
+  ROWS.forEach(function(r){
+    var cls = r.out ? ' rowmuted' : '';
+    h += '<div class="rh' + cls + '">' + r.name + '<small>' + r.sub + '</small></div>';
+    r.cells.forEach(function(cell, ci){
+      h += '<div class="cell' + cls + '">';
+      cell.forEach(function(n){
+        var has = n.s && SCREENS[n.s];
+        var meta = has ? '<span class="sid">' + n.s + '</span>' : (n.k === "later" ? '<span>v2 검토</span>' : '<span>화면 없음</span>');
+        h += '<button type="button" class="node' + (has ? '' : ' noscreen') + '" data-kind="' + n.k + '"' + (has ? ' data-go="' + n.s + '" data-role="' + (r.name === "멤버" || r.name === "보호자" ? "member" : (r.name === "리더" ? "leader" : "")) + '"' : ' aria-disabled="true"') + ' data-stage="' + STAGES[ci][0] + '">' +
+          '<b>' + n.t + '</b><i>' + meta + '</i></button>';
+      });
+      h += '</div>';
+    });
+  });
+  grid.innerHTML = h;
+  /* 칸이 하나도 없는 열은 모바일에서 숨긴다 */
+  grid.parentNode.parentNode.setAttribute("data-built", "1");
+}
+
+/* ── 이동 ─────────────────────────────── */
+var phone = document.getElementById("phone");
+function go(id, opts){
+  if (id === "share-me") { id = "M-land"; }
+  if (!SCREENS[id]) return;
+  opts = opts || {};
+  if (opts.role) S.role = opts.role;
+  if (opts.preview === "1") S.preview = true;
+  if (opts.preview === "0" || id === "M-land" || id === "M-pay") S.preview = opts.preview === "1";
+  if (opts.join === "1" && S.role === "member" && S.screen !== "M-status" && S.count < 5) S.count++;
+  if (opts.guardian === "1") S.guardian = true;
+  S.screen = id;
+  render();
+  try { history.replaceState(null, "", "#" + id); } catch(e){}
+}
+function render(){
+  var sc = SCREENS[S.screen];
+  phone.innerHTML = '<div class="app">' + sc.render() + '</div>';
+  document.getElementById("stTitle").textContent = sc.t;
+  document.getElementById("stMeta").innerHTML = '<span class="sid">' + S.screen + '</span>, ' + sc.who + ' ' + (sc.web ? "웹" : "앱");
+  document.getElementById("note").innerHTML = '<b>메모</b> ' + (NOTES[S.screen] || "");
+  Array.prototype.forEach.call(grid.querySelectorAll(".node"), function(n){
+    n.classList.toggle("on", n.getAttribute("data-go") === S.screen);
+  });
+  var cnt = document.getElementById("cnt"), h = '';
+  for (var i = 1; i <= 5; i++) h += '<button type="button" class="' + (i === S.count ? 'on' : '') + '" data-count="' + i + '">' + i + '명</button>';
+  cnt.innerHTML = h;
+}
+
+document.addEventListener("click", function(e){
+  var c = e.target.closest("[data-count]");
+  if (c){ S.count = +c.getAttribute("data-count"); render(); return; }
+  var p = e.target.closest("[data-pick]");
+  if (p){ S.shortPick = p.getAttribute("data-pick"); render(); return; }
+  var g = e.target.closest("[data-go]");
+  if (g){
+    go(g.getAttribute("data-go"), {
+      role: g.getAttribute("data-role") || null,
+      preview: g.getAttribute("data-preview"),
+      join: g.getAttribute("data-join"),
+      guardian: g.getAttribute("data-guardian")
+    });
+    if (g.classList.contains("node") && window.matchMedia("(max-width:1180px)").matches){
+      document.getElementById("phone").scrollIntoView({behavior:"smooth", block:"start"});
+    }
+  }
+});
+document.getElementById("reset").addEventListener("click", function(){
+  S = {screen:"L-land", role:"leader", count:2, shortPick:"leader", guardian:false};
+  render();
+});
+
+buildGrid();
+var start = (location.hash || "").slice(1);
+if (SCREENS[start]) { S.screen = start; if (start.charAt(0) === "M" || start.charAt(0) === "G") S.role = "member"; }
+render();
+
+/* ── 셀프테스트 (?selftest=1) ─────────────────────────────── */
+if (/selftest=1/.test(location.search)){
+  var out = [], fail = 0;
+  function ok(cond, msg){ out.push((cond ? "PASS " : "FAIL ") + msg); if (!cond) fail++; }
+  Object.keys(SCREENS).forEach(function(id){
+    S.screen = id; S.role = id.charAt(0) === "L" ? "leader" : "member"; render();
+    var gos = phone.querySelectorAll("[data-go]");
+    Array.prototype.forEach.call(gos, function(b){
+      var t = b.getAttribute("data-go");
+      ok(SCREENS[t] || t === "share-me", id + " -> " + t + " 대상 화면 있음");
+    });
+    ok(!!NOTES[id], id + " 메모 있음");
+    var txt = phone.textContent;
+    ok(!/[\u2014\u2013]/.test(txt), id + " 대시 없음");
+  });
+  Array.prototype.forEach.call(grid.querySelectorAll(".node[data-go]"), function(n){
+    ok(!!SCREENS[n.getAttribute("data-go")], "맵 " + n.getAttribute("data-go") + " 화면 있음");
+  });
+  ok(!/[\u2014\u2013]/.test(document.querySelector(".page").textContent), "페이지 전체 대시 없음");
+  S.screen = "L-land"; render();
+  var pre = document.createElement("pre"); pre.id = "selftest-out";
+  pre.textContent = "SELFTEST " + (fail ? "FAIL " + fail : "OK") + " (" + out.length + ")\n" + out.join("\n");
+  document.body.appendChild(pre);
+}
+})();
+</script>
+</body>
+</html>
